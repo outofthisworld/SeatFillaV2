@@ -52,7 +52,7 @@ module.exports.connections = {
   *                                                                          *
   * MongoDB is the leading NoSQL database.                                   *
   * http://en.wikipedia.org/wiki/MongoDB                                     *
-  *                                                                          *
+  *             l                                                             *
   * Run: npm install sails-mongo                                             *
   *                                                                          *
   ***************************************************************************/
@@ -74,13 +74,13 @@ module.exports.connections = {
   *                                                                          *
   *                                                                          *
   ***************************************************************************/
-  // somePostgresqlServer: {
-  //   adapter: 'sails-postgresql',
-  //   host: 'YOUR_POSTGRES_SERVER_HOSTNAME_OR_IP_ADDRESS',
+   Seatfilla_Database: {
+     adapter: 'sails-postgresql',
+     host: 'postgres://postgres:@localhost:5432/seatfilla',
   //   user: 'YOUR_POSTGRES_USER', // optional
   //   password: 'YOUR_POSTGRES_PASSWORD', // optional
   //   database: 'YOUR_POSTGRES_DB' //optional
-  // }
+  }
 
 
   /***************************************************************************

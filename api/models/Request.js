@@ -108,6 +108,10 @@ module.exports = {
       integer:true,
       defaultsTo:0
     },
+    currency:{
+      type:'string',
+
+    },
     maximumPayment:{
       type:'number',
       decimal:true,
@@ -116,7 +120,9 @@ module.exports = {
       max:10001
     },
     willTakeOffers:{
-
+      type:'boolean',
+      required:true,
+      notNull:true
     },
     //One to many (User can have many requests,
     //request can have one user.)
@@ -129,6 +135,7 @@ module.exports = {
 
     new Promise((resolve)=>{
       resolve(((record)=>{
+        
         const earliestDeparture = new Date(parseInt(record.earliestDepartureYear),
         parseInt(record.earliestDepartureMonth)-1,parseInt(record,earliestDepartureDay));
 

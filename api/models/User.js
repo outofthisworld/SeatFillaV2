@@ -103,7 +103,24 @@ module.exports = {
       type:'boolean',
       boolean:true
     },
-     verifyPassword: function (password) {
+    //One to many on requests
+    requests: {
+      collection: 'Request',
+      via: 'user'
+    },
+    //One to many on addresses (may have duplicates however stops synchornization issues)
+    addresses:{
+      collection: 'Address',
+      via:'user'
+    },
+    bids:{
+      collection: 'Bid',
+      via:'user'
+    },
+    emailConfirmed:()=>{
+      return isEmailConfirmed;
+    },  
+    verifyPassword: function (password) {
       return bcrypt.compareSync(password, this.password);
     },
     changePassword: function(newPassword, cb){

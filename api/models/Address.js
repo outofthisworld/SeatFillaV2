@@ -11,15 +11,27 @@ module.exports = {
     addressLine:{
 
     },
+    addressLineTwo:{
+
+    },
+    addressLineThree:{
+
+    },
     country: {
 
-    }
+    },
+    postcode: {
+
+    },
     city:{
 
-    }
+    },
+    state:{
+
+    },
     //One to many (User can have many addresses,
     //request can have one user.)
-    owner:{
+    user:{
       model:'user'
     }
   }

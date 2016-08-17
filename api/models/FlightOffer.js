@@ -11,6 +11,15 @@ module.exports = {
       notNull:true,
       required:true
     },
+    ip:{
+      type:'string',
+      ip:true,
+      notNull:true,
+      required:true
+    },
+    authCode:{
+
+    },
     departureAirportCode:{
       type:'string',
       required:true,
@@ -63,7 +72,6 @@ module.exports = {
     offerExpireDateTime:{
       type:'datetime',
       required:true,
-
     },
     pets: {
       collection: 'Bid',

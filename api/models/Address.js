@@ -8,7 +8,19 @@
 module.exports = {
 
   attributes: {
+    addressLine:{
 
+    },
+    country: {
+
+    }
+    city:{
+
+    }
+    //One to many (User can have many addresses,
+    //request can have one user.)
+    owner:{
+      model:'user'
+    }
   }
 };
-

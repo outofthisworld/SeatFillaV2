@@ -6,9 +6,24 @@
  */
 
 module.exports = {
-
+  autoPk:false,
+  seedData:[
+    {
+      id:1
+    }
+  ],
   attributes: {
+    id:{
+      type:'number',
+      integer:true,
+      notNull:true,
+      primaryKey:true
+    },
+    role:{
+      type:'string',
+      notNull:'true',
 
+    }
   }
 };
 

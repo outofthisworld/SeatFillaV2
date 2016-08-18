@@ -137,6 +137,8 @@ module.exports = {
   //Here we will hash the pass before it enters the db..
   beforeCreate: function (attrs, cb) {
     bcrypt.hash(attrs.password, SALT_WORK_FACTOR, function (err, hash) {
+      if(err) return cb(err);
+
       attrs.password = hash;
       return cb();
     });

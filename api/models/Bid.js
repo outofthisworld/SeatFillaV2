@@ -8,16 +8,20 @@ module.exports = {
   attributes: {
     bidAmount:{
       type:'number',
-      required:'true',
+      required:true
     },
     bidCurrency:{
-      type
+      type:'string',
+      required:true,
+      notNull:true
     },
     flightOffer: {
-      model: 'FlightOffer'
+      model: 'FlightOffer',
+      notNull:true,
+      required:true
     },
     user: {
-      model:'User'
+      model:'user'
     }
   }
 };

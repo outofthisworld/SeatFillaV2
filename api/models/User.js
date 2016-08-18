@@ -117,6 +117,10 @@ module.exports = {
       collection: 'Bid',
       via:'user'
     },
+    apiKeys:{
+      collection: 'ApiUsers',
+      via:'user'
+    },
     emailConfirmed:()=>{
       return isEmailConfirmed;
     },  

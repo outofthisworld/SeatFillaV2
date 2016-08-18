@@ -17,8 +17,10 @@ module.exports = {
       notNull:true,
       required:true
     },
-    authCode:{
-
+    apiKey:{
+      type:'string',
+      notNull:true,
+      
     },
     departureAirportCode:{
       type:'string',

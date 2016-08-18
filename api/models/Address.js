@@ -8,25 +8,37 @@
 module.exports = {
   attributes: {
     addressLine:{
-
+      type:'string',
+      required:true,
+      notNull:true
     },
     addressLineTwo:{
-
+      type:'string',
+      required:true,
+      notNull:true
     },
     addressLineThree:{
-
-    },
-    country: {
-
+      type:'string',
+      notNull:false,
+      required:false
     },
     postcode: {
-
+      type: 'number',
+      required:true,
+      notNull:true
     },
-    city:{
-
+    city: {
+      model: 'city',
+      notNull:true
     },
-    state:{
-
+    country: {
+      model: 'country',
+      notNull:true
+    },
+    state: {
+      model: 'state',
+      notNull:false,
+      required:false
     },
     //One to many (User can have many addresses,
     //request can have one user.)

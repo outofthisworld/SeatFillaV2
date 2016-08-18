@@ -18,8 +18,9 @@ module.exports.bootstrap = function(cb) {
 
   Console.log('Bootstrapping SeatFilla...');
   async.series([
- 		Country.seed
-
+ 		Country.seed,
+    State.seed
  	],cb);
+   
   cb();
 };

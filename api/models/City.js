@@ -6,8 +6,13 @@
  */
 
 module.exports = {
-
+  autoPK:false,
   attributes: {
+     
+     addresses: {
+      collection: 'Address',
+      via: 'city'
+    }
 
   }
 };

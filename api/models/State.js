@@ -6,6 +6,7 @@
  */
 
 module.exports = {
+    autoPk:false,
 seedData:[
 {id:1,name:'Andaman and Nicobar Islands',countryId:101},
 {id:2,name:'Andhra Pradesh',countryId:101},
@@ -4128,6 +4129,10 @@ seedData:[
 ],
 attributes: {
 
+      addresses: {
+      collection: 'Address',
+      via: 'state'
+     }
 }
 };
 

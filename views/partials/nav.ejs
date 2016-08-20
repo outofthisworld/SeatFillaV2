@@ -1,0 +1,38 @@
+ <app-drawer-layout force-narrow fullbleed>
+    <app-drawer id="drawer" opened>
+      <app-toolbar>
+      <h2>Navigation</h2>
+      </app-toolbar>
+      <paper-menu selected="{{selected}}" attr-for-selected="name">
+        <paper-item name="item">name</paper-item>
+      </paper-menu>
+    </app-drawer>
+       <app-header-layout fullbleed>
+      <app-header class="main-header" fixed effects="waterfall">
+        <app-toolbar>
+          <nav>
+          <paper-icon-button style="position:absolute;top:0px;" icon="menu" drawer-toggle></paper-icon-button>
+          <h2 class="title">SeatFilla</h2>
+          <paper-tabs>
+            selected="{{selected}}">
+            <paper-tab link>
+              <a href="#section1bg" class="link" tabindex="-1">SIGN UP </a>
+            </paper-tab>
+            <paper-tab link>
+              <a href="#link2" class="link" tabindex="-1">ABOUT</a>
+            </paper-tab>
+            <paper-tab link>
+              <a href="#link3" class="link" tabindex="-1">APP</a>
+            </paper-tab>
+            <paper-tab link>
+              <a href="#link3" class="link" tabindex="-1">TAB FOUR</a>
+            </paper-tab>
+            <paper-tab link>
+              <a href="#link3" class="link" tabindex="-1">TAB FIVE</a>
+            </paper-tab>
+          </paper-tabs>
+           <paper-icon-button style="position:absolute;right:0px;top:0px;" icon="settings" drawer-toggle></paper-icon-button>
+      
+          </nav>
+        </app-toolbar>
+      </app-header>

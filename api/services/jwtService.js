@@ -20,16 +20,17 @@ const apiKey = "secret-half";
 
 
 const createApiSecret = function (apiKey,sharedSecret){
-    return Buffer.from(apiKey+sharedSecret).toString('base64');
+    return Buffer.from(sails.config.session.secret+sharedSecret).toString('base64');
 }
 
 module.exports = {
         createApiToken:function(req, payload, cb){
             const key = req.body.sfKey || req.query.sfKey || req.headers['x-seatfilla-key'] || req.params.sfKey;
-            if(payload && secret && key){
+            if(payload && key){
                 cb(null, jwt.sign(payload, createApiSecret(apiKey, key)));
             }else{
-                cb(new Error('Did not recieve all information required..'));
+                sails.log.debug('Error creating API token in services/jwtService.js')
+                cb(new Error('Did not recieve all information required for creating API token'), null);
             }
         },
         verifyApiToken:function(req, cb){

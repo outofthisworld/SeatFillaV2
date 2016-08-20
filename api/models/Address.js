@@ -27,21 +27,21 @@ module.exports = {
       required:true,
       notNull:true
     },
+    //Look up tables
     city: {
-      model: 'city',
+      type:'number',
       notNull:true
     },
     country: {
-      model: 'country',
+      type:'number',
       notNull:true
     },
     state: {
-      model: 'state',
+      type:'number',
       notNull:false,
       required:false
     },
-    //One to many (User can have many addresses,
-    //request can have one user.)
+    //One to many 
     user:{
       model:'user'
     }

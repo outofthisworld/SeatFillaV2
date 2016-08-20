@@ -21,6 +21,7 @@
     "grunt-sync": "0.5.2",
     "include-all": "~0.1.6",
     "jsonwebtoken": "^7.1.9",
+    "passport": "^0.3.2",
     "rc": "1.0.1",
     "sails": "~0.12.4",
     "sails-disk": "~0.10.9",

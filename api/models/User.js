@@ -29,6 +29,12 @@ module.exports = {
       minLength:1,
       maxLength:30
     },
+    middleName:{
+      type:'string',
+      required:false,
+      minLength:1,
+      maxLength:30
+    },
     lastName:{
       type:'string',
       required:true,
@@ -41,67 +47,52 @@ module.exports = {
       required:true,
       unique:true,
       notNull:true,
-      maxLength:50,
-      minLength:1
     },
     username:{
       type:'string',
-      required:true,
-      unique:true,
-      notNull:true,
       minLength:3,
-      maxLength:20,
-
+      maxLength:20
     },
     password:{
       type:'string',
-      required:true,
-      notNull:true,
       minLength:7, //8-25
       maxLength:26,
       notContains: function(cb){
-          setTimeout(function() {
             cb(this.username);
-          }, 1);
       }
     },
     passwordConfirmation:{
       type:'string',
-      required:true,
-      notNull:true,
       equals: function(cb){
-        setTimeout(function(){
           cb(this.password);
-        },1);
       }
     },
     birthDay:{
-      type:'number',
-      max:32,
-      min:-1,
-      required:true,
-      notNull:true
+      type:'string',
+      integer:true,
+      required:false
     },
     birthMonth:{
-      type:'number',
+      type:'string',
       integer:true,
-      max:13, //Non inclusive
-      min:-1, // 0
-      notNull:true
+      required:false
+    },
+    provider:{
+      type:'string',
+      required:false,
+      notNull:false,
+      defaultsTo:'local'
     },
     birthYear:{
-      type:'number',
+      type:'string',
       integer:true,
-      notNull:true,
-      min:1899 // 1900
+      required:false
     },
     isEmailConfirmed:{
       type:'boolean',
-      boolean:true
     },
     isLockedOut:{
       type:'boolean',
-      boolean:true
     },
     //One to many on requests
     requests: {
@@ -121,9 +112,20 @@ module.exports = {
       collection: 'ApiUsers',
       via:'user'
     },
+    roles: {
+      collection: 'UserRole',
+      via: 'user',
+      dominant: true
+    },
     emailConfirmed:()=>{
-      return isEmailConfirmed;
-    },  
+      return this.isEmailConfirmed;
+    },
+    hasRole:(role)=>{
+      if(this.roles.filter((r)=>{r.role === role}).length > 0){
+        return true;
+      } 
+      return false;     
+    },
     verifyPassword: function (password) {
       return bcrypt.compareSync(password, this.password);
     },
@@ -134,18 +136,23 @@ module.exports = {
       });
     },
     toJSON: function() {
+      delete this.password;
+      delete this.passwordConfirmation;
       var obj = this.toObject();
       return obj;
     }
   },
   //Here we will hash the pass before it enters the db..
   beforeCreate: function (attrs, cb) {
-    bcrypt.hash(attrs.password, SALT_WORK_FACTOR, function (err, hash) {
-      if(err) return cb(err);
+    if(attrs.provider === 'local'){
+      bcrypt.hash(attrs.password, SALT_WORK_FACTOR, function (err, hash) {
+        if(err) return cb(err);
 
-      attrs.password = hash;
-      return cb();
-    });
+        attrs.password = hash;
+        attrs.passwordConfirmation = hash;
+        return cb();
+      });
+    }
   },
   beforeUpdate: function (attrs, cb) {
     if(attrs.newPassword){

@@ -8,12 +8,20 @@
 module.exports = {
   autoPK:false,
   attributes: {
-     
-     addresses: {
-      collection: 'Address',
-      via: 'city'
+    id:{
+      type:'number',
+      primaryKey:true
+    },
+    stateID: {
+      type:'number',
+      notNull:true,
+      required:true
+    },
+    name:{
+      type:'string',
+      notNull:true,
+      required:true
     }
-
   }
 };
 

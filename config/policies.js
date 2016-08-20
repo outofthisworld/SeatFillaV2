@@ -19,6 +19,28 @@
 
 module.exports.policies = {
 
+  '*':['requestModiferPolicy','responseModiferPolicy'],
+  UserController:{
+    '*':true
+  },
+  AuthController:{
+    'generateApiToken':['passportAuth']
+  },
+  VerifyController:{
+    '*':true
+  },
+  FlightOfferController:{
+    '*':false,
+    'create':['apiPolicy'],
+    'delete':['apiPolicy'],
+    'update':['apiPolicy']
+  },
+  RequestController:{
+    '*':false
+  }
+
+
+
   /***************************************************************************
   *                                                                          *
   * Default policy for all controllers and actions (`true` allows public     *
@@ -49,12 +71,9 @@ module.exports.policies = {
 		// feed : ['isNiceToAnimals', 'hasRabbitFood']
 	// }
 
-  FlightOfferController:{
-    '*': 'apiPolicy'
-  },
-  RequestController:{
-
-  },
+ // FlightOfferController:{
+   // '*': 'apiPolicy'
+  //},
   //UserController:{
    //'*':false,
    //create:true

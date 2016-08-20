@@ -29,7 +29,7 @@ module.exports.connections = {
   *                                                                          *
   ***************************************************************************/
   localDiskDb: {
-    adapter: 'sails-disk'
+     adapter: 'sails-disk'
   },
 
   /***************************************************************************
@@ -74,13 +74,11 @@ module.exports.connections = {
   *                                                                          *
   *                                                                          *
   ***************************************************************************/
-   Seatfilla_Database: {
-     adapter: 'sails-postgresql',
-     host: 'postgres://postgres:@localhost:5432/seatfilla',
-  //   user: 'YOUR_POSTGRES_USER', // optional
-  //   password: 'YOUR_POSTGRES_PASSWORD', // optional
-  //   database: 'YOUR_POSTGRES_DB' //optional
-  }
+  //Seatfilla_Database: {
+  //   adapter: 'sails-postgresql',
+   //  host: 'postgresql://Dale@localhost/seatfilla',
+   //  user:'Dale'
+ // }
 
 
   /***************************************************************************

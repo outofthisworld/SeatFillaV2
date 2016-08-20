@@ -9,18 +9,8 @@
  * http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.bootstrap.html
  */
 
-const async = require('async');
 
-module.exports.bootstrap = function(cb) {
 
-  // It's very important to trigger this callback method when you are finished
-  // with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)
-
-  Console.log('Bootstrapping SeatFilla...');
-  async.series([
- 		Country.seed,
-    State.seed
- 	],cb);
-   
-  cb();
+module.exports.bootstrap = function(callback) {
+  callback();
 };

@@ -79,14 +79,12 @@ module.exports = {
     },
     earliestReturnMonth:{
       type: 'number',
-      integer:true,
       min:0,
       max:13,
       defaultsTo:0
     },
     earliestReturnYear:{
       type: 'number',
-      integer:true,
       defaultsTo: 0
     },
     latestReturnDay:{
@@ -109,13 +107,11 @@ module.exports = {
       defaultsTo:0
     },
     currency:{
-      type:'string',
-
+      type:'string'
     },
     maximumPayment:{
       type:'number',
       decimal:true,
-      finite:true,
       min:0,
       max:10001
     },

@@ -7,11 +7,7 @@
 
 module.exports = {
   autoPk:false,
-  seedData:[
-    {
-      id:1
-    }
-  ],
+  seedData:[],
   attributes: {
     id:{
       type:'number',
@@ -21,8 +17,11 @@ module.exports = {
     },
     role:{
       type:'string',
-      notNull:'true',
-
+      notNull:true,
+    },
+    user: {
+      collection: 'User',
+      via: 'roles'
     }
   }
 };

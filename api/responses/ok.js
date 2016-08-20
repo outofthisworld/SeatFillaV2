@@ -43,17 +43,21 @@ module.exports = function sendOK (data, options) {
       viewData = undefined;
     }
   }
-
-  // If a view was provided in options, serve it.
-  // Otherwise try to guess an appropriate view, or if that doesn't
-  // work, just send JSON.
-  if (options.view) {
-    return res.view(options.view, { data: viewData, title: 'OK' });
-  }
+    
+     const final = { data: viewData, options:options };
+    if(final.options.layout) final.layout = final.options.layout;
+    if(final.options.title) final.title = final.options.title;
+  
+   // If a view was provided in options, serve it.
+   // Otherwise try to guess an appropriate view, or if that doesn't
+   // work, just send JSON.
+   if (options.view) {
+    return res.view(options.view, final);
+   }
 
   // If no second argument provided, try to serve the implied view,
   // but fall back to sending JSON(P) if no view can be inferred.
-  else return res.guessView({ data: viewData, title: 'OK' }, function couldNotGuessView () {
+  else return res.guessView(final, function couldNotGuessView () {
     return res.jsonx(data);
   });
 

@@ -11,17 +11,10 @@
  */
 
 module.exports = {
-  autoPK: false,
   attributes: {
-   id:{
-      type:'string',
-      primaryKey:true,
-      defaultsTo: function(){ return uuid.v4(); }
-    },
     ip: {
        type:'string',
        required:true,
-       ip:true
     },
     user_agent: {
        type:'string',

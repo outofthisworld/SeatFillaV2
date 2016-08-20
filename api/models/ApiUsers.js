@@ -10,6 +10,7 @@ module.exports = {
   attributes: {
     apiToken:{
       type:'string',
+      primaryKey:true,
       notNull:true,
       required:true
     },

@@ -1,20 +1,15 @@
 /**
  * UserController
- *
- *  
- * 
- * 
  */
 
 module.exports = {
    //Post
    create:function(req,res){
-       //if(req.method === "") return res.badRequest();
+       //
 
-       //This is required (determines whether or not we should hash the password)
        req.body.provider = 'local';
 
-       User.create(req.body).exec(function(err,user){
+       User.create(req.allParams()).exec(function(err,user){
            if(err || !user){
                sails.log.info('Error when creating user ', err)
                return res.negotiate(err);

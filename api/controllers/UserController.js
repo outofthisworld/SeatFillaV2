@@ -9,7 +9,7 @@
 module.exports = {
    //Post
    create:function(req,res){
-       if(req.isPOST()) return res.badRequest();
+       //if(req.method === "") return res.badRequest();
 
        //This is required (determines whether or not we should hash the password)
        req.body.provider = 'local';

@@ -12,8 +12,8 @@ const localStrategyFields = {
 
 
 const facebookStrategyFields = { 
-      clientID: FACEBOOK_APP_ID,
-      clientSecret: FACEBOOK_APP_SECRET,
+      //clientID: FACEBOOK_APP_ID,
+      //clientSecret: FACEBOOK_APP_SECRET,
       callbackURL: "http://www.seatfilla.com/auth/facebook/"
 }
 
@@ -32,7 +32,7 @@ passport.deserializeUser(function(id, done) {
 });
 
 const localStrategy = function(req, email, password, done){
-       User.findOne().where({or: { email: email, username: req.body.username}})
+       User.findOne().where({or: [{email: email}, {username:req.body.username}]})
        .populate('roles').exec(function(err, user){
            if(err){
                done(err);
@@ -78,4 +78,4 @@ const googleStrategy = function(){
 
 //Local auth
 passport.use(new LocalStrategy(localStrategyFields, localStrategy));
-passport.use(new FacebookStrategy(facebookStrategyFields, facebookStrategy));
+//passport.use(new FacebookStrategy(facebookStrategyFields, facebookStrategy));

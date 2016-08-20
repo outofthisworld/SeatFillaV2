@@ -12,11 +12,11 @@ module.exports = {
 
     //Authenticate users for local logins (see passport.js)
     local: function(req,res){
-        if(!req.isPOST()) return res.badRequest();
+        //if(!req.isPOST()) return res.badRequest();
         
         passport.authenticate('local', function(err, user, message){
 
-            if(err || !user) return res.negotiate({error:err, message:message, errorMessage:err.message });
+            if(err || !user) return res.negotiate({error:err, message:message });
 
             req.login(user, function(err) {
                 if (err){ 
@@ -28,7 +28,7 @@ module.exports = {
                 return res.send({message: message, user: user});
             });
 
-            return res.ok({user:req.user}, { view:'/Dashboard', title:'Dashboard'});
+           // return res.ok({user:req.user}, { view:'/Dashboard', title:'Dashboard'});
         })(req,res);
     },
 

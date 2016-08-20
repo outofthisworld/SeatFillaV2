@@ -56,10 +56,7 @@ module.exports = {
     password:{
       type:'string',
       minLength:7, //8-25
-      maxLength:26,
-      notContains: function(cb){
-            cb(this.username);
-      }
+      maxLength:26
     },
     passwordConfirmation:{
       type:'string',
@@ -90,9 +87,11 @@ module.exports = {
     },
     isEmailConfirmed:{
       type:'boolean',
+      defaultsTo:false
     },
     isLockedOut:{
       type:'boolean',
+      defaultsTo:false
     },
     //One to many on requests
     requests: {

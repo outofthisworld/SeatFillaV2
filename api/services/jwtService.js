@@ -20,34 +20,36 @@ const apiKey = "secret-half";
 
 
 const createApiSecret = function (apiKey,sharedSecret){
-    return Buffer.from(sails.config.session.secret+sharedSecret).toString('base64');
+    return sails.config.session.secret+sharedSecret;
 }
 
 module.exports = {
+
+        //Create an api token from the given request and payload
         createApiToken:function(req, payload, cb){
             const key = req.body.sfKey || req.query.sfKey || req.headers['x-seatfilla-key'] || req.params.sfKey;
             if(payload && key){
-                cb(null, jwt.sign(payload, createApiSecret(apiKey, key)));
+                return cb(null, jwt.sign(payload, createApiSecret(apiKey, key)));
             }else{
                 sails.log.debug('Error creating API token in services/jwtService.js')
-                cb(new Error('Did not recieve all information required for creating API token'), null);
+
+                return cb(new Error('Did not recieve all information required for creating API token'), null);
             }
         },
-        verifyApiToken:function(req, cb){
-            const token = req.body.sfToken || req.query.sfToken || req.headers['x-access-token'];
-            const key = req.body.sfKey || req.query.sfKey || req.headers['x-seatfilla-key'];
 
-            if(token && key){
-                jwt.verify(token, createApiSecret(apiKey,key), function(err, decoded) {  
-                        if(err) {
-                            cb(err) 
-                        }else{
-                            cb(null, decoded, token);
-                        }
-                    });
-            }else{
-                cb(new Error('Missing token or key'));
+        //Verify an api token.
+        verifyApiToken:function(req, cb){
+            const token = req.param('sfToken') || req.headers['x-access-token'];
+            const key = req.param('sfKey') || req.headers['x-seatfilla-key'];
+
+            if(!token || !key){
+                 return cb(new Error('Missing token or key'));
             }
+
+            jwt.verify(token, createApiSecret(apiKey,key), (err, decoded)=>{  
+                if(err) return cb(err) 
+                else return cb(null, decoded, token); 
+            });
         }
 };
 

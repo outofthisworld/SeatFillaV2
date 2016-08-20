@@ -24,6 +24,7 @@ module.exports.policies = {
     '*':true
   },
   AuthController:{
+    '*':false,
     'generateApiToken':['passportAuth']
   },
   VerifyController:{
@@ -33,7 +34,8 @@ module.exports.policies = {
     '*':false,
     'create':['apiPolicy'],
     'delete':['apiPolicy'],
-    'update':['apiPolicy']
+    'update':['apiPolicy'],
+    'find':['apiPolicy']
   },
   RequestController:{
     '*':false

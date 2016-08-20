@@ -33,23 +33,47 @@ module.exports.http = {
   *                                                                          *
   ***************************************************************************/
 
-    // order: [
-    //   'startRequestTimer',
-    //   'cookieParser',
-    //   'session',
-    //   'myRequestLogger',
-    //   'bodyParser',
-    //   'handleBodyParserError',
-    //   'compress',
-    //   'methodOverride',
-    //   'poweredBy',
-    //   '$custom',
-    //   'router',
-    //   'www',
-    //   'favicon',
-    //   '404',
-    //   '500'
-    // ],
+     order: [
+       'startRequestTimer',
+       'cookieParser',
+       'session',
+       'passportInit',
+       'passportSession',
+       'requestLogger',
+       'reqModifer',
+       'resModifer',
+       'bodyParser',
+       'handleBodyParserError',
+       'compress',
+       'methodOverride',
+       'poweredBy',
+       '$custom',
+       'router',
+       'www',
+       'favicon',
+       '404',
+       '500'
+    ],
+
+    reqModifer : function(req,res,next){
+          req.isPOST = function(){
+              return req.method === "POST";
+          }
+          req.isGET = function(){
+              return req.method === "GET";
+          }
+          req.isPUT = function(){
+              return req.method === "PUT";
+          }
+          req.isDELETE = function(){
+              return req.method === "DELETE";
+          }
+          next();
+    },
+
+    resModifer : function(req,res,next){
+      next();
+    },
 
   /****************************************************************************
   *                                                                           *
@@ -57,10 +81,10 @@ module.exports.http = {
   *                                                                           *
   ****************************************************************************/
 
-    // myRequestLogger: function (req, res, next) {
-    //     console.log("Requested :: ", req.method, req.url);
-    //     return next();
-    // }
+    requestLogger: function (req, res, next) {
+         console.log("Requested :: ", req.method, req.url);
+         return next();
+    }
 
 
   /***************************************************************************

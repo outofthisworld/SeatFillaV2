@@ -6,6 +6,8 @@
   <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Anonymous+Pro" />
   <link rel='stylesheet' href='//fonts.googleapis.com/css?family=Michroma' type='text/css' />
 
+  <%- partial ('scripts.ejs') %>
+
   <!--Favicon-->
   <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
   <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
@@ -24,18 +26,6 @@
   <meta name="msapplication-TileColor" content="#ffffff">
   <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
   <meta name="theme-color" content="#ffffff">
-
-  <!-- Jquery -->
-  <script src="../assets/bower_components/jquery/dist/jquery.min.js"></script>
-
-  <!-- Bootstrap js -->
-  <script src="../assets/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-
-  <!-- Polymer platform js -->
-  <script src="../assets/bower_components/platform/platform.js"></script>
-
-  <!-- Web components -->
-  <script src="../assets/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
 
   <!-- Elements -->
   <link rel="import" href="./bower_components/polymer/polymer.html">
@@ -868,44 +858,7 @@ div.margin {
   margin-bottom: 1.5em;
 }
 
-  
+
   </style>
 
-  <script>
-       $(document).ready(function () {
-            var debug = true;
-
-            var replaceVideo = () =>{
-                $('#myVideo').remove();
-                $('.header').attr('id','section1bg').fadeIn(500);
-                localStorage.setItem('intro_played',1);
-            }
-
-            if(debug || !localStorage.getItem('intro_played')){
-              $('video').get(0).play();
-            }else{
-              replaceVideo();
-            }
-
-            document.getElementById('myVideo').addEventListener('ended',function(e) {
-                $('#myVideo').fadeOut(1000,function(){
-                    replaceVideo();
-                });
-            },false);
-            });
-
-            $('#login-form-link').click(function(e) {
-                $("#login-form").delay(100).fadeIn(100);
-                $("#register-form").fadeOut(100);
-                $('#register-form-link').removeClass('active');
-                $(this).addClass('active');
-                e.preventDefault();
-              });
-              $('#register-form-link').click(function(e) {
-                $("#register-form").delay(100).fadeIn(100);
-                $("#login-form").fadeOut(100);
-                $('#login-form-link').removeClass('active');
-                $(this).addClass('active');
-                e.preventDefault();
-            });
-   </script>
+  

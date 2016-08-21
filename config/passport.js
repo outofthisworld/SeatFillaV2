@@ -12,9 +12,12 @@ const localStrategyFields = {
 
 
 const facebookStrategyFields = { 
-      //clientID: FACEBOOK_APP_ID,
-      //clientSecret: FACEBOOK_APP_SECRET,
-      callbackURL: "http://www.seatfilla.com/auth/facebook/"
+      clientID: '294356564254458',
+      clientSecret: '4c1ca548f206377818fe869fa057035a',
+      callbackURL: "http://localhost:1337/auth/facebookCallback/",
+      profileFields: ['id', 'emails', 'gender', 'link', 
+      'locale', 'name', 'timezone', 'updated_time', 'verified','photos'],
+      passReqToCallback: true
 }
 
 /* 
@@ -31,6 +34,7 @@ passport.deserializeUser(function(id, done) {
     });
 });
 
+//Local stratergy for logging in
 const localStrategy = function(req, email, password, done){
        User.findOne().where({or: [{email: email}, {username:req.body.username}]})
        .populate('roles').exec(function(err, user){
@@ -46,7 +50,10 @@ const localStrategy = function(req, email, password, done){
        });
 }
 
-const facebookStrategy = function(accessToken,refreshToken,profile,done){
+//Facebook stratergy for logging in
+const facebookStrategy = function(req,accessToken,refreshToken,profile,done){
+    sails.log.debug(profile);
+    sails.log.debug(req);
      User.findOrCreate(
          { id: profile.id, provider:'facebook' }, 
          {
@@ -55,15 +62,24 @@ const facebookStrategy = function(accessToken,refreshToken,profile,done){
              firstName: profile.name.givenName,
              middleName: profile.name.middleName,
              lastName: profile.name.familyName,
-             email: (function(){
-                 profile.emails[0].value;
-                 sails.log(profile.emails);
-             })(),
-     
+             email: profile.emails[0].value
           },
     function(err, user) {
-      if (err || !user) { return done(err || new Error('Could not create user'), null); }
-      done(null, user);
+         if (err || !user) { return done(err || new Error('Could not create user'), null); }
+
+         req.login(user,function(err){
+             if(err){
+                sails.log.debug(err);
+             }else{
+                sails.log.debug('Succefully logged in request');
+             }
+         });
+
+         req.session.fb = {}
+         req.session.fb.accessToken = accessToken;
+         req.session.fb.refreshToken = refreshToken;
+
+         return done(null, user);
     });
 }
 
@@ -78,4 +94,4 @@ const googleStrategy = function(){
 
 //Local auth
 passport.use(new LocalStrategy(localStrategyFields, localStrategy));
-//passport.use(new FacebookStrategy(facebookStrategyFields, facebookStrategy));
+passport.use(new FacebookStrategy(facebookStrategyFields, facebookStrategy));

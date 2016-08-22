@@ -1,35 +1,61 @@
+/*
+  Created by dale
+*/
+
 module.exports = {
   // Lets handle sending async notifications to a (one) client.
   sendDedicatedNotificationAsync: function (req, done) {
+    //Return a function which takes a message..
     return function (message) {
+      //Lets run the asyncrounously since we're running database operations and javascript only has one thread..
       async.asyncify(function () {
+        //Grab the socketID
         const socketId = req.session.notificationSocketId || sails.sockets.getId(req)
+
+        //If the user is logged on, create a notification for the user.
         if (req.user) {
           Notifications.create({
             user: req.user.id,
-            message: message
+            message: message,
+            read:false
           }).exec(function (err, notification) {
             if (err) return done(err, null)
-          })
+          });
         }
+
+        //Log it..
         sails.log.debug('Send async notification via notificationService')
+
+        //Send it to the right socket..
         sails.sockets.broadcast(socketId, 'NotificationService', message)
+
+        //All good.
         return 'sent'
       })(function (result) {
+        //Return to the caller
         if (done && typeof done === 'function') return done(null, result)
       })
     }
   },
   //Sends a system notification to all users.
   sendSystemNotification:function(message){
+      //Return a new promouse 
       return new Promise(function(resolve,reject){
-          SystemNotification.create({
-              message:message
-          }).exec(function(err,notification){
-              sails.sockets.blast('SystemNotification', message);
-          });
-          resolve('sent');
-      });
+            //Create a system notification record..
+            SystemNotification.create({
+                message:message,
+                read:false
+            }).exec(function(err,notification){
+                if(err){ reject(err);}
+                sails.sockets.blast('SystemNotification', message);
+                resolve('sent');
+                return notification;
+        }).then(function(notification){
+            SystemNotificationUser.create({
+              message:""
+            });
+
+        });
   },
   //Returns a new promise withe the users lastest notifications
   findLatestNotifications: function (req) {

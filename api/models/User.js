@@ -116,6 +116,14 @@ module.exports = {
       via: 'user',
       dominant: true
     },
+    systemNotificationUser: {
+      collection: 'SystemNotificationUser',
+      via: 'user'
+    },
+    notifications: {
+      collection: 'Notifications',
+      via: 'user'
+    },
     emailConfirmed:()=>{
       return this.isEmailConfirmed;
     },

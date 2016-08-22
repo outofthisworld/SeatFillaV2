@@ -10,7 +10,7 @@ module.exports = function(req, res, next) {
       req.options.tokenPayload = decoded;
 
       ApiUsers.findOne({token:token}).exec(function(err, apiUser){
-            if(!err && apiUser.isVerified) {
+            if(!err && apiUser.isVerified && !apiUser.isBlocked) {
                  sails.log.debug('Succesfully authenticated API token in policies/apiPolicy.js');
                  return next();
             }

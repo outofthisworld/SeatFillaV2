@@ -30,7 +30,7 @@ module.exports = {
   },
   latestNotifications: function(req,res){
       //Make sure we only get requests from sockets or xhr..
-      if(!req.isSocket || !req.xhr) return res.badRequest();
+      if(!req.isSocket || !req.xhr) return res.redirect('/');
 
       //Use our notification service to find our latest notifications (both system and user specific)
       notificationService.findLatestNotifications(req).then(function(latestNotifications){

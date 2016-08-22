@@ -23,7 +23,11 @@ module.exports = {
   //Sends a system notification to all users.
   sendSystemNotification:function(message){
       return new Promise(function(resolve,reject){
-          sails.sockets.blast('SystemNotification', message);
+          SystemNotification.create({
+              message:message
+          }).exec(function(err,notification){
+              sails.sockets.blast('SystemNotification', message);
+          });
           resolve('sent');
       });
   },

@@ -12,11 +12,16 @@ module.exports.email = {
 
     },
     messageTemplates:{
+       messageTypes:{
+           registration:'registration',
+           flightConfirmation:'flightConfirmation'
+       },
        registration:function(object){
         return  {
                 from: this.config.auth.username,
                 to: object.email,
                 subject: 'Welcome to SeatFilla, please verify your email!',
+                type: 'registration',
                 html: 'Hello <em>' + object.firstName + '</em><br><br>'
                       + 'Thank you for registering with <em><i>SeatFilla</i></em! we require all new users '
                       + 'to register their email address with us. You can do so by clicking on the ' 

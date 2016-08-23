@@ -1,8 +1,11 @@
+/*
+    Created by Dale.
+
+    Email service to send and schedule failed emails to be resent.
+*/
+
 const nodemailer = require('nodemailer')
 const smtpPool = require('nodemailer-smtp-transport')
-
-// For reading and writing our json file..
-var fs = require('fs')
 
 // Create a scheduler for failed emails..
 const schedule = require('node-schedule')
@@ -15,7 +18,7 @@ rule.minute = 59
 // Schedule a new email resending task, should an email fail to be sent.
 const j = schedule.scheduleJob(rule, function () {
   sails.log.debug('resending failed emails..')
-  fs.readFile(email_service, 'utf8', function (err, data) {
+  FileService.readFileUTF8Async(email_service, function (err, data) {
         var obj;
         if (!err && module.exports) {
             email_service.FailedMessages.forEach(e, i => {
@@ -33,7 +36,7 @@ const j = schedule.scheduleJob(rule, function () {
              });
 
               //Write out our
-            fs.writeFile(email_service, obj, 'utf8', function (err) {
+            FileService.writeFileUTF8Async(email_service, obj, function (err) {
                 if (err) {
                   sails.log.debug('Error writing ' + email_service + ' error: ' + err)
                 }
@@ -70,14 +73,14 @@ module.exports = {
     return new Promise((resolve, reject) => {
       transporter.sendMail(message, function (err, info) {
         if (err) {
-          fs.readFile(email_service, 'utf8', function (err, data) {
+          FileService.readFileUTF8Async(email_service, function (err, data) {
             if (err) {
               sails.log.debug('Error reading ' + email_service + ' error: ' + err)
               return reject(err)
             }else {
               obj = JSON.parse(data)
               obj.FailedMessages.push(message)
-              fs.writeFile(email_service, obj, 'utf8', function (err) {
+              fs.writeFileUTF8Async(email_service, obj, function (err) {
                 if (err) {
                   sails.log.debug('Error writing file ' + email_service + ' error: ' + err)
                   return reject(err)
@@ -91,6 +94,21 @@ module.exports = {
         }
       })
     })
+  },
+  //Removes a failed message from the scheduled queue by removing it from the JSON file.
+  //Will probably used if a user clicks resend verification email or something of the sorts..
+  removeFromQueuedEmails:function(email, messageType){
+      FileService.readFileUTF8Async(email_service,function(err,data){
+          FileService.safeParseJsonAsync(data).then(function(obj){
+              const failed = obj.FailedMessages.reject((failedMessage)=>{
+                  return failedMessage.type === messageType && failedMessage.email === email;
+              });
+              obj.FailedMessages = failed;
+              FileService.writeFileUTF8Async(email_service,obj,function(err){
+                 if (err)  sails.log.debug('Error writing file in EmailService.js @ removeFromQueuedEmails' + email_service + ' error: ' + err)
+              });
+          });
+      });
   },
   // Closes the service..
   closeEmailService: function () {

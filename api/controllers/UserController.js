@@ -6,7 +6,8 @@ module.exports = {
    //Post
    create:function(req,res){
        //
-    
+       req.body.provider = 'local';
+       UserService.createUser(req)
    },
    //Get
    myaccount:function(req,res){

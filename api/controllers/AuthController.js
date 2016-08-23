@@ -1,8 +1,8 @@
 /**
  * AuthController
+ * Created by Dale
  *
  * @description :: Server-side logic for managing auths
- * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
 const passport = require('passport')
@@ -10,30 +10,27 @@ const passport = require('passport')
 module.exports = {
   // Authenticate users for local logins (see passport.js)
   local: function (req, res) {
-    if(req.user) return req.ok({error: "Already logged in"});
-
     async.asyncify(function () {
       passport.authenticate('local', function (err, user, message) {
-        if (err || !user) return {error: err, message: message}
+        if (err || !user) return {error: err, message: error.message}
 
         req.login(user, function (err) {
           if (err) {
             sails.log.debug('Failed to log on user to req in controllers/authcontroller.js')
 
-            return {error: err,message: 'failed to log on user to req in controllers/authcontroller.js'}
+            return {error: err, message:err.message, messagelocal: 'failed to log on user to req in controllers/authcontroller.js'}
           }
 
           sails.log.debug('Succesfully logged on user via passport in controllers/authcontroller.js')
 
           return {user: req.user}
-        // return res.ok({user:req.user}, { view:'/Dashboard', title:'Dashboard'})
         })
       })(req, res)
     })((result) => {
       if (result.error) {
-        return res.negotiate(result)
+        return res.json(result);
       }else {
-        return res.send({message: message, user: user})
+        return res.redirect('/');
       }
     })
   },
@@ -61,7 +58,7 @@ module.exports = {
         }
       })
     })((result) => {
-      return res.json(result)
+      return res.json(result);
     })
   },
   facebook: function (req,res) {
@@ -79,7 +76,7 @@ module.exports = {
         failureRedirect: '/user/login'
         })(req,res,function(err,user) {
           sails.log.debug('Error in facebook callback ' + err);
-          return res.json({error:err,user:user});  
+          return res.ok({error:err,user:user});  
       });
   }
 }

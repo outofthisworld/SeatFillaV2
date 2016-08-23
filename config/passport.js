@@ -36,7 +36,7 @@ passport.deserializeUser(function(id, done) {
 
 //Local stratergy for logging in
 const localStrategy = function(req, email, password, done){
-       User.findOne().where({or: [{email: email}, {username:req.body.username}]})
+       User.findOne().where({or: [{email: email}, {username:req.allParams().username}]})
        .populate('roles').exec(function(err, user){
            if(err){
                done(err);

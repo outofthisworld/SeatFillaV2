@@ -1,10 +1,19 @@
 
 var nodemailer = require('nodemailer');
-var smtpPool = require('nodemailer-smtp-pool');
+var smtpPool = require('nodemailer-smtp-transport');
 
 var transporter = nodemailer.createTransport(
-    smtpTransport(sails.config.email.config)
+    smtpPool(sails.config.email.config)
 );
+
+transporter.use('stream', function(mail, callback){
+    var addresses = mail.message.getAddresses();
+    console.log('From: %s', JSON.stringify(addresses.from));
+    console.log('To: %s', JSON.stringify(addresses.to));
+    console.log('Cc: %s', JSON.stringify(addresses.cc));
+    console.log('Bcc: %s', JSON.stringify(addresses.bcc));
+    callback();
+});
 
 //Verify the server is running
 transporter.verify(function(error, success) {

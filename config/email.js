@@ -1,25 +1,15 @@
 
-
-
 module.exports.email = {
     config:{
-        //Useing gmail
-        service: 'gmail',
+        //Using gmail
+        service: 'Gmail',
+        host:'localhost',
         auth:{
             username:'SeatFilla@gmail.com',
-            password:'lifeislife'
+            password:'uxqieuklnocnxrbg'
+            //password:'wcldugaeyozpmfxi'
         },
-        //Time out 
-        connectionTimeout:5000,
-        //Used for identifying our server
-        name:'SeatFilla',
-        //Use ssl
-        secure:true,
-        //Max connections before using another transported
-        maxConnections:5,
-        //Max messages to send using a transported
-        maxMessages: 10,
-        rateLimit: 5
+
     },
     messageTemplates:{
        registration:function(object){

@@ -40,10 +40,10 @@ module.exports = {
   // Generates an API token (a JSON web token that is signed using HMAC to ensure integrity). 
   generateApiToken: function (req, res) {
     async.asyncify(function () {
-      jwtService.createApiToken(req, {
+      ApiService.createApiToken(req, {
         id: req.user.id,
         permissions: ['all'],
-        iat: Math.floor(Date.now() / 1000) - 30,
+        iat: Math.floor(new Date().getTime() / 1000) - 30,
         aud: 'SeatFilla',
         sub: 'SeatfillaApiToken'
       }, function (err, token) {

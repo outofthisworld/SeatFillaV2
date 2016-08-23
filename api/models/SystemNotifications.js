@@ -8,9 +8,9 @@ module.exports = {
         notNull:true,
         required:true
       },
-      systemNotificationUser: {
-        collection: 'SystemNotificationUser',
+      systemNotificationUsers:{
+        collection: 'SystemNotificationUsers',
         via: 'systemNotification'
       }
-    }
+  }
 }

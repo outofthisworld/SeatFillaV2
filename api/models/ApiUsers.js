@@ -19,6 +19,11 @@ module.exports = {
       defaultsTo:false,
       notNull:true
     },
+    isBlocked:{
+      type:'boolean',
+      defaultsTo:false,
+      notNull:true
+    },
     user: {
       model:'user',
       notNull:true,

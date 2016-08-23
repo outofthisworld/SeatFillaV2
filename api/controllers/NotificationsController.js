@@ -21,7 +21,7 @@ module.exports = {
     });
 
     //Lets broadcast a message..
-    notificationService.sendDedicatedNotificationAsync(req)({
+    NotificationService.sendDedicatedNotificationAsync(req)({
       message: 'Succesfully subscribed to notification service.'
     });
     
@@ -33,7 +33,7 @@ module.exports = {
       if(!req.isSocket || !req.xhr) return res.redirect('/');
 
       //Use our notification service to find our latest notifications (both system and user specific)
-      notificationService.findLatestNotifications(req).then(function(latestNotifications){
+      NotificationService.findLatestNotifications(req).then(function(latestNotifications){
         //Return them to the client.
         return res.json({latestNotifications:latestNotifications});
       }).catch(function(err){
@@ -41,8 +41,11 @@ module.exports = {
         return res.negotiate({error:err});
       });
   },
-  // This is here for testing purposes
+
+  // This is here for testing purposes (sends a system wide notification to all users)
   sendNotification: function (req, res) {
-    notificationService.sendSystemNotification(req.param('message'));
+    NotificationService.sendSystemNotification(req.param('message')).catch(function(err){
+        sails.log.debug('Error sending system notification ' + err);
+    });
   }
 }

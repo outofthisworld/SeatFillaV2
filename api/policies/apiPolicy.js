@@ -1,6 +1,5 @@
-
 module.exports = function(req, res, next) {
-  jwtService.verifyApiToken(req, function(err, decoded, token){
+  ApiService.verifyApiToken(req, function(err, decoded, token){
       if(err){ 
           sails.log.debug('Could not verify API token in policies/apiPolicy.js');
           return res.json({status: 401,message: err.message});

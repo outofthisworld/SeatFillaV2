@@ -116,9 +116,9 @@ module.exports = {
       via: 'user',
       dominant: true
     },
-    systemNotificationUser: {
-      collection: 'SystemNotificationUser',
-      via: 'user'
+    systemNotificationUsers:{
+        collection: 'SystemNotificationUsers',
+        via: 'systemNotification'
     },
     notifications: {
       collection: 'Notifications',

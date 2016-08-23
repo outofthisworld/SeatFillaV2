@@ -10,8 +10,17 @@
  * should they be needed later.
  */
 
+//For ids (v4 is used)
+const uuid = require('node-uuid');
+
 module.exports = {
+  autoPK: false,
   attributes: {
+    id:{
+      type:'string',
+      primaryKey:true,
+      defaultsTo: function(){ return uuid.v4(); }
+    },
     ip: {
        type:'string',
        required:true,

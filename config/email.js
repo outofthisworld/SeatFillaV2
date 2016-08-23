@@ -22,7 +22,7 @@ module.exports.email = {
                       + 'to register their email address with us. You can do so by clicking on the ' 
                       + 'link provided below. Happy flying! <br><br>' 
                       + 'Verification link: <br>'
-                      + 'http://localhost:1337/verify/email?id=' + object.id
+                      + 'http://localhost:1337/verify/email?verificationId=' + object.verificationId
             }
         }
     }

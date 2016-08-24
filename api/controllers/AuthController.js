@@ -78,5 +78,10 @@ module.exports = {
           sails.log.debug('Error in facebook callback ' + err);
           return res.ok({error:err,user:user});  
       });
+  },
+  logout: function (req, res) {
+     req.logout();
+     req.session.destroy();
+     res.redirect('/');
   }
 }

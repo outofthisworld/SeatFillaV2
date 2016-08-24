@@ -48,7 +48,6 @@
   "author": "Dale appleby & Richard lancaster",
   "license": "MIT",
   "devDependencies": {
-    //Dev dependencies for running tests
     "supertest": "^2.0.0",
     "mocha": "^3.0.2"
   }

@@ -2,7 +2,7 @@ const fs = require('fs');
 
 module.exports = {
     readFileUTF8Async:function(path, callback){
-        return this.readFile(callback,'utf8');
+        return this.readFileAsync(callback,'utf8');
     },
     readFileAsync:function(path,fileEncoding,callback){
         fs.readFile(path,fileEncoding, function (err, data) {
@@ -15,7 +15,7 @@ module.exports = {
         });
     },
     writeFileUTF8Async:function(path,data,callback){
-        return this.writeFile(path,data,'utf8',callback);
+        return this.writeFileAsync(path,data,'utf8',callback);
     },
     writeFileAsync:function(path,data,encoding,callback){
         fs.writeFile(path, data, encoding, function (err) {

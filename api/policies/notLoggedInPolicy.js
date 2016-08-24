@@ -1,5 +1,5 @@
 module.exports = function(req, res, next) {
-    if(!(req.isAuthenticated || req.isAuthenticated() || req.user)){
+    if(!(req.user)){
         sails.log.debug('Passed not log in policy...');
         return next();  
     }

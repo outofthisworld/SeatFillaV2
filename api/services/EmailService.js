@@ -5,7 +5,7 @@
 
 const nodemailer = require('nodemailer')
 const smtpPool = require('nodemailer-sendgrid-transport')
-
+const transporter = nodemailer.createTransport(smtpPool(sails.config.email.config))
 // Create a scheduler for failed emails..
 const schedule = require('node-schedule')
 const rule = new schedule.RecurrenceRule()
@@ -18,6 +18,7 @@ module.exports = {
     return new Promise((resolve, reject) => {
       transporter.sendMail(message, function (err, info) {
         if (err) {
+          sails.log.debug('Error sending email: ' + err.message);
           FileService.readFileUTF8Async(email_service, function (err, data) {
             if (err) {
               sails.log.debug('Error reading ' + email_service + ' error: ' + err)
@@ -61,9 +62,7 @@ module.exports = {
   }
 }
 
-
-(function init () {
-  const transporter = nodemailer.createTransport(smtpPool(sails.config.email.config))
+function init () {
 
   // Listen to the stream
   transporter.use('stream', function (mail, callback) {
@@ -106,18 +105,6 @@ module.exports = {
       }
     })
   })
-  var email = {
-    to: ['dale@farpoint.co.nz'],
-    from: 'SeatFilla.com',
-    subject: 'SeatFilla',
-    text: 'Awesome sauce',
-    html: '<b>Awesome sauce</b>'
-  }
+}
 
- module.exports.sendEmailAsync(email).then(function (info) {
-    sails.log.debug('Succesfully sent test email')
-  }).catch(function (err) {
-    sails.log.debug('Error sending test email ' + err)
-  })
-
-})();
+init();

@@ -6,7 +6,7 @@
 
 describe('Auth Controller Tests',function(){
 
-    describe('GET /users', function() {
+   /*describe('GET /users', function() {
     it('respond with json', function(done) {
         request(sails.hooks.http.app)
         .get('/users')
@@ -32,5 +32,5 @@ describe('Auth Controller Tests',function(){
             name: 'TOBI'
         }, done);
     });
-    });
+    });*/
 });

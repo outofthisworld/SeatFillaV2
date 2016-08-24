@@ -7,18 +7,13 @@ const winston = require('winston');
 
 const logger = new(winston.Logger)({
   transports: [
-    new (winston.transports.Console)({}),
-    new (winston.transports.File)({
-      filename: 'seatfilla.log',
-      level: 'verbose',
-      json: false,
-      colorize: true
-    })
+    new (winston.transports.Console)({})
+   
   ]
 });
 
 module.exports.log = {
-   level: 'silly',
+   level: 'debug',
    colorize: true,
-   custom: logger
+   //custom: logger
 };

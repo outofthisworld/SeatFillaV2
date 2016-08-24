@@ -12,7 +12,7 @@ module.exports.email = {
        },
        registration:function(object){
         return  {
-                from: this.config.auth.username,
+                from: 'SeatFilla.registration.com',
                 to: object.email,
                 subject: 'Welcome to SeatFilla, please verify your email!',
                 type: 'registration',

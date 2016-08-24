@@ -1,0 +1,33 @@
+<link rel="import" href="./bower_components/polymer/polymer.html">
+<link rel="import" href="./bower_components/paper-material/paper-material.html">
+<link rel="import" href="./bower_components/iron-ajax/iron-ajax.html">
+
+<dom-module id="seatfilla-list">
+  <template>
+    <style>
+      /* local DOM styles go here */
+      :host {
+        display: inline-block;
+      }
+    </style>
+    <!-- local DOM goes here -->
+        <template is="seatfilla-list">
+        <iron-ajax url="/" last-response="{{data}}" auto></iron-ajax>
+        <iron-list items="[[data]]" as="item" grid>
+            <template>
+            <div>
+              <paper-material animated elevation="1">
+                Name: [[item.name]]
+               </paper-materoal> 
+            </div>
+            </template>
+        </iron-list>
+        </template>
+    <!-- end local DOM -->
+  </template>
+  <script>
+  Polymer({
+    is: 'seatfilla-list',
+  });
+  </script>
+</dom-module>

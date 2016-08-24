@@ -85,7 +85,7 @@ module.exports = {
       integer:true,
       required:false
     },
-    isEmailConfirmed:{
+    isEmailVerified:{
       type:'boolean',
       defaultsTo:false
     },

@@ -17,6 +17,7 @@ module.exports = {
 
             user.save(function(err){
                 if(err) return res.negotiate(err);
+                return res.redirect('user/login');
             });
 
         });

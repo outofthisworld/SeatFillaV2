@@ -5,9 +5,10 @@ describe('User controller tests', function () {
   describe('POST /user/create', function () {
     it('respond with json', function (done) {
 
-      User.destroy({username:'BlackJem'}).exec(function(err){
-        sails.log.debug('Succesfully destroyed test user');
-        assert(!err);
+      User.destroy({email:'dale@farpoint.co.nz'}).exec(function(err){
+        if(err){
+          return done(err);
+        }
       });
 
       request(sails.hooks.http.app)
@@ -30,9 +31,11 @@ describe('User controller tests', function () {
         })
         .end(function (err, res) {
           if (err) return done(err)
-          if (res.error) return done(res.error)
+          if (res.error) return done(res.body.error)
           
-          assert(res.user);
+          sails.log.debug(res.body);
+          assert(res.body.user);
+          sails.log.debug(res.body.user);
 
           done();
         })

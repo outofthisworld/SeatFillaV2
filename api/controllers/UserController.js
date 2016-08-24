@@ -38,7 +38,7 @@ module.exports = {
 
    },
    //Get the resend verification email page.
-   resendVerificationEmail:function(req,res){
+   verifyEmaill:function(req,res){
 
    }
 };

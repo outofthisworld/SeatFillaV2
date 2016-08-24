@@ -46,7 +46,10 @@ module.exports = {
 
     },
     //Get the resend verification email page.
-    verifyEmaill: function(req, res) {
+    verifyEmail: function(req, res) {
 
+    },
+    login: function(req,res){
+        res.redirect('/');
     }
 };

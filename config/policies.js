@@ -39,6 +39,7 @@ module.exports.policies = {
     'findOne':['getPolicy','adminPolicy'],
     'create':['postPolicy','createAccountPolicy','notLoggedInPolicy'],
     'myaccount':['getPolicy','passportAuth'],
+    'login':['getPolicy']
   },
   AuthController:{
     '*':false,

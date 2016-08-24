@@ -27,7 +27,7 @@ describe('User controller tests', function () {
             middleName:'Appleby',
             email:'dale@farpoint.co.nz',
             isLockedOut:false,
-            isEmailConfirmed:false
+            isEmailVerified:false
         })
         .end(function (err, res) {
           if (err) return done(err)

@@ -56,7 +56,7 @@ module.exports = {
     password:{
       type:'string',
       minLength:7, //8-25
-      maxLength:26
+      maxLength:61
     },
     passwordConfirmation:{
       type:'string',

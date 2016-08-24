@@ -2,7 +2,7 @@
   "name": "capstone",
   "private": true,
   "version": "0.0.0",
-  "description": "a Sails application",
+  "description": "Seatfilla website",
   "keywords": [],
   "dependencies": {
     "bcrypt": "^0.8.7",
@@ -23,6 +23,7 @@
     "jsonwebtoken": "^7.1.9",
     "node-schedule": "^1.1.1",
     "nodemailer": "^2.5.0",
+    "nodemailer-sendgrid-transport": "^0.2.0",
     "nodemailer-smtp-pool": "^2.7.0",
     "nodemailer-smtp-transport": "^2.6.0",
     "passport": "^0.3.2",
@@ -36,13 +37,19 @@
   },
   "scripts": {
     "debug": "node debug app.js",
-    "start": "node app.js"
+    "start": "node app.js",
+    "test": "node ./node_modules/mocha/bin/mocha test/bootstrap.test.js test/integration/**/*.test.js"
   },
   "main": "app.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/root/capstone.git"
   },
-  "author": "root",
-  "license": ""
+  "author": "Dale appleby & Richard lancaster",
+  "license": "MIT",
+  "devDependencies": {
+    //Dev dependencies for running tests
+    "supertest": "^2.0.0",
+    "mocha": "^3.0.2"
+  }
 }

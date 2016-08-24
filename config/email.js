@@ -1,15 +1,9 @@
 
 module.exports.email = {
     config:{
-        //Using gmail
-        service: 'Gmail',
-        host:'localhost',
         auth:{
-            username:'SeatFilla@gmail.com',
-            password:'uxqieuklnocnxrbg'
-            //password:'wcldugaeyozpmfxi'
+             api_key:'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'
         },
-
     },
     messageTemplates:{
        messageTypes:{

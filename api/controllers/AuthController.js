@@ -104,14 +104,14 @@ module.exports = {
   },
   twitterCallback: function (req, res) {
     passport.authenticate('twitter', {
-      successRedirect: '/auth/success',
+      successRedirect: '/user/completeRegistration',
       failureRedirect: '/user/login'
     })(req, res, function (err, user) {
       if(err){
          sails.log.debug('Error in twitter callback ' + err)
          return res.badRequest({error: err,user: user})
       }else{
-         res.redirect('/auth/success');
+         res.redirect('/user/completeRegistration');
       }
     })
   },

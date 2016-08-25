@@ -3,7 +3,7 @@
  */
 
 module.exports = {
-    //Post create a user
+    //Post [create a user]
     create: function(req, res) {
         sails.log.debug('in user/create');
         UserService.createUser(req).then(function(user) {
@@ -18,11 +18,19 @@ module.exports = {
             });
         });
     },
-    //Get the register page
+    //GET [register an account page]
     register: function(req, res) {
 
     },
-    //Get the my account page
+    //GET [complete registraion page]
+    completeRegistration: function(req,res){
+        return res.ok({user:req.user});
+    },
+    //POST [update a users details]
+    update: function(req,res){
+
+    },
+    //GET [return the my account page]
     myAccount: function(req, res) {
         return res.ok({
             user: req.user
@@ -32,7 +40,7 @@ module.exports = {
             title: req.__('MyAccount')
         });
     },
-    //Get the change details page
+    //[Get the change details page]
     changeDetails: function(req, res) {
         return res.ok({
             user: req.user
@@ -41,14 +49,15 @@ module.exports = {
             title: req.__('ChangeDetails')
         });
     },
-    //Get the reset password page
+    //[Get the reset password page]
     resetPassword: function(req, res) {
 
     },
-    //Get the resend verification email page.
+    //[Get the resend verification email page.]
     verifyEmail: function(req, res) {
 
     },
+    //[Get the login page]
     login: function(req,res){
         res.redirect('/');
     }

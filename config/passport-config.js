@@ -12,7 +12,7 @@ module.exports.passport_config = {
         passwordField:"password", 
         passReqToCallback: true },
 
-    //Facebook fields
+    //Facebook fields (dales fb)
     facebookStrategyFields:{ 
         clientID: '294356564254458',
         clientSecret: '4c1ca548f206377818fe869fa057035a',
@@ -22,19 +22,20 @@ module.exports.passport_config = {
         passReqToCallback: true
     },
 
-    //Twitter fields
+    //Twitter fields (used twitter account associated with dale@farpoint.co.nz for keys)
     twitterStrategyFields :{
-        consumerKey: TWITTER_CONSUMER_KEY,
-        consumerSecret: TWITTER_CONSUMER_SECRET,
+        consumerKey: 'yVTbxPx6FlasXEwwWw0owaAHw',
+        consumerSecret: 'vZ8FQN4hcVcBXCmGWH9yxvtlqXAEJ9dGjoWqKDZWbcoKev73Pa',
         callbackURL: "http://localhost:1337/auth/twitterCallback/",
         passReqToCallback:true
     },
 
-    //Google fields
+    //Google fields (used dale@farpoint.co.nz for creating API key)
     googleStrategyFields = {
-        consumerKey: GOOGLE_CONSUMER_KEY,
-        consumerSecret: GOOGLE_CONSUMER_SECRET,
-        callbackURL: "http://localhost:1337/auth/googleCallback/k",
+        consumerKey: '998518772662-83bluipuml5m7n19tipu2i79qafpquc4.apps.googleusercontent.com',
+        consumerSecret: 'xQdKMAMfHU4X-cgnMiXkCWvM',
+        //AIzaSyA1pzn_Q_OxcgbLDmdwMoZc81aiKKVM2ZU
+        callbackURL: "http://localhost:1337/auth/googleCallback/",
         passReqToCallback:true
    }
 }

@@ -1,3 +1,9 @@
+/* 
+   Make any passport changes, or external client/consumer key changes from this
+   configuration file. 
+   
+   Created by Dale
+*/
 
 module.exports.passport_config = {
     //Change this is the front end form name fields change.
@@ -20,14 +26,15 @@ module.exports.passport_config = {
     twitterStrategyFields :{
         consumerKey: TWITTER_CONSUMER_KEY,
         consumerSecret: TWITTER_CONSUMER_SECRET,
-        callbackURL: "http://www.example.com/auth/twitter/callback",
+        callbackURL: "http://localhost:1337/auth/twitterCallback/",
         passReqToCallback:true
     },
 
+    //Google fields
     googleStrategyFields = {
         consumerKey: GOOGLE_CONSUMER_KEY,
         consumerSecret: GOOGLE_CONSUMER_SECRET,
-        callbackURL: "http://www.example.com/auth/google/callback",
+        callbackURL: "http://localhost:1337/auth/googleCallback/k",
         passReqToCallback:true
    }
 }

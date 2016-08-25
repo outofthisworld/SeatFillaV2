@@ -45,6 +45,47 @@ module.exports = {
       })
     })
   },
+  //Creates an external passport user.
+  createExternalUser: function(req, accessToken, refreshToken, profile){
+    return new Promise(function(resolve,reject){
+
+      const providerKey = profile.provider + 'Id';
+      const find = {provider:profile.provider} 
+      find[providerKey] = profile.id;
+
+      const create = {
+              provider: profile.provider,
+              firstName: profile.name.givenName,
+              middleName: profile.name.middleName,
+              lastName: profile.name.familyName,
+              email: profile.emails[0].value
+      };
+      create[providerKey] = profile.id;
+
+      User.findOrCreate( find, create,
+      function(err, user) {
+
+          if (err) { return reject(err || new Error('Could not create user')) }
+
+          req.login(user,function(err){
+              if(err){
+                  sails.log.debug(err);
+                  return reject(err);
+              }else{
+                  sails.log.debug('Succefully logged in request');
+              }
+          });
+
+          res.session.provider = profile.provider;
+          req.session[req.session.provider] = {}
+          req.session[req.session.provider].accessToken = accessToken;
+          req.session[req.session.provider].refreshToken = refreshToken;
+
+          return resolve(user);
+      });
+
+   });
+  },
   deleteUser: function (obj) {
     return new Promise(function(resolve,reject){
         const destroy = function(id){

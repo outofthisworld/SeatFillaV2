@@ -1,28 +1,39 @@
+/*
+    Contains all the logic for logging in via remote websites using SSO,
+    current supports facebook,twitter,google and local authentication.
+
+    Created by Dale.
+*/
+
 //Here we will define new passport stratergies so we 
 // can login using fb, twitter ect.
 const passport = require('passport'), 
 LocalStrategy = require('passport-local').Strategy,
-FacebookStrategy = require('passport-facebook').Strategy;
+FacebookStrategy = require('passport-facebook').Strategy,
+TwitterStrategy = require('passport-twitter').Strategy,
+GoogleStrategy = require('passport-google-oauth').OAuthStrategy;
+
+
+/*
+    Configuration (Check passport_config.js, contains API keys and callback URL's ect.')
+*/
 
 //Change this is the front end form name fields change.
-const localStrategyFields = {
-     usernameField:"email",
-     passwordField:"password", 
-     passReqToCallback: true }
+const localStrategyFields = sails.config.passport_config.localStrategyFields;
 
+//Facebook SSO fields 
+const facebookStrategyFields = sails.config.passport_config.facebookStrategyFields;
 
-const facebookStrategyFields = { 
-      clientID: '294356564254458',
-      clientSecret: '4c1ca548f206377818fe869fa057035a',
-      callbackURL: "http://localhost:1337/auth/facebookCallback/",
-      profileFields: ['id', 'emails', 'gender', 'link', 
-      'locale', 'name', 'timezone', 'updated_time', 'verified','photos'],
-      passReqToCallback: true
-}
+//Twitter SSO fields
+const twitterStrategyFields = sails.config.passport_config.twitterStrategyFields;
+
+//Google SSO fields
+const googleStrategyFields =  sails.config.passport_config.googleStrategyFields;
+
 
 /* 
    Handles the serialization and 
-   deserialization proccess (keeps server memory low)
+   deserialization proccess for session storage (keeps server memory low)
  */
 passport.serializeUser(function(user, done) {
     done(null, user.id);
@@ -50,48 +61,23 @@ const localStrategy = function(req, email, password, done){
        });
 }
 
-//Facebook stratergy for logging in
-const facebookStrategy = function(req,accessToken,refreshToken,profile,done){
+//Generic statergy for external auths (facebook,twitter,google) emits code duplication.
+const genericStratergy = function(req,accessToken,refreshToken,profile,done){
     sails.log.debug(profile);
-    sails.log.debug(req);
-     User.findOrCreate(
-         { id: profile.id, provider:'facebook' }, 
-         {
-             id: profile.id,
-             provider: 'facebook',
-             firstName: profile.name.givenName,
-             middleName: profile.name.middleName,
-             lastName: profile.name.familyName,
-             email: profile.emails[0].value
-          },
-    function(err, user) {
-         if (err || !user) { return done(err || new Error('Could not create user'), null); }
-
-         req.login(user,function(err){
-             if(err){
-                sails.log.debug(err);
-             }else{
-                sails.log.debug('Succefully logged in request');
-             }
-         });
-
-         req.session.fb = {}
-         req.session.fb.accessToken = accessToken;
-         req.session.fb.refreshToken = refreshToken;
-
-         return done(null, user);
+    UserService.createExternalUser(req,accessToken,refreshToken,profile).then(function(user){
+        sails.log.debug('Succesfully created new external user' + user);
+        return done();
+    }).catch(function(err){
+        sails.log.debug('Error when creating external user ' + err);
+        return done(err);
     });
 }
 
-const twitterStrategy = function(){
-
-}
-
-const googleStrategy = function(){
-
-}
-
-
 //Local auth
 passport.use(new LocalStrategy(localStrategyFields, localStrategy));
-passport.use(new FacebookStrategy(facebookStrategyFields, facebookStrategy));
+//Facebook auth
+passport.use(new FacebookStrategy(facebookStrategyFields, genericStratergy));
+//Twitter auth
+passport.use(new TwitterStrategy(twitterStrategyFields, genericStratergy));
+//Google auth
+passport.use(new GoogleStrategy(googleStrategyFields,genericStratergy));

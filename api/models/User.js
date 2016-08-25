@@ -22,6 +22,21 @@ module.exports = {
       primaryKey:true,
       defaultsTo: function(){ return uuid.v4(); }
     },
+    facebookId:{
+      type:'string',
+      required:false,
+      notNull:false
+    },
+    twitterId:{
+      type:'string',
+      required:false,
+      notNull:false
+    },
+    googleId:{
+      type:'string',
+      required:false,
+      notNull:false
+    },
     firstName:{
       type:'string',
       required: true,

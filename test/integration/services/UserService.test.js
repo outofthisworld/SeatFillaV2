@@ -4,7 +4,7 @@ describe('User service tests', function () {
       const req = {
         allParams: function () {
           return {
-            id:1234,
+            id: 1234,
             username: 'TestUser123',
             password: 'testpassword',
             passwordConfirmation: 'testpassword',
@@ -27,7 +27,7 @@ describe('User service tests', function () {
       }
 
       UserService.createUser(req).then(function (user) {
-        return user.id;
+        return user.id
       }).then(function (id) {
         User.find(id).exec(function (err, user) {
           if (err) return done(err)

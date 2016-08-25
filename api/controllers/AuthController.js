@@ -18,7 +18,7 @@ module.exports = {
           if (err) {
             sails.log.debug('Failed to log on user to req in controllers/authcontroller.js')
 
-            return {error: err, message:err.message, messagelocal: 'failed to log on user to req in controllers/authcontroller.js'}
+            return {error: err, message: err.message, messagelocal: 'failed to log on user to req in controllers/authcontroller.js'}
           }
 
           sails.log.debug('Succesfully logged on user via passport in controllers/authcontroller.js')
@@ -28,9 +28,9 @@ module.exports = {
       })(req, res)
     })((result) => {
       if (result.error) {
-        return res.json(result);
+        return res.json(result)
       }else {
-        return res.redirect('/');
+        return res.json(result)
       }
     })
   },
@@ -58,30 +58,34 @@ module.exports = {
         }
       })
     })((result) => {
-      return res.json(result);
+      return res.json(result)
     })
   },
-  facebook: function (req,res) {
-      if(req.user) return req.ok({error: "Already logged in"});
+  facebook: function (req, res) {
+    if (req.user) return res.redrect('/')
 
-      sails.log.debug('Made request to login via facebook');
+    sails.log.debug('Made request to login via facebook')
 
-      passport.authenticate('facebook', {scope: 'public_profile, email'})(req, res, function(err){
-          sails.log.debug('Recieved error when authenticating via facebook');
-      });
+    passport.authenticate('facebook', {scope: 'public_profile, email'})(req, res, function (err) {
+      sails.log.debug('Recieved error when authenticating via facebook')
+    })
   },
-  facebookCallback: function (req,res) {
-      passport.authenticate('facebook',{
-        successRedirect: '/',
-        failureRedirect: '/user/login'
-        })(req,res,function(err,user) {
-          sails.log.debug('Error in facebook callback ' + err);
-          return res.ok({error:err,user:user});  
-      });
+  facebookCallback: function (req, res) {
+    passport.authenticate('facebook', {
+      successRedirect: '/',
+      failureRedirect: '/user/login'
+    })(req, res, function (err, user) {
+      sails.log.debug('Error in facebook callback ' + err)
+      return res.ok({error: err,user: user})
+    })
   },
+  twitter: function (req, res) {},
+  twitterCallback: function (req, res) {},
+  google: function (req, res) {},
+  googleCallback: function (req, res) {},
   logout: function (req, res) {
-     req.logout();
-     req.session.destroy();
-     res.redirect('/');
+    req.logout()
+    req.session.destroy()
+    res.redirect('/')
   }
 }

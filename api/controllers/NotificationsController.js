@@ -22,6 +22,7 @@ module.exports = {
 
     //Lets broadcast a message..
     NotificationService.sendDedicatedNotificationAsync(req)({
+      title: 'Subscription notice',
       message: 'Succesfully subscribed to notification service.'
     });
     

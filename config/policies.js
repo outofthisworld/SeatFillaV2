@@ -51,6 +51,8 @@ module.exports.policies = {
     'googleCallback':true,
     'facebookCallback':true,
     'instagramCallback':true,
+    'twitter':true,
+    'twitterCallback':true,
   },
   VerifyController:{
     '*':false,

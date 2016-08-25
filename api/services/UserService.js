@@ -39,7 +39,13 @@ module.exports = {
               // Error sending email.. handle it
               sails.log.debug('Failed to send email... ' + message + 'error: ' + err)
               reject(err)
-            })
+            });
+
+            //Lets broadcast a message..
+            NotificationService.sendDedicatedNotificationAsync(req)({
+              title: 'You have succesfully registered!',
+              message: 'Thank-you for registering at SeatFilla, don\'t forget to validate your email!'
+            });
           })
         return resolve(user)
       })
@@ -53,13 +59,74 @@ module.exports = {
       const find = {provider:profile.provider} 
       find[providerKey] = profile.id;
 
-      const create = {
-              provider: profile.provider,
-              firstName: profile.name.givenName,
-              middleName: profile.name.middleName,
-              lastName: profile.name.familyName,
-              email: profile.emails[0].value
-      };
+      //Cheap hacks >.< (they all provide different data.. makes model validation hard too)
+      const externalInfo = {
+        twitter:{
+          username: (function(){
+            return profile.username;
+          })(),
+          provider: (function(){
+            return profile.provider;
+          })(),
+          firstName: (function(){
+            return profile._json.name;
+          })(),
+          profile_image_url: (function(){
+             return profile._json.profile_image_url || null;
+          })(),
+          emailIsVerified:(function(){
+             return false;
+           })(),
+           isLockedOut:false
+        },
+        facebook:{
+           provider: (function(){
+             return profile.provider;
+           })(),
+           firstName: (function(){
+             return profile.name.givenName;
+            }()),
+           middleName: (function(){
+             return profile.name.middleName;
+           })(),
+           lastName:(function(){
+            return profile.name.familyName;
+           })(),
+           email: (function(){
+             if(Array.isArray(profile.emails) && profile.emails.length > 0){
+               return profile.emails[0].value;
+             }else{
+               return null;
+             }
+           })(),
+           username: (function(){
+             if(!this.email){
+              return firstName + lastName + Math.ceil((Math.random() + 0.01) * 
+               ((Math.random() * 2000) + (Math.random() * 99999)))
+             }else{
+               return null;
+             }
+           })(),
+           profile_image_url:(function(){
+             if(Array.isArray(profile.photos) && profile.photos.length > 0){
+               return profile.photos[0].value;
+             }else{
+               return null;
+             }
+           })(),
+           emailIsVerified:(function(){
+             return this.email || false;
+           })(),
+           isLockedOut: false
+        },
+        google:{
+
+        }
+      }
+
+      const create = externalInfo[profile.provider];
+      if(!create) return reject(new Error('Unsupported provider !!' + profile.provider));
+
       create[providerKey] = profile.id;
 
       User.findOrCreate( find, create,
@@ -67,15 +134,12 @@ module.exports = {
 
           if (err) { return reject(err || new Error('Could not create user')) }
 
-          req.login(user,function(err){
-              if(err){
-                  sails.log.debug(err);
-                  return reject(err);
-              }else{
-                  sails.log.debug('Succefully logged in request');
-              }
-          });
-
+          if(create.profile_image_url){
+            UserImage.create({
+              user: user.id,
+              url: create.profile_image_url
+            }).exec(function(err,userImage){});
+          }
           res.session.provider = profile.provider;
           req.session[req.session.provider] = {}
           req.session[req.session.provider].accessToken = accessToken;
@@ -83,7 +147,6 @@ module.exports = {
 
           return resolve(user);
       });
-
    });
   },
   deleteUser: function (obj) {

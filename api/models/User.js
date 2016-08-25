@@ -139,6 +139,10 @@ module.exports = {
       collection: 'Notifications',
       via: 'user'
     },
+    images:{
+      collection: 'UserImage',
+      via: 'user'
+    },
     emailConfirmed:()=>{
       return this.isEmailConfirmed;
     },

@@ -5,79 +5,96 @@
     Created by Dale.
 */
 
-//Here we will define new passport stratergies so we 
-// can login using fb, twitter ect.
-const passport = require('passport'), 
-LocalStrategy = require('passport-local').Strategy,
-FacebookStrategy = require('passport-facebook').Strategy,
-TwitterStrategy = require('passport-twitter').Strategy,
-GoogleStrategy = require('passport-google-oauth').OAuthStrategy;
-
+const passport = require('passport'),
+  LocalStrategy = require('passport-local').Strategy,
+  FacebookStrategy = require('passport-facebook').Strategy,
+  TwitterStrategy = require('passport-twitter').Strategy,
+  GoogleStrategy = require('passport-google-oauth').OAuthStrategy
 
 /*
-    Configuration (Check passport_config.js, contains API keys and callback URL's ect.')
+    Confirguration belows, details external provider API keys and callback URL's ect.)
 */
 
-//Change this is the front end form name fields change.
-const localStrategyFields = sails.config.passport_config.localStrategyFields;
+// Change this is the front end form name fields change.
+const localStrategyFields = {
+  usernameField: 'email',
+  passwordField: 'password',
+passReqToCallback: true }
 
-//Facebook SSO fields 
-const facebookStrategyFields = sails.config.passport_config.facebookStrategyFields;
+// Facebook fields (dales fb)
+const facebookStrategyFields = {
+  clientID: '294356564254458',
+  clientSecret: '4c1ca548f206377818fe869fa057035a',
+  callbackURL: 'http://localhost:1337/auth/facebookCallback/',
+  profileFields: ['id', 'emails', 'gender', 'link',
+    'locale', 'name', 'timezone', 'updated_time', 'verified', 'photos'],
+  passReqToCallback: true
+}
 
-//Twitter SSO fields
-const twitterStrategyFields = sails.config.passport_config.twitterStrategyFields;
+// Twitter fields (used twitter account associated with dale@farpoint.co.nz for keys)
+const twitterStrategyFields = {
+  consumerKey: 'yVTbxPx6FlasXEwwWw0owaAHw',
+  consumerSecret: 'vZ8FQN4hcVcBXCmGWH9yxvtlqXAEJ9dGjoWqKDZWbcoKev73Pa',
+  callbackURL: 'http://127.0.0.1:1337/auth/twitterCallback/',
+  passReqToCallback: true
+}
 
-//Google SSO fields
-const googleStrategyFields =  sails.config.passport_config.googleStrategyFields;
-
+// Google fields (used dale@farpoint.co.nz for creating API key)
+const googleStrategyFields = {
+  consumerKey: '998518772662-83bluipuml5m7n19tipu2i79qafpquc4.apps.googleusercontent.com',
+  consumerSecret: 'xQdKMAMfHU4X-cgnMiXkCWvM',
+  // AIzaSyA1pzn_Q_OxcgbLDmdwMoZc81aiKKVM2ZU
+  callbackURL: 'http://127.0.0.1:1337/auth/googleCallback/',
+  passReqToCallback: true
+}
 
 /* 
    Handles the serialization and 
    deserialization proccess for session storage (keeps server memory low)
  */
-passport.serializeUser(function(user, done) {
-    done(null, user.id);
-});
+passport.serializeUser(function (user, done) {
+  done(null, user.id)
+})
 
-passport.deserializeUser(function(id, done) {
-    User.findOne({ id: id }).populate('roles').exec(function (err, user) {
-        done(err, user);
-    });
-});
+passport.deserializeUser(function (id, done) {
+  User.findOne({ id: id }).populate('roles').exec(function (err, user) {
+    done(err, user)
+  })
+})
 
-//Local stratergy for logging in
-const localStrategy = function(req, email, password, done){
-       User.findOne().where({or: [{email: email}, {username:req.allParams().username}]})
-       .populate('roles').exec(function(err, user){
-           if(err){
-               done(err);
-           }else if(!user){
-               done(new Error('Invalid username'));
-           }else if(!user.verifyPassword(password)){
-               done(new Error('Invalid password'));
-           }else{ 
-            return done(null, user, { message:"Succesfully logged in" });
-           }
-       });
+// Local stratergy for logging in
+const localStrategy = function (req, email, password, done) {
+  User.findOne().where({or: [{email: email}, {username: req.allParams().username}]})
+    .populate('roles').exec(function (err, user) {
+    if (err) {
+      done(err)
+    }else if (!user) {
+      done(new Error('Invalid username'))
+    }else if (!user.verifyPassword(password)) {
+      done(new Error('Invalid password'))
+    }else {
+      return done(null, user, { message: 'Succesfully logged in' })
+    }
+  })
 }
 
-//Generic statergy for external auths (facebook,twitter,google) emits code duplication.
-const genericStratergy = function(req,accessToken,refreshToken,profile,done){
-    sails.log.debug(profile);
-    UserService.createExternalUser(req,accessToken,refreshToken,profile).then(function(user){
-        sails.log.debug('Succesfully created new external user' + user);
-        return done();
-    }).catch(function(err){
-        sails.log.debug('Error when creating external user ' + err);
-        return done(err);
-    });
+// Generic statergy for external auths (facebook,twitter,google) emits code duplication.
+const genericStratergy = function (req, accessToken, refreshToken, profile, done) {
+  sails.log.debug(profile)
+  UserService.createExternalUser(req, accessToken, refreshToken, profile).then(function (user) {
+    sails.log.debug('Succesfully created new external user' + user)
+    return done()
+  }).catch(function (err) {
+    sails.log.debug('Error when creating external user ' + err)
+    return done(err)
+  })
 }
 
-//Local auth
-passport.use(new LocalStrategy(localStrategyFields, localStrategy));
-//Facebook auth
-passport.use(new FacebookStrategy(facebookStrategyFields, genericStratergy));
-//Twitter auth
-passport.use(new TwitterStrategy(twitterStrategyFields, genericStratergy));
-//Google auth
-passport.use(new GoogleStrategy(googleStrategyFields,genericStratergy));
+// Local auth
+passport.use(new LocalStrategy(localStrategyFields, localStrategy))
+// Facebook auth
+passport.use(new FacebookStrategy(facebookStrategyFields, genericStratergy))
+// Twitter auth
+passport.use(new TwitterStrategy(twitterStrategyFields, genericStratergy))
+// Google auth
+passport.use(new GoogleStrategy(googleStrategyFields, genericStratergy))

@@ -58,6 +58,10 @@ module.exports = {
         }
       })
     })((result) => {
+      NotificationService.sendDedicatedNotificationAsync(req)({
+              title: 'Api token has been succesfully generated! ',
+              message: 'Your seatfilla API token has been succesfully generated, it will be verified shortly.!'
+      });
       return res.json(result)
     })
   },

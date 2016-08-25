@@ -73,6 +73,8 @@ module.exports = {
     passport.authenticate('facebook', {scope: 'public_profile, email'})(req, res, function (err) {
       if(err){
       sails.log.debug('Recieved error when authenticating via facebook ' + err);
+      }else{
+        
       }
     })
   },

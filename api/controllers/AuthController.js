@@ -67,22 +67,68 @@ module.exports = {
     sails.log.debug('Made request to login via facebook')
 
     passport.authenticate('facebook', {scope: 'public_profile, email'})(req, res, function (err) {
-      sails.log.debug('Recieved error when authenticating via facebook')
+      if(err){
+      sails.log.debug('Recieved error when authenticating via facebook ' + err);
+      }
     })
   },
   facebookCallback: function (req, res) {
     passport.authenticate('facebook', {
-      successRedirect: '/',
+      successRedirect: '/auth/success',
       failureRedirect: '/user/login'
     })(req, res, function (err, user) {
-      sails.log.debug('Error in facebook callback ' + err)
-      return res.ok({error: err,user: user})
+      if(err){
+         sails.log.debug('Error in facebook callback ' + err)
+         return res.badRequest({error: err,user: user})
+      }else{
+         res.redirect('/auth/success');
+      }
     })
   },
-  twitter: function (req, res) {},
-  twitterCallback: function (req, res) {},
-  google: function (req, res) {},
-  googleCallback: function (req, res) {},
+  twitter: function (req, res) {
+     if (req.user) return res.redrect('/')
+
+     sails.log.debug('Made request to login via twitter')
+
+     passport.authenticate('twitter')(req, res, function (err) {
+        if(err){
+           sails.log.debug('Recieved error when authenticating via twitter ' + err)
+        }
+    })
+  },
+  twitterCallback: function (req, res) {
+    passport.authenticate('twitter', {
+      successRedirect: '/auth/success',
+      failureRedirect: '/user/login'
+    })(req, res, function (err, user) {
+      if(err){
+         sails.log.debug('Error in twitter callback ' + err)
+         return res.badRequest({error: err,user: user})
+      }else{
+         res.redirect('/auth/success');
+      }
+    })
+  },
+  google: function (req, res) {
+     if (req.user) return res.redrect('/')
+
+     sails.log.debug('Made request to login via twitter')
+
+     passport.authenticate('google')(req, res, function (err) {
+        if(err){
+           sails.log.debug('Recieved error when authenticating via google ' + err)
+        }
+     });
+  },
+  googleCallback: function (req, res) {
+    passport.authenticate('google', { failureRedirect: '/user/login' },
+    function(req, res) {
+      res.redirect('/auth/success');
+    })
+  },
+  success:function(req,res){
+    return res.ok({user:req.user});
+  },
   logout: function (req, res) {
     req.logout()
     req.session.destroy()

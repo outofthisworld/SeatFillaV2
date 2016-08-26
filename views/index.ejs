@@ -3,15 +3,11 @@
       <%- partial ('partials/nav.ejs') %>
       <app-box class="merge" effects="parallax-background">
         <div id="section_container">
-          <section id="section1bg" class="header section_img section-full">
+          <section id="section1bg" class="header section_img section-80">
             <div class="container80">
-            
-              <div class="row">
-              <div class="col-md-7">
-              <h2 style="color:white;font-size:3em;color:white;position:relative;top:20px;">SeatFilla<div class="lead" style="color:white">GET WHERE YOU NEED TO GO</div></h2>
-              </div>
-              <div class="col-md-5">
-				<div class="panel panel-login">
+                  
+              <div class="col-md-5 pull-right">
+				<div class="panel panel-login pull-right">
 					<div class="panel-heading">
 						<div class="row">
 							<div class="col-xs-6">
@@ -41,11 +37,8 @@
 										<div class="row">
 											<div class="col-sm-6 col-sm-offset-3">
 												<input type="submit" name="login-submit" id="login-submit" tabindex="4" class="form-control btn btn-login" value="Log In">
-                                                 <a href="/auth/facebook" class="btn btn-primary"><span class="fa fa-facebook"></span> Sign in with Facebook</a>
-                                                 <a href="/auth/twitter" class="btn btn-primary"><span class="fa fa-twitter"></span>Sign in with Twitter</a>
-                                                 <a href="/auth/google" class="btn btn-primary"><span class="fa fa-google"></span>Sign In with Google</a>
 											</div>
-										</div>
+										</div>                
 									</div>
 									<div class="form-group">
 										<div class="row">
@@ -55,8 +48,14 @@
 												</div>
 											</div>
 										</div>
-									</div>
+									</div> 
+                                            <div class=" btn-group">
+                                                 <a href="/auth/facebook" class="btn btn-block btn-primary"><span class="fa fa-facebook"></span> Sign in with Facebook</a>
+                                                 <a href="/auth/twitter" class="btn btn-block btn-default"><span class="fa fa-twitter"></span> Sign in with Twitter</a>
+                                                 <a href="/auth/google" class="btn btn-block btn-danger"><span class="fa fa-google"></span> Sign In with Google</a>
+                                            </div>
 								</form>
+                                
 								<form id="register-form" action="http://phpoll.com/register/process" method="post" role="form" style="display: none;">
 									<div class="form-group">
 										<input type="text" name="username" id="username" tabindex="1" class="form-control" placeholder="Username" value="">
@@ -81,7 +80,7 @@
 							</div>
 						</div>	
 		      </div>
-        	</div>
+        
               </div>
             </div>
           </div>

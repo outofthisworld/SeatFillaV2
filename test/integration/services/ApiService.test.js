@@ -1,8 +1,6 @@
 const assert = require('assert')
 
-/*
-    Created by dale.
-*/
+
 
 describe('AuthController tests', function () {
 

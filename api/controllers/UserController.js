@@ -32,9 +32,8 @@ module.exports = {
     },
     //GET [return the my account page]
     myAccount: function(req, res) {
-        return res.ok({
-            user: req.user
-        }, {
+        return res.ok({user: req.user }, 
+        {
             layout: 'user/myAccount',
             view: 'user/index',
             title: req.__('MyAccount')

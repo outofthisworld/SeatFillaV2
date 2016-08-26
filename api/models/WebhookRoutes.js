@@ -10,6 +10,8 @@ module.exports = {
             primaryKey:true,
             defaultsTo: function(){ return uuid.v4(); }
         },
+        //e.g FlightOffer/create
+        //    
         route:{
             type:'String',
             required:true,

@@ -5,6 +5,10 @@
 */
 
 describe('EmailService tests',function(){
+
+
+
+
     describe('Send Email',function(){
         it('Sends an email',function(done){
               var email = {
@@ -19,7 +23,7 @@ describe('EmailService tests',function(){
                 done();
             }).catch(function (err) {
                 done(err);
-            })
+            });
         });
     });
 

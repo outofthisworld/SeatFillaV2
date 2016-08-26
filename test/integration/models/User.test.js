@@ -28,7 +28,7 @@ describe('User tests',function(){
             isLockedOut: false,
             isEmailVerified: false,
             ip: '127.0.0.1'
-                        
+                        //this if ths
           }).exec(function(err,createdUser){   //Callback function returns error and the created user.
 
               if(err){ //Checks for error
@@ -38,7 +38,7 @@ describe('User tests',function(){
                   return done(); //Test passed (no arguments needed)
               }
               
-          });
+          });//this the hotifix
         });
 
         //How to define another method within descibe

@@ -84,8 +84,7 @@
             return new Promise(function(resolve,reject){
                  ApiRoutes.find({path:obj}).exec(function(err,route){
                         if(err) {
-                           sails.log.debug('An error in apiReqestPolicy.js occurred, 
-                           + 'most likely the API route is missing from the database.')
+                           sails.log.debug('An error in apiReqestPolicy.js occurred,most likely the API route is missing from the database.')
                            return reject(err);
                         }
                         return resolve(route);

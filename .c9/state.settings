@@ -1,6 +1,6 @@
 {
     "commandPanel": {
-        "@value": "git"
+        "@value": ""
     },
     "console": {
         "@expanded": true,

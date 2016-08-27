@@ -3,7 +3,7 @@
 module.exports = {
 
     attributes:{
-        ApiUser:{
+        apiUser:{
             model:'ApiUsers',
             notNull:true,
             required:true

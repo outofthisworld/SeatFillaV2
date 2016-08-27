@@ -1,0 +1,428 @@
+{
+    "commandPanel": {
+        "@value": "git"
+    },
+    "console": {
+        "@expanded": true,
+        "@height": 196,
+        "@maximized": "false",
+        "json()": {
+            "meta": {
+                "accessList": [
+                    "tab0",
+                    "tab1"
+                ]
+            },
+            "name": "pane1",
+            "nodes": [
+                {
+                    "type": "tab",
+                    "name": "tab0",
+                    "path": "",
+                    "className": [
+                        "tab0",
+                        "focus"
+                    ],
+                    "document": {
+                        "changed": false,
+                        "meta": {
+                            "timestamp": 1472219089499
+                        },
+                        "filter": true,
+                        "title": "bash - \"Dales-MacBook-Pro.local\" ",
+                        "tooltip": "bash - \"Dales-MacBook-Pro.local\" ",
+                        "terminal": {
+                            "id": "devel_26",
+                            "cwd": "",
+                            "width": 1129,
+                            "height": 170
+                        }
+                    },
+                    "editorType": "terminal",
+                    "active": true
+                },
+                {
+                    "type": "tab",
+                    "name": "tab1",
+                    "path": "",
+                    "className": [],
+                    "document": {
+                        "title": "Immediate",
+                        "changed": false,
+                        "meta": {
+                            "timestamp": 1472219089501
+                        },
+                        "filter": true
+                    },
+                    "editorType": "immediate",
+                    "active": false
+                }
+            ],
+            "skin": "editor_tab",
+            "skinset": "default",
+            "type": "pane"
+        }
+    },
+    "experiments": {
+        "@@enabled": true,
+        "@autosave": false,
+        "@flat-dark": true,
+        "@git": 1,
+        "@go_completion": true,
+        "@plugin-manager": 1,
+        "@plugins": true,
+        "@sdk": true,
+        "@test": 0
+    },
+    "ext": {
+        "counters": {
+            "@ace": 10,
+            "@ace.repl": 1,
+            "@acestatus": 5,
+            "@datagrid": 3,
+            "@divider": 5,
+            "@document": 32,
+            "@form": 5,
+            "@immediate": 5,
+            "@menu": 9,
+            "@menuitem": 22,
+            "@pane": 8,
+            "@postmessage": 1,
+            "@preferences": 2,
+            "@preview": 1,
+            "@session": 31,
+            "@tab": 31,
+            "@tree": 2,
+            "@undoManager": 32
+        }
+    },
+    "findinfiles": {
+        "@console": "true",
+        "@matchcase": "false",
+        "@regex": "false",
+        "@scope": "selection",
+        "@wholeword": "false"
+    },
+    "installer": {
+        "json()": {}
+    },
+    "menus": {
+        "@minimized": false
+    },
+    "nak": {
+        "@installed": true
+    },
+    "openfiles": {
+        "@hidetree": false
+    },
+    "panecycle": {
+        "json()": [
+            "tab0",
+            "tab30",
+            "tab27"
+        ]
+    },
+    "panels": {
+        "@active-left": "tree",
+        "@width-left": 239,
+        "commands.panel": {
+            "@enabled": "true",
+            "@name": "commands.panel"
+        },
+        "debugger": {
+            "@enabled": "true",
+            "@name": "debugger"
+        },
+        "navigate": {
+            "@enabled": "true",
+            "@name": "navigate"
+        },
+        "outline": {
+            "@enabled": "true",
+            "@name": "outline"
+        },
+        "scm": {
+            "@enabled": "true",
+            "@name": "scm"
+        },
+        "tree": {
+            "@enabled": "true",
+            "@name": "tree"
+        }
+    },
+    "projecttree": {
+        "@scrollpos": 538,
+        "@showfs": true,
+        "expanded": {
+            "json()": [
+                "/",
+                "/www",
+                "/vscode",
+                "/views",
+                "/test",
+                "/tasks",
+                "/assets",
+                "/config",
+                "/api",
+                "/api/controllers",
+                "/api/models",
+                "/api/policies",
+                "/api/services"
+            ]
+        }
+    },
+    "recentfiles": {
+        "json()": []
+    },
+    "tabs": {
+        "json()": {
+            "focus": "/api/services/ApiService.js",
+            "nodes": [
+                {
+                    "type": "pane",
+                    "name": "pane6",
+                    "nodes": [
+                        {
+                            "type": "tab",
+                            "name": "tab19",
+                            "path": "/api/controllers/NotificationsController.js",
+                            "className": [
+                                "tab19"
+                            ],
+                            "document": {
+                                "changed": false,
+                                "meta": {
+                                    "timestamp": 1472103018000
+                                },
+                                "filter": true,
+                                "title": "NotificationsController.js",
+                                "tooltip": "/api/controllers/NotificationsController.js",
+                                "ace": {}
+                            },
+                            "editorType": "ace",
+                            "active": false
+                        },
+                        {
+                            "type": "tab",
+                            "name": "tab23",
+                            "path": "/api/models/Webhook.js",
+                            "className": [
+                                "tab23"
+                            ],
+                            "document": {
+                                "changed": false,
+                                "meta": {
+                                    "timestamp": 1472261105673
+                                },
+                                "filter": true,
+                                "title": "Webhook.js",
+                                "tooltip": "/api/models/Webhook.js",
+                                "ace": {}
+                            },
+                            "editorType": "ace",
+                            "active": false
+                        },
+                        {
+                            "type": "tab",
+                            "name": "tab24",
+                            "path": "/api/policies/apiRequestPolicy.js",
+                            "className": [
+                                "tab24"
+                            ],
+                            "document": {
+                                "changed": false,
+                                "meta": {
+                                    "timestamp": 1472116803000
+                                },
+                                "filter": true,
+                                "title": "apiRequestPolicy.js",
+                                "tooltip": "/api/policies/apiRequestPolicy.js",
+                                "ace": {}
+                            },
+                            "editorType": "ace",
+                            "active": false
+                        },
+                        {
+                            "type": "tab",
+                            "name": "tab25",
+                            "path": "/api/models/ApiRoutes.js",
+                            "className": [
+                                "tab25",
+                                "changed"
+                            ],
+                            "document": {
+                                "changed": true,
+                                "meta": {
+                                    "timestamp": 1472261105676
+                                },
+                                "filter": true,
+                                "title": "ApiRoutes.js",
+                                "tooltip": "/api/models/ApiRoutes.js",
+                                "ace": {}
+                            },
+                            "editorType": "ace",
+                            "active": false
+                        },
+                        {
+                            "type": "tab",
+                            "name": "tab27",
+                            "path": "/api/models/ApiRequest.js",
+                            "className": [
+                                "tab27",
+                                "changed"
+                            ],
+                            "document": {
+                                "changed": true,
+                                "meta": {
+                                    "timestamp": 1472261293186
+                                },
+                                "filter": true,
+                                "title": "ApiRequest.js",
+                                "tooltip": "/api/models/ApiRequest.js",
+                                "ace": {}
+                            },
+                            "editorType": "ace",
+                            "active": true
+                        },
+                        {
+                            "type": "tab",
+                            "name": "tab28",
+                            "path": "/api/models/ApiUsers.js",
+                            "className": [
+                                "tab28"
+                            ],
+                            "document": {
+                                "changed": false,
+                                "meta": {
+                                    "timestamp": 1472261105677
+                                },
+                                "filter": true,
+                                "title": "ApiUsers.js",
+                                "tooltip": "/api/models/ApiUsers.js",
+                                "ace": {}
+                            },
+                            "editorType": "ace",
+                            "active": false
+                        }
+                    ],
+                    "skin": "editor_tab",
+                    "skinset": "default",
+                    "meta": {
+                        "accessList": [
+                            "tab27",
+                            "tab25",
+                            "tab23",
+                            "tab28",
+                            "tab24",
+                            "tab19"
+                        ]
+                    }
+                },
+                {
+                    "type": "pane",
+                    "name": "pane5",
+                    "nodes": [
+                        {
+                            "type": "tab",
+                            "name": "tab10",
+                            "path": "/api/controllers/AuthController.js",
+                            "className": [
+                                "tab10"
+                            ],
+                            "document": {
+                                "changed": false,
+                                "meta": {
+                                    "timestamp": 1472110232000
+                                },
+                                "filter": true,
+                                "title": "AuthController.js",
+                                "tooltip": "/api/controllers/AuthController.js",
+                                "ace": {}
+                            },
+                            "editorType": "ace",
+                            "active": false
+                        },
+                        {
+                            "type": "tab",
+                            "name": "tab21",
+                            "path": "/api/models/SupportTicket.js",
+                            "className": [
+                                "tab21"
+                            ],
+                            "document": {
+                                "changed": false,
+                                "meta": {
+                                    "timestamp": 1472261105666
+                                },
+                                "filter": true,
+                                "title": "SupportTicket.js",
+                                "tooltip": "/api/models/SupportTicket.js",
+                                "ace": {}
+                            },
+                            "editorType": "ace",
+                            "active": false
+                        },
+                        {
+                            "type": "tab",
+                            "name": "tab22",
+                            "path": "/api/models/User.js",
+                            "className": [
+                                "tab22"
+                            ],
+                            "document": {
+                                "changed": false,
+                                "meta": {
+                                    "timestamp": 1472261105671
+                                },
+                                "filter": true,
+                                "title": "User.js",
+                                "tooltip": "/api/models/User.js",
+                                "ace": {}
+                            },
+                            "editorType": "ace",
+                            "active": false
+                        },
+                        {
+                            "type": "tab",
+                            "name": "tab30",
+                            "path": "/api/services/ApiService.js",
+                            "className": [
+                                "tab30",
+                                "focus"
+                            ],
+                            "document": {
+                                "changed": false,
+                                "meta": {
+                                    "timestamp": 1471920025000
+                                },
+                                "filter": true,
+                                "title": "ApiService.js",
+                                "tooltip": "/api/services/ApiService.js",
+                                "ace": {}
+                            },
+                            "editorType": "ace",
+                            "active": true
+                        }
+                    ],
+                    "width": "46.693479498861045%",
+                    "skin": "editor_tab",
+                    "skinset": "default",
+                    "meta": {
+                        "accessList": [
+                            "tab30",
+                            "tab10",
+                            "tab22",
+                            "tab21"
+                        ]
+                    }
+                }
+            ],
+            "type": "hsplitbox"
+        }
+    },
+    "tree_selection": {
+        "json()": [
+            "/api/services/ApiService.js"
+        ]
+    }
+}

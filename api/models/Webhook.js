@@ -18,7 +18,7 @@ module.exports = {
             model:'User'
         },
         routes:{
-            collection:'WebhookRoutes',
+            collection:'ApiRoutes',
             via:'id'
         }
     }

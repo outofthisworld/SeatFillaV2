@@ -143,6 +143,11 @@ module.exports = {
       collection: 'UserImage',
       via: 'user'
     },
+    //A user can have many support tickets.
+    supportTickets:{
+      collection: 'SupportTicket',
+      via:'user'
+    }
     emailConfirmed:()=>{
       return this.isEmailConfirmed;
     },

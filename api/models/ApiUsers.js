@@ -27,6 +27,9 @@ module.exports = {
       notNull:true,
       required:true
     }
+    apiRequests:{
+      collection:'ApiRequest',
+    }
   }
 };
 

@@ -33,7 +33,7 @@ module.exports = {
                 }
               })
             }
-          })
+          })//
           return reject(err)
         } else {
           return resolve(info)

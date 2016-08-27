@@ -49,7 +49,12 @@
     const uuid = require('node-uuid');
     
     //Our secret API key, (remember to move this to our config files later when can be bothered >:) )
-    const apiKey = "secret-half";
+    const apiKey = 'secret-half';
+    
+    const tokenParam = 'sfToken';
+    const keyParam = 'sfKey';
+    const tokenHeaderSecretKey = 'x-seatfilla-key';
+    const tokenHeaderToken = 'x-access-token';
     
     const createApiSecret = function(apiKey, sharedSecret) {
         return sails.config.session.secret + sharedSecret;
@@ -58,9 +63,9 @@
     module.exports = {
     
         //Create an api token from the given request and payload
-        createApiToken: function(req, payload, cb) {
+        createApiToken: function(obj, payload, cb) {
             //Grab the key..
-            const key = req.body.sfKey || req.query.sfKey || req.headers['x-seatfilla-key'] || req.params.sfKey;
+            const key = this.findApiKeyFromRequest(obj);
     
             //If we have the payload and the key...
             if (payload && key) {
@@ -74,13 +79,79 @@
                 return cb(new Error('Did not recieve all information required for creating API token'), null);
             }
         },
-    
+        //Looks up an api route via the ApiRoutes model
+        locateApiRoute: function(obj){
+            return new Promise(function(resolve,reject){
+                 ApiRoutes.find({path:obj}).exec(function(err,route){
+                        if(err) {
+                           sails.log.debug('An error in apiReqestPolicy.js occurred, 
+                           + 'most likely the API route is missing from the database.')
+                           return reject(err);
+                        }
+                        return resolve(route);
+                    });
+            });
+        },
+        //finds the user half of the secret api key from a request object
+        findApiKeyFromRequest: function(req){
+            return req.param(keyParam) || req.headers[tokenHeaderSecretKey];
+        },
+        //finds the api token from the request object
+        findApiTokenFromRequest: function(req){
+            return req.param(tokenParam) || req.headers[tokenHeaderToken];
+        },
+        //Locates an api user via supplying a token, the request object or the user associated with the request.
+        //If a user is supplied, since users can have many API tokens.. an array of api users will be returned.
+        locateApiUser: function(obj){
+            new Promise(function(resolve,reject){
+                if(obj.token || obj.request){
+                    ApiUsers.findOne({apiToken: obj.token || this.findApiTokenFromRequest(obj.request)})
+                    .exec(function(err,user){
+                        if(err) return reject(err)
+                        else return resolve(user);
+                        
+                    });
+                }else if(obj.user){
+                    ApiUsers.find({user: obj.user.id}).exec(function(err,user){
+                        if(err) return reject(err)
+                        else return resolve(user);
+                    });
+                }else{
+                    return reject(new Error('Invalid object attributes passed to services/ApiService.js, function locateApiUser'));
+                }
+            })
+        },
+        //Attempts to create a new API request given an object that contains
+        // request: req object
+        // path: request path
+        // token: api token
+        // Not that if the request object is not supplied, both path and token must be supplied.
+        createApiRequest: function(obj){
+            return new Promise(function(resolve,reject){
+                this.locateApiRoute(obj.path || obj.request.path).then(function(route){
+                    this.locateApiUser(obj.token || this.findApiTokenFromRequest(obj.request)).then(function(apiUser){
+                        ApiRequest.create({
+                            apiUser: apiUser.apiToken,
+                            apiRoute: route.id
+                        }).exec(function(err,result){
+                            if(err) return reject(err)
+                            else return resolve(result);
+                        })
+                    }).catch(function(err){
+                        return reject(err);
+                    })
+                  }).catch(function(err){
+                      return reject(err);
+                  })
+                }
+            })
+        }
         //Verify an api token.
         verifyApiToken: function(req, cb) {
     
             //Grab the token and the key
-            const token = req.param('sfToken') || req.headers['x-access-token'];
-            const key = req.param('sfKey') || req.headers['x-seatfilla-key'];
+            const token = this.findApiTokenFromRequest(req);
+            const key = this.findApiKeyFromRequest(req);
     
             //We haven't been supplied with the right information.. return.
             if (!token || !key) {

@@ -29,6 +29,7 @@ module.exports = {
     }
     apiRequests:{
       collection:'ApiRequest',
+      via:'apiUsers'
     }
   }
 };

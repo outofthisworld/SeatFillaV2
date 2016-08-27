@@ -8,7 +8,7 @@ module.exports = {
             notNull:true,
             required:true
         },
-        route:{
+        apiRoute:{
             model:'ApiRoutes'
             notNull:true,
             required:true

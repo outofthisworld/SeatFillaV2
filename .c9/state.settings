@@ -4,7 +4,7 @@
     },
     "console": {
         "@expanded": true,
-        "@height": 196,
+        "@height": 381,
         "@maximized": "false",
         "json()": {
             "meta": {
@@ -35,7 +35,7 @@
                             "id": "devel_26",
                             "cwd": "",
                             "width": 1129,
-                            "height": 170
+                            "height": 355
                         }
                     },
                     "editorType": "terminal",
@@ -81,7 +81,7 @@
             "@acestatus": 5,
             "@datagrid": 3,
             "@divider": 5,
-            "@document": 32,
+            "@document": 34,
             "@form": 5,
             "@immediate": 5,
             "@menu": 9,
@@ -90,10 +90,10 @@
             "@postmessage": 1,
             "@preferences": 2,
             "@preview": 1,
-            "@session": 31,
-            "@tab": 31,
+            "@session": 33,
+            "@tab": 33,
             "@tree": 2,
-            "@undoManager": 32
+            "@undoManager": 34
         }
     },
     "findinfiles": {
@@ -118,8 +118,8 @@
     "panecycle": {
         "json()": [
             "tab0",
-            "tab30",
-            "tab27"
+            "tab10",
+            "tab28"
         ]
     },
     "panels": {
@@ -151,7 +151,7 @@
         }
     },
     "projecttree": {
-        "@scrollpos": 538,
+        "@scrollpos": -10,
         "@showfs": true,
         "expanded": {
             "json()": [
@@ -167,7 +167,8 @@
                 "/api/controllers",
                 "/api/models",
                 "/api/policies",
-                "/api/services"
+                "/api/services",
+                "/out"
             ]
         }
     },
@@ -176,7 +177,7 @@
     },
     "tabs": {
         "json()": {
-            "focus": "/api/services/ApiService.js",
+            "focus": "/api/models/ApiUsers.js",
             "nodes": [
                 {
                     "type": "pane",
@@ -282,17 +283,19 @@
                                 "ace": {}
                             },
                             "editorType": "ace",
-                            "active": true
+                            "active": false
                         },
                         {
                             "type": "tab",
                             "name": "tab28",
                             "path": "/api/models/ApiUsers.js",
                             "className": [
-                                "tab28"
+                                "tab28",
+                                "changed",
+                                "focus"
                             ],
                             "document": {
-                                "changed": false,
+                                "changed": true,
                                 "meta": {
                                     "timestamp": 1472261105677
                                 },
@@ -302,17 +305,17 @@
                                 "ace": {}
                             },
                             "editorType": "ace",
-                            "active": false
+                            "active": true
                         }
                     ],
                     "skin": "editor_tab",
                     "skinset": "default",
                     "meta": {
                         "accessList": [
-                            "tab27",
-                            "tab25",
-                            "tab23",
                             "tab28",
+                            "tab25",
+                            "tab27",
+                            "tab23",
                             "tab24",
                             "tab19"
                         ]
@@ -327,10 +330,11 @@
                             "name": "tab10",
                             "path": "/api/controllers/AuthController.js",
                             "className": [
-                                "tab10"
+                                "tab10",
+                                "changed"
                             ],
                             "document": {
-                                "changed": false,
+                                "changed": true,
                                 "meta": {
                                     "timestamp": 1472110232000
                                 },
@@ -340,7 +344,7 @@
                                 "ace": {}
                             },
                             "editorType": "ace",
-                            "active": false
+                            "active": true
                         },
                         {
                             "type": "tab",
@@ -388,10 +392,10 @@
                             "path": "/api/services/ApiService.js",
                             "className": [
                                 "tab30",
-                                "focus"
+                                "changed"
                             ],
                             "document": {
-                                "changed": false,
+                                "changed": true,
                                 "meta": {
                                     "timestamp": 1471920025000
                                 },
@@ -401,16 +405,16 @@
                                 "ace": {}
                             },
                             "editorType": "ace",
-                            "active": true
+                            "active": false
                         }
                     ],
-                    "width": "46.693479498861045%",
+                    "width": "66.68235163861824%",
                     "skin": "editor_tab",
                     "skinset": "default",
                     "meta": {
                         "accessList": [
-                            "tab30",
                             "tab10",
+                            "tab30",
                             "tab22",
                             "tab21"
                         ]
@@ -422,7 +426,7 @@
     },
     "tree_selection": {
         "json()": [
-            "/api/services/ApiService.js"
+            "/out/AuthController.js.html"
         ]
     }
 }

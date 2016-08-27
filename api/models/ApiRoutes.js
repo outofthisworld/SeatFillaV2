@@ -15,6 +15,10 @@ module.exports = {
             type:'String',
             required:true,
             notNull:true
+        },
+        apiRequests:{
+           collection:'ApiRequest',
+           via:'apiRoute'
         }
     }
 }

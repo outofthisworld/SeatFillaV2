@@ -15,7 +15,7 @@ module.exports = {
       type:'string',
       notNull:true,
       required:true
-    }
+    },
     
     
     //(The user the support ticket belongs to) One to many relationship with user

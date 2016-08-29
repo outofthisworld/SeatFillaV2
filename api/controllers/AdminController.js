@@ -9,5 +9,8 @@ module.exports = {
     },
     apirequests:function(req,res){
 
+    },
+    livechat:function(req,res){
+        return res.ok();
     }
 }

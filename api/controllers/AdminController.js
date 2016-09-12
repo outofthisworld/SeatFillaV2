@@ -1,6 +1,6 @@
 
 module.exports = {
-    //Get the create user pae
+    //Get the create user page
     create:function(req,res){
 
     },

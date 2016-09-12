@@ -26,10 +26,10 @@ module.exports = {
       model:'user',
       notNull:true,
       required:true
-    }
+    },
     apiRequests:{
       collection:'ApiRequest',
-      via:'apiUsers'
+      via:'apiUser'
     }
   }
 };

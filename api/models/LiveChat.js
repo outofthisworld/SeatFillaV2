@@ -20,10 +20,10 @@ module.exports = {
             type:'string',
             required:true,
             notNull:true
-        }
+        },
         department:{
             model:'SupportDepartments',
-            required:true
+            required:true,
             notNull:true
         },
         isAwaiting:{

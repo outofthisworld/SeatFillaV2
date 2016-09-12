@@ -147,7 +147,7 @@ module.exports = {
     supportTickets:{
       collection: 'SupportTicket',
       via:'user'
-    }
+    },
     emailConfirmed:()=>{
       return this.isEmailConfirmed;
     },

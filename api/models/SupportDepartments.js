@@ -7,9 +7,9 @@ module.exports = {
             required:true,
             notNull:true,
             type:'String'
-        }
+        },
         supportTickets:{
-            collection:'SupportTicket'
+            collection:'SupportTicket',
             via: 'topic'
         }
     }

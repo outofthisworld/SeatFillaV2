@@ -142,9 +142,8 @@
                   }).catch(function(err){
                       return reject(err);
                   })
-                }
-            })
-        }
+                });
+        },
         //Verify an api token.
         verifyApiToken: function(req, cb) {
     
@@ -176,5 +175,4 @@
                 })
             })
         }
-      }
     };

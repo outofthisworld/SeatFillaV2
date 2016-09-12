@@ -23,11 +23,14 @@ module.exports = {
       model:'user',
       notNull:true,
       required:true
+    },
+    
+
+    topic:{
+      model:'SupportDepartments',
+      notNull:true
     }
-    
     //Created at and updated at are automatically attributes of the model.
-    
-    
   }
 };
 

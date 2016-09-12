@@ -9,7 +9,7 @@ module.exports = {
             required:true
         },
         apiRoute:{
-            model:'ApiRoutes'
+            model:'ApiRoutes',
             notNull:true,
             required:true
         }

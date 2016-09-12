@@ -129,7 +129,7 @@ module.exports = {
   beforeCreate: function(record,cb){
     //Checks we have valid date ranges
 
-    new Promise((resolve)=>{
+    new Promise((resolve,reject)=>{
       resolve(((record)=>{
         
         const earliestDeparture = new Date(parseInt(record.earliestDepartureYear),

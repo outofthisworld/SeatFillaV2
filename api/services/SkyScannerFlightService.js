@@ -97,12 +97,6 @@ module.exports = {
             });
         });
     },
-    retrieveCurrencies() {
-
-    },
-    retrieveLocales() {
-
-    },
     retrieveItin(urlEndpoint, obj) {
         return new Promise((resolve, reject) => {
             if (!obj || !urlEndpoint) return

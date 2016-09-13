@@ -10,38 +10,59 @@ module.exports = {
     //Api key
     apiKey: 'ri875778577970785652401867130811',
     //Location schema
-    locationschemas:['Iata', 'GeoNameCode', 'GeoNameId', 'Rnid', 'Sky'],
+    locationschemas: {Iata:'Iata', GeoNameCode:'GeoNameCode', GeoNameId:'GeoNameId', Rnid:'Rnid', Sky:'Sky'},
     //Cabin classes
-    cabinclasses:['Economy', 'PremiumEconomy', 'Business', 'First'],
-
-    //
-    sessionObj:{
-        country:'ISO currency code/currencies service',
-        locale:'ISO locale code (language and country)/Locales Service',
-        originplace:'Origin City/Airport as specified in location schema',
-        destinationplace:'Dest City/Airport as specified in location schema',
-        outbounddate:'YY-mm-dd',
-        inbounddate:'YY-mm-dd',
-        locationschema:'As specified by locationschemas',
-        cabinclass:'As specified by cabinclasses',
-        adults:'NumberOfAdults',
-        children:0,
-        infants:0,
-        groupPricing:false
+    cabinclasses: {Economy:'Economy', PremiumEconomy:'PremiumEconomy', Business:'Business', First:'First'},
+    //The carrier schemas
+    carrierschemas:['Iata', 'Icao', 'Skyscanner'],
+    //Sort itin by...
+    sorttypes:{ carrier:'carrier', 
+                duration:'duration', 
+                outboundarrivetime:'outboundarrivetime', 
+                outbounddeparttime:'outbounddeparttime', 
+                inboundarrivetime:'inboundarrivetime', 
+                inbounddeparttime:'inbounddeparttime', 
+                price:'price'},
+   //Sort asc desc..             
+   sortorders:{
+       asc:'asc',
+       desc:'desc'
+   },
+    sessionObj: {
+        country: 'ISO currency code/currencies service',
+        locale: 'ISO locale code (language and country)/Locales Service',
+        originplace: 'Origin City/Airport as specified in location schema',
+        destinationplace: 'Dest City/Airport as specified in location schema',
+        outbounddate: 'YY-mm-dd',
+        inbounddate: 'YY-mm-dd',
+        locationschema: 'As specified by locationschemas',
+        cabinclass: 'As specified by cabinclasses',
+        adults: 'NumberOfAdults',
+        children: 0,
+        infants: 0,
+        groupPricing: false
     },
-    itinObj:{
-
+    itinObj: {
+        locationschema:this.locationschemas.Rnid, //
+        carrierschema:this.carrierschemas.Economy,
+        sorttype:this.sorttypes.price,
+        sortorder:this.sortorders.asc, // 'asc' || 'desc'
+        originairports:'delim by ;', //Filter outgoing airports
+        destinationairports:'delim by ;', //Filter incoming airports
+        maxStops:10, //Max number of stops
+        outbounddeparttime:'M;A;E', //Morning, afternoon, evening
+        outbounddepartstarttime:null, //Start of depart time
     },
     //Retrieves the session key from sky scanner (handshake)
     obtainSessionKey(obj) {
-        return new Promise((resolve,reject)=>{
-        
+        return new Promise((resolve, reject) => {
+
             if (!obj) return reject(new Error('Invalid object supplied to obtainSessionKey: ' + arguments));
 
-            if(obj.locationschema && locationschemas.indexOf(obj.locationscehma) === -1)
+            if (obj.locationschema && locationschemas.indexOf(obj.locationscehma) === -1)
                 return reject(new Error('Invalid location schema property supplied to obtain session key: ' + arguments));
 
-            if(obj.cabinclasses && cabinclasses.indexOf(obj.cabinclasses) === -1)
+            if (obj.cabinclasses && cabinclasses.indexOf(obj.cabinclasses) === -1)
                 return reject(new Error('Invalid cabin class property supplied to obtain session key: ' + arguments));
 
             obj.apiKey = this.apiKey;
@@ -67,38 +88,38 @@ module.exports = {
     retrieveCurrencies() {
 
     },
-    retrieveLocales(){
+    retrieveLocales() {
 
     },
     retrieveItin(urlEndpoint, obj) {
-        return new Promise((resolve,reject)=>{
+        return new Promise((resolve, reject) => {
             if (!obj || !urlEndpoint) return
-                reject(new Error('Invalid object supplied to retrieveItin: ' + arguments), null);
+            reject(new Error('Invalid object supplied to retrieveItin: ' + arguments), null);
 
             if (!obj.apiKey)
                 obj.apiKey = this.apiKey;
 
             let queryString = querystring.stringify(obj);
             request({
-                    headers: {
-                        'Accept': 'application/json'
-                    },
-                    uri: urlEndpoint + '?' + (queryString || ''),
-                    method: 'GET'
-                }, function(err, res, body) {
-                    if (err) return reject(err)
-                    else return resolve(res.body);
+                headers: {
+                    'Accept': 'application/json'
+                },
+                uri: urlEndpoint + '?' + (queryString || ''),
+                method: 'GET'
+            }, function(err, res, body) {
+                if (err) return reject(err)
+                else return resolve(res.body);
             });
         });
     },
-    makeLivePricingApiRequest(sessionKeyObj,itinObj){
-        return new Promise((resolve,reject)=>{
-            this.obtainSessionKey(sessionKeyObj).then((result)=>{
+    makeLivePricingApiRequest(sessionKeyObj, itinObj) {
+        return new Promise((resolve, reject) => {
+            this.obtainSessionKey(sessionKeyObj).then((result) => {
                 const url = result.url;
-                this.retrieveItin(url,itinObj).then((result)=>{
+                this.retrieveItin(url, itinObj).then((result) => {
                     resolve(result);
-                }).catch((err)=> reject(err));
-            }).catch((err)=>reject(err))
+                }).catch((err) => reject(err));
+            }).catch((err) => reject(err))
         });
     }
 }

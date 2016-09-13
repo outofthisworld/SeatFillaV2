@@ -1,6 +1,9 @@
 /*
     This module contains the logic for integrating with skyscanners public flight API.
     Created by Dale.
+    
+    Methods are heavily documented with information obtained about skyscanners API,
+    to enable quick modifications/ability to recognize API changes.
 */
 
 //Request module for sending and recieving API requests
@@ -69,16 +72,16 @@ module.exports = {
         duration: this.maxduration, //Max flight duration
         includecarriers: null, //Iata carrier codes
         excludecarriers: null, //Iata carrier codes
-        pageindex:0,
-        pagesize:10,
+        pageindex: 0,
+        pagesize: 10,
 
     },
-    bookingDetailsObj:{
-        outboundlegid:null,	
-        inboundlegid:null,	
-        adults:1,
-        children:0,
-        infants:0
+    bookingDetailsObj: {
+        outboundlegid: null,
+        inboundlegid: null,
+        adults: 1,
+        children: 0,
+        infants: 0
     },
     /*
         POST request details:
@@ -148,7 +151,7 @@ module.exports = {
             });
         });
     },
-    
+
     /*
         GET REQUEST information: 
         (Note that this request must be sent AFTER first obtaining a session key from skyscanner.)
@@ -244,7 +247,49 @@ module.exports = {
         The Response
         Location Header	Contains the URL for polling the the booking details.
     */
-    requestForBookingDetails(obj){
+    requestForBookingDetails(obj) {
+        return new Promise((resolve,reject)=>{
+            if(!obj || !obj.sessionkey) return reject(new Error('Invalid args to request for booking details ' + arguments));
+
+            const requestLoc = 'http://partners.api.skyscanner.net/apiservices/pricing/v1.0/'+
+                                            '${obj.sessionkey}/booking?';
+            delete obj.sessionkey;
+            const finalRequestURI = requestLoc + querystring.stringify(obj);
+
+            request({
+                    headers: {
+                        'Accept': 'application/json'
+                    },
+                    uri: finalRequestURI,
+                    method: 'PUT'
+                }, function(err, res, body) {
+                    if (err) return reject(err)
+                    else return resolve({url:res.headers.location}); 
+            });
+        });
+    },
+    /*
+        Polling the Booking Details (GET)
+        http://partners.api.skyscanner.net/apiservices/pricing/v1.0/{session key}/booking/{itinerary key}?apiKey={apiKey}
+
+        Getting the session key and itinerary key: the full polling URL, including the session key and itinerary key,
+        is obtained from the Location header in the response to the Booking Details request.
+
+        Parameters (Query string)
+
+        [Parameter	Required	Description	Data Type	Constraints]
+        apiKey	Yes	The API Key to identify the customer	String	Must be a valid API Key
+        locationschema	No	The code schema used for locations	String	The supported codes are below
+        carrierschema	No	The code schema to use for carriers	String	The supported codes are below
+
+        Optional Parameters for Mobile Usage
+
+        Parameter	Sample Value	Description	Data Type
+        includeQuery	false	Whether or not to repeat the query in the subsequent polls	Boolean
+        skipCarrierLookup	1050;881;1859	A semicolon separated list of carried Ids which have already been sent to the client in this booking details session, and hence will not be re-sent in subsequent polls	List of integers
+        skipPlaceLookup	11235;13542;16189	A semicolon separated list of place Ids which have already been sent to the client in this booking details session, and hence will not be re-sent in subsequent polls	List of integers
+    */
+    pollBookingDetails(obj){
 
     }
 }

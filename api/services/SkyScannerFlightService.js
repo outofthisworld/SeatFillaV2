@@ -14,6 +14,24 @@ module.exports = {
     //Cabin classes
     cabinclasses:['Economy', 'PremiumEconomy', 'Business', 'First'],
 
+    //
+    sessionObj:{
+        country:'ISO currency code/currencies service',
+        locale:'ISO locale code (language and country)/Locales Service',
+        originplace:'Origin City/Airport as specified in location schema',
+        destinationplace:'Dest City/Airport as specified in location schema',
+        outbounddate:'YY-mm-dd',
+        inbounddate:'YY-mm-dd',
+        locationschema:'As specified by locationschemas',
+        cabinclass:'As specified by cabinclasses',
+        adults:'NumberOfAdults',
+        children:0,
+        infants:0,
+        groupPricing:false
+    },
+    itinObj:{
+
+    },
     //Retrieves the session key from sky scanner (handshake)
     obtainSessionKey(obj) {
         return new Promise((resolve,reject)=>{

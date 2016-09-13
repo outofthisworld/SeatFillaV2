@@ -3,55 +3,67 @@ const request = require('request');
 //Used to encode form data
 const querystring = require('querystring');
 
-
 module.exports = {
     //Api endpoint
     skyScannerApiEndPoint: 'http://partners.api.skyscanner.net/apiservices/pricing/v1.0',
     //Api key
     apiKey: 'ri875778577970785652401867130811',
     //Location schema
-    locationschemas: {Iata:'Iata', GeoNameCode:'GeoNameCode', GeoNameId:'GeoNameId', Rnid:'Rnid', Sky:'Sky'},
+    locationschemas: { Iata: 'Iata', GeoNameCode: 'GeoNameCode', GeoNameId: 'GeoNameId', Rnid: 'Rnid', Sky: 'Sky' },
     //Cabin classes
-    cabinclasses: {Economy:'Economy', PremiumEconomy:'PremiumEconomy', Business:'Business', First:'First'},
+    cabinclasses: { Economy: 'Economy', PremiumEconomy: 'PremiumEconomy', Business: 'Business', First: 'First' },
     //The carrier schemas
-    carrierschemas:['Iata', 'Icao', 'Skyscanner'],
+    carrierschemas: { Iata: 'Iata', Icao: 'Icao', Skyscanner: 'Skyscanner' },
     //Sort itin by...
-    sorttypes:{ carrier:'carrier', 
-                duration:'duration', 
-                outboundarrivetime:'outboundarrivetime', 
-                outbounddeparttime:'outbounddeparttime', 
-                inboundarrivetime:'inboundarrivetime', 
-                inbounddeparttime:'inbounddeparttime', 
-                price:'price'},
-   //Sort asc desc..             
-   sortorders:{
-       asc:'asc',
-       desc:'desc'
-   },
+    sorttypes: {
+        carrier: 'carrier',
+        duration: 'duration',
+        outboundarrivetime: 'outboundarrivetime',
+        outbounddeparttime: 'outbounddeparttime',
+        inboundarrivetime: 'inboundarrivetime',
+        inbounddeparttime: 'inbounddeparttime',
+        price: 'price'
+    },
+    //Sort asc desc..             
+    sortorders: {
+        asc: 'asc',
+        desc: 'desc'
+    },
+    //Morning, afternoon, evening
+    maxduration: 1800,
+    departtimes: ['M', 'A', 'E'],
     sessionObj: {
-        country: 'ISO currency code/currencies service',
+        country: 'ISO country code',
+        currency: 'ISO currency code/currencies service',
         locale: 'ISO locale code (language and country)/Locales Service',
         originplace: 'Origin City/Airport as specified in location schema',
         destinationplace: 'Dest City/Airport as specified in location schema',
         outbounddate: 'YY-mm-dd',
         inbounddate: 'YY-mm-dd',
-        locationschema: 'As specified by locationschemas',
-        cabinclass: 'As specified by cabinclasses',
-        adults: 'NumberOfAdults',
+        locationschema: this.locationschemas.Rnid,
+        cabinclass: this.cabinclasses.Economy,
+        adults: 1,
         children: 0,
         infants: 0,
         groupPricing: false
     },
     itinObj: {
-        locationschema:this.locationschemas.Rnid, //
-        carrierschema:this.carrierschemas.Economy,
-        sorttype:this.sorttypes.price,
-        sortorder:this.sortorders.asc, // 'asc' || 'desc'
-        originairports:'delim by ;', //Filter outgoing airports
-        destinationairports:'delim by ;', //Filter incoming airports
-        maxStops:10, //Max number of stops
-        outbounddeparttime:'M;A;E', //Morning, afternoon, evening
-        outbounddepartstarttime:null, //Start of depart time
+        locationschema: this.locationschemas.Rnid, //location schema
+        carrierschema: this.carrierschemas.Iata, // carrier schema
+        sorttype: this.sorttypes.price,
+        sortorder: this.sortorders.asc, // 'asc' || 'desc'
+        originairports: null, //Filter outgoing airports delim by ';'
+        destinationairports: null, //Filter incoming airports delim by ';'
+        maxStops: 10, //Max number of stops
+        outbounddeparttime: departtimes.join(';'),
+        outbounddepartstarttime: null, //Start of depart time 'hh:mm'
+        outbounddepartendtime: null, //End of depart time 'hh:mm'
+        inbounddeparttime: departtimes.join(';'),
+        inbounddepartstarttime: null, //Start of depart time 'hh:mm'
+        inbounddepartendtime: null, //Start of depart time 'hh:mm'
+        duration: this.maxduration, //Max flight duration
+        includecarriers: null, //Iata carrier codes
+        excludecarriers: null //Iata carrier codes
     },
     //Retrieves the session key from sky scanner (handshake)
     obtainSessionKey(obj) {

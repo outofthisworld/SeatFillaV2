@@ -23,10 +23,20 @@ module.exports = {
                     method: 'GET'
                 },
                 function(err, res, body) {
-                    if (err) return reject(ErrorUtils.createNewError('Invalid parameters when calling retrieve itin', arguments, err))
+                    if (err) return reject(ErrorUtils.createNewError('Error in response when calling getSkyScannerSuportedCountries', arguments, err))
                     else return resolve(res.body);
                 });
         });
+    },
+    //Get the ISO 3166-1 2 letter country code for a specific locale and country name
+    getIsoCountryCode(locale,countryName){
+        return getSkyScannerSupportedCountries(locale)
+        .then((result)=>{
+            return result.Countries.filter((element)=>{
+                return element.Name === countryName;
+            }).map((filteredElement)=>{
+                return filteredElement.Code;
+            })
+        })
     }
-
 }

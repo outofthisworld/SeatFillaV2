@@ -11,17 +11,32 @@ const request = require('request');
 //Used to encode form data
 const querystring = require('querystring');
 
-module.exports = {
+const exportObj = {
     //Api endpoint
     skyScannerApiEndPoint: 'http://partners.api.skyscanner.net/apiservices/pricing/v1.0',
     //Api key
     apiKey: 'ri875778577970785652401867130811',
     //Location schema
-    locationschemas: { Iata: 'Iata', GeoNameCode: 'GeoNameCode', GeoNameId: 'GeoNameId', Rnid: 'Rnid', Sky: 'Sky' },
+    locationschemas: { 
+        Iata: 'Iata',
+        GeoNameCode: 'GeoNameCode',
+        GeoNameId: 'GeoNameId',
+        Rnid: 'Rnid',
+        Sky: 'Sky' 
+    },
     //Cabin classes
-    cabinclasses: { Economy: 'Economy', PremiumEconomy: 'PremiumEconomy', Business: 'Business', First: 'First' },
+    cabinclasses: { 
+        Economy: 'Economy', 
+        PremiumEconomy: 'PremiumEconomy', 
+        Business: 'Business', 
+        First: 'First' 
+    },
     //The carrier schemas
-    carrierschemas: { Iata: 'Iata', Icao: 'Icao', Skyscanner: 'Skyscanner' },
+    carrierschemas: { 
+        Iata: 'Iata',
+         Icao: 'Icao',
+          Skyscanner: 'Skyscanner'
+     },
     //Sort itin by...
     sorttypes: {
         carrier: 'carrier',
@@ -40,49 +55,6 @@ module.exports = {
     //Morning, afternoon, evening
     maxduration: 1800,
     departtimes: ['M', 'A', 'E'],
-    sessionObj: {
-        country: 'ISO country code',
-        currency: 'ISO currency code/currencies service',
-        locale: 'ISO locale code (language and country)/Locales Service',
-        originplace: 'Origin City/Airport as specified in location schema',
-        destinationplace: 'Dest City/Airport as specified in location schema',
-        outbounddate: 'YY-mm-dd',
-        inbounddate: 'YY-mm-dd',
-        locationschema: this.locationschemas.Rnid,
-        cabinclass: this.cabinclasses.Economy,
-        adults: 1,
-        children: 0,
-        infants: 0,
-        groupPricing: false
-    },
-    itinObj: {
-        locationschema: this.locationschemas.Rnid, //location schema
-        carrierschema: this.carrierschemas.Iata, // carrier schema
-        sorttype: this.sorttypes.price,
-        sortorder: this.sortorders.asc, // 'asc' || 'desc'
-        originairports: null, //Filter outgoing airports delim by ';'
-        destinationairports: null, //Filter incoming airports delim by ';'
-        maxStops: 10, //Max number of stops
-        outbounddeparttime: departtimes.join(';'),
-        outbounddepartstarttime: null, //Start of depart time 'hh:mm'
-        outbounddepartendtime: null, //End of depart time 'hh:mm'
-        inbounddeparttime: departtimes.join(';'),
-        inbounddepartstarttime: null, //Start of depart time 'hh:mm'
-        inbounddepartendtime: null, //Start of depart time 'hh:mm'
-        duration: this.maxduration, //Max flight duration
-        includecarriers: null, //Iata carrier codes
-        excludecarriers: null, //Iata carrier codes
-        pageindex: 0,
-        pagesize: 10,
-
-    },
-    bookingDetailsObj: {
-        outboundlegid: null,
-        inboundlegid: null,
-        adults: 1,
-        children: 0,
-        infants: 0
-    },
     /*
         POST request details:
         URL: http://partners.api.skyscanner.net/apiservices/pricing/v1.0
@@ -251,9 +223,10 @@ module.exports = {
         return new Promise((resolve,reject)=>{
             if(!obj || !obj.sessionkey) return reject(new Error('Invalid args to request for booking details ' + arguments));
 
-            const requestLoc = 'http://partners.api.skyscanner.net/apiservices/pricing/v1.0/'+
-                                            '${obj.sessionkey}/booking?';
+            const requestLoc = 'http://partners.api.skyscanner.net/apiservices/pricing/v1.0/${obj.sessionkey}/booking?';
+            //Remove the session key before url encoding the object
             delete obj.sessionkey;
+
             const finalRequestURI = requestLoc + querystring.stringify(obj);
 
             request({
@@ -289,7 +262,81 @@ module.exports = {
         skipCarrierLookup	1050;881;1859	A semicolon separated list of carried Ids which have already been sent to the client in this booking details session, and hence will not be re-sent in subsequent polls	List of integers
         skipPlaceLookup	11235;13542;16189	A semicolon separated list of place Ids which have already been sent to the client in this booking details session, and hence will not be re-sent in subsequent polls	List of integers
     */
-    pollBookingDetails(obj){
+    pollBookingDetails(pollingUrl, obj){
+        return new Promise(function(resolve,reject){
+            if(!obj || !pollingUrl) 
+                return reject(new Error('Invalid parameters passed to poll booking details ' + arguments));
+            
+            if(!obj.apiKey)
+                obj.apiKey = this.apiKey;
+            
+            const queryString = querystring.stringify(obj);
 
+            request({
+                    headers: {
+                        'Accept': 'application/json'
+                    },
+                    uri: pollingUrl + '?' + querystring,
+                    method: 'GET'
+                }, function(err, res, body) {
+                    if (err) return reject(err)
+                    else return resolve({
+                        body: res.body,
+                        nextPollUrl: res.headers.location
+              }); 
+          });
+      })
     }
 }
+
+
+exportObj.sessionObj = {
+        country: 'ISO country code',
+        currency: 'ISO currency code/currencies service',
+        locale: 'ISO locale code (language and country)/Locales Service',
+        originplace: 'Origin City/Airport as specified in location schema',
+        destinationplace: 'Dest City/Airport as specified in location schema',
+        outbounddate: 'YY-mm-dd',
+        inbounddate: 'YY-mm-dd',
+        locationschema: this.locationschemas.Rnid,
+        cabinclass: this.cabinclasses.Economy,
+        adults: 1,
+        children: 0,
+        infants: 0,
+        groupPricing: false
+    }
+exportObj.itinObj= {
+        locationschema: this.locationschemas.Rnid, //location schema
+        carrierschema: this.carrierschemas.Iata, // carrier schema
+        sorttype: this.sorttypes.price,
+        sortorder: this.sortorders.asc, // 'asc' || 'desc'
+        originairports: null, //Filter outgoing airports delim by ';'
+        destinationairports: null, //Filter incoming airports delim by ';'
+        maxStops: 10, //Max number of stops
+        outbounddeparttime: departtimes.join(';'),
+        outbounddepartstarttime: null, //Start of depart time 'hh:mm'
+        outbounddepartendtime: null, //End of depart time 'hh:mm'
+        inbounddeparttime: departtimes.join(';'),
+        inbounddepartstarttime: null, //Start of depart time 'hh:mm'
+        inbounddepartendtime: null, //Start of depart time 'hh:mm'
+        duration: this.maxduration, //Max flight duration
+        includecarriers: null, //Iata carrier codes
+        excludecarriers: null, //Iata carrier codes
+        pageindex: 0,
+        pagesize: 10,
+
+    }
+    exportObj.bookingDetailsObj= {
+        outboundlegid: null,
+        inboundlegid: null,
+        adults: 1,
+        children: 0,
+        infants: 0,
+        sessionkey:null
+    }
+    exportObj.bookingDetailsPollingObj={
+        locationschema:this.locationschemas.Rnid,
+        carrierschema:this.carrierschemas.Iata
+    }
+
+    module.exports = exportObj;

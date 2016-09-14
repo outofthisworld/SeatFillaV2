@@ -10,14 +10,14 @@
 const request = require('request');
 //Used to encode form data
 const querystring = require('querystring');
-
+//Error utils for more details errors
 const { ErrorUtils } = require('./../utils');
+//Making requests to SS.
+const apiKey = sails.config.skyscanner.apiKey;
+//The end point location
+const skyScannerApiEndPoint = 'http://partners.api.skyscanner.net/apiservices/pricing/v1.0';
 
 const exportObj = {
-        //Api endpoint
-        skyScannerApiEndPoint: 'http://partners.api.skyscanner.net/apiservices/pricing/v1.0',
-        //Api key
-        apiKey: 'ri875778577970785652401867130811',
         //Location schema
         locationschemas: {
             Iata: 'Iata',
@@ -99,7 +99,7 @@ const exportObj = {
 
                 if (!obj) return reject(new Error('Invalid object supplied to obtainSessionKey: ' + arguments.toString()));
 
-                obj.apiKey = this.apiKey;
+                obj.apiKey = apiKey;
                 const sendData = querystring.stringify(obj);
                 const contentLength = sendData.length;
 
@@ -108,7 +108,7 @@ const exportObj = {
                         'Content-Length': contentLength,
                         'Content-Type': 'application/x-www-form-urlencoded'
                     },
-                    uri: this.skyScannerApiEndPoint,
+                    uri: skyScannerApiEndPoint,
                     body: sendData,
                     method: 'POST'
                 }, function(err, res, body) {
@@ -172,7 +172,7 @@ const exportObj = {
                     return reject(ErrorUtils.createNewError('Invalid parameters when calling retrieve itin ', arguments));
                 }
 
-                obj.apiKey = this.apiKey;
+                obj.apiKey = apiKey;
 
                 //Encode the obj as a query string..
                 let queryString = querystring.stringify(obj);
@@ -323,7 +323,7 @@ exportObj.sessionObj = {
         infants: 0,
         groupPricing: false
     }
-    //Itinerary request object
+//Itinerary request object
 exportObj.itinObj = {
         locationschema: exportObj.locationschemas.Rnid, //location schema
         carrierschema: exportObj.carrierschemas.Iata, // carrier schema
@@ -359,6 +359,5 @@ exportObj.bookingDetailsPollingObj = {
     locationschema: exportObj.locationschemas.Rnid,
     carrierschema: exportObj.carrierschemas.Iata
 }
-
 
 module.exports = exportObj;

@@ -1,5 +1,7 @@
 /*
     Created by Dale
+
+    Useful array utilities.
 */
 
 module.exports = {

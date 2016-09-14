@@ -14,8 +14,9 @@
 
 
 const ErrorUtils = require('./ErrorUtils');
-const ArrayUtils = require('./ArrayUtils')
+const ArrayUtils = require('./ArrayUtils');
+
 module.exports = {
     ErrorUtils,
-    ArrayUtils
+    ArrayUtils,
 }

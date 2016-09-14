@@ -316,7 +316,7 @@ exportObj.sessionObj = {
         destinationplace: 'Dest City/Airport as specified in location schema',
         outbounddate: 'YY-mm-dd',
         inbounddate: 'YY-mm-dd',
-        locationschema: exportObj.locationschemas.Rnid,
+        locationschema: exportObj.locationschemas.Iata,
         cabinclass: exportObj.cabinclasses.Economy,
         adults: 1,
         children: 0,
@@ -325,7 +325,7 @@ exportObj.sessionObj = {
     }
 //Itinerary request object
 exportObj.itinObj = {
-        locationschema: exportObj.locationschemas.Rnid, //location schema
+        locationschema: exportObj.locationschemas.Iata, //location schema
         carrierschema: exportObj.carrierschemas.Iata, // carrier schema
         sorttype: exportObj.sorttypes.price,
         sortorder: exportObj.sortorders.asc, // 'asc' || 'desc'
@@ -356,7 +356,7 @@ exportObj.bookingDetailsObj = {
     }
     //Booking details polling object
 exportObj.bookingDetailsPollingObj = {
-    locationschema: exportObj.locationschemas.Rnid,
+    locationschema: exportObj.locationschemas.Iata,
     carrierschema: exportObj.carrierschemas.Iata
 }
 

@@ -21,23 +21,13 @@ var _seat_filla_map = function(options) {
 
     var x = {
         map: null,
-
         location: (function(options) {
             geolocator.config({ language: 'en', google: { version: '3', key: 'AIzaSyDDBWrH7DuCZ8wNlOXgINCtI_gT9NkDRq4' } });
             defaultLoc = { coords: { longitude: 0, latitude: 0 } };
-            if (typeof Storage !== "undefined" && sessionStorage.getItem('location')) {
+            if (options && options.useCache && typeof Storage !== "undefined" && sessionStorage.getItem('location')) {
                 var location = JSON.parse(sessionStorage.getItem('location'));
                 return location;
             } else {
-                var options = {
-                    enableHighAccuracy: true,
-                    timeout: 6000,
-                    maximumAge: 0,
-                    desiredAccuracy: 30,
-                    fallbackToIP: true,
-                    addressLookup: true,
-                    timezone: true,
-                };
                 console.log('Could not find location in session storage');
                 geolocator.locate(options, function(err, location) {
                     if (err) {
@@ -55,7 +45,7 @@ var _seat_filla_map = function(options) {
                         }
                     } else {
                         console.log('Creating map, used geolocator (uncached) to retrieve location ' + location);
-                        if (typeof Storage !== "undefined" && location) {
+                        if (options && options.useCache && typeof Storage !== "undefined" && location) {
                             sessionStorage.setItem('location', JSON.stringify(location));
                         }
                         return location;
@@ -65,50 +55,40 @@ var _seat_filla_map = function(options) {
         })(options),
 
         configure: function(options) {
-            const outer = this;
-            
-            this.map = (function(location) {
-                console.log(location);
-                //Create a pos object for the google maps API
+            const _map = this;
+            _map.map = (function(location) {
                 var pos = {
                     lat: location.coords.latitude,
                     lng: location.coords.longitude
                 };
-
                 //Create a new map
                 var map = new google.maps.Map(document.getElementById('map-canvas'), {
                     zoom: (options && options.zoom) || 2,
                     center: (options && options.coords) || pos
                 });
 
-                
                 google.maps.event.addListener(map, 'click', function(event) {
-                    outer.addMarker(map, event.latLng, 'Some title', 'Airport', 'Content');
+                    _map.addMarker(event.latLng, 'Some title', 'Airport', 'Content');
                 });
 
-
-                placeStartMarker(pos);
-
-                function placeStartMarker(pos) {
-                    var infoWindow = new google.maps.InfoWindow({ map: map });
-                    map.setCenter(pos);
-                    infoWindow.setPosition(pos);
-                    infoWindow.setContent('Your location');
-                    infoWindow.open(map, pos);
-                }
-
+                var infoWindow = new google.maps.InfoWindow({ map: map });
+                map.setCenter(pos);
+                infoWindow.setPosition(pos);
+                infoWindow.setContent('Your location');
                 return map;
-            })((options || this.location || this.geoLocate()))
+            })(options || this.location || this.geoLocate());
         },
 
-        addMarker: function(map, location, title, markerSymbol, contentInfo) {
+        addMarker: function(location, title, markerSymbol, contentInfo) {
             // Add the marker at the clicked location, and add the next-available label
             // from the array of alphabetical characters.
+            var map = this.map;
+
             var marker = new google.maps.Marker({
                 position: location,
                 label: markerSymbol,
-                title,
-                map,
+                title: title,
+                map: map,
                 animation: google.maps.Animation.DROP,
                 draggable: true,
 

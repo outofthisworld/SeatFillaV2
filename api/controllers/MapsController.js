@@ -1,7 +1,5 @@
-
-
 module.exports = {
-    airports(){
-
+    airports(req, res) {
+        return res.ok();
     }
 }

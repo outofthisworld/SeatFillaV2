@@ -11,7 +11,7 @@ const request = require('request');
 //Used to encode form data
 const querystring = require('querystring');
 //Error utils for more details errors
-const { ErrorUtils } = require('./../utils');
+const ErrorUtils = require('./../utils').ErrorUtils;
 //Making requests to SS.
 const apiKey = sails.config.skyscanner.apiKey;
 //The end point location
@@ -175,7 +175,7 @@ const exportObj = {
                 obj.apiKey = apiKey;
 
                 //Encode the obj as a query string..
-                let queryString = querystring.stringify(obj);
+                const queryString = querystring.stringify(obj);
                 request({
                     headers: {
                         'Accept': 'application/json'
@@ -323,7 +323,7 @@ exportObj.sessionObj = {
         infants: 0,
         groupPricing: false
     }
-//Itinerary request object
+    //Itinerary request object
 exportObj.itinObj = {
         locationschema: exportObj.locationschemas.Iata, //location schema
         carrierschema: exportObj.carrierschemas.Iata, // carrier schema

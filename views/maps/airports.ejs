@@ -1,12 +1,42 @@
 <!-- Seatfilla V0.01 Capstone project developed by Dale/Richard, enjoy -->
+<script type="text/javascript" src="/bower_components/geolocator/dist/geolocator.min.js"></script>
+<script type="text/javascript">
+
+    geolocator.config({
+        language: "en",
+        google: {
+            version: "3",
+            key: "AIzaSyDDBWrH7DuCZ8wNlOXgINCtI_gT9NkDRq4"
+        }
+    });
+
+    window.onload = function () {
+        var options = {
+            enableHighAccuracy: true,
+            timeout: 6000,
+            maximumAge: 0,
+            desiredAccuracy: 30,
+            fallbackToIP: true, 
+            addressLookup: true,
+            timezone: true,
+            map: "map-canvas"
+        };
+        geolocator.locate(options, function (err, location) {
+            if (err) return console.log(err);
+            console.log(location);
+            window.alert(location);
+        
+        });
+    };
+
+</script>
 <body class="fullbleed layout vertical">
-      <%- partial ('partials/nav.ejs') %>
+      <%- partial ('../partials/nav.ejs') %>
       <app-box class="merge" effects="parallax-background">
         <div id="section_container">
           <section class="header section_img section-full">
-            <div class="container80">
-                  
-    
+            <div class="container80">        
+            <div id="map-canvas" style="width:600px;height:400px"></div>
             </div>
           </section>
         <div id="live-chat">
@@ -16,12 +46,9 @@
             <span class="chat-message-counter">3</span>
         </header>
         <div class="chat">
-            <div class="chat-history">
-                
+            <div class="chat-history"> 
                 <div class="chat-message clearfix">
-                    
                     <img src="http://lorempixum.com/32/32/people" alt="" width="32" height="32">
-
                     <div class="chat-message-content clearfix">
                         
                         <span class="chat-time">13:35</span>
@@ -89,9 +116,7 @@
 
         </div> <!-- end chat -->
         </div> <!-- end live-chat -->
-
-
-        <%- partial ('partials/footer.ejs') %>
+        <%- partial ('../partials/footer.ejs') %>
       </app-box>
     </app-header-layout>
   </app-drawer-layout>

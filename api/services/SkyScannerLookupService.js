@@ -3,7 +3,7 @@ const request = require('request');
 //Used to encode form data
 const querystring = require('querystring');
 //Error utils for more details errors
-const { ErrorUtils } = require('./../utils');
+const ErrorUtils = require('./../utils').ErrorUtils;
 //Making requests to SS.
 const apiKey = sails.config.skyscanner.apiKey;
 //The end point for obtaining supported countries
@@ -90,8 +90,8 @@ module.exports = {
             </CurrencyDto>
         </Currencies>
     */
-    getCurrencyCodes(){
-        return new Promise((resolve,reject)=>{
+    getCurrencyCodes() {
+        return new Promise((resolve, reject) => {
             const endPoint = supportedCurrenciesApiEndPoint + '?apiKey=' + apiKey;
             request({
                     headers: {
@@ -103,7 +103,7 @@ module.exports = {
                 function(err, res, body) {
                     if (err) return reject(ErrorUtils.createNewError('Error in response when calling getCurrencyCodes', arguments, err))
                     else return resolve(res.body.Currencies);
-            });
+                });
         });
     },
     /*
@@ -118,19 +118,19 @@ module.exports = {
             </LocaleDto>
         </Locales>
     */
-    getLocales(){
-            return new Promise((resolve,reject)=>{
-                const endPoint = supportedLocalesApiEndPoint + '?apiKey=' + apiKey;
-                request({
-                        headers: {
-                            'Accept': 'application/json'
-                        },
-                        uri: endPoint,
-                        method: 'GET'
+    getLocales() {
+        return new Promise((resolve, reject) => {
+            const endPoint = supportedLocalesApiEndPoint + '?apiKey=' + apiKey;
+            request({
+                    headers: {
+                        'Accept': 'application/json'
                     },
-                    function(err, res, body) {
-                        if (err) return reject(ErrorUtils.createNewError('Error in response when calling getCurrencyCodes', arguments, err))
-                        else return resolve(res.body.Locales);
+                    uri: endPoint,
+                    method: 'GET'
+                },
+                function(err, res, body) {
+                    if (err) return reject(ErrorUtils.createNewError('Error in response when calling getCurrencyCodes', arguments, err))
+                    else return resolve(res.body.Locales);
                 });
         });
     }

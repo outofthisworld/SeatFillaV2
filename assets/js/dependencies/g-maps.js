@@ -11,116 +11,124 @@
 
     This javascript file also contains the logic for handling the creation/logic of google maps.
 */
-$(document).ready(function() {
-    //Everything starts here
-    (function(options) {
-        geolocator.config({ language: 'en', google: { version: '3', key: 'AIzaSyDDBWrH7DuCZ8wNlOXgINCtI_gT9NkDRq4' } });
-
-        var createMap = function(location) {
-            console.log(location);
-
-            //Create a pos object for the google maps API
-            var pos = {
-                lat: location.coords.latitude,
-                lng: location.coords.longitude
-            };
-
-            //Create a new map
-            var map = createNewGoogleMap({
-                coords: pos,
-                zoom: 2
-            })
-
-            google.maps.event.addListener(map, 'click', function(event) {
-                addMarker(event.latLng, map, 'Some title', 'Airport', 'Content');
-            });
 
 
-            initMap(pos);
+//var obj = {}
+//_sf_map.call(obj,params)
+//obj.prototype = _sf_map.prototype
 
-            function createNewGoogleMap(options) {
-                return new google.maps.Map(document.getElementById('map-canvas'), {
-                    zoom: options.zoom || 2,
-                    center: options.coords
-                });
-            }
+var _seat_filla_map = function(options) {
 
-            function initMap(pos) {
-                var infoWindow = new google.maps.InfoWindow({ map: map });
-                map.setCenter(pos);
-                infoWindow.setPosition(pos);
-                infoWindow.setContent('Your location');
-                infowindow.open(map, pos);
-            }
+    var x = {
+        map: null,
 
-            function addMarker(location, map, title, markerSymbol, contentInfo) {
-                // Add the marker at the clicked location, and add the next-available label
-                // from the array of alphabetical characters.
-                var marker = new google.maps.Marker({
-                    position: location,
-                    label: markerSymbol,
-                    title: title,
-                    map: map,
-                    animation: google.maps.Animation.DROP,
-                    draggable: true,
+        location: (function(options) {
+            geolocator.config({ language: 'en', google: { version: '3', key: 'AIzaSyDDBWrH7DuCZ8wNlOXgINCtI_gT9NkDRq4' } });
+            defaultLoc = { coords: { longitude: 0, latitude: 0 } };
+            if (typeof Storage !== "undefined" && sessionStorage.getItem('location')) {
+                var location = JSON.parse(sessionStorage.getItem('location'));
+                return location;
+            } else {
+                var options = {
+                    enableHighAccuracy: true,
+                    timeout: 6000,
+                    maximumAge: 0,
+                    desiredAccuracy: 30,
+                    fallbackToIP: true,
+                    addressLookup: true,
+                    timezone: true,
+                };
+                console.log('Could not find location in session storage');
+                geolocator.locate(options, function(err, location) {
+                    if (err) {
+                        if (!navigator.geolocation) {
+                            console.log('Error when locating position ' + err + '. Defaulting coordinates');
+                            return defaultLoc;
+                        } else {
+                            navigator.geolocation.getCurrentPosition(function(position) {
+                                return position;
 
-                });
-
-                marker.addListener('click', function() {
-                    var infowindow = new google.maps.InfoWindow({
-                        content: contentInfo
-                    });
-                    infowindow.open(map, marker);
-                });
-
-                marker.addListener(marker, 'click', function(event) {
-                    if (marker.getAnimation() !== null) {
-                        marker.setAnimation(null);
+                            }, function error() {
+                                console.log('Error when using navigator geolocation');
+                                return defaultLoc;
+                            });
+                        }
                     } else {
-                        marker.setAnimation(google.maps.Animation.BOUNCE);
+                        console.log('Creating map, used geolocator (uncached) to retrieve location ' + location);
+                        if (typeof Storage !== "undefined" && location) {
+                            sessionStorage.setItem('location', JSON.stringify(location));
+                        }
+                        return location;
                     }
-                    infoWindow.setPosition(event.latLng);
-                    infowindow.setContent(label);
                 });
             }
-        }
+        })(options),
 
-        if (typeof Storage !== "undefined" && sessionStorage.getItem('location')) {
-            var location = JSON.parse(sessionStorage.getItem('location'));
-            createMap(location);
-        } else {
-            var options = {
-                enableHighAccuracy: true,
-                timeout: 6000,
-                maximumAge: 0,
-                desiredAccuracy: 30,
-                fallbackToIP: true,
-                addressLookup: true,
-                timezone: true,
-            };
-            console.log('Could not find location in session storage');
-            geolocator.locate(options, function(err, location) {
-                finalLoc = { coords: { longitude: 0, latitude: 0 } };
-                if (err) {
-                    if (!navigator.geolocation) {
-                        console.log('Error when locating position ' + err + '. Defaulting coordinates');
-                    } else {
-                        navigator.geolocation.getCurrentPosition(function(position) {
-                            finalLoc = position;
+        configure: function(options) {
+            const outer = this;
+            
+            this.map = (function(location) {
+                console.log(location);
+                //Create a pos object for the google maps API
+                var pos = {
+                    lat: location.coords.latitude,
+                    lng: location.coords.longitude
+                };
 
-                        }, function error() {
-                            console.log('Error when using navigator geolocation');
-                        });
-                    }
-                } else {
-                    console.log('Creating map, used geolocator (uncached) to retrieve location ' + location);
-                    if (typeof Storage !== "undefined" && location) {
-                        sessionStorage.setItem('location', JSON.stringify(location));
-                        finalLoc = location;
-                    }
+                //Create a new map
+                var map = new google.maps.Map(document.getElementById('map-canvas'), {
+                    zoom: (options && options.zoom) || 2,
+                    center: (options && options.coords) || pos
+                });
+
+                
+                google.maps.event.addListener(map, 'click', function(event) {
+                    outer.addMarker(map, event.latLng, 'Some title', 'Airport', 'Content');
+                });
+
+
+                placeStartMarker(pos);
+
+                function placeStartMarker(pos) {
+                    var infoWindow = new google.maps.InfoWindow({ map: map });
+                    map.setCenter(pos);
+                    infoWindow.setPosition(pos);
+                    infoWindow.setContent('Your location');
+                    infoWindow.open(map, pos);
                 }
-                createMap(finalLoc)
+
+                return map;
+            })((options || this.location || this.geoLocate()))
+        },
+
+        addMarker: function(map, location, title, markerSymbol, contentInfo) {
+            // Add the marker at the clicked location, and add the next-available label
+            // from the array of alphabetical characters.
+            var marker = new google.maps.Marker({
+                position: location,
+                label: markerSymbol,
+                title,
+                map,
+                animation: google.maps.Animation.DROP,
+                draggable: true,
+
+            });
+
+            marker.addListener('click', function() {
+                var infowindow = new google.maps.InfoWindow({
+                    content: contentInfo
+                });
+                infowindow.open(map, marker);
+            });
+
+            marker.addListener(marker, 'click', function(event) {
+                if (marker.getAnimation() !== null) {
+                    marker.setAnimation(null);
+                } else {
+                    marker.setAnimation(google.maps.Animation.BOUNCE);
+                }
             });
         }
-    })();
-});
+    }
+    return x;
+}

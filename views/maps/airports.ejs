@@ -1,7 +1,15 @@
 <!-- Seatfilla V0.01 Capstone project developed by Dale/Richard, enjoy -->
 <script type="text/javascript" src="/bower_components/geolocator/dist/geolocator.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDBWrH7DuCZ8wNlOXgINCtI_gT9NkDRq4"></script>
-<script src="/js/dependencies/g-maps.js"></script>
+<script src="/js/dependencies/g-maps.js">
+</script>
+<script>
+    $(window).ready(function(){
+        _seat_filla_map({
+             preFetchLocation:true
+         }).configure()
+    });
+</script>
 <body class="fullbleed layout vertical">
       <%- partial ('../partials/nav.ejs') %>
       <app-box class="merge" effects="parallax-background">

@@ -24,13 +24,11 @@ var _seat_filla_map = function(options) {
 
     var _instance = {};
     _instance.map = null;
+    _instance.markers = [];
 
+    _instance.addMarker = function(markerOpts, cb) {
 
-    const executableQueue = [];
-
-    _instance.addMarker = function(options, cb) {
-
-        if (!options) {
+        if (!markerOpts) {
             throw new Error('Invalid args passed to addMarker (_seat_filla_map)');
         }
 
@@ -38,16 +36,29 @@ var _seat_filla_map = function(options) {
         // from the array of alphabetical characters.
         var map = _instance.map;
 
+        console.log(_instance.markers);
+
 
         function add() {
-            var marker = new google.maps.Marker(options);
+            var marker = new google.maps.Marker(markerOpts);
+            var infowindow;
 
-            if (options.content) {
+            if (markerOpts.content) {
+
+                infowindow = new google.maps.InfoWindow({
+                    content: markerOpts.content
+                });
+
                 marker.addListener('click', function() {
-                    var infowindow = new google.maps.InfoWindow({
-                        content: options.content
-                    });
 
+                    _instance.markers.forEach((m) => {
+                        if (m.marker) {
+                            m.marker.setAnimation(null);
+                        }
+                        if (m.infowindow) {
+                            m.infowindow.close();
+                        }
+                    })
                     marker.infowindow = {
                         window: infowindow,
                         open: true
@@ -57,7 +68,7 @@ var _seat_filla_map = function(options) {
                 });
             }
 
-            if (options.markerClickAnimation) {
+            if (markerOpts.markerClickAnimation) {
                 marker.addListener('click', function(event) {
                     if (marker.getAnimation() !== null) {
                         marker.setAnimation(null);
@@ -67,32 +78,24 @@ var _seat_filla_map = function(options) {
                 });
             }
 
-            if (options.onClickListeners) {
-                if (Array.isArray(options.onClickListeners.markerListeners)) {
-                    options.onClickListeners.markerListeners.forEach((element) => {
+            if (markerOpts.onClickListeners) {
+                if (Array.isArray(markerOpts.onClickListeners.markerListeners)) {
+                    markerOpts.onClickListeners.markerListeners.forEach((element) => {
                         marker.addListener('click', element.bind(marker));
                     })
                 }
 
-                if (Array.isArray(options.onClickListeners.mapListeners)) {
-                    options.onClickListeners.mapListeners.forEach((element) => {
+                if (Array.isArray(markerOpts.onClickListeners.mapListeners)) {
+                    markerOpts.onClickListeners.mapListeners.forEach((element) => {
                         map.addListener('click', element.bind(marker));
                     })
                 }
             }
 
-            return marker;
+            return { marker: marker, infowindow: infowindow };
         }
 
-        if (map) {
-            executableQueue.forEach((exec) => {
-                exec.cb.call(this, exec.options);
-            });
-            add();
-        } else {
-            executableQueue.push({ cb: add, options: options });
-        }
-
+        _instance.markers.push(add());
     }
 
     function createMap(loc) {
@@ -107,23 +110,6 @@ var _seat_filla_map = function(options) {
             zoom: (options && options.zoom) || 2,
             center: (options && options.coords) || pos
         });
-
-        (function setUserPosition() {
-            var infoWindow = new google.maps.InfoWindow({ map: map });
-            map.setCenter(pos);
-            infoWindow.setPosition(pos);
-            infoWindow.setContent('Your location');
-            _instance.addMarker({
-                position: pos,
-                title: 'You',
-                label: 'Y',
-                map: map,
-                content: 'Your position',
-                animation: google.maps.Animation.DROP,
-                markerClickAnimation: google.maps.Animation.BOUNCE,
-                draggable: true,
-            });
-        })();
 
         google.maps.event.addListener(map, 'click', function(event) {
             _instance.addMarker({
@@ -147,10 +133,7 @@ var _seat_filla_map = function(options) {
                     mapListeners: [],
                     markerListeners: [
                         function onMarkerClicked(event) {
-                            console.log({
-                                latitude: _instance.location.coords.latitude,
-                                longitude: _instance.location.coords.longitude
-                            });
+                            console.log(_instance.location.coords);
                             console.log(event.latLng.lat());
                             console.log(event.latLng.lng());
                             var result = geolocator.calcDistance({
@@ -173,6 +156,23 @@ var _seat_filla_map = function(options) {
         });
 
         _instance.map = map;
+
+        (function setUserPosition() {
+            var infoWindow = new google.maps.InfoWindow({ map: map });
+            map.setCenter(pos);
+            infoWindow.setPosition(pos);
+            infoWindow.setContent('Your location');
+            _instance.addMarker({
+                position: pos,
+                title: 'You',
+                label: 'Y',
+                map: map,
+                content: 'Your position',
+                animation: google.maps.Animation.DROP,
+                markerClickAnimation: google.maps.Animation.BOUNCE,
+                draggable: true,
+            });
+        })();
     }
 
 

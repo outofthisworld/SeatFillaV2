@@ -45,6 +45,10 @@ var _seat_filla_map = function(options) {
         return line;
     }
 
+    _instance.addLegend = function(element, position) {
+        _instance.map.controls[position || google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
+    }
+
     _instance.animateLineSymbols = function(line, interval) {
         var count = 0;
         window.setInterval(function() {
@@ -91,14 +95,14 @@ var _seat_filla_map = function(options) {
                 });
 
                 marker.addListener('click', function() {
-                    for (var i in Object.keys(_instance.markers)) {
+                    /*for (var i in Object.keys(_instance.markers)) {
                         if (_instance.markers[i] && _instance.markers[i].marker) {
                             _instance.markers[i].setAnimation(null);
                         }
                         if (_instance.markers[i] && _instance.markers[i].infowindow) {
                             _instance.markers[i].infowindow.close();
                         }
-                    }
+                    }*/
 
                     marker.infowindow = {
                         window: infowindow,
@@ -158,75 +162,10 @@ var _seat_filla_map = function(options) {
         //Create a new map
         var map = new google.maps.Map(document.getElementById('map-canvas'), {
             zoom: (options && options.zoom) || 2,
-            center: pos
+            center: pos,
+            mapTypeId: (options && options.mapTypeId),
+
         });
-
-        var line;
-
-        google.maps.event.addListener(map, 'click', function(event) {
-            _instance.addMarker({
-                position: event.latLng,
-                title: 'Some title',
-                map: map,
-                animation: google.maps.Animation.DROP,
-                markerClickAnimation: google.maps.Animation.BOUNCE,
-                draggable: true,
-                icon: {
-                    url: 'http://127.0.0.1:1337/images/g_maps_airport_icon.png',
-                    // This marker is 20 pixels wide by 32 pixels high.
-                    size: new google.maps.Size(32, 32),
-                    // The origin for this image is (0, 0).
-                    origin: new google.maps.Point(0, 0),
-                    // The anchor for this image is the base of the airport icon at (0, 32).
-                    anchor: new google.maps.Point(32 / 2, 32)
-                },
-
-                onClickListeners: {
-                    mapListeners: [],
-                    markerListeners: [
-                        function onMarkerClicked(event) {
-                            var from = {
-                                latitude: _instance.location.coords.latitude,
-                                longitude: _instance.location.coords.longitude,
-                                lat: _instance.location.coords.latitude,
-                                lng: _instance.location.coords.longitude
-                            }
-                            var to = {
-                                latitude: event.latLng.lat(),
-                                longitude: event.latLng.lng(),
-                                lat: event.latLng.lat(),
-                                lng: event.latLng.lng()
-                            }
-                            var result = geolocator.calcDistance({ from, to });
-                            console.log(result);
-
-                            if (line) line.setMap(null);
-
-                            var planeSymbol = {
-                                path: 'M362.985,430.724l-10.248,51.234l62.332,57.969l-3.293,26.145 l-71.345-23.599l-2.001,13.069l-2.057-13.529l-71.278,22.928l-5.762-23.984l64.097-59.271l-8.913-51.359l0.858-114.43 l-21.945-11.338l-189.358,88.76l-1.18-32.262l213.344-180.08l0.875-107.436l7.973-32.005l7.642-12.054l7.377-3.958l9.238,3.65 l6.367,14.925l7.369,30.363v106.375l211.592,182.082l-1.496,32.247l-188.479-90.61l-21.616,10.087l-0.094,115.684',
-                                scale: 0.0393,
-                                strokeOpacity: 1,
-                                strokeColor: '#222',
-                                strokeWeight: 1,
-                                anchor: new google.maps.Point(300, 300)
-                            }
-                            line = _instance.createAnimatedLineSymbol({
-                                path: [from, to],
-                                icons: [{
-                                    icon: planeSymbol,
-                                    offset: '100%'
-                                }],
-                                strokeOpacity: 1,
-                                strokeColor: '#544'
-                            })
-                            console.log(line);
-                        }
-                    ]
-                },
-                content: '<h1>Its an airport!</h1>'
-            });
-        });
-
         _instance.map = map;
 
         (function setUserPosition() {

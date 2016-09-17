@@ -26,6 +26,40 @@ var _seat_filla_map = function(options) {
     _instance.map = null;
     _instance.markers = [];
 
+
+    _instance.createLine = function(options) {
+        if (!options) throw new Error('Invalid params passed to createLine');
+
+        options.map = _instance.map;
+        var line = new google.maps.Polyline(options);
+
+        return line;
+    }
+
+    _instance.createAnimatedLineSymbol = function(options) {
+        if (!options) throw new Error('Invalid params passed to createLine');
+
+        var line = _instance.createLine(options);
+        _instance.animateLineSymbols(line, options.interval);
+
+        return line;
+    }
+
+    _instance.animateLineSymbols = function(line, interval) {
+        var count = 0;
+        window.setInterval(function() {
+            count = (count + 1) % 200;
+
+            var icons = line.get('icons');
+
+            for (var key in icons) {
+                icons[key].offset = (count / 2) + '%';
+            }
+            line.set('icons', icons);
+        }, interval || 50);
+    }
+
+
     _instance.addMarker = function(markerOpts, cb) {
 
         if (!markerOpts) {
@@ -95,7 +129,10 @@ var _seat_filla_map = function(options) {
             return { marker: marker, infowindow: infowindow };
         }
 
-        _instance.markers.push(add());
+        var marker = add();
+        if (cb && typeof cb === 'function')
+            cb(marker);
+        _instance.markers.push(marker);
     }
 
     function createMap(loc) {
@@ -108,10 +145,12 @@ var _seat_filla_map = function(options) {
         //Create a new map
         var map = new google.maps.Map(document.getElementById('map-canvas'), {
             zoom: (options && options.zoom) || 2,
-            center: (options && options.coords) || pos
+            center: pos
         });
 
         google.maps.event.addListener(map, 'click', function(event) {
+            var line;
+
             _instance.addMarker({
                 position: event.latLng,
                 title: 'Some title',
@@ -133,21 +172,41 @@ var _seat_filla_map = function(options) {
                     mapListeners: [],
                     markerListeners: [
                         function onMarkerClicked(event) {
-                            console.log(_instance.location.coords);
-                            console.log(event.latLng.lat());
-                            console.log(event.latLng.lng());
-                            var result = geolocator.calcDistance({
-                                from: {
-                                    latitude: _instance.location.coords.latitude,
-                                    longitude: _instance.location.coords.longitude
-                                },
-                                to: {
-                                    latitude: event.latLng.lat(),
-                                    longitude: event.latLng.lng()
-                                },
-
-                            });
+                            var from = {
+                                latitude: _instance.location.coords.latitude,
+                                longitude: _instance.location.coords.longitude,
+                                lat: _instance.location.coords.latitude,
+                                lng: _instance.location.coords.longitude
+                            }
+                            var to = {
+                                latitude: event.latLng.lat(),
+                                longitude: event.latLng.lng(),
+                                lat: event.latLng.lat(),
+                                lng: event.latLng.lng()
+                            }
+                            var result = geolocator.calcDistance({ from, to });
                             console.log(result);
+
+                            if (line) line.setMap(null);
+
+                            var planeSymbol = {
+                                path: 'M362.985,430.724l-10.248,51.234l62.332,57.969l-3.293,26.145 l-71.345-23.599l-2.001,13.069l-2.057-13.529l-71.278,22.928l-5.762-23.984l64.097-59.271l-8.913-51.359l0.858-114.43 l-21.945-11.338l-189.358,88.76l-1.18-32.262l213.344-180.08l0.875-107.436l7.973-32.005l7.642-12.054l7.377-3.958l9.238,3.65 l6.367,14.925l7.369,30.363v106.375l211.592,182.082l-1.496,32.247l-188.479-90.61l-21.616,10.087l-0.094,115.684',
+                                scale: 0.0393,
+                                strokeOpacity: 1,
+                                strokeColor: '#222',
+                                strokeWeight: 1,
+                                anchor: new google.maps.Point(300, 300)
+                            }
+                            line = _instance.createAnimatedLineSymbol({
+                                path: [from, to],
+                                icons: [{
+                                    icon: planeSymbol,
+                                    offset: '100%'
+                                }],
+                                strokeOpacity: 1,
+                                strokeColor: '#544'
+                            })
+                            console.log(line);
                         }
                     ]
                 },
@@ -175,39 +234,42 @@ var _seat_filla_map = function(options) {
         })();
     }
 
-
-    (function init(cb) {
-        geolocator.config({ language: 'en', google: { version: '3', key: 'AIzaSyDDBWrH7DuCZ8wNlOXgINCtI_gT9NkDRq4' } });
-        defaultLoc = { coords: { longitude: 0, latitude: 0 } };
-        if (options && options.useCache && typeof Storage !== "undefined" && sessionStorage.getItem('location')) {
-            var location = JSON.parse(sessionStorage.getItem('location'));
-            cb(location);
-        } else {
-            console.log('Could not find location in session storage');
-            geolocator.locate(options, function(err, location) {
-                if (err) {
-                    if (!navigator.geolocation) {
-                        console.log('Error when locating position ' + err + '. Defaulting coordinates');
-                        cb(defaultLoc);
-                    } else {
-                        navigator.geolocation.getCurrentPosition(function(position) {
-                            cb(position);
-
-                        }, function error() {
-                            console.log('Error when using navigator geolocation');
+    if (!options || !options.coords) {
+        (function init(cb) {
+            geolocator.config({ language: 'en', google: { version: '3', key: 'AIzaSyDDBWrH7DuCZ8wNlOXgINCtI_gT9NkDRq4' } });
+            defaultLoc = { coords: { longitude: 0, latitude: 0 } };
+            if (options && options.useCache && typeof Storage !== "undefined" && sessionStorage.getItem('location')) {
+                var location = JSON.parse(sessionStorage.getItem('location'));
+                cb(location);
+            } else {
+                console.log('Could not find location in session storage');
+                geolocator.locate(options, function(err, location) {
+                    if (err) {
+                        if (!navigator.geolocation) {
+                            console.log('Error when locating position ' + err + '. Defaulting coordinates');
                             cb(defaultLoc);
-                        });
+                        } else {
+                            navigator.geolocation.getCurrentPosition(function(position) {
+                                cb(position);
+
+                            }, function error() {
+                                console.log('Error when using navigator geolocation');
+                                cb(defaultLoc);
+                            });
+                        }
+                    } else {
+                        console.log('Creating map, used geolocator (uncached) to retrieve location ' + location);
+                        if (options && options.useCache && typeof Storage !== "undefined" && location) {
+                            sessionStorage.setItem('location', JSON.stringify(location));
+                        }
+                        cb(location);
                     }
-                } else {
-                    console.log('Creating map, used geolocator (uncached) to retrieve location ' + location);
-                    if (options && options.useCache && typeof Storage !== "undefined" && location) {
-                        sessionStorage.setItem('location', JSON.stringify(location));
-                    }
-                    cb(location);
-                }
-            });
-        }
-    })(createMap);
+                });
+            }
+        })(createMap);
+    } else {
+        createMap(options.coords);
+    }
 
     return _instance;
 }

@@ -22,10 +22,24 @@
 <body class="fullbleed layout vertical">
       <%- partial ('../partials/nav.ejs') %>
       <app-box class="merge" effects="parallax-background">
-        <div id="container">      
+        <div id="container">  
+            <div class="row">
+            <div class="col-md-3">
+              <div class="divider-50" style="min-height:50vh;width:100vw;">
+
+              </div>
+              <div class="divider-50" style="min-height:50vh;width:100vw;">
+
+              </div>
+            </div>
+            <div class="col-md-9">
             <div id="map-canvas" style="width:100vw;height:100vh"></div>
+            </div>
+          <div class="map-footer" style="width:100%;color:black;display:block;">
+            
+          </div>
+          </div>
         </div>
-      
         <%- partial ('../partials/footer.ejs') %>
       </app-box>
     </app-header-layout>

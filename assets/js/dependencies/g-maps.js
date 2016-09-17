@@ -24,7 +24,7 @@ var _seat_filla_map = function(options) {
 
     var _instance = {};
     _instance.map = null;
-    _instance.markers = [];
+    _instance.markers = {};
 
 
     _instance.createLine = function(options) {
@@ -59,7 +59,9 @@ var _seat_filla_map = function(options) {
         }, interval || 50);
     }
 
-
+    _instance.getMarker = function(latLng) {
+        return _intance.markers[latLng.lat + ':' + latLng.lng];
+    }
     _instance.addMarker = function(markerOpts, cb) {
 
         if (!markerOpts) {
@@ -84,15 +86,15 @@ var _seat_filla_map = function(options) {
                 });
 
                 marker.addListener('click', function() {
+                    for (var i in Object.keys(_instance.markers)) {
+                        if (_instance.markers[i].marker) {
+                            _instance.markers[i].setAnimation(null);
+                        }
+                        if (_instance.markers[i].infowindow) {
+                            _instance.markers[i].infowindow.close();
+                        }
+                    }
 
-                    _instance.markers.forEach((m) => {
-                        if (m.marker) {
-                            m.marker.setAnimation(null);
-                        }
-                        if (m.infowindow) {
-                            m.infowindow.close();
-                        }
-                    })
                     marker.infowindow = {
                         window: infowindow,
                         open: true
@@ -126,13 +128,18 @@ var _seat_filla_map = function(options) {
                 }
             }
 
-            return { marker: marker, infowindow: infowindow };
+            return { marker: marker, infowindow: infowindow, data: markerOpts.data };
         }
 
         var marker = add();
         if (cb && typeof cb === 'function')
             cb(marker);
-        _instance.markers.push(marker);
+
+        const lat = markerOpts.position.lat();
+        const lng = markerOpts.position.lng();
+        _instance.markers[lat + ':' + lng] = marker;
+
+        return marker;
     }
 
     function createMap(loc) {
@@ -148,9 +155,9 @@ var _seat_filla_map = function(options) {
             center: pos
         });
 
-        google.maps.event.addListener(map, 'click', function(event) {
-            var line;
+        var line;
 
+        google.maps.event.addListener(map, 'click', function(event) {
             _instance.addMarker({
                 position: event.latLng,
                 title: 'Some title',

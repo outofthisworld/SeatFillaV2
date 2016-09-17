@@ -60,8 +60,13 @@ var _seat_filla_map = function(options) {
     }
 
     _instance.getMarker = function(latLng) {
-        return _intance.markers[latLng.lat + ':' + latLng.lng];
+        return _intance.markers[JSON.stringify(latLng)];
     }
+
+    _instance.addMapClickListener = function(handler) {
+        google.maps.event.addListener(_instance.map, 'click', handler);
+    }
+
     _instance.addMarker = function(markerOpts, cb) {
 
         if (!markerOpts) {
@@ -87,10 +92,10 @@ var _seat_filla_map = function(options) {
 
                 marker.addListener('click', function() {
                     for (var i in Object.keys(_instance.markers)) {
-                        if (_instance.markers[i].marker) {
+                        if (_instance.markers[i] && _instance.markers[i].marker) {
                             _instance.markers[i].setAnimation(null);
                         }
-                        if (_instance.markers[i].infowindow) {
+                        if (_instance.markers[i] && _instance.markers[i].infowindow) {
                             _instance.markers[i].infowindow.close();
                         }
                     }
@@ -135,10 +140,11 @@ var _seat_filla_map = function(options) {
         if (cb && typeof cb === 'function')
             cb(marker);
 
-        const lat = markerOpts.position.lat();
-        const lng = markerOpts.position.lng();
-        _instance.markers[lat + ':' + lng] = marker;
-
+        const lat = markerOpts.position.lat;
+        const lng = markerOpts.position.lng;
+        console.log('Position: ' + JSON.stringify(markerOpts.position))
+        _instance.markers[JSON.stringify(markerOpts.position)] = marker;
+        console.log(_instance.markers);
         return marker;
     }
 

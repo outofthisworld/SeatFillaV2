@@ -63,8 +63,12 @@ var _seat_filla_map = function(options) {
         }, interval || 50);
     }
 
+    _instance.getMarkerJsonString = function(latLngString) {
+        return _instance.markers[latLngString];
+    }
+
     _instance.getMarker = function(latLng) {
-        return _intance.markers[JSON.stringify(latLng)];
+        return _instance.markers[JSON.stringify(latLng)];
     }
 
     _instance.addMapClickListener = function(handler) {

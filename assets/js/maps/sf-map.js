@@ -15,11 +15,6 @@
     This javascript file also contains the logic for handling the creation/logic of google maps.
 */
 
-
-//var obj = {}
-//_sf_map.call(obj,params)
-//obj.prototype = _sf_map.prototype
-
 var _seat_filla_map = function(options) {
 
     var _instance = {};
@@ -27,6 +22,7 @@ var _seat_filla_map = function(options) {
     _instance.markers = {};
 
 
+    //Creates a new Polygon line on the map
     _instance.createLine = function(options) {
         if (!options) throw new Error('Invalid params passed to createLine');
 
@@ -36,6 +32,72 @@ var _seat_filla_map = function(options) {
         return line;
     }
 
+    //Removes a marker from the map and returns the data associated with it
+    _instance.removeMarker = function(latLng) {
+        if (!latLng) throw new Error('Invalid params');
+
+        const json = JSON.stringify(latLng);
+
+        if (instance.pos && (latLng.lat == _instance.pos.lat && latLng.lng == _instance.pos.lng))
+            delete _instance.pos;
+
+        if (!_instance.markers || !_instance.markers[json]) return;
+
+        _instance.markers[json].infowindow.close();
+        _instance.markers[json].marker.setMap(null);
+        const data = _instance.markers[json].data;
+        delete _instance.markers[json];
+
+        return data;
+    }
+
+    //Removes the geolocated position from the map, if it exists
+    _instance.removeGeoLocatedPosition = function() {
+        if (!_instance.pos) return;
+
+        const json = JSON.stringify(_instance.pos);
+        if (_instance.markers[json]) {
+            _instance.markers[json].marker.setMap(null);
+            _instance.markers[json].infowindow.setMap(null);
+            delete _instance.markers[json];
+            delete _instance.pos;
+        }
+    }
+
+    //Sets a position on the map
+    _instance.setGeoLocatedPosition = function(options) {
+
+        _instance.removeGeoLocatedPosition();
+        _instance.pos = options.pos;
+
+        if (options.infowindow) {
+            var infoWindow = new google.maps.InfoWindow({ map: _instance.map });
+            infoWindow.setPosition(options.pos);
+            infoWindow.setContent(options.infowindowContent);
+        }
+
+        if (options.centerMap) {
+            _instance.map.setCenter(options.pos);
+        }
+
+        _instance.addMarker(options.marker);
+    }
+
+    //Hides all markers from the map
+    _instance.hideAllMarkers = function() {
+        _instance.markers.forEach(function(marker) {
+            marker.marker.setMap(null);
+        });
+    }
+
+    //Shows all markers
+    _instance.showAllMarkers = function() {
+        _instance.markers.forEach(function(marker) {
+            marker.marker.setMap(_instance.map);
+        });
+    }
+
+    //Creates an animated line symbol
     _instance.createAnimatedLineSymbol = function(options) {
         if (!options) throw new Error('Invalid params passed to createLine');
 
@@ -45,10 +107,12 @@ var _seat_filla_map = function(options) {
         return line;
     }
 
+    //Adds a legend to the map
     _instance.addLegend = function(element, position) {
         _instance.map.controls[position || google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
     }
 
+    //Default animation for a polygon line
     _instance.animateLineSymbols = function(line, interval) {
         var count = 0;
         window.setInterval(function() {
@@ -63,18 +127,22 @@ var _seat_filla_map = function(options) {
         }, interval || 50);
     }
 
+    //Retrieves a marker using a latLng json encoded string
     _instance.getMarkerJsonString = function(latLngString) {
         return _instance.markers[latLngString];
     }
 
+    //Retrieves a marker using a latLng object
     _instance.getMarker = function(latLng) {
         return _instance.markers[JSON.stringify(latLng)];
     }
 
+    //Adds a click listener to the map
     _instance.addMapClickListener = function(handler) {
         google.maps.event.addListener(_instance.map, 'click', handler);
     }
 
+    //Adds a marker to the map
     _instance.addMarker = function(markerOpts, cb) {
 
         if (!markerOpts) {
@@ -156,40 +224,46 @@ var _seat_filla_map = function(options) {
         return marker;
     }
 
+    //Creates the map
     function createMap(loc) {
         _instance.location = loc;
-
-        var pos = {
+        _instance.pos = {
             lat: _instance.location.coords.latitude,
             lng: _instance.location.coords.longitude
         };
+
         //Create a new map
         var map = new google.maps.Map(document.getElementById('map-canvas'), {
             zoom: (options && options.zoom) || 2,
-            center: pos,
+            center: _instance.pos,
             mapTypeId: (options && options.mapTypeId),
 
         });
-        _instance.map = map;
 
-        (function setUserPosition() {
-            var infoWindow = new google.maps.InfoWindow({ map: map });
-            map.setCenter(pos);
-            infoWindow.setPosition(pos);
-            infoWindow.setContent('Your location');
-            _instance.addMarker({
-                position: pos,
+        _instance.map = map;
+        _instance.setGeoLocatedPosition({
+            pos: _instance.pos,
+            infowindow: true,
+            infoWindowContent: 'Your position',
+            centerMap: true,
+            marker: {
+                position: _instance.pos,
                 title: 'You',
                 label: 'Y',
-                map: map,
+                map: _instance.map,
                 content: 'Your position',
                 animation: google.maps.Animation.DROP,
                 markerClickAnimation: google.maps.Animation.BOUNCE,
                 draggable: true,
-            });
-        })();
+                onClickListeners: {
+                    markerListeners: options.markerListeners
+
+                }
+            }
+        });
     }
 
+    //Performs geo location
     if (!options || !options.coords) {
         (function init(cb) {
             geolocator.config({ language: 'en', google: { version: '3', key: 'AIzaSyDDBWrH7DuCZ8wNlOXgINCtI_gT9NkDRq4' } });

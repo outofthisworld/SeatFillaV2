@@ -65,7 +65,7 @@ $(document).ready(function() {
                         }
                         var result = geolocator.calcDistance({ from, to });
 
-                        document.getElementById('distance').innerHTML = isNaN(parseFloat(result).toFixed()) ? 'N/A' : parseFloat(result).toFixed() + ' KM';
+                        //document.getElementById('distance').innerHTML = isNaN(parseFloat(result).toFixed()) ? 'N/A' : parseFloat(result).toFixed() + ' KM';
 
                         if (line) line.setMap(null);
 

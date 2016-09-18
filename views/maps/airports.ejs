@@ -10,256 +10,78 @@
   #legend img {
       vertical-align: middle;
   }
+  label{
+    font-size:12px;
+  }
+
 </style>
 <body class="fullbleed layout vertical">
       <%- partial ('../partials/nav.ejs') %>
       <app-box class="merge" effects="parallax-background">
-        <div id="container-fluid">  
+        <div class="container-fluid" style="height:100vh;">  
             <div class="row">
             <div class="col-md-3 col-lg-3 col-sm-6 col-xs-6">
-              <div class="divider-50" style="margin:0px;padding-top:0px;padding-left:10px;height:100vh;">
-        
-                    <div style="height:100vh;overflow-y:auto;overflow-x:hidden;">
+              <div class="divider-50" style="margin:0px;padding-top:0px;padding-left:10px;">
+                <h3> Flight Info </h2>
+                  <div style="height:100vh;overflow-y:auto;overflow-x:hidden;">
                    <section style="margin:0px;padding-top:0px;padding-left:10px;">
-                    <h2 style="font-size:20px">Flight Details</h2>
-
-                 
-                    
                     <div class="panel">
                     <div class="panel-heading">
                      <p class="lead" id = "country">New Zealand</h2><img src="" id="country_flag" width="32" height="32" class="img img-responsive pull-right"/>
-                     <p> Please select the departure and destination countries/cities from the input fields below and click search.
+                                     <p>Current position : <p id="location"></p>
                     </div>
                     <div class="panel-body">
-                    <br>
-                    <p>Current position : <p id="location"></p></p><br><br>
-                    Departure Country:
-                    <input id="departure_country" type="text" class="input" value=""/><br>
-                    Departure City:
-                    <input id="departure_city" type="text" class="input" value=""/><br>
-
-
-                    Departure Airport(s)
-                    <select id="airports_selections" multiselect="true">
+    
+                    <div class="form-group">
+                      <label for="departure_country">Departure Country</label>
+                        <input id="departure_country" type="text" class="form-control" value=""/>
+                    </div>
+                    <div class="form-group">
+                      <label for="departure_city">Departure City</label>
+                            <input id="departure_city" type="text" class="form-control" value=""/>
+                    </div>
+                     <div class="form-group">
+                      <label for="pwd">Departure Airport(s)</label>
+                               <select id="airports_selections" multiselect="true" class="form-control">
                     </select>
+                    </div>
                     <hr>
-                    <br>
-                    Destination Country/City:
-                    <input type="text" id="destination_query"/>
-                    Destination Airport(s)<br>
-                    <select id="destination_airports" multiselect="true">
+                    <div class="form-group">
+                      <label for="pwd"> Destination Country/City:</label>
+                             <input type="text" id="destination_query" class="form-control"/>
                     </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="pwd">Destination Airport(s)</label>
+                            <select id="destination_airports" multiselect="true" class="form-control">
+                            </select> 
+                    </select>
+                    </div>
                     <hr>
-                    <br>
-                    <p> Distance to destination: <small id="distance"/>0 km</small></p>
                     </div>
                     <div class="panel-footer">
                       <input type="button" class="btn btn-primary btn-block" value="Search" id="Search"/>
                     </div>
                     </div>
-
                 </section>
-					<div class="panel-body">
-						<div class="table-container">
-							<table class="table table-filter">
-								<tbody>
-									<tr>
-										<td>      
-											<div class="media">
-												<a href="#" class="pull-left">
-													<h3>Flight xxx</h3>
-												</a>
-												<div class="media-body">
-													<span class="media-meta">Departs: Febrero 13, 2016</span>
-                          <br>
-                          <span class="media-meta">Departs: Febrero 13, 2016</span> 
-												</div>
-											</div>
-										</td>
-									</tr>
-                  <tr>
-                  	<tr>
-										<td>      
-											<div class="media">
-												<a href="#" class="pull-left">
-													<h3>Flight xxx</h3>
-												</a>
-												<div class="media-body">
-													<span class="media-meta">Departs: Febrero 13, 2016</span>
-                          <br>
-                          <span class="media-meta">Departs: Febrero 13, 2016</span> 
-												</div>
-											</div>
-										</td>
-									</tr>
-                  <tr>
-                  	<tr>
-										<td>      
-											<div class="media">
-												<a href="#" class="pull-left">
-													<h3>Flight xxx</h3>
-												</a>
-												<div class="media-body">
-													<span class="media-meta">Departs: Febrero 13, 2016</span>
-                          <br>
-                          <span class="media-meta">Departs: Febrero 13, 2016</span> 
-												</div>
-											</div>
-										</td>
-									</tr>
-                  <tr>
-                  	<tr>
-										<td>      
-											<div class="media">
-												<a href="#" class="pull-left">
-													<h3>Flight xxx</h3>
-												</a>
-												<div class="media-body">
-													<span class="media-meta">Departs: Febrero 13, 2016</span>
-                          <br>
-                          <span class="media-meta">Departs: Febrero 13, 2016</span> 
-												</div>
-											</div>
-										</td>
-									</tr>
-                  <tr>
-                  	<tr>
-										<td>      
-											<div class="media">
-												<a href="#" class="pull-left">
-													<h3>Flight xxx</h3>
-												</a>
-												<div class="media-body">
-													<span class="media-meta">Departs: Febrero 13, 2016</span>
-                          <br>
-                          <span class="media-meta">Departs: Febrero 13, 2016</span> 
-												</div>
-											</div>
-										</td>
-									</tr>
-                  <tr>
-                  	<tr>
-										<td>      
-											<div class="media">
-												<a href="#" class="pull-left">
-													<h3>Flight xxx</h3>
-												</a>
-												<div class="media-body">
-													<span class="media-meta">Departs: Febrero 13, 2016</span>
-                          <br>
-                          <span class="media-meta">Departs: Febrero 13, 2016</span> 
-												</div>
-											</div>
-										</td>
-									</tr>
-                  <tr>
-                  	<tr>
-										<td>      
-											<div class="media">
-												<a href="#" class="pull-left">
-													<h3>Flight xxx</h3>
-												</a>
-												<div class="media-body">
-													<span class="media-meta">Departs: Febrero 13, 2016</span>
-                          <br>
-                          <span class="media-meta">Departs: Febrero 13, 2016</span> 
-												</div>
-											</div>
-										</td>
-									</tr>
-                  <tr>
-                  	<tr>
-										<td>      
-											<div class="media">
-												<a href="#" class="pull-left">
-													<h3>Flight xxx</h3>
-												</a>
-												<div class="media-body">
-													<span class="media-meta">Departs: Febrero 13, 2016</span>
-                          <br>
-                          <span class="media-meta">Departs: Febrero 13, 2016</span> 
-												</div>
-											</div>
-										</td>
-									</tr>
-                  <tr>
-                  	<tr>
-										<td>      
-											<div class="media">
-												<a href="#" class="pull-left">
-													<h3>Flight xxx</h3>
-												</a>
-												<div class="media-body">
-													<span class="media-meta">Departs: Febrero 13, 2016</span>
-                          <br>
-                          <span class="media-meta">Departs: Febrero 13, 2016</span> 
-												</div>
-											</div>
-										</td>
-									</tr>
-                  <tr>
-										<td>      
-											<div class="media">
-												<a href="#" class="pull-left">
-													<h3>Flight xxx</h3>
-												</a>
-												<div class="media-body">
-													<span class="media-meta">Departs: Febrero 13, 2016</span>
-                          <br>
-                          <span class="media-meta">Departs: Febrero 13, 2016</span> 
-												</div>
-											</div>
-										</td>
-									</tr>
-                  <tr>
-										<td>      
-											<div class="media">
-												<a href="#" class="pull-left">
-													<h3>Flight xxx</h3>
-												</a>
-												<div class="media-body">
-													<span class="media-meta">Departs: Febrero 13, 2016</span>
-                          <br>
-                          <span class="media-meta">Departs: Febrero 13, 2016</span> 
-												</div>
-											</div>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-					</div>
-				</div>
-				<div class="content-footer">
-				</div>
-
- 
-
+                </div>
+                <div class="content-footer">
+                </div>
               </div>
-
             </div>
-
             <div class="col-md-9 col-sm-6 col-xs-6 col-lg-9">
             <div id="map-canvas" style="width:100vw;height:95vh"></div>
             <div id="legend">
               <small>Map symbols</small>
             </div>
             </div>
-           
-
-
           </div>
-
-
         </div>
-        <%- partial ('../partials/footer.ejs') %>
       </app-box>
     </app-header-layout>
-  </app-drawer-layout>
-
-  <script type="text/javascript" src="/bower_components/geolocator/dist/geolocator.min.js"></script>
+  </app-drawer-layout><script type="text/javascript" src="/bower_components/geolocator/dist/geolocator.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDBWrH7DuCZ8wNlOXgINCtI_gT9NkDRq4"></script>
-<script type="text/javascript" src="/js/sf-map.js"></script>
-<script type="text/javascript" src="/js/airport-data.js"></script>
-<script type="text/javascript" src="/js/airport-map.js"></script>
+<script type="text/javascript" src="/js/maps/sf-map.js"></script>
+<script type="text/javascript" src="/js/maps/airport-data.js"></script>
+<script type="text/javascript" src="/js/maps/airport-map.js"></script>
   </body>

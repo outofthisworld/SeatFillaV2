@@ -6,6 +6,11 @@ window.seatfilla.globals = window.seatfilla.globals || {};
 window.seatfilla.globals.site = {
     baseURL: '127.0.0.1',
     siteName: 'SeatFilla',
+    endpoints:{
+        maps:{
+            retrieveFlightInfo:'/maps/retrieveFlightInfo'
+        }
+    }
 }
 
 window.seatfilla.globals.getFirstBrowserLanguage = function() {

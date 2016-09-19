@@ -1,7 +1,6 @@
 $(document).ready(function() {
 
-    (function initMap() {
-
+    (function initMap(options) {
         var sf_map = _seat_filla_map({
             enableHighAccuracy: true,
             timeout: 6000,
@@ -88,7 +87,8 @@ $(document).ready(function() {
                         data.Locale = getFirstBrowserLanguage();
                         $.ajax({
                             type: "POST",
-                            url: '127.0.0.1/maps/retrieveFlightInfo',
+                            url: window.seatfilla.globals.site.baseURL.concat(
+                                window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo),
                             data: data,
                             success: function(response) {
 
@@ -145,20 +145,31 @@ $(document).ready(function() {
                         lat: data.Latitude
                     }
 
+                    const jsonPos = JSON.stringify(pos);
+
+                    /* Note that this can be extracted to a sep file, and use ajax.load)*/
                     const div = document.createElement('div');
                     const h2 = document.createElement('h2');
-                    h2.innerHTML = data.Name;
-
                     const p = document.createElement('p');
+
+                    h2.innerHTML = data.Name;
                     p.innerHTML = 'Country: ' + data.Country + '<br>' + 'City: ' + data.City + '<br>';
 
                     div.appendChild(h2);
                     div.appendChild(p);
 
+                    const input =  $('<input/>').attr('type', 'button')
+                        .attr('class', 'btn btn-primary')
+                        .attr('value', 'Find flights').attr('data-coords', jsonPos);
+
+                    $(div).append(input);
+
+                    /*End of dynamic content*/
+
                     airportMarker.content = div.outerHTML;
                     airportMarker.position = pos;
 
-                    const element = $('<option></option>').html(data.Name).attr('value', JSON.stringify(pos));
+                    const element = $('<option></option>').html(data.Name).attr('value', jsonPos);
                     $('#destination_airports').append(element);
 
                     airportMarker.data = data;

@@ -1,4 +1,4 @@
-var sf_retrieveAirportData = function() {
+window.seatfilla.globals.sf_retrieveAirportData = function() {
     return {
         "1": {
             "Name": "Goroka",

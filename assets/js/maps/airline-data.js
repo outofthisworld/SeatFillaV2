@@ -1,4 +1,4 @@
-sf_retrieveAirlineData = function() {
+window.seatfilla.globals.sf_retrieveAirlineData = function() {
     return {
         "2": {
             "Airline": "135 Airways",

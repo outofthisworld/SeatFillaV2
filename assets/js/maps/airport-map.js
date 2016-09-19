@@ -107,7 +107,7 @@ $(document).ready(function() {
             content: '<h1>Its an airport!</h1>'
         }
 
-        const airport_data = sf_retrieveAirportData();
+        const airport_data = window.seatfilla.globals.sf_retrieveAirportData();
         const airportDataKeys = Object.keys(airport_data).sort(function(one, two) {
             const data1 = airport_data[one];
             const data2 = airport_data[two];

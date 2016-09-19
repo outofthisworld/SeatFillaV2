@@ -40,19 +40,43 @@ var _seat_filla_map = function(options) {
     _instance.removeMarker = function(latLng) {
         if (!latLng) throw new Error('Invalid params');
 
+        console.log(_instance.markers);
         const json = JSON.stringify(latLng);
+        console.log(json);
 
-        if (instance.pos && (latLng.lat == _instance.pos.lat && latLng.lng == _instance.pos.lng))
+        if (_instance.pos && (latLng.lat == _instance.pos.lat && latLng.lng == _instance.pos.lng))
             delete _instance.pos;
 
-        if (!_instance.markers || !_instance.markers[json]) return;
+        if (!_instance.markers || !_instance.markers[json]) {
+            console.log('Could not find marker to remove');
+            return;
+        };
 
         _instance.markers[json].infowindow.close();
         _instance.markers[json].marker.setMap(null);
         const data = _instance.markers[json].data;
         delete _instance.markers[json];
-
+        console.log('removed');
         return data;
+    }
+
+    _instance.removeAllMarkers = function() {
+        Object.keys(_instance.markers).forEach(function(key) {
+            console.log(key);
+            const marker = _instance.markers[key];
+            console.log(marker);
+            if (marker && marker.marker && marker.marker.data) {
+                const pos = {
+                    lng: marker.data.Longitude,
+                    lat: marker.data.Latitude,
+                }
+
+                if (!_instance.isGeoLocatedPosition(pos)) {
+                    console.log('removing marker');
+                    _instance.removeMarker(pos);
+                }
+            }
+        });
     }
 
     //Removes the geolocated position from the map, if it exists

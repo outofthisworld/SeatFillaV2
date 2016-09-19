@@ -78,7 +78,7 @@ $(document).ready(function() {
                         })
                     },
                     function sendServerRequest(event) {
-                        if (sf_map.isGeoLocatedPosition(to)) return;
+                        /*if (sf_map.isGeoLocatedPosition(to)) return;
 
                         const marker = this;
                         const data = marker.data;
@@ -93,12 +93,12 @@ $(document).ready(function() {
                             success: function(response) {
 
                             },
-                        });
+                        });*/
                     },
                     function updateSelection(event) {
                         var pos = {
-                            lat: event.latLng.lat(),
                             lng: event.latLng.lng(),
+                            lat: event.latLng.lat()
                         }
                         $('#destination_airports').val(JSON.stringify(pos));
                     }
@@ -132,6 +132,11 @@ $(document).ready(function() {
         });
 
         $('#Search').click(function() {
+            sf_map.removeAllMarkers();
+            if (line) line.setMap(null)
+
+
+            $('#destination_airports').html("");
             const departureCity = $('#departure_city').val();
             const departureCountry = $('#departure_country').val();
 
@@ -158,9 +163,15 @@ $(document).ready(function() {
                     div.appendChild(h2);
                     div.appendChild(p);
 
-                    const input =  $('<input/>').attr('type', 'button')
+                    const input = $('<input/>').attr('type', 'button')
                         .attr('class', 'btn btn-primary')
-                        .attr('value', 'Find flights').attr('data-coords', jsonPos);
+                        .attr('value', 'Find flights').attr('data-coords', jsonPos).
+                    attr('data-toggle', 'modal').attr('data-target', '#myModal');
+
+                    $(input).on('click', function() {
+                        const coords = $(this).attr('data-coords');
+                        const marker = sf_map.getMarkerJsonString(coords);
+                    });
 
                     $(div).append(input);
 
@@ -168,6 +179,7 @@ $(document).ready(function() {
 
                     airportMarker.content = div.outerHTML;
                     airportMarker.position = pos;
+
 
                     const element = $('<option></option>').html(data.Name).attr('value', jsonPos);
                     $('#destination_airports').append(element);

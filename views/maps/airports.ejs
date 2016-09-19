@@ -16,6 +16,23 @@
 
 </style>
 <body class="fullbleed layout vertical">
+  <div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Modal Header</h4>
+      </div>
+      <div class="modal-body">
+        <p>Some text in the modal.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+    </div>
       <%- partial ('../partials/nav.ejs') %>
       <app-box class="merge" effects="parallax-background">
         <div class="container-fluid" style="height:100vh;">  
@@ -28,7 +45,7 @@
                     <div class="panel">
                     <div class="panel-heading">
                      <p class="lead" id = "country">New Zealand</h2><img src="" id="country_flag" width="32" height="32" class="img img-responsive pull-right"/>
-                    <p>Current position : <p id="location"></p>
+                                     <p>Current position : <p id="location"></p>
                     </div>
                     <div class="panel-body">
     

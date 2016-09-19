@@ -16,6 +16,7 @@
     <script src="/js/dependencies/facebook.js"></script>
     <script src="/js/dependencies/notificationService.js"></script>
     <script src="/js/dependencies/seatfilla-config.js"></script>
+    <script src="/js/dependencies/socket-handler.js"></script>
     <!--SCRIPTS END-->
     
     <!-- Note that these are not built autoatically by grunt where as scripts/css files are injected via pipeline.js -->
@@ -24,18 +25,27 @@
     <link rel="import" href="/bower_components/paper-input/paper-input.html">
     <link rel="import" href="/bower_components/paper-toolbar/paper-toolbar.html">
     <link rel="import" href="/bower_components/iron-icons/iron-icons.html">
+    <link rel="import" href="/bower_components/iron-icons/places-icons.html">
+    <link rel="import" href="/bower_components/iron-icons/image-icons.html">
+    <link rel="import" href="/bower_components/iron-icons/social-icons.html">
+    <link rel="import" href="/bower_components/iron-icons/maps-icons.html">
+    <link rel="import" href="/bower_components/iron-icons/notification-icons.html">
+    <link rel="import" href="/bower_components/iron-icon/iron-icon.html">
     <link rel="import" href="/bower_components/paper-button/paper-button.html">
     <link rel="import" href="/bower_components/paper-icon-button/paper-icon-button.html">
     <link rel="import" href="/bower_components/paper-menu/paper-menu.html">
+    <link rel="import" href="/bower_components/paper-material/paper-material.html">
     <link rel="import" href="/bower_components/paper-styles/paper-styles.html">
     <link rel="import" href="/bower_components/app-layout/app-layout.html">
     <link rel="import" href="/bower_components/paper-tabs/paper-tabs.html">
+    <link rel="import" href="/bower_components/paper-badge/paper-badge.html">
     <link rel="import" href="/bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
     <link rel="import" href="/bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
     <link rel="import" href="/bower_components/iron-pages/iron-pages.html">
     <link rel="import" href="/bower_components/iron-form-element-behavior/iron-form-element-behavior.html">
     <link rel="import" href="/bower_components/iron-form/iron-form.html">
     <link rel="import" href="/bower_components/paper-button/paper-button.html">
+    <link rel="import" href="/bower_components/paper-toast/paper-toast.html">
 
 
     <!--STYLES-->
@@ -47,22 +57,28 @@
 
       <style is="custom-style">
 
+     body {
+        position:relative;
+        margin:0px;
+        padding:0px;
+        top:20px;
+      }
+
     /*Polymer compnents*/
     app-header {
       background-color: white;
       color: black;
-      max-height: 40px;
+      max-height: 50px;
     }
     
     paper-tabs {
-      background-color: white;
-      width:50vw;
-      background-color:white;
+      width:40%;
+      color:white;
+      border-radius:5px;
       position:absolute;
-      right:0px;top:0px;
-      padding:10px;
+      right:120px;
+      top:10px;
       font-size:10px;
-      font-family: 'verdana';
       max-height:40px;
     }
     
@@ -1033,6 +1049,7 @@ div.margin {
 	background: #fff;		
 	padding: 20px;
 	margin-bottom: 30px;
+  }
   
   .title {
 		margin-top: 0px;
@@ -1049,37 +1066,15 @@ div.margin {
 		color:white;
 		font-family: Segoe UI;
 		font-weight: lighter;
-	}
-
-
+  }
  </style>
-
- <script>
- jQuery(function ($) {
-        $(".tile").height($("#tile1").width());
-        $(".carousel").height($("#tile1").width());
-        $(".item").height($("#tile1").width());
-        
-        $(window).on('resize', function () {
-            if (this.resizeTO) {
-                clearTimeout(this.resizeTO);
-            }
-            this.resizeTO = setTimeout(function () {
-                $(this).trigger('resizeEnd');
-            }, 10);
-        });
-
-        $(window).on('resizeEnd', function () {
-            $(".tile").height($("#tile1").width());
-            $(".carousel").height($("#tile1").width());
-            $(".item").height($("#tile1").width());
-        });
-    });
- </script>
   </head>
 
 
     <%- body %>
 
 
+       <paper-toast id="notification" class="fit-bottom" duration="0">
+       <paper-button onclick="notification.toggle()" class="yellow-button" style="pull-right">Close toast</paper-button>
+       </paper-toast>
 </html>

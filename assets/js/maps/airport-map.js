@@ -171,6 +171,20 @@ $(document).ready(function() {
                     $(input).on('click', function() {
                         const coords = $(this).attr('data-coords');
                         const marker = sf_map.getMarkerJsonString(coords);
+                        $('#searchFlights').on('click', function() {
+                            alert('hello world');
+                            const data = marker.data;
+                            data.Locale = window.seatfilla.globals.getFirstBrowserLanguage();
+                            $.ajax({
+                                type: "POST",
+                                url: window.seatfilla.globals.site.baseURL.concat(
+                                    window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo),
+                                data: data,
+                                success: function(response) {
+
+                                },
+                            });
+                        });
                     });
 
                     $(div).append(input);

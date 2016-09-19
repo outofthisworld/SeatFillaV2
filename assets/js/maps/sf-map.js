@@ -32,6 +32,10 @@ var _seat_filla_map = function(options) {
         return line;
     }
 
+    _instance.isGeoLocatedPosition = function(pos) {
+        return pos.lat == _instance.pos.lat && pos.lng == _instance.pos.lng;
+    }
+
     //Removes a marker from the map and returns the data associated with it
     _instance.removeMarker = function(latLng) {
         if (!latLng) throw new Error('Invalid params');
@@ -144,17 +148,11 @@ var _seat_filla_map = function(options) {
 
     //Adds a marker to the map
     _instance.addMarker = function(markerOpts, cb) {
-
         if (!markerOpts) {
             throw new Error('Invalid args passed to addMarker (_seat_filla_map)');
         }
 
-        // Add the marker at the clicked location, and add the next-available label
-        // from the array of alphabetical characters.
         var map = _instance.map;
-
-        console.log(_instance.markers);
-
 
         function add() {
             var marker = new google.maps.Marker(markerOpts);
@@ -167,15 +165,6 @@ var _seat_filla_map = function(options) {
                 });
 
                 marker.addListener('click', function() {
-                    /*for (var i in Object.keys(_instance.markers)) {
-                        if (_instance.markers[i] && _instance.markers[i].marker) {
-                            _instance.markers[i].setAnimation(null);
-                        }
-                        if (_instance.markers[i] && _instance.markers[i].infowindow) {
-                            _instance.markers[i].infowindow.close();
-                        }
-                    }*/
-
                     marker.infowindow = {
                         window: infowindow,
                         open: true
@@ -184,6 +173,8 @@ var _seat_filla_map = function(options) {
                     infowindow.open(map, marker);
                 });
             }
+
+            const obj = { marker: marker, infowindow: infowindow, data: markerOpts.data }
 
             if (markerOpts.markerClickAnimation) {
                 marker.addListener('click', function(event) {
@@ -198,18 +189,18 @@ var _seat_filla_map = function(options) {
             if (markerOpts.onClickListeners) {
                 if (Array.isArray(markerOpts.onClickListeners.markerListeners)) {
                     markerOpts.onClickListeners.markerListeners.forEach((element) => {
-                        marker.addListener('click', element.bind(marker));
+                        marker.addListener('click', element.bind(obj));
                     })
                 }
 
                 if (Array.isArray(markerOpts.onClickListeners.mapListeners)) {
                     markerOpts.onClickListeners.mapListeners.forEach((element) => {
-                        map.addListener('click', element.bind(marker));
+                        map.addListener('click', element.bind(obj));
                     })
                 }
             }
 
-            return { marker: marker, infowindow: infowindow, data: markerOpts.data };
+            return obj;
         }
 
         var marker = add();

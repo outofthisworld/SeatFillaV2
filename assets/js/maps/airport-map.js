@@ -1,19 +1,19 @@
 $(document).ready(function() {
 
-    var sf_map = _seat_filla_map({
-        enableHighAccuracy: true,
-        timeout: 6000,
-        maximumAge: 0,
-        desiredAccuracy: 30,
-        fallbackToIP: true,
-        addressLookup: true,
-        timezone: true,
-        useCache: true,
-        preFetchLocation: true,
-        maxOpenMarkers: 1
-    });
-
     (function initMap() {
+
+        var sf_map = _seat_filla_map({
+            enableHighAccuracy: true,
+            timeout: 6000,
+            maximumAge: 0,
+            desiredAccuracy: 30,
+            fallbackToIP: true,
+            addressLookup: true,
+            timezone: true,
+            useCache: true,
+            preFetchLocation: true,
+            maxOpenMarkers: 1
+        });
 
         var line;
 
@@ -65,10 +65,7 @@ $(document).ready(function() {
                         }
                         var result = geolocator.calcDistance({ from, to });
 
-                        //document.getElementById('distance').innerHTML = isNaN(parseFloat(result).toFixed()) ? 'N/A' : parseFloat(result).toFixed() + ' KM';
-
                         if (line) line.setMap(null);
-
 
                         line = sf_map.createAnimatedLineSymbol({
                             path: [from, to],
@@ -80,7 +77,23 @@ $(document).ready(function() {
                             strokeOpacity: 0.5,
                             strokeColor: '#FFF'
                         })
-                        console.log(line);
+                    },
+                    function sendServerRequest(event) {
+                        if (sf_map.isGeoLocatedPosition(to)) return;
+
+                        const marker = this;
+                        const data = marker.data;
+                        console.log(marker);
+
+                        data.Locale = getFirstBrowserLanguage();
+                        $.ajax({
+                            type: "POST",
+                            url: '127.0.0.1/maps/retrieveFlightInfo',
+                            data: data,
+                            success: function(response) {
+
+                            },
+                        });
                     },
                     function updateSelection(event) {
                         var pos = {
@@ -145,10 +158,10 @@ $(document).ready(function() {
                     airportMarker.content = div.outerHTML;
                     airportMarker.position = pos;
 
-
                     const element = $('<option></option>').html(data.Name).attr('value', JSON.stringify(pos));
                     $('#destination_airports').append(element);
 
+                    airportMarker.data = data;
                     sf_map.addMarker(airportMarker);
                 }
             });

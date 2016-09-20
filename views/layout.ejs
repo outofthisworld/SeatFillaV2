@@ -5,6 +5,11 @@
 
     <!-- Viewport mobile tag for sensible mobile support -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta property="og:url"           content="seatfilla.com" />
+	  <meta property="og:type"          content="website" />
+	  <meta property="og:title"         content="SeatFilla" />
+	  <meta property="og:description"   content="Find flights" />
+	  <meta property="og:image"         content="seatfilla.com" />
 
     <!--SCRIPTS-->
     <script src="/bower_components/jquery/dist/jquery.min.js"></script>
@@ -1215,9 +1220,19 @@ div.margin {
 		font-weight: lighter;
   }
  </style>
-  </head>
+ 	<script>
 
-<h1><a href="#" data-toggle="modal" data-target="#login-modal">Login</a></h1>
+
+   //Facebook like script
+   (function(d, s, id) {
+	  var js, fjs = d.getElementsByTagName(s)[0];
+	  if (d.getElementById(id)) return;
+	  js = d.createElement(s); js.id = id;
+	  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1";
+	  fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk'));
+  </script>
+</head>
 <div class="modal fade" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
     	  <div class="modal-dialog">
 				<div class="loginmodal-container">
@@ -1236,11 +1251,7 @@ div.margin {
 		  </div>
     <%- body %>
 
-
-
-        
-
-
+       <a href="#" data-toggle="modal" data-target="#login-modal">Login</a>
        <paper-toast id="notification" class="fit-bottom" duration="0">
        <paper-button onclick="notification.toggle()" class="yellow-button" style="pull-right">Close toast</paper-button>
        </paper-toast>

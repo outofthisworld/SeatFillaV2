@@ -1,0 +1,68 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/paper-material/paper-material.html">
+<link rel="import" href="/bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="/bower_components/iron-list/iron-list.html">
+
+
+<dom-module id="list-example">
+    <style>
+         :host {
+            display: block;
+        }
+        
+        #list-example {
+            height: 100vh;
+            width: 100vw;
+        }
+        
+        #i-list {
+            height: 100vh;
+            width: 100vw;
+        }
+        
+        #fixed-list {
+            min-width: 300px;
+            min-height: 300px;
+            background-color: white;
+        }
+        
+        .panel-full {
+            background-color: white;
+            min-width: 300px;
+            min-height: 300px;
+        }
+    </style>
+    <template>
+
+
+<iron-ajax url="/maps/test" last-response="{{data}}" auto></iron-ajax>
+  <iron-list id="i-list" items="[[data]]" as="item" grid>
+    <template>
+ 
+
+      <div id="fixed-list">
+          <div class="panel panel-default panel-full">
+              <div class="panel-content">
+             Name: [[item.name]]
+             </div>
+        </div>
+      </div>
+
+
+    </template>
+    </iron-list>
+
+    </template>
+</dom-module>
+
+<script>
+    (function() {
+        Polymer({
+            is: 'list-example',
+            attached: function() {
+                // Use the top-level document element as scrolltarget
+                this.$.list.scrollTarget = this.ownerDocument.documentElement;
+            }
+        });
+    })();
+</script>

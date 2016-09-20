@@ -46,6 +46,11 @@
     <link rel="import" href="/bower_components/iron-form/iron-form.html">
     <link rel="import" href="/bower_components/paper-button/paper-button.html">
     <link rel="import" href="/bower_components/paper-toast/paper-toast.html">
+    <link rel="import" href="/bower_components/iron-dropdown/iron-dropdown.html">
+    <link rel="import" href="/bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+    <link rel="import" href="/bower_components/iron-ajax/iron-ajax.html">
+    <link rel="import" href="/bower_components/iron-list/iron-list.html">
+    <link rel="import" href="/elements/SeatFillaList.html">
 
 
     <!--STYLES-->
@@ -61,15 +66,42 @@
         position:relative;
         margin:0px;
         padding:0px;
-        top:20px;
+        top:10px;
       }
 
     /*Polymer compnents*/
     app-header {
-      background-color: white;
-      color: black;
+      color: red;
       max-height: 50px;
     }
+
+    app-toolbar {
+       background-color: white;
+    }
+
+    paper-material{
+      background-color: #373542;
+    }
+
+  paper-item {
+    display:block;
+    padding:20px;
+    margin-top:10px;
+  }
+   .paper-badge-red {
+    --paper-badge-background: red;
+  }
+  .paper-badge-blue {
+    --paper-badge-background: var(--paper-light-blue-300);
+  }
+
+    .paper-badge-orange {
+    --paper-badge-background: orange;
+  }
+
+    .paper-badge-black {
+    --paper-badge-background: black;
+  }
     
     paper-tabs {
       width:40%;
@@ -81,6 +113,7 @@
       font-size:10px;
       max-height:40px;
     }
+
     
     .link {
       color: black;
@@ -115,10 +148,8 @@
       position: relative;
       min-height: 100vh;
       min-width: 100vw;
-      color: #fff;
       display: flex;
       overflow-x: hidden;
-      display:flex;
     }
 
     .section-full{
@@ -169,7 +200,7 @@
     }
     
     #section1bg {
-      background-image: url('./images/animated.png');
+      background-image: url('./images/globe.jpeg');
     }
     
     #section2bg { 
@@ -297,47 +328,163 @@
     /*
       Footer
     */
-    .full {
-    width: 100%;	
-    }
+   @import url(https://fonts.googleapis.com/css?family=Lato:400,300,700,900|Open+Sans:400,300);
 
-    .gap {
-      height: 30px;
-      width: 100%;
-      clear: both;
-      display: block;
-    }
-    .footer {
-      padding:0px;
-      margin:0px;
-      height: auto;
-      padding-bottom: 30px;
-      position: relative;
-      width: 100vw;
-      background-color:white;
-    }
-    .footer p {
-      margin: 0;
-    }
-    .footer img {
-      max-width: 100%;
-    }
+footer {
+	background-repeat: repeat;
+}
+.footer_top {
+	min-height:100px;
+}
+.bagcblue {
+	background-color:#ffa733;
+	background-image: url('images/footer_sli.png');
+	background-repeat: no-repeat;
+	background-position: left top;
+	padding-left:65px;
+	padding-top:15px;
+	color:#FFF;
+	font-family: 'Lato', sans-serif;
+	min-height:131px;
+}
+.bagcblue p {
+	font-size:13px;
+}
+
+.methodh4 {
+	float:left;
+	width:103px;
+	margin-top:50px;
+}
+.bagcgrey h4 {
+	font-family: 'Lato', sans-serif;
+	font-size:20px;
+	font-weight:700;
+}
+.img-responsive2 {
+	width:350px;
+	margin-top:68px;
+	float:left;
+}
+.heading6 {
+	font-size:18px;
+	font-family: 'Lato', sans-serif;
+	text-transform:uppercase;
+}
+.footer_bottom_col {
+	background-color:#373542;
+	min-height:388px;
+	padding-top:30px;
+}
+.heading_footer {
+	font-family: 'Open Sans', sans-serif;
+	font-weight:700;
+	color:#FFF;
+	text-transform:uppercase;
+	font-size:16px;
+}
+.heading_footer span {
+	display:block;
+	background-image: url(http://webenlance.in/bootsnipp/images/display.png);
+	background-repeat: no-repeat;
+	background-position: left bottom;
+	padding-bottom: 8px;
+	line-height: 22px;
+}
+.footerul {
+	list-style-type:none;
+	float:left;
+	margin-left:0px;
+	padding-left:0px;
+	margin-top:15px;
+	font-family: 'Lato', sans-serif;
+}
+.footerul li a {
+	color:#c9c9c9;
+	font-size:13px;
+	line-height:20px;
+	font-family: 'Lato', sans-serif;
+	font-weight: 400;
+}
+.footerul p {
+	color:#c9c9c9;
+	font-size:13px;
+}
+.footerul p a {
+	color:#fff !important;
+	font-weight:700 !important;
+}
+.copyright {
+	width:100%;
+	float:left;
+	min-height:40px;
+	background-color:#FFF;
+	padding-top:12px;
+	text-align:center;
+}
+ @media (max-width:768px) {
+	
+/*footer*/
+.footer_top {
+background-color:#FFF !important;
+background-image:none;
+}
+.tabmob {
+background-image:none;
+}
+.bagcgrey {
+background-image:none;
+background-color:#f7f7f7;
+padding:25px 15px 15px 15px;
+}
+.methodh4 {
+width:100%;
+text-align:center;
+margin-top:0px;
+}
+.img-responsive2 {
+ margin-top: 5px;
+ margin-bottom:10px;
+width:90%;
+display:table;
+margin-left:5%;
+margin-right:5%;
+}
+.bagcblue {
+background-image:none;
+padding:10px !important;
+}
+ .footerul {
+ float:none;
+width:100%;
+}
+}
+.socmatpbo { margin-top:25px; float:left !important; font-size:20px; margin-top:60px; }
+.social li {
+    float: left;
+}
+.social li a i {
     
-    .footer ul {
-      font-size: 13px;
-      list-style-type: none;
-      margin-left: 0;
-      padding-left: 0;
-      margin-top: 15px;
-      color: black;
-    }
-    .footer ul li a {
-      padding: 0 0 5px 0;
-      display: block;
-    }
-    .footer a {
-      color: black;
-    }
+    border-radius: 50%;
+    height: 37px;
+    line-height: 30px;
+    margin: 0 8px;
+    padding: 5px;
+    text-align: center;
+    width: 37px;
+}
+.social {
+    float: right;
+    list-style-type: none;
+    margin: 5px 0 0;
+    padding: 0;
+}
+.socmatpbo {
+    float: left !important;
+    font-size: 20px;
+    margin-top: 60px;
+}
+
     .supportLi h4 {
       font-size: 20px;
       font-weight: lighter;
@@ -882,7 +1029,7 @@ div.margin {
 }
 
 #live-chat header {
-    background: orange;
+    background: #373542;
     border-radius: 5px 5px 0 0;
     color: white;
     cursor: pointer;
@@ -1070,8 +1217,28 @@ div.margin {
  </style>
   </head>
 
-
+<h1><a href="#" data-toggle="modal" data-target="#login-modal">Login</a></h1>
+<div class="modal fade" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    	  <div class="modal-dialog">
+				<div class="loginmodal-container">
+					<h1>Login to Your Account</h1><br>
+				  <form>
+					<input type="text" name="user" placeholder="Username">
+					<input type="password" name="pass" placeholder="Password">
+					<input type="submit" name="login" class="login loginmodal-submit" value="Login">
+				  </form>
+					
+				  <div class="login-help">
+					<a href="#">Register</a> - <a href="#">Forgot Password</a>
+				  </div>
+				</div>
+			</div>
+		  </div>
     <%- body %>
+
+
+
+        
 
 
        <paper-toast id="notification" class="fit-bottom" duration="0">

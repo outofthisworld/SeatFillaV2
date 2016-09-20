@@ -20,20 +20,19 @@ module.exports = {
     },
     //GET [register an account page]
     register: function(req, res) {
-
+        return res.ok();
     },
     //GET [complete registraion page]
-    completeRegistration: function(req,res){
-        return res.ok({user:req.user});
+    completeRegistration: function(req, res) {
+        return res.ok({ user: req.user });
     },
     //POST [update a users details]
-    update: function(req,res){
+    update: function(req, res) {
 
     },
     //GET [return the my account page]
     myAccount: function(req, res) {
-        return res.ok({user: req.user }, 
-        {
+        return res.ok({ user: req.user }, {
             layout: 'user/myAccount',
             view: 'user/index',
             title: req.__('MyAccount')
@@ -57,7 +56,7 @@ module.exports = {
 
     },
     //[Get the login page]
-    login: function(req,res){
+    login: function(req, res) {
         res.redirect('/');
     }
 };

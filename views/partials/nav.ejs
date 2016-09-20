@@ -1,23 +1,4 @@
- <style>
-  paper-item {
-    display:block;
-    padding:20px;
-    margin-top:10px;
-  }
-   .red {
-    --paper-badge-background: var(--paper-red-300);
-  }
-  .blue {
-    --paper-badge-background: var(--paper-light-blue-300);
-  }
-  paper-tabs{
-    padding:10px;
-  }
-  #notifications:hover{
-    display:hidden;
-  }
- </style>
- 
+
  <app-drawer-layout force-narrow fullbleed>
     <app-drawer id="drawer" opened>
       <app-toolbar>
@@ -39,8 +20,8 @@
       <paper-material elevation="1" style="background-color:white;">
         <app-toolbar>
           <nav>
-          <paper-icon-button style="position:absolute;top:5px;" icon="menu" drawer-toggle></paper-icon-button>
-          <h2 class="title" style="">SeatFilla</h2>
+          <paper-icon-button style="position:absolute;top:12px;" icon="menu" drawer-toggle></paper-icon-button>
+          <h1 style="font-weight:normal;color:lightblue;" >SeatFilla</h1>
           <paper-tabs>
             selected="{{selected}}">
             <paper-tab link>
@@ -61,10 +42,13 @@
           </paper-tabs>
            <paper-icon-button style="position:absolute;right:50px;top:12px;float:right;" icon="search" alt="Search"></paper-icon-button>
            <paper-icon-button style="position:absolute;right:5px;top:12px;" icon="settings" drawer-toggle></paper-icon-button>
-           <paper-icon-button style="position:absolute;right:95px;top:12px;" id="notifications" icon="social:notifications" alt="inbox">
-          </paper-icon-button>
-          <paper-badge for="notifications" label="4">
+           <paper-icon-button style="position:absolute;right:95px;top:12px;" id="notifications" icon="social:notifications" alt="inbox"></paper-icon-button>
+          
+          <paper-badge for="notifications" label="4" class="paper-badge-red">
           </paper-badge>
+              
+             
+          
           </nav>
         </app-toolbar>
         </paper-material>

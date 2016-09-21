@@ -1,4 +1,6 @@
 /*
+
+  -- Dale 
   Here we set up any policies on our controllers,
   Policies act as preconditions, things that must be true in order to
   proceed to a controller action.Because sails services all http methods

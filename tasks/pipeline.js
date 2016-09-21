@@ -17,8 +17,8 @@
 // (if you're using LESS with the built-in default config, you'll want
 //  to change `assets/styles/importer.less` instead.)
 var cssFilesToInject = [
-    '/assets/bower_components/bootstrap/dist/css/bootstrap.min.css',
-    '/assets/bower_components/bootstrap/dist/css/bootstrap-theme.min.css',
+    'bower_components/bootstrap/dist/css/bootstrap.min.css',
+    'bower_components/bootstrap/dist/css/bootstrap-theme.min.css',
     'styles/**/*.css',
 ];
 

@@ -34,6 +34,11 @@
         
         .panel {
             background-color: #FFF;
+            border-style: none;
+        }
+        
+        .panel-heading {
+            padding: 2px;
         }
         
         .panel-full {
@@ -237,13 +242,18 @@
     <template>
 
       <div id="fixed-list">
-          <div class="panel panel-default panel-full">
-              <div class="panel-content">
+          <div class="panel panel-primary panel-full">
+              <div class="panel-heading">
                   <paper-material elevation= "5">
                  <img src="[[item.image]]" class="img img-responsive" style="width:300px;height:100px;"/>
                       </paper-material>
-                     Name: [[item.name]]
+                
              </div>
+             
+             <div class="panel-body">
+                <p> Name: [[item.name]]</p>
+            </div>
+        
         </div>
       </div>
    

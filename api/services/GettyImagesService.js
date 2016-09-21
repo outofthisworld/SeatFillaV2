@@ -28,7 +28,7 @@ var tokenRequestTime = null;
 var tokenExpiraryTime = 1800; //In seconds
 
 
-var obj = {
+module.exports = {
     getToken() {
         return new Promise((resolve, reject) => {
             if (token && tokenRequestTime && ((new Date().getTime() - tokenRequestTime) / 1000) <
@@ -89,7 +89,7 @@ var obj = {
                 page: options.page,
                 page_size: options.pageSize,
                 exclude_nudity: true,
-                embed_content_only: options['embed_content_only'] || true,
+                embed_content_only: options['embed_content_only'] || true
             }
 
             const sendData = querystring.stringify(reqObject);
@@ -111,9 +111,11 @@ var obj = {
                     } else {
                         const obj = JSON.parse(body);
 
-                        if (obj.ErrorCode) {
+                        if (!obj) {
                             console.log(obj);
-                            return reject(new Error('Error with request to ' + gettyAuthEndpoint + ' ' + JSON.stringify(obj)));
+                            return reject(new Error('Error with request to ' + gettyAuthEndpoint + ' could not parse body'));
+                        } else if (obj.ErrorCode) {
+                            return reject(new Error('Error with request to ' + getttyAuthEndpoint + JSON.stringify(obj)))
                         }
 
                         return resolve(obj);
@@ -132,11 +134,11 @@ var obj = {
     },
     searchAndRetrieveUrls(options) {
         return new Promise((resolve, reject) => {
-            obj.makeImagesRequest(options).then(function(res) {
+            this.makeImagesRequest(options).then(function(res) {
                 if (res && res.images) {
                     //console.log(JSON.stringify(res));
                     resolve(res.images.map(function(image) {
-                        return image['display_sizes'][0].uri;
+                        return { embededImage: image['uri_oembed'], displaySizeImage: image['display_sizes'][0].uri };
                     }));
                 } else {
                     reject(new Error('Could not obtain response'));

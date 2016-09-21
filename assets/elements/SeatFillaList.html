@@ -3,7 +3,6 @@
 <link rel="import" href="/bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="/bower_components/iron-list/iron-list.html">
 
-
 <dom-module id="list-example">
     <style>
          :host {
@@ -16,7 +15,7 @@
         }
         
         #i-list {
-            height: 100vh;
+            height: 1000px;
             width: 100vw;
         }
         
@@ -24,6 +23,7 @@
             min-width: 300px;
             min-height: 300px;
             background-color: white;
+            padding: 10px;
         }
         
         .panel-full {
@@ -31,46 +31,7 @@
             min-width: 300px;
             min-height: 300px;
         }
-        /* Carousel Control */
-        
-        .control-box {
-            text-align: right;
-            width: 100%;
-        }
-        
-        .carousel-control {
-            background: #666;
-            border: 0px;
-            border-radius: 0px;
-            display: inline-block;
-            font-size: 34px;
-            font-weight: 200;
-            line-height: 18px;
-            opacity: 0.5;
-            padding: 4px 10px 0px;
-            position: static;
-            height: 30px;
-            width: 15px;
-        }
-        /* Mobile Only */
-        
-        @media (max-width: 767px) {
-            .page-header,
-            .control-box {
-                text-align: center;
-            }
-        }
-        
-        @media (max-width: 479px) {
-            .caption {
-                word-break: break-all;
-            }
-        }
-        
-        li {
-            list-style-type: none;
-        }
-        
+    
         #myCarousel h4 {
             font-family: verdana;
             font-size: 12px;
@@ -86,9 +47,10 @@
             background: #ff5e99;
             color: #FFFFFF;
         }
+ 
     </style>
     <template>
-
+<div class="container">
 <div class="carousel slide" id="myCarousel">
         <div class="carousel-inner">
             <div class="item active">
@@ -259,14 +221,20 @@
 	   <!-- /.control-box -->   
                               
     </div><!-- /#myCarousel -->
+    </div>
 <iron-ajax url="/maps/test" last-response="{{data}}" auto></iron-ajax>
   <iron-list id="i-list" items="[[data]]" as="item" grid>
     <template>
       <div id="fixed-list">
+             <paper-material elevation= "5">
           <div class="panel panel-default panel-full">
               <div class="panel-content">
-             Name: [[item.name]]
+                  <paper-material elevation= "5">
+                 <img src="[[item.image]]" class="img img-responsive" style="width:300px;height:100px;"/>
+               
+                     Name: [[item.name]]
              </div>
+                </paper-material>
         </div>
       </div>
 

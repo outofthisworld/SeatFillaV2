@@ -5,7 +5,6 @@ module.exports = {
     retrieveFlightInfo(req, res) {
         const obj = Object.create(SkyScannerFlightServer.sessionObj);
 
-
         exportObj.sessionObj = {
             country: req.param('Country'),
             currency: 'ISO currency code/currencies service',
@@ -23,36 +22,27 @@ module.exports = {
         }
     },
     test(req, res) {
-        return res.json([{
-                name: 'one'
-            },
-            {
-                name: 'two'
-            },
-            {
-                name: 'one'
-            },
-            {
-                name: 'one'
-            },
-            {
-                name: 'one'
-            },
-            {
-                name: 'one'
-            },
-            {
-                name: 'one'
-            },
-            {
-                name: 'one'
-            },
-            {
-                name: 'one'
-            },
-            {
-                name: 'one'
+        GettyImagesService.searchAndRetrieveUrls({
+            phrase: 'Auckland city skyline',
+            page: 1,
+            pageSize: 20
+        }).then(function(data) {
+            sails.log.debug(data);
+
+            var arr = [];
+
+            for (var i = 0; i < 20; i++) {
+                arr.push({
+                    name: 'one',
+                    image: data[i].displaySizeImage
+                });
             }
-        ]);
+
+            return res.json(arr);
+        }).catch(function(err) {
+            sails.log.debug(err);
+            res.forbidden(err);
+        });
+
     }
 }

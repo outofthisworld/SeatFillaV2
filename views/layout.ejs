@@ -76,12 +76,12 @@
 
     /*Polymer compnents*/
     app-header {
-      color: red;
-      max-height: 50px;
+      color: black;
+      max-height: 55px;
     }
 
     app-toolbar {
-       background-color: white;
+       background-color:white;
     }
 
     paper-material{
@@ -92,6 +92,7 @@
     display:block;
     padding:20px;
     margin-top:10px;
+    color:white;
   }
    .paper-badge-red {
     --paper-badge-background: red;
@@ -119,7 +120,6 @@
       max-height:40px;
     }
 
-    
     .link {
       color: black;
       font-size: 1em;
@@ -213,11 +213,11 @@
     }
     
     #section3bg {
-      background-color:#232323;
+          background-color: #232323;
     }
     
     #section4bg {
-
+  
     }
     
     #section5bg {
@@ -1303,6 +1303,56 @@ div.margin {
             padding: 0px;
             margin: 0px;
         }
+
+/*nav dropdown menu */
+        ul.dropdown-menu-s{
+    min-width:250px;
+    position:relative;
+    margin-right:-30px;
+    margin-top:50px;
+    color:black;
+}
+ul.dropdown-menu-s li .item{
+    display:block;
+    padding:3px 10px;
+    margin: 3px 0;
+}
+ul.dropdown-menu-s li .item:hover{
+    background-color:#f3f3f3;
+}
+ul.dropdown-menu-s li .item:after{
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+}
+
+ul.dropdown-menu-s li .item-left{
+    float:left;
+}
+ul.dropdown-menu-s li .item-left img,
+ul.dropdown-menu-s li .item-left span.item-info{
+    float:left;
+}
+ul.dropdown-menu-s li .item-left span.item-info{
+    margin-left:10px;   
+}
+ul.dropdown-menu-s li .item-left span.item-info span{
+    display:block;
+}
+ul.dropdown-menu-s li .item-right{
+    float:right;
+}
+ul.dropdown-menu-s li .item-right button{
+    margin-top:14px;
+}
+.menu-icon{
+  position:absolute;
+  top:12px;
+  float:right;
+}
         
  </style>
  	<script>

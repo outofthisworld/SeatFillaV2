@@ -1,4 +1,4 @@
-const fs = require('fs');
+/*onst fs = require('fs');
 
 module.exports = {
     port: 80,
@@ -7,4 +7,4 @@ module.exports = {
         cert: fs.readFileSync(process.cwd() + '/2_seat-filla.com.crt'),
         passphrase: 'lifeislife'
     }
-}
+}*/

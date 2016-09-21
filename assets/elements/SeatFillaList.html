@@ -7,8 +7,7 @@
     <style>
          :host {
             display: block;
-            background-color: #232323;
-            --iron-list-background-color: #232323;
+            background-color: #FFF;
         }
         
         #list-example {
@@ -16,23 +15,24 @@
             width: 100vw;
             padding: 0px;
             margin: 0px;
-            background-color: #232323;
+            background-color: #FFF;
         }
         
         #i-list {
             height: 1000px;
             width: 100%;
+            background-color: #FFF;
         }
         
         #fixed-list {
             min-width: 300px;
             min-height: 300px;
             padding: 10px;
+            background-color: #FFF;
         }
         
         .panel {
-            background-color: white;
-            border-style: none;
+            background-color: #FFF;
         }
         
         .panel-full {
@@ -230,24 +230,22 @@
     </div><!-- /#myCarousel -->
     </div>
 <iron-ajax url="/maps/test" last-response="{{data}}" auto></iron-ajax>
-        <h2 style="color:white;">Cheap flights</h2>
+        <h2>Cheap flights</h2>
   <iron-list id="i-list" items="[[data]]" as="item" grid>
       
     <template>
-          <paper-material elevation= "5">
+
       <div id="fixed-list">
-             <paper-material elevation= "5">
           <div class="panel panel-default panel-full">
               <div class="panel-content">
                   <paper-material elevation= "5">
                  <img src="[[item.image]]" class="img img-responsive" style="width:300px;height:100px;"/>
-               
+                      </paper-material>
                      Name: [[item.name]]
              </div>
-                </paper-material>
         </div>
       </div>
-             </paper-material>
+   
 
 
     </template>

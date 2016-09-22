@@ -67,32 +67,42 @@
 
       <style is="custom-style">
 
+
+   
+      
      body {
         position:relative;
         margin:0px;
         padding:0px;
         top:10px;
+        background-attachment: fixed;
+        background-image:url('images/skyline-dark.jpg');
       }
+      
+      html{
+        padding:0px;
+      }
+
 
     /*Polymer compnents*/
     app-header {
-      color: black;
+      color: white;
       max-height: 50px;
     }
 
     .menu-link{
-      color:black;
+      color:white;
     }
 
     .sf-logo{
-      color:black;
+      color:white;
       font-weight:normal;
       font-size:12px;
       font-family:'verdana';
     }
 
     app-toolbar {
-       background-color:white;
+       background-color:#2196F3;
        min-height:100px;
     }
 
@@ -123,7 +133,7 @@
       border-radius:5px;
       position:absolute;
       right:0px;
-      top:57px;
+      top:55px;
       font-family:'verdana'
       font-size:8px;
       line-height:20px;
@@ -132,17 +142,18 @@
     }
 
     .link {
-      color: black;
+      color: white;
       font-size: 10px;
       font-weight: bold;
       max-height:40px;
       @apply(--layout-horizontal);
       @apply(--layout-center-center);
       border-style:solid;
-      border-color:lightgrey;
+      border-color:white;
       border-width:1px;
-      background-color:white;
+      background-color:#64B5F6;
            opacity:1;
+           padding:10px;
     }
 
     .link:hover{
@@ -222,19 +233,35 @@
     }
     
     #section1bg {
-      background-image: url('./images/globe.jpeg');
+      background-image: url('/images/skyline-dark.jpg');
     }
     
     #section2bg { 
+      color:white;
      
+ 
+    }
+
+    #section2bg li{
+      color:white;
+    }
+
+    #section2bg h2{
+      color:white;
+    }
+
+      #section2bg p{
+      color:white;
     }
     
     #section3bg {
-          background-color: #232323;
+        background-color:white;
+            
     }
     
     #section4bg {
-  
+     background-color:white;
+ 
     }
     
     #section5bg {
@@ -246,6 +273,12 @@
       overflow-x: hidden;
       margin: auto;
     }
+
+         #myCarousel h4 {
+            font-family: verdana;
+            font-size: 12px;
+        }
+        
 
 
     /*

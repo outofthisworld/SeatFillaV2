@@ -72,7 +72,7 @@ overflow: hidden;
             </paper-tab>
           </paper-tabs>
      
-           <paper-icon style="right:10px;top:15px;" class="menu-icon" icon="user" drawer-toggle>
+           <paper-icon style="right:10px;top:15px;" class="menu-icon" icon="settings" drawer-toggle>
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle menu-link" data-toggle="dropdown" role="button" aria-expanded="false"><iron-icon icon="settings"> </iron-icon><span class="caret"></span></a>
                                         <ul class="dropdown-menu" id="settings">
@@ -119,8 +119,8 @@ overflow: hidden;
           <li class="dropdown">
           <a href="#" class="dropdown-toggle menu-link" data-toggle="dropdown" role="button" aria-expanded="false"><iron-icon icon="social:notifications"> </iron-icon><span class="caret"></span></a>
           <ul class="dropdown-menu dropdown-menu-s" id="notifications-menu" role="menu">
-            <p class="">Notifications</span>
-              <li>
+            <div class="panel panel-default"><h2 class="text-center">Site Notifications</h2></div>
+              <!--<li>
                   <span class="item" style="background-color:lightblue;">
                         <span class="item-info">
                             <span class="lead">Message name</span>
@@ -138,10 +138,10 @@ overflow: hidden;
                         </span>
                     </span>
                 </span>
-              </li>
+              </li>-->
        
-              <li class="divider"></li>
-              <li><a class="text-center" href="">View All notifications</a></li>
+              
+              <li style="position:relative;bottom:0px;width:100%;"><a class="text-center" href="">View All notifications</a></li>
           </ul>
         </li>
         

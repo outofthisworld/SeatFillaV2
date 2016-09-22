@@ -17,6 +17,24 @@
     transform: scale(1.01,1.02);
 	}
 
+.image-slider{
+	min-height:350px;
+}
+	#myCarousel .nav a small {
+    display:block;
+}
+#myCarousel .nav {
+	background:#eee;
+}
+#myCarousel .nav a {
+    border-radius:0px;
+}
+
+.carousel-caption p{
+	color:black;
+	text-shadow:none;
+}
+
 	/* carousel */
 .media-carousel 
 {
@@ -85,8 +103,17 @@ a{
         <div id="section_container">
           <section id="section1bg" class="header section_img section-full">
             <div class="container80">
-			<h2 style="color:white;">Get where you need to go at Seatfilla </h2>
-              <div class="col-md-8-offset-2">
+
+ <h2 style="color:white;">Get where you need to go at Seatfilla </h2>
+	<div id="myCarousel" class="carousel slide">
+      <!-- Wrapper for slides -->
+      <div class="carousel-inner">
+      
+        <div class="item active" style="marin:0px;padding:0px;">
+          <img src="http://placehold.it/1200x400/ffffff/ffffff" class="image-slider">
+           <div class="carousel-caption" style="width:100%;height:100%;margin:0px;padding:0px;left:0;top:0;">
+           
+              <div class="col-xs-12">
 			  <paper-mater elevation="2">
 				<form id="flightSearchForm">
 					<div class ="panel" style="min-width:100%;min-height:100%;background-color:white;border-style:solid;border-color:lightgrey;padding:10px;">
@@ -129,7 +156,7 @@ a{
 									<p><iron-icon icon="flight-takeoff" style="color:white;"></iron-icon> Departure date</p>
 									</div>
 									<div class = "panel-content">
-										<div style="margin-auto;width:50px;height:90px;"><iron-icon icon="add" class="center-block" style="margin-auto;width:80px;height:200px">></iron-icon></div>
+										<div style="margin-auto;width:50px;height:90px;"><iron-icon icon="add" class="center-block" style="color:orange;margin-auto;width:80px;height:200px">></iron-icon></div>
 										<p class="text-center">Choose</p>
 									</div>		
 								</div>
@@ -165,7 +192,52 @@ a{
 					</div>
 				</div>
 				</form>
+				</paper-material>
           	  </div>
+          </div>
+        </div><!-- End Item -->
+ 
+         <div class="item">
+          <img src="http://placehold.it/1200x400/999999/cccccc">
+           <div class="carousel-caption">
+            <h3>Headline</h3>
+            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. <a href="http://sevenx.de/demo/bootstrap-carousel/" target="_blank" class="label label-danger">Bootstrap 3 - Carousel Collection</a></p>
+          </div>
+        </div><!-- End Item -->
+        
+        <div class="item">
+          <img src="http://placehold.it/1200x400/dddddd/333333">
+           <div class="carousel-caption">
+            <h3>Headline</h3>
+            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. <a href="http://sevenx.de/demo/bootstrap-carousel/" target="_blank" class="label label-danger">Bootstrap 3 - Carousel Collection</a></p>
+          </div>
+        </div><!-- End Item -->
+        
+        <div class="item">
+          <img src="http://placehold.it/1200x400/999999/cccccc">
+           <div class="carousel-caption">
+            <h3>Headline</h3>
+            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.</p>
+          </div>
+        </div><!-- End Item -->
+                
+      </div><!-- End Carousel Inner -->
+
+
+    	<ul class="nav nav-pills nav-justified">
+          <li data-target="#myCarousel" data-slide-to="0" class="active"><a href="#">Search flights<small>Search flights</small></a></li>
+          <li data-target="#myCarousel" data-slide-to="1"><a href="#">Make flight request<small>Make flight request</small></a></li>
+          <li data-target="#myCarousel" data-slide-to="2"><a href="#">Make flight offer<small>Make flight offer</small></a></li>
+          <li data-target="#myCarousel" data-slide-to="3"><a href="#">Support<small>Support</small></a></li>
+        </ul>
+
+
+    </div><!-- End Carousel -->
+
+
+
+
+			
           </section>
 
 		   <section id="section3bg" class"section section_img">

@@ -1,264 +1,7 @@
-<style>
-	#flightSearchForm select{
-		position:relative;
-		top:10px;
-	}
-	iron-icon:hover{
- -ms-transform:  scale(1.05,1.05);/* IE 9 */
-    -webkit-transform:  scale(1.05,1.05); /* Chrome, Safari, Opera */
-    transform: scale(1.05,1.05);
-	}
-	.panel.date-picker{
-		-ms-transform:  scale(1.01,1.02);/* IE 9 */
-    -webkit-transform:  scale(1.01,1.02); /* Chrome, Safari, Opera */
-    transform: scale(1.01,1.02);
-	}
-.image-slider{
-	min-height:350px;
-}
-	#myCarousel .nav a small {
-    display:block;
-}
-#myCarousel .nav {
-	background:#eee;
-}
-#myCarousel .nav a {
-    border-radius:0px;
-}
-.carousel-caption p{
-	color:black;
-	text-shadow:none;
-}
-	/* carousel */
-.media-carousel 
-{
-  width:80vw;
-  margin-bottom: 0;
-  padding: 0 40px 30px 40px;
-  margin-top: 30px;
-}
-/* Previous button  */
-.media-carousel .carousel-control.left 
-{
-  background-image: none;
-  background: none repeat scroll 0 0 #222222;
-  border: 4px solid #FFFFFF;
-  border-radius: 23px 23px 23px 23px;
-  height: 40px;
-  width : 40px;
- 
-}
-/* Next button  */
-.media-carousel .carousel-control.right 
-{
- 
-  background-image: none;
-  background: none repeat scroll 0 0 #222222;
-  border: 4px solid #FFFFFF;
-  border-radius: 23px 23px 23px 23px;
-  height: 40px;
-  width : 40px;
-}
-/* Changes the position of the indicators */
-.media-carousel .carousel-indicators 
-{
-  position:relative;
-  bottom:100px;
-  left:80%;
-}
-/* Changes the colour of the indicators */
-.media-carousel .carousel-indicators li 
-{
-  background: blue;
-}
-.media-carousel .carousel-indicators .active 
-{
-  background: #333333;
-}
-.media-carousel img
-{
-  width: 250px;
-  height: 100px
-}
-a{
-	color:black;
-}
 
-.how-it-works {
-    
-	right:5%;
-}
-
-.board .nav-tabs {
-	position: relative;
-	/* border-bottom: 0; */
-	/* width: 80%; */
-	margin: auto auto;
-	margin-bottom: 0;
-	box-sizing: border-box;
-
-}
-
-.board > div.board-inner > .nav-tabs {
-	border: none;
-}
-
-p.narrow{
-	width: 60%;
-	margin: 10px auto;
-}
-
-.liner{
-	height: 2px;
-	background: #ddd;
-	position: absolute;
-	width: 80%;
-	margin: auto auto;
-	left: 0;
-	right: 0;
-	top: 50%;
-	z-index: 1;
-}
-
-.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
-	color: #555555;
-	cursor: default;
-	/* background-color: #ffffff; */
-	border: 0;
-	border-bottom-color: transparent;
-	outline: 0;
-}
-
-span.round-tabs{
-	width: 70px;
-	height: 70px;
-	line-height: 70px;
-	display: inline-block;
-	border-radius: 100px;
-	background: white;
-	z-index: 2;
-	position: absolute;
-	left: 0;
-	text-align: center;
-	font-size: 25px;
-	
-}
-
-span.round-tabs:hover{
-		-ms-transform:  scale(1.05,1.05);/* IE 9 */
-    -webkit-transform:  scale(1.05,1.05); /* Chrome, Safari, Opera */
-    transform: scale(1.05,1.05);
-}
-
-span.round-tabs.one{
-	border: 2px solid #ddd;
-	color: #ddd;
-}
-
-li.active span.round-tabs.one, li.active span.round-tabs.two, li.active span.round-tabs.three, li.active span.round-tabs.four, li.active span.round-tabs.five {
-	background: lightgrey!important;
-	border: 2px solid lightblue;
-	color: #fff;
-}
-
-span.round-tabs.two{
-	border: 2px solid #ddd;
-	color: #ddd;
-}
-
-span.round-tabs.three{
-	border: 2px solid #ddd;
-	color: #ddd;
-}
-
-span.round-tabs.four{
-	border: 2px solid #ddd;
-	color: #ddd;
-}
-
-span.round-tabs.five{
-	border: 2px solid #ddd;
-	color: #ddd;
-}
-
-.nav-tabs > li.active > a span.round-tabs{
-	background: #fafafa;
-}
-.nav-tabs > li {
-	width: 20%;
-}
-
-.nav-tabs > li a{
-	width: 70px;
-	height: 70px;
-	margin: auto auto;
-	border-radius: 100%;
-	padding: 0;
-}
-
-.nav-tabs > li a:hover{
-	background: transparent;
-}
-
-.tab-content{
-}
-.tab-pane{
-	position: relative;
-	padding-top: 50px;
-}
-
-.btn-outline-rounded{
-	padding: 10px 40px;
-	margin: 20px 0;
-	border: 2px solid transparent;
-	border-radius: 25px;
-}
-
-.btn.green{
-	background-color:#69cb95;
-	/*border: 2px solid #5cb85c;*/
-	color: #ffffff;
-}
-
-@media( max-width : 585px ){
-
-	.board {
-		width: 90%;
-		height:auto !important;
-	}
-	span.round-tabs {
-		font-size:16px;
-		width: 50px;
-		height: 50px;
-		line-height: 50px;
-	}
-	.tab-content .head{
-		font-size:20px;
-	}
-	.nav-tabs > li a {
-		width: 50px;
-		height: 50px;
-		line-height:50px;
-	}
-
-	li.active:after {
-		content: " ";
-		position: absolute;
-		left: 35%;
-	}
-
-	.btn-outline-rounded {
-		padding:12px 20px;
-	}
-}
-/* End carousel */
-</style>
-
-
-  
-      <%- partial ('partials/nav.ejs') %>
+ <%- partial ('partials/nav.ejs') %>
       
-      <app-box class="merge" effects="parallax-background">
+    
         <div id="section_container">
         <section id="section1bg" class="section_img ">
       <div class="container" style="padding:100px;">
@@ -269,14 +12,14 @@ span.round-tabs.five{
       <div class="carousel-inner">
       
         <div class="item active" style="marin:0px;padding:0px;">
-          <img src="http://placehold.it/1200x400/ffffff/ffffff" class="image-slider">
+          <img src="http://placehold.it/1200x400/ffffff/ffffff" class="image-slider" style="min-width:1000px;min-height:350px;">
            <div class="carousel-caption" style="width:100%;height:100%;margin:0px;padding:0px;left:0;top:0;">
            
               <div class="col-xs-12">
 				<form id="flightSearchForm">
 					<div class ="panel" style="min-width:100%;min-height:100%;background-color:white;border-style:solid;border-color:lightgrey;padding:10px;">
 					<div class="panel-heading" style="background-color:#2196F3">
-						<p style="color:white;text-transform:uppercase;"><iron-icon icon="flight-takeoff" style="color:white;"></iron-icon> Search for flights</p>
+						<p style="color:white;text-transform:uppercase;">Search for flights</p>
 					</div>
 					<div class="row" style="margin-top:10px">
 						<div class="col-xs-4">
@@ -291,15 +34,15 @@ span.round-tabs.five{
 							</div>
 							<br>
 							<div class="form-group">
-							<div class="col-xs-4">
+							<div class="col-xs-3">
 								<label for="adults"><p>Adults</p></label>
 								<input id="adults" class="form-control" type="number" value="1"/>
 								</div>
-									<div class="col-xs-4">
+									<div class="col-xs-3">
 									<label for="children"><p>Children</p></label>
 									<input id="children" class="form-control" type="number" value="0"/>
 								</div>
-								<div class="col-xs-4">
+								<div class="col-xs-3">
 									<label for="infants"><p>Infants</p></label>
 									<input id="infants" class="form-control" type="number" value="0"/>
 								</div>
@@ -307,14 +50,14 @@ span.round-tabs.five{
 
 							</div>
 						</div>
-						<div class="col-xs-6" >
+						<div class="col-xs-5" >
 								<div class="col-xs-6" style="margin:0px;padding:5px;">
 			 						<div class="panel date-picker" style="width:100%;height:200px;margin:0px;padding:0px;">								
 									<div class="panel-heading" style="background-color:#2196F3;padding:10px;">
-									<p><iron-icon icon="flight-takeoff" style="color:white;"></iron-icon> Departure date</p>
+									<p class="text-white"><i class="fa fa-plane" style="color:white;"></i> Departure date</p>
 									</div>
 									<div class = "panel-content">
-										<div style="margin-auto;width:50px;height:90px;"><iron-icon icon="add" class="center-block" style="color:orange;margin-auto;width:80px;height:200px">></iron-icon></div>
+										<div style="margin-auto;width:50px;height:90px;"><i class="fa fa-search" style="margin-auto;width:80px;height:200px"></i></div>
 										<p class="text-center">Choose</p>
 									</div>		
 								</div>
@@ -322,30 +65,24 @@ span.round-tabs.five{
 								<div class="col-xs-6"  style="margin:0px;padding:5px;">
 			 						<div class="panel date-picker" style="width:100%;height:200px;margin:0px;padding:0px;">								
 									<div class="panel-heading" style="background-color:#2196F3;padding:10px;">
-									<p><iron-icon icon="flight-takeoff" style="color:white;"></iron-icon> Arrival date</p>
+							<p class="text-white"><i class="fa fa-plane" style="color:white;"></i> Arrival date</p>
 									</div>
 									<div class = "panel-content">
-										<div style="margin-auto;width:50px;height:90px;"><iron-icon icon="add" class="center-block" style="margin-auto;width:80px;height:200px">></iron-icon></div>
+										<i class="fa fa-plus" style="font-size:50px;color;black;"></i>
 										<p class="text-center">Choose</p>
 									</div>		
 								</div>
 							</div>
 						</div>
-						<div class="col-sm-2 col-md-2 col-lg-2 col-xs-2">
+						<div class="col-sm-3 col-md-3 col-lg-2 col-xs-3">
+						<div class="pull-right">
 						<a href="#">
-							<div class="panel panel-default">
-							<iron-icon icon="search" style="width:100%;height:100px;background-color:#2196F3;color:white;float:right;border-color:white;border-style:solid;border-width:5px;"></iron-icon>
-							
-							</div>
+							<i class="fa fa-search" style="min-width:120px;max-width:120px;font-size:100px;background-color:orange;color:white;border-color:white;border-style:solid;border-width:5px;"></i>
 						<a>
 						<a href="#">
-							<div class="panel panel-default">
-							<iron-icon icon="maps:near-me" style="width:100%;height:100px;background-color:#2196F3;color:white;float:right;border-color:white;border-style:solid;border-width:5px;"></iron-icon>
-							<div>
-								<a href="maps/airports"><p style="color:black;font-size:10px;" class="text-center">Use the map</p></a>
-							</div>
-							</div>
+							<i class="fa fa-map-marker" style="min-width:120px;max-width:120px;font-size:100px;background-color:#2196F3;color:white;;border-color:white;border-style:solid;border-width:5px;"></i>
 						<a>
+						</div>
 						</div>
 					</div>
 				</div>
@@ -393,8 +130,6 @@ span.round-tabs.five{
     </section>
 
 
-   <section>
-
 
     <section  class="section how-it-works" id="how-it-works">
         <div class="container">
@@ -405,38 +140,37 @@ span.round-tabs.five{
             </div>
             <div class="row">
                 <div class="col-md-12 board">
-                    <!-- <h2>Welcome to IGHALO!<sup>™</sup></h2>-->
                     <div class="board-inner">
                         <ul class="nav nav-tabs" id="myTab">
                             <div class="liner"></div>
                             <li class="active">
-                                <a href="#home" aria-controls="home" role="tab" data-toggle="tab" title="User Experience">
+                                <a href="#home"  role="tab" data-toggle="tab">
                       <span class="round-tabs one">
-                              <i class="icon icon-profile-male"></i>
+                              <i class="">1</i>
                       </span>
                                 </a></li>
-
-                            <li><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" title="Sketch">
+							
+                            <li><a href="#profile" role="tab" data-toggle="tab">
                      <span class="round-tabs two">
-                         <i class="icon icon-pencil"></i>
+                         <i class="">2</i>
                      </span>
                             </a>
                             </li>
-                            <li><a href="#prototyping" aria-controls="prototyping" role="tab" data-toggle="tab" title="Prototyping">
+                            <li><a href="#prototyping" role="tab" data-toggle="tab">
                      <span class="round-tabs three">
-                          <i class="icon icon-layers"></i>
+                          <i class="">3</i>
                      </span> </a>
                             </li>
 
-                            <li><a href="#uidesign" aria-controls="uidesign" role="tab" data-toggle="tab" title="UI Design">
+                            <li><a href="#uidesign"  role="tab" data-toggle="tab">
                          <span class="round-tabs four">
-                              <i class="icon icon-aperture"></i>
+                              <i class="">4</i>
                          </span>
                             </a></li>
 
-                            <li><a href="#doner" aria-controls="doner" role="tab" data-toggle="tab" title="Development">
+                            <li><a href="#doner" role="tab" data-toggle="tab">
                          <span class="round-tabs five">
-                              <i class="icon icon-tools-2"></i>
+                              <i class="">5</i>
                          </span> </a>
                             </li>
 
@@ -486,17 +220,18 @@ span.round-tabs.five{
                             </p>
                           
                         </div>
-                        <div class="clearfix"></div>
+                  
                     </div>
 
                 </div>
             </div>
         </div>
-    </section>
+		</section>
+   
     <!-- /How it work -->
            
                
-               
+<section> <!--Latest bid section-->
           <!--Latest bids-->
           <div class="col-xs-12">
                  <header>
@@ -611,11 +346,11 @@ span.round-tabs.five{
             </div>
            </aside>
            </div>
-          </section>
+</section><!--Latest bid section end-->
           
-		   <section id="section3bg" class"section section_img">
-		  <div class="container">
 
+<section>
+<div class="container">
 <div class="carousel slide" id="myCarousel">
         <div class="carousel-inner">
             <div class="item active">
@@ -897,13 +632,9 @@ span.round-tabs.five{
       </div>                          
     </div>
   </div>
+</section>
 
-		  </section>
 
-		  <div id="section3bg" class="container-fluid">
-       
-		  </div>
-		 
 
        
          
@@ -1017,10 +748,11 @@ span.round-tabs.five{
         </div> <!-- end chat -->
 
     </div> <!-- end live-chat -->
+	</section>
+
+	</div>
+
 
 
         <%- partial ('partials/footer.ejs') %>
-      </app-box>
-      
-    </app-header-layout>
-  </app-drawer-layout>
+    

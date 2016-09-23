@@ -8,6 +8,10 @@
          :host {
             display: block;
             background-color: none;
+            padding: 0px;
+            margin: 0px;
+            position: relative;
+            top: -40px;
             /*t*/
         }
         
@@ -23,16 +27,17 @@
             height: 1000px;
             width: 100%;
             background-color: none;
+            padding: 0px;
+            margin: 0px;
         }
         
         #fixed-list {
-            min-width: 300px;
-            min-height: 300px;
+            max-width: 250px;
+            max-height: 250px;
             padding: 10px;
         }
         
         .panel {
-       
             border-style: none;
         }
         
@@ -41,8 +46,8 @@
         }
         
         .panel-full {
-            min-width: 300px;
-            min-height: 300px;
+            max-width: 250px;
+            min-height: 250px;
         }
         
          ::selection {
@@ -59,7 +64,7 @@
     <template>
 
 <iron-ajax url="/maps/test" last-response="{{data}}" auto></iron-ajax>
-        <h2>Cheap flights</h2>
+  
   <iron-list id="i-list" items="[[data]]" as="item" grid>
       
     <template>

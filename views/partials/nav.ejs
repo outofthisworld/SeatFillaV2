@@ -29,6 +29,36 @@ margin-right: 15px !important;
 padding: 0px;
 overflow: hidden;
 }
+body {
+    background:#f0f0f0;
+}
+
+
+.dropdown.user {
+    background:white;
+    border:1px solid #ccc;
+    border-radius:4px;
+    width:260px;    
+    height:40px;
+    color:white;
+    position:absolute;
+    font-size:10px;
+    top:10px;
+    right:170px;
+}
+.dropdown-menu>li>a {
+    color:#428bca;
+}
+.dropdown-menu>li>a:hover {
+    color:white;
+}
+.dropdown.user ul.dropdown-menu {
+    border-radius:4px;
+    box-shadow:none;
+    margin-top:20px;
+    width:300px;
+}
+
 </style>
  <app-drawer-layout force-narrow fullbleed>
     <app-drawer id="drawer" opened>
@@ -47,14 +77,29 @@ overflow: hidden;
       </paper-menu>
     </app-drawer>
        <app-header-layout fullbleed>
-      <app-header >
+      <app-header>
 
         <app-toolbar>
           <nav>
           <paper-icon-button style="position:absolute;top:30px;" icon="menu" drawer-toggle></paper-icon-button>
-          <h1 class="sf-logo" ><img src="images/Logo.png" width="50" height="50"/> SeatFilla</h1>
+          <h1 class="sf-logo" ><img src="/images/Logo.png" width="50" height="50"/> SeatFilla</h1>
+          <ul class="nav navbar-nav">
+        <li class="dropdown user">
+          <a href="#" style="color:black;transform:scale(1,1);" data-toggle="dropdown"><p>Username<span class="glyphicon glyphicon-user pull-right"></span></p></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Account Settings <span class="glyphicon glyphicon-cog pull-right"></span></a></li>
+            <li class="divider"></li>
+            <li><a href="#">User stats <span class="glyphicon glyphicon-stats pull-right"></span></a></li>
+            <li class="divider"></li>
+            <li><a href="#">Messages <span class="badge pull-right"> 42 </span></a></li>
+            <li class="divider"></li>
+            <li><a href="#">Favourites Snippets <span class="glyphicon glyphicon-heart pull-right"></span></a></li>
+            <li class="divider"></li>
+            <li><a href="#">Sign Out <span class="glyphicon glyphicon-log-out pull-right"></span></a></li>
+          </ul>
+        </li>
+      </ul>
           <paper-tabs>
-            selected="{{selected}}">
             <paper-tab link>
               <a href="#section1bg" class="link" tabindex="-1">SIGN UP </a>
             </paper-tab>
@@ -76,11 +121,13 @@ overflow: hidden;
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle menu-link" data-toggle="dropdown" role="button" aria-expanded="false"><iron-icon icon="settings"> </iron-icon><span class="caret"></span></a>
                                         <ul class="dropdown-menu" id="settings">
+                                          <%if (req.user) { %>
                                             <li>
                                                 <div class="navbar-content">
                                                     <div class="row">
                                                         <div class="col-md-5">
-                                                            <img src="http://placehold.it/120x120"
+                                            
+                                                        <img src="http://placehold.it/120x120"
                                                                 alt="Alternate Text" class="img-responsive" />
                                                             <p class="text-center small">
                                                                 <a href="#">Change Photo</a></p>
@@ -93,6 +140,7 @@ overflow: hidden;
                                                             </div>
                                                             <a href="#" class="btn btn-primary btn-sm active">View Profile</a>
                                                         </div>
+
                                                     </div>
                                                 </div>
                                                 <div class="navbar-footer">
@@ -108,8 +156,44 @@ overflow: hidden;
                                                     </div>
                                                 </div>
                                             </li>
+                                            <% }else {%>
+                                                   <li>
+                                                <div class="navbar-content">
+                                                    <div class="row">
+                                                        <div class="col-md-5">
+                                            
+                                                        <img src="http://placehold.it/120x120"
+                                                                alt="Alternate Text" class="img-responsive" />
+                                                            <p class="text-center small">
+                                                                <a href="#">Change Photo</a></p>
+                                                        </div>
+                                                        <div class="col-md-7">
+                                                            <span>Username</span>
+                                                            <p class="text-muted small">
+                                                                email@email.com</p>
+                                                            <div class="divider">
+                                                            </div>
+                                                            <a href="#" class="btn btn-primary btn-sm active">View Profile</a>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                                <div class="navbar-footer">
+                                                    <div class="navbar-footer-content">
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <a href="#" class="btn btn-default btn-sm">Change Passowrd</a>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <a href="http://www.jquery2dotnet.com" class="btn btn-default btn-sm pull-right">Sign Out</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                         <% } %>
                                         </ul>
-           </li>
+                                    </li>
            </paper-icon>
            <paper-icon-button style="right:50px;" class="menu-icon" icon="search" alt="Search"></paper-icon-button>
            <paper-badge for="notifications" label="4" class="paper-badge-red">
@@ -143,14 +227,6 @@ overflow: hidden;
               
               <li style="position:relative;bottom:0px;width:100%;"><a class="text-center" href="">View All notifications</a></li>
           </ul>
-        </li>
-        
+        </li>  
           </nav>
-    
-
-    
-        <div class="center pull-right" style="color:lightgrey;position:relative;left:200px;bottom:20px;">
-        <p>Phone: 0800-334-343</p>
-	    </div>
-
       </app-header>

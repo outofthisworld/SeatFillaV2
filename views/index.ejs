@@ -83,6 +83,174 @@
 a{
 	color:black;
 }
+
+.how-it-works {
+    
+	right:5%;
+}
+
+.board .nav-tabs {
+	position: relative;
+	/* border-bottom: 0; */
+	/* width: 80%; */
+	margin: auto auto;
+	margin-bottom: 0;
+	box-sizing: border-box;
+
+}
+
+.board > div.board-inner > .nav-tabs {
+	border: none;
+}
+
+p.narrow{
+	width: 60%;
+	margin: 10px auto;
+}
+
+.liner{
+	height: 2px;
+	background: #ddd;
+	position: absolute;
+	width: 80%;
+	margin: auto auto;
+	left: 0;
+	right: 0;
+	top: 50%;
+	z-index: 1;
+}
+
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+	color: #555555;
+	cursor: default;
+	/* background-color: #ffffff; */
+	border: 0;
+	border-bottom-color: transparent;
+	outline: 0;
+}
+
+span.round-tabs{
+	width: 70px;
+	height: 70px;
+	line-height: 70px;
+	display: inline-block;
+	border-radius: 100px;
+	background: white;
+	z-index: 2;
+	position: absolute;
+	left: 0;
+	text-align: center;
+	font-size: 25px;
+	
+}
+
+span.round-tabs:hover{
+		-ms-transform:  scale(1.05,1.05);/* IE 9 */
+    -webkit-transform:  scale(1.05,1.05); /* Chrome, Safari, Opera */
+    transform: scale(1.05,1.05);
+}
+
+span.round-tabs.one{
+	border: 2px solid #ddd;
+	color: #ddd;
+}
+
+li.active span.round-tabs.one, li.active span.round-tabs.two, li.active span.round-tabs.three, li.active span.round-tabs.four, li.active span.round-tabs.five {
+	background: lightgrey!important;
+	border: 2px solid lightblue;
+	color: #fff;
+}
+
+span.round-tabs.two{
+	border: 2px solid #ddd;
+	color: #ddd;
+}
+
+span.round-tabs.three{
+	border: 2px solid #ddd;
+	color: #ddd;
+}
+
+span.round-tabs.four{
+	border: 2px solid #ddd;
+	color: #ddd;
+}
+
+span.round-tabs.five{
+	border: 2px solid #ddd;
+	color: #ddd;
+}
+
+.nav-tabs > li.active > a span.round-tabs{
+	background: #fafafa;
+}
+.nav-tabs > li {
+	width: 20%;
+}
+
+.nav-tabs > li a{
+	width: 70px;
+	height: 70px;
+	margin: auto auto;
+	border-radius: 100%;
+	padding: 0;
+}
+
+.nav-tabs > li a:hover{
+	background: transparent;
+}
+
+.tab-content{
+}
+.tab-pane{
+	position: relative;
+	padding-top: 50px;
+}
+
+.btn-outline-rounded{
+	padding: 10px 40px;
+	margin: 20px 0;
+	border: 2px solid transparent;
+	border-radius: 25px;
+}
+
+.btn.green{
+	background-color:#69cb95;
+	/*border: 2px solid #5cb85c;*/
+	color: #ffffff;
+}
+
+@media( max-width : 585px ){
+
+	.board {
+		width: 90%;
+		height:auto !important;
+	}
+	span.round-tabs {
+		font-size:16px;
+		width: 50px;
+		height: 50px;
+		line-height: 50px;
+	}
+	.tab-content .head{
+		font-size:20px;
+	}
+	.nav-tabs > li a {
+		width: 50px;
+		height: 50px;
+		line-height:50px;
+	}
+
+	li.active:after {
+		content: " ";
+		position: absolute;
+		left: 35%;
+	}
+
+	.btn-outline-rounded {
+		padding:12px 20px;
+	}
+}
 /* End carousel */
 </style>
 
@@ -92,7 +260,7 @@ a{
       
       <app-box class="merge" effects="parallax-background">
         <div id="section_container">
-        <section id="section1bg" class="header section_img section-full">
+        <section id="section1bg" class="section_img ">
       <div class="container" style="padding:100px;">
 
  <h2 style="color:white;">Get where you need to go at Seatfilla </h2>
@@ -221,16 +389,111 @@ a{
         </ul>
 
 
-    </div><!-- End Carousel -->
+    </div><!-- End Carousel -->	
+    </section>
 
 
+   <section>
 
 
-			
-          </section>
+    <section  class="section how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="row text-center">
+                <div class="how-it-works-heading">
+                    <h2 class="section-title">What is Seatfilla</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 board">
+                    <!-- <h2>Welcome to IGHALO!<sup>™</sup></h2>-->
+                    <div class="board-inner">
+                        <ul class="nav nav-tabs" id="myTab">
+                            <div class="liner"></div>
+                            <li class="active">
+                                <a href="#home" aria-controls="home" role="tab" data-toggle="tab" title="User Experience">
+                      <span class="round-tabs one">
+                              <i class="icon icon-profile-male"></i>
+                      </span>
+                                </a></li>
 
+                            <li><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" title="Sketch">
+                     <span class="round-tabs two">
+                         <i class="icon icon-pencil"></i>
+                     </span>
+                            </a>
+                            </li>
+                            <li><a href="#prototyping" aria-controls="prototyping" role="tab" data-toggle="tab" title="Prototyping">
+                     <span class="round-tabs three">
+                          <i class="icon icon-layers"></i>
+                     </span> </a>
+                            </li>
 
-   <section id="section2bg" class="section section_img">
+                            <li><a href="#uidesign" aria-controls="uidesign" role="tab" data-toggle="tab" title="UI Design">
+                         <span class="round-tabs four">
+                              <i class="icon icon-aperture"></i>
+                         </span>
+                            </a></li>
+
+                            <li><a href="#doner" aria-controls="doner" role="tab" data-toggle="tab" title="Development">
+                         <span class="round-tabs five">
+                              <i class="icon icon-tools-2"></i>
+                         </span> </a>
+                            </li>
+
+                        </ul></div>
+
+                    <div class="tab-content">
+                        <div class="tab-pane fade in active" id="home">
+
+                            <h2 class="head text-center">Searching Flights</h2>
+                            <p class="lead text-center">
+                                Seatfilla allows you to search flights to numerous destinations around the world easily and quickly by scanning
+								various sources for the cheapsest flights.
+                            </p>
+                        </div>
+                        <div class="tab-pane fade" id="profile">
+                            <h2 class="head text-center">Requesting Flights</h2>
+                            <p class="lead text-center">
+                                Seatfilla users can request flights between any destinations and dates and be notified by our system
+								should we come accross any flights matching your description. Aditionally, these flight requests
+								are monitored by Seatfilla ticket providers - one of them might just accept your request at a discounted rate!
+                            </p>
+                        </div>
+                        <div class="tab-pane fade" id="prototyping">
+                            <h2 class="head text-center">Purchase/Bid on Flight Tickets</h2>
+                            <p class="lead text-center">
+                                Take advantage of Seatfilla and it's flights offered by our various partners. These flights often are marginally cheaper
+								than the original cost and can either be bidded on/purchased depending on our suppliers choice when supplying the ticket to our platform. 
+                            </p>
+
+                        </div>
+                        <div class="tab-pane fade" id="uidesign">
+                            <h2 class="head text-center">Join our newsletter</h2>
+                            <p class="lead text-center">
+                                Receive updates about the cheapest flights available from your country!
+                            </p>
+
+                        </div>
+                        <div class="tab-pane fade" id="doner">
+                            <div class="text-center">
+                                <i class="img-intro icon-checkmark-circle"></i>
+                            </div>
+                            <h2 class="head text-center">API (For Developers)</h2>
+                            <p class="lead text-center">
+                                If you are a developer, you can take advantage of our API to check out the places people frequently want to travel
+								and the types of prices they're willing to pay. Also, with a verified API key (contact required) you can use our flight
+								offer API endpoint to send flights to us!
+                            </p>
+                          
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- /How it work -->
            
                
                

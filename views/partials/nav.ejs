@@ -1,46 +1,97 @@
 <style>
-nav.navbar-findcond { background: #fff; border-color: #ccc; box-shadow: 0 0 2px 0 #ccc; min-height:80px; height:50px; }
-nav.navbar-findcond a { color: #f14444; }
-nav.navbar-findcond ul.navbar-nav a { color: #f14444; border-style: solid; border-width: 0 0 2px 0; border-color: #fff; }
-nav.navbar-findcond ul.navbar-nav a:hover,
-nav.navbar-findcond ul.navbar-nav a:visited,
-nav.navbar-findcond ul.navbar-nav a:focus,
-nav.navbar-findcond ul.navbar-nav a:active { background: #fff; }
-nav.navbar-findcond ul.navbar-nav a:hover { border-color: #f14444; }
-nav.navbar-findcond li.divider { background: #ccc; }
-nav.navbar-findcond button.navbar-toggle { background: #f14444; border-radius: 2px; }
-nav.navbar-findcond button.navbar-toggle:hover { background: #999; }
-nav.navbar-findcond button.navbar-toggle > span.icon-bar { background: #fff; }
-nav.navbar-findcond ul.dropdown-menu { border: 0; background: #fff; border-radius: 4px; margin: 4px 0; box-shadow: 0 0 4px 0 #ccc; }
-nav.navbar-findcond ul.dropdown-menu > li > a { color: #444; }
-nav.navbar-findcond ul.dropdown-menu > li > a:hover { background: #f14444; color: #fff; }
-nav.navbar-findcond span.badge { background: #f14444; font-weight: normal; font-size: 11px; margin: 0 4px; }
-nav.navbar-findcond span.badge.new { background: rgba(255, 0, 0, 0.8); color: #fff; }
 
+
+.top_bar {background-color:#2196F3;padding:2px;border-color:none;}
+
+
+@media (max-width: 600px) {
+    .top_bar {
+        display:none;
+    }
+}
+
+ul.site-tabs{
+    position:relative;
+    top:30px;
+    right:10px;
+}
+
+.rightc { list-style-type:none; margin-bottom:0px; float:right;}
+.rightc li { margin:0px 10px; font-size:13px; float:left; line-height:40px; color:white;}
+.rightc li a {   color:black; }
+
+.navbar-right li a { color:white;font-size:12px;}
+nav.site-nav{ background: #fff; border-color: #ccc; box-shadow: 0 0 2px 0 #ccc; }
+nav.site-nav a { color: #2196F3; }
+nav.site-nav ul.navbar-nav a { color: #2196F3; border-style: solid; border-width: 0 0 2px 0; border-color: #fff; }
+nav.site-nav ul.navbar-nav a:hover,
+nav.site-nav ul.navbar-nav a:visited,
+nav.site-nav ul.navbar-nav a:focus,
+nav.site-nav ul.navbar-nav a:active { background: #fff; }
+nav.site-nav ul.navbar-nav a:hover { border-color: #2196F3; }
+nav.site-nav li.divider { background: #2196F3; }
+nav.site-nav button.navbar-toggle { background: #2196F3; border-radius: 2px; }
+nav.site-nav button.navbar-toggle:hover { background: #999; }
+nav.site-nav button.navbar-toggle > span.icon-bar { background: #fff; }
+nav.site-nav ul.dropdown-menu { border: 0; background: #fff; border-radius: 4px; margin: 4px 0; box-shadow: 0 0 4px 0 #ccc; }
+nav.site-nav ul.dropdown-menu > li > a { color: #2196F3; }
+nav.site-nav ul.dropdown-menu > li > a:hover { background: #f14444; color: #fff; }
+nav.site-nav span.badge { background: #2196F3; font-weight: normal; font-size: 11px; margin: 0 4px; }
+nav.site-nav span.badge.new { background: rgba(255, 0, 0, 0.8); color: #fff; }
 </style>
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 
-<nav class="navbar navbar-findcond navbar-fixed-top">
-    <div class="container">
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
-				<span class="sr-only">Toggle navigation</span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			</button>
-			<a class="navbar-brand" href="#"><image src="/images/Logo.png" width"30" height="30"/>Seatfilla</a>
-		</div>
-		<div class="collapse navbar-collapse" id="navbar">
-			<ul class="nav navbar-nav navbar-right">
+<header class="site-header">
+    
+</div>
+<!--top_bar-->
+<nav class="navbar navbar-default navbar-fixed-top site-nav" role="navigation">
+    	<div class="container">
+			<!-- Brand and toggle get grouped for better mobile display -->
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+                <br>
+				<a class="" href="#" style="position:relative;bottom:10px;left:5px;"><img src="/images/Logo.png" width="64" height="64"> Seatfilla</a>
+			</div>
+
+			<!-- Collect the nav links, forms, and other content for toggling -->
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				
+				<ul class="nav navbar-nav navbar-right" style="">
+                <li><a href="#">Home</a></li>
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Something</a>
+						<ul class="dropdown-menu">
+							<li><a href="#">Action</a></li>
+							<li><a href="#">Another action</a></li>
+							<li><a href="#">Something else here</a></li>
+							<li class="divider"></li>
+							<li><a href="#">Separated link</a></li>
+						</ul>
+					</li>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Login</a></li>
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-fw fa-bell-o"></i> Bildirimler <span class="badge">0</span></a>
 					<ul class="dropdown-menu" role="menu">
+                        <li> Notifications</li>
 						<li><a href="#"><i class="fa fa-fw fa-tag"></i> <span class="badge">Music</span> sayfası <span class="badge">Video</span> sayfasında etiketlendi</a></li>
 						<li><a href="#"><i class="fa fa-fw fa-thumbs-o-up"></i> <span class="badge">Music</span> sayfasında iletiniz beğenildi</a></li>
 						<li><a href="#"><i class="fa fa-fw fa-thumbs-o-up"></i> <span class="badge">Video</span> sayfasında iletiniz beğenildi</a></li>
 						<li><a href="#"><i class="fa fa-fw fa-thumbs-o-up"></i> <span class="badge">Game</span> sayfasında iletiniz beğenildi</a></li>
-					</ul>
+                        <li>
+                        <div class="well well-sm">
+                            View all
+                         </div>
+                        </li>
+                    </ul>
+                    
 				</li>
 				<li class="active"><a href="#">Ana Sayfa <span class="sr-only">(current)</span></a></li>
 				<li class="dropdown">
@@ -54,9 +105,28 @@ nav.navbar-findcond span.badge.new { background: rgba(255, 0, 0, 0.8); color: #f
 					</ul>
 				</li>
 			</ul>
-			<form class="navbar-form navbar-right search-form" role="search">
-				<input type="text" class="form-control" placeholder="Search" />
-			</form>
-		</div>
-	</div>
-</nav>
+	
+			</div><!-- /.navbar-collapse -->
+
+            
+		</div><!-- /.container-fluid -->
+         <div class="top_bar">
+            <div class="container">
+            <div class="col-xs-5 col-md-6">
+            <ul class="social" style="position:absolute;left:0px;">
+            <li><a target="_blank" href=""><i class="fa fa-facebook text-white"></i></a></li>
+            <li><a target="_blank" href=""><i class="fa fa-twitter text-white"></i></a></li>
+            <li><a target="_blank" href=""><i class="fa fa-instagram text-white"></i></a></li>
+            </ul></div>
+            <div class="col-xs-7 col-md-6">
+            <ul class="rightc">
+            <li><i class="fa fa-envelope-o"></i> customer@seatfilla.com </li>
+            <li><i class="fa fa-user"></i> <a href="webenlance.com" >Login</a></li>      
+            </ul>
+            </div>
+            </div>
+        </div>
+	</nav>
+    
+</header>
+

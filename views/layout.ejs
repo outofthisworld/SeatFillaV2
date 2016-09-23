@@ -59,82 +59,15 @@
     <link rel="stylesheet" href="/styles/main.css">
     <!--STYLES END-->
 
-      <style is="custom-style">
+   <style is="custom-style">
 
-
-     body {
-        position:relative;
-        margin:0px;
-        padding:0px;
-        top:40px;
-        background-attachment: fixed;
-        background-image:url('images/skyline-dark.jpg');
-      }
+    body {
+        background-color:white;
+    }
       
-      html{
+    html,ul{
         padding:0px;
-      }
-
-
-    /*Polymer compnents*/
-    app-header {
-      color: white;
-      max-height: 50px;
-    }
-
-    .menu-link{
-      color:black;
-    }
-
-    .sf-logo{
-      color:black;
-      font-weight:normal;
-      font-size:12px;
-      font-family:'verdana';
-    }
-
-    app-toolbar {
-       background-color:white;
-       min-height:100px;
-       border-top:0px;
-       border-left:0px;
-       border-right:0px;
-       border-bottom:4px;
-       border-color:#1E88E5;
-       border-style:solid;
-
-    }
-
-  paper-item {
-    display:block;
-    padding:20px;
-    margin-top:10px;
-    color:black;
-  }
-   .paper-badge-red {
-    --paper-badge-background: red;
-  }
-  .paper-badge-blue {
-    --paper-badge-background: var(--paper-light-blue-300);
-  }
-
-    .paper-badge-orange {
-    --paper-badge-background: orange;
-  }
-
-    .paper-badge-black {
-    --paper-badge-background: black;
-  }
-    
-    paper-tabs {
-      width:60%;
-      border-radius:5px;
-      position:absolute;
-      right:0px;
-      top:52px;
-      font-family:'verdana'
-      letter-spacing:2px;
-      opacity:1;
+        margin:0px;
     }
 
     .link {
@@ -151,27 +84,6 @@
       opacity:1;
     }
 
-    .link:hover{
-      color:white;
-    }
-
-    /*All polymer elements*/
-    :root {
-      /* Label and underline color when the input is not focused */
-      --paper-input-container-color: black;
-      /* Label and underline color when the input is focused */
-      --paper-input-container-focus-color: black;
-      /* Label and underline color when the input is invalid */
-      --paper-input-container-invalid-color: red;
-      /* Input foreground color */
-      --paper-input-container-input-color: black;
-    }
-
-    /*End polymer compnents*/
-
-    /* 
-      Section
-    */
     .section {
       position: relative;
       min-height: 100vh;
@@ -208,14 +120,6 @@
       max-height: 80vh;
     }
     
-    .header {
-      position: relative;
-      display: flex;
-      -webkit-box-shadow: 1px 2px 4px 0px rgba(18, 18, 18, 1);
-      -moz-box-shadow: 1px 2px 4px 0px rgba(18, 18, 18, 1);
-      box-shadow: 1px 2px 4px 0px rgba(18, 18, 18, 1);
-    }
-
     section{
       padding:50px;
       overflow:hidden;
@@ -231,46 +135,17 @@
       background-image: url('/images/skyline-dark.jpg');
     }
     
-    #section2bg { 
-      color:white;
-    }
-
-    #section2bg li{
-      color:white;
-    }
-
-    #section2bg h2{
-      color:white;
-    }
-
-      #section2bg p{
-      color:white;
-    }
-    
-    #section3bg {
-        background-color:white;
-            
-    }
-    
-    #section4bg {
-     background-color:white;
- 
-    }
-    
-    #section5bg {
-      background-color: lightgrey;
-    }
-    
+   
     #section_container {
       width: 100%;
       overflow-x: hidden;
       margin: auto;
     }
 
-         #myCarousel h4 {
-            font-family: verdana;
-            font-size: 12px;
-        }
+   #myCarousel h4 {
+      font-family: verdana;
+      font-size: 12px;
+   }
         
 
 
@@ -352,8 +227,6 @@
 
     .form-control { margin-bottom: 10px; }
 
-
-    /*Site title*/
     .title {
       font-size: 1em;
       letter-spacing: 2px;
@@ -373,145 +246,8 @@
       top:50%;
     }
     
-    /*
-      Footer
-    */
-   @import url(https://fonts.googleapis.com/css?family=Lato:400,300,700,900|Open+Sans:400,300);
 
-footer {
-	background-repeat: repeat;
-}
-.footer_top {
-	min-height:100px;
-}
-.bagcblue {
-	background-color:#ffa733;
-	background-image: url('images/footer_sli.png');
-	background-repeat: no-repeat;
-	background-position: left top;
-	padding-left:65px;
-	padding-top:15px;
-	color:#FFF;
-	font-family: 'Lato', sans-serif;
-	min-height:131px;
-}
-.bagcblue p {
-	font-size:13px;
-}
 
-.methodh4 {
-	float:left;
-	width:103px;
-	margin-top:50px;
-}
-.bagcgrey h4 {
-	font-family: 'Lato', sans-serif;
-	font-size:20px;
-	font-weight:700;
-}
-.img-responsive2 {
-	width:350px;
-	margin-top:68px;
-	float:left;
-}
-.heading6 {
-	font-size:18px;
-	font-family: 'Lato', sans-serif;
-	text-transform:uppercase;
-}
-.footer_bottom_col {
-background: #2c539e; /* Old browsers */
-background: -moz-linear-gradient(top,  #2c539e 0%, #2c539e 100%); /* FF3.6-15 */
-background: -webkit-linear-gradient(top,  #2c539e 0%,#2c539e 100%); /* Chrome10-25,Safari5.1-6 */
-background: linear-gradient(to bottom,  #2c539e 0%,#2c539e 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c539e', endColorstr='#2c539e',GradientType=0 ); /* IE6-9 */
-
-	min-height:388px;
-	padding-top:30px;
-}
-.heading_footer {
-	font-family: 'Open Sans', sans-serif;
-	font-weight:700;
-	color:#FFF;
-	text-transform:uppercase;
-	font-size:16px;
-}
-.heading_footer span {
-	display:block;
-	background-image: url(http://webenlance.in/bootsnipp/images/display.png);
-	background-repeat: no-repeat;
-	background-position: left bottom;
-	padding-bottom: 8px;
-	line-height: 22px;
-}
-.footerul {
-	list-style-type:none;
-	float:left;
-	margin-left:0px;
-	padding-left:0px;
-	margin-top:15px;
-	font-family: 'Lato', sans-serif;
-}
-.footerul li a {
-	color:#c9c9c9;
-	font-size:13px;
-	line-height:20px;
-	font-family: 'Lato', sans-serif;
-	font-weight: 400;
-}
-.footerul p {
-	color:#c9c9c9;
-	font-size:13px;
-}
-.footerul p a {
-	color:#fff !important;
-	font-weight:700 !important;
-}
-.copyright {
-	width:100%;
-	float:left;
-	min-height:40px;
-	background-color:#FFF;
-	padding-top:12px;
-	text-align:center;
-}
- @media (max-width:768px) {
-	
-/*footer*/
-.footer_top {
-background-color:#FFF !important;
-background-image:none;
-}
-.tabmob {
-background-image:none;
-}
-.bagcgrey {
-background-image:none;
-background-color:#f7f7f7;
-padding:25px 15px 15px 15px;
-}
-.methodh4 {
-width:100%;
-text-align:center;
-margin-top:0px;
-}
-.img-responsive2 {
- margin-top: 5px;
- margin-bottom:10px;
-width:90%;
-display:table;
-margin-left:5%;
-margin-right:5%;
-}
-.bagcblue {
-background-image:none;
-padding:10px !important;
-}
- .footerul {
- float:none;
-width:100%;
-}
-}
 .socmatpbo { margin-top:25px; float:left !important; font-size:20px; margin-top:60px; }
 .social li {
     float: left;

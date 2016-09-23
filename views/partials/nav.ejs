@@ -1,232 +1,62 @@
 <style>
-
-#settings{
-    position:relative;
-    right:100px;
-}
-
-.navbar-content
-{
-    width:320px;
-    padding: 15px;
-    padding-bottom:0px;
-}
-.navbar-content:before, .navbar-content:after
-{
-    display: table;
-    content: "";
-    line-height: 0;
-}
-.navbar-nav.navbar-right:last-child {
-margin-right: 15px !important;
-}
-.navbar-footer 
-{
-    background-color:#DDD;
-}
-.navbar-footer-content { padding:15px 15px 15px 15px; }
-.dropdown-menu {
-padding: 0px;
-overflow: hidden;
-}
-body {
-    background:#f0f0f0;
-}
-
-
-.dropdown.user {
-    background:white;
-    border:1px solid #ccc;
-    border-radius:4px;
-    width:260px;    
-    height:40px;
-    color:white;
-    position:absolute;
-    font-size:10px;
-    top:10px;
-    right:170px;
-}
-.dropdown-menu>li>a {
-    color:#428bca;
-}
-.dropdown-menu>li>a:hover {
-    color:white;
-}
-.dropdown.user ul.dropdown-menu {
-    border-radius:4px;
-    box-shadow:none;
-    margin-top:20px;
-    width:300px;
-}
+nav.navbar-findcond { background: #fff; border-color: #ccc; box-shadow: 0 0 2px 0 #ccc; min-height:80px; height:50px; }
+nav.navbar-findcond a { color: #f14444; }
+nav.navbar-findcond ul.navbar-nav a { color: #f14444; border-style: solid; border-width: 0 0 2px 0; border-color: #fff; }
+nav.navbar-findcond ul.navbar-nav a:hover,
+nav.navbar-findcond ul.navbar-nav a:visited,
+nav.navbar-findcond ul.navbar-nav a:focus,
+nav.navbar-findcond ul.navbar-nav a:active { background: #fff; }
+nav.navbar-findcond ul.navbar-nav a:hover { border-color: #f14444; }
+nav.navbar-findcond li.divider { background: #ccc; }
+nav.navbar-findcond button.navbar-toggle { background: #f14444; border-radius: 2px; }
+nav.navbar-findcond button.navbar-toggle:hover { background: #999; }
+nav.navbar-findcond button.navbar-toggle > span.icon-bar { background: #fff; }
+nav.navbar-findcond ul.dropdown-menu { border: 0; background: #fff; border-radius: 4px; margin: 4px 0; box-shadow: 0 0 4px 0 #ccc; }
+nav.navbar-findcond ul.dropdown-menu > li > a { color: #444; }
+nav.navbar-findcond ul.dropdown-menu > li > a:hover { background: #f14444; color: #fff; }
+nav.navbar-findcond span.badge { background: #f14444; font-weight: normal; font-size: 11px; margin: 0 4px; }
+nav.navbar-findcond span.badge.new { background: rgba(255, 0, 0, 0.8); color: #fff; }
 
 </style>
- <app-drawer-layout force-narrow fullbleed>
-    <app-drawer id="drawer" opened>
-      <app-toolbar>
-      
-      <small>Menu</small>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 
-      </app-toolbar>
-      <paper-menu selected="0" attr-for-selected="name">
-  <paper-item>Item 1</paper-item>
-  <paper-item>Item 2</paper-item>
-   <paper-item>Item 2</paper-item>
-    <paper-item>Item 2</paper-item>
-     <paper-item>Item 2</paper-item>
-</paper-menu>
-      </paper-menu>
-    </app-drawer>
-       <app-header-layout fullbleed>
-      <app-header>
-
-        <app-toolbar>
-          <nav>
-          <paper-icon-button style="position:absolute;top:30px;" icon="menu" drawer-toggle></paper-icon-button>
-          <h1 class="sf-logo" ><img src="/images/Logo.png" width="50" height="50"/> SeatFilla</h1>
-          <ul class="nav navbar-nav">
-        <li class="dropdown user">
-          <a href="#" style="color:black;transform:scale(1,1);" data-toggle="dropdown"><p>Username<span class="glyphicon glyphicon-user pull-right"></span></p></a>
-          <ul class="dropdown-menu">
-            <li><a href="#">Account Settings <span class="glyphicon glyphicon-cog pull-right"></span></a></li>
-            <li class="divider"></li>
-            <li><a href="#">User stats <span class="glyphicon glyphicon-stats pull-right"></span></a></li>
-            <li class="divider"></li>
-            <li><a href="#">Messages <span class="badge pull-right"> 42 </span></a></li>
-            <li class="divider"></li>
-            <li><a href="#">Favourites Snippets <span class="glyphicon glyphicon-heart pull-right"></span></a></li>
-            <li class="divider"></li>
-            <li><a href="#">Sign Out <span class="glyphicon glyphicon-log-out pull-right"></span></a></li>
-          </ul>
-        </li>
-      </ul>
-          <paper-tabs>
-            <paper-tab link>
-              <a href="#section1bg" class="link" tabindex="-1">SIGN UP </a>
-            </paper-tab>
-            <paper-tab link>
-              <a href="#link2" class="link" tabindex="-1">ABOUT</a>
-            </paper-tab>
-            <paper-tab link>
-              <a href="#link3" class="link" tabindex="-1">APP</a>
-            </paper-tab>
-            <paper-tab link>
-              <a href="#link3" class="link" tabindex="-1">TAB FOUR</a>
-            </paper-tab>
-            <paper-tab link>
-              <a href="#link3" class="link" tabindex="-1">TAB FIVE</a>
-            </paper-tab>
-          </paper-tabs>
-     
-           <paper-icon style="right:10px;top:15px;" class="menu-icon" icon="settings" drawer-toggle>
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle menu-link" data-toggle="dropdown" role="button" aria-expanded="false"><iron-icon icon="settings"> </iron-icon><span class="caret"></span></a>
-                                        <ul class="dropdown-menu" id="settings">
-                                          <%if (req.user) { %>
-                                            <li>
-                                                <div class="navbar-content">
-                                                    <div class="row">
-                                                        <div class="col-md-5">
-                                            
-                                                        <img src="http://placehold.it/120x120"
-                                                                alt="Alternate Text" class="img-responsive" />
-                                                            <p class="text-center small">
-                                                                <a href="#">Change Photo</a></p>
-                                                        </div>
-                                                        <div class="col-md-7">
-                                                            <span>Username</span>
-                                                            <p class="text-muted small">
-                                                                email@email.com</p>
-                                                            <div class="divider">
-                                                            </div>
-                                                            <a href="#" class="btn btn-primary btn-sm active">View Profile</a>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-                                                <div class="navbar-footer">
-                                                    <div class="navbar-footer-content">
-                                                        <div class="row">
-                                                            <div class="col-md-6">
-                                                                <a href="#" class="btn btn-default btn-sm">Change Passowrd</a>
-                                                            </div>
-                                                            <div class="col-md-6">
-                                                                <a href="http://www.jquery2dotnet.com" class="btn btn-default btn-sm pull-right">Sign Out</a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <% }else {%>
-                                                   <li>
-                                                <div class="navbar-content">
-                                                    <div class="row">
-                                                        <div class="col-md-5">
-                                            
-                                                        <img src="http://placehold.it/120x120"
-                                                                alt="Alternate Text" class="img-responsive" />
-                                                            <p class="text-center small">
-                                                                <a href="#">Change Photo</a></p>
-                                                        </div>
-                                                        <div class="col-md-7">
-                                                            <span>Username</span>
-                                                            <p class="text-muted small">
-                                                                email@email.com</p>
-                                                            <div class="divider">
-                                                            </div>
-                                                            <a href="#" class="btn btn-primary btn-sm active">View Profile</a>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-                                                <div class="navbar-footer">
-                                                    <div class="navbar-footer-content">
-                                                        <div class="row">
-                                                            <div class="col-md-6">
-                                                                <a href="#" class="btn btn-default btn-sm">Change Passowrd</a>
-                                                            </div>
-                                                            <div class="col-md-6">
-                                                                <a href="http://www.jquery2dotnet.com" class="btn btn-default btn-sm pull-right">Sign Out</a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                         <% } %>
-                                        </ul>
-                                    </li>
-           </paper-icon>
-           <paper-icon-button style="right:50px;" class="menu-icon" icon="search" alt="Search"></paper-icon-button>
-           <paper-badge for="notifications" label="4" class="paper-badge-red">
-          </paper-badge>
-           <paper-icon style="right:105px;top:16px;" class="menu-icon" id="notifications" icon="social:notifications" alt="inbox">
-         
-          <li class="dropdown">
-          <a href="#" class="dropdown-toggle menu-link" data-toggle="dropdown" role="button" aria-expanded="false"><iron-icon icon="social:notifications"> </iron-icon><span class="caret"></span></a>
-          <ul class="dropdown-menu dropdown-menu-s" id="notifications-menu" role="menu">
-            <div class="panel panel-default"><h2 class="text-center">Site Notifications</h2></div>
-              <!--<li>
-                  <span class="item" style="background-color:lightblue;">
-                        <span class="item-info">
-                            <span class="lead">Message name</span>
-                            <p>This is a message</p>
-                        </span>
-                    </span>
-                </span>
-              </li>
-              <hr>
-                    <li>
-                  <span class="item">
-                        <span class="item-info">
-                            <span class="lead">Message name</span>
-                            <p>This is a message</p>
-                        </span>
-                    </span>
-                </span>
-              </li>-->
-       
-              
-              <li style="position:relative;bottom:0px;width:100%;"><a class="text-center" href="">View All notifications</a></li>
-          </ul>
-        </li>  
-          </nav>
-      </app-header>
+<nav class="navbar navbar-findcond navbar-fixed-top">
+    <div class="container">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#"><image src="/images/Logo.png" width"30" height="30"/>Seatfilla</a>
+		</div>
+		<div class="collapse navbar-collapse" id="navbar">
+			<ul class="nav navbar-nav navbar-right">
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-fw fa-bell-o"></i> Bildirimler <span class="badge">0</span></a>
+					<ul class="dropdown-menu" role="menu">
+						<li><a href="#"><i class="fa fa-fw fa-tag"></i> <span class="badge">Music</span> sayfası <span class="badge">Video</span> sayfasında etiketlendi</a></li>
+						<li><a href="#"><i class="fa fa-fw fa-thumbs-o-up"></i> <span class="badge">Music</span> sayfasında iletiniz beğenildi</a></li>
+						<li><a href="#"><i class="fa fa-fw fa-thumbs-o-up"></i> <span class="badge">Video</span> sayfasında iletiniz beğenildi</a></li>
+						<li><a href="#"><i class="fa fa-fw fa-thumbs-o-up"></i> <span class="badge">Game</span> sayfasında iletiniz beğenildi</a></li>
+					</ul>
+				</li>
+				<li class="active"><a href="#">Ana Sayfa <span class="sr-only">(current)</span></a></li>
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Admin <span class="caret"></span></a>
+					<ul class="dropdown-menu" role="menu">
+						<li><a href="#">Geri bildirim</a></li>
+						<li><a href="#">Yardım</a></li>
+						<li class="divider"></li>
+						<li><a href="#">Ayarlar</a></li>
+						<li><a href="#exit">Çıkış yap</a></li>
+					</ul>
+				</li>
+			</ul>
+			<form class="navbar-form navbar-right search-form" role="search">
+				<input type="text" class="form-control" placeholder="Search" />
+			</form>
+		</div>
+	</div>
+</nav>

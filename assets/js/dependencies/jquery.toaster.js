@@ -64,7 +64,7 @@
             'class': 'toaster',
             'css': {
                 'position': 'fixed',
-                'top': '10px',
+                'top': '180px',
                 'right': '10px',
                 'width': '300px',
                 'zIndex': 50000
@@ -77,19 +77,19 @@
                 '<span aria-hidden="true">&times;</span>' +
                 '<span class="sr-only">Close</span>' +
                 '</button>' +
-                '<span class="title"></span>: <span class="message"></span>' +
+                '<span class="title"></span><span class="message"></span>' +
                 '</div>',
 
             'defaults': {
-                'title': 'Notice',
+                'title': '',
                 'priority': 'success'
             },
 
             'css': {},
             'cssm': {},
-            'csst': { 'fontWeight': 'bold' },
+            'csst': {},
 
-            'fade': 'slow',
+            'fade': 'veryslow',
 
             'display': function($toast) {
                 return $toast.fadeIn(settings.toast.fade);

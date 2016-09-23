@@ -31,18 +31,16 @@ nav.site-nav ul.navbar-nav a:active { background: #fff; }
 nav.site-nav ul.navbar-nav a:hover { border-color: #2196F3; }
 nav.site-nav li.divider { background: #2196F3; }
 nav.site-nav button.navbar-toggle { background: #2196F3; border-radius: 2px; }
-nav.site-nav button.navbar-toggle:hover { background: #999; }
+nav.site-nav button.navbar-toggle:hover { background:  #2196F3; }
 nav.site-nav button.navbar-toggle > span.icon-bar { background: #fff; }
 nav.site-nav ul.dropdown-menu { border: 0; background: #fff; border-radius: 4px; margin: 4px 0; box-shadow: 0 0 4px 0 #ccc; }
 nav.site-nav ul.dropdown-menu > li > a { color: #2196F3; }
-nav.site-nav ul.dropdown-menu > li > a:hover { background: #f14444; color: #fff; }
+nav.site-nav ul.dropdown-menu > li > a:hover { background:  #2196F3; color: #fff; }
 nav.site-nav span.badge { background: #2196F3; font-weight: normal; font-size: 11px; margin: 0 4px; }
 nav.site-nav span.badge.new { background: rgba(255, 0, 0, 0.8); color: #fff; }
 </style>
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
-
 <header class="site-header">
-    
 </div>
 <!--top_bar-->
 <nav class="navbar navbar-default navbar-fixed-top site-nav" role="navigation">
@@ -63,6 +61,7 @@ nav.site-nav span.badge.new { background: rgba(255, 0, 0, 0.8); color: #fff; }
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				
 				<ul class="nav navbar-nav navbar-right" style="">
+                <br>
                 <li><a href="#">Home</a></li>
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Something</a>
@@ -78,13 +77,12 @@ nav.site-nav span.badge.new { background: rgba(255, 0, 0, 0.8); color: #fff; }
                     <li><a href="#">About</a></li>
                     <li><a href="#">Login</a></li>
 				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-fw fa-bell-o"></i> Bildirimler <span class="badge">0</span></a>
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-fw fa-bell-o"></i> Notifications <span class="badge">2</span></a>
 					<ul class="dropdown-menu" role="menu">
                         <li> Notifications</li>
-						<li><a href="#"><i class="fa fa-fw fa-tag"></i> <span class="badge">Music</span> sayfası <span class="badge">Video</span> sayfasında etiketlendi</a></li>
-						<li><a href="#"><i class="fa fa-fw fa-thumbs-o-up"></i> <span class="badge">Music</span> sayfasında iletiniz beğenildi</a></li>
-						<li><a href="#"><i class="fa fa-fw fa-thumbs-o-up"></i> <span class="badge">Video</span> sayfasında iletiniz beğenildi</a></li>
-						<li><a href="#"><i class="fa fa-fw fa-thumbs-o-up"></i> <span class="badge">Game</span> sayfasında iletiniz beğenildi</a></li>
+						<li><a href="#"><i class="fa fa-fw fa-tag"></i> <span class="badge">Notification</span> Welcome to Seatfilla</a></li>
+						<li><a href="#"><i class="fa fa-fw fa-thumbs-o-up"></i> <span class="badge">Congratulations</span> You just visited SeatFilla</a></li>
+		
                         <li>
                         <div class="well well-sm">
                             View all
@@ -93,7 +91,8 @@ nav.site-nav span.badge.new { background: rgba(255, 0, 0, 0.8); color: #fff; }
                     </ul>
                     
 				</li>
-				<li class="active"><a href="#">Ana Sayfa <span class="sr-only">(current)</span></a></li>
+				<li class="active"><a href="#">Login<span class="sr-only">(current)</span></a></li>
+                <%if(req.user && req.user.role == 'Admin'){%>
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Admin <span class="caret"></span></a>
 					<ul class="dropdown-menu" role="menu">
@@ -104,6 +103,7 @@ nav.site-nav span.badge.new { background: rgba(255, 0, 0, 0.8); color: #fff; }
 						<li><a href="#exit">Çıkış yap</a></li>
 					</ul>
 				</li>
+                <%}%>
 			</ul>
 	
 			</div><!-- /.navbar-collapse -->

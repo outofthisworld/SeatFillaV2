@@ -33,8 +33,8 @@ module.exports = {
     //GET [return the my account page]
     myAccount: function(req, res) {
         return res.ok({ user: req.user }, {
-            layout: 'user/myAccount',
-            view: 'user/index',
+            layout: 'layouts/my-account-layout',
+            view: 'user/my-account',
             title: req.__('MyAccount')
         });
     },
@@ -43,7 +43,8 @@ module.exports = {
         return res.ok({
             user: req.user
         }, {
-            view: 'user/changedetails',
+            layout: 'layouts/my-account-layout',
+            view: 'user/change-details',
             title: req.__('ChangeDetails')
         });
     },

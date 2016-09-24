@@ -36,7 +36,7 @@
     }
 
     body {
-        margin-top:120px;
+        margin-top:0px;
         background-color:#FAFAFA;
     }
       
@@ -107,7 +107,7 @@
     }
     
     #section1bg {
-      background-image: url('/images/globe.jpeg');
+        background-image:url('/images/globe.jpeg')
     }
     
    
@@ -222,347 +222,7 @@
     }
     
 
-h1.page-header {
-    margin-top: -5px;
-}
 
-.sidebar {
-	padding-left: 0;
-}
-
-.main-container { 
-	background: #fafafa;
-    padding:0px;
-	padding-top: 35px;
-}
-
-.footer {
-	width: 100%;
-}  
-
-:focus {
-	outline: none;
-}
-
-.side-menu {
-	position: relative;
-	width: 100%;
-    min-height:145%;
-    height:100%;
-    margin-left:15px;
-	background-color: #fafafa;
-	border-right: 1px solid #e7e7e7;
-}
-.side-menu .navbar {
-	border: none;
-}
-.side-menu .navbar-header {
-	width: 100%;
-	border-bottom: 1px solid #e7e7e7;
-}
-.side-menu .navbar-nav .active a {
-	background-color: transparent;
-	margin-right: -1px;
-	border-right: 5px solid #e7e7e7;
-}
-.side-menu .navbar-nav li {
-	display: block;
-	width: 100%;
-	border-bottom: 1px solid #e7e7e7;
-}
-.side-menu .navbar-nav li a {
-	padding: 15px;
-}
-.side-menu .navbar-nav li a .glyphicon {
-	padding-right: 10px;
-}
-.side-menu #dropdown {
-	border: 0;
-	margin-bottom: 0;
-	border-radius: 0;
-	background-color: transparent;
-	box-shadow: none;
-}
-.side-menu #dropdown .caret {
-	float: right;
-	margin: 9px 5px 0;
-}
-.side-menu #dropdown .indicator {
-	float: right;
-}
-.side-menu #dropdown > a {
-	border-bottom: 1px solid #e7e7e7;
-}
-.side-menu #dropdown .panel-body {
-	padding: 0;
-	background-color: #f3f3f3;
-}
-.side-menu #dropdown .panel-body .navbar-nav {
-	width: 100%;
-}
-.side-menu #dropdown .panel-body .navbar-nav li {
-	padding-left: 15px;
-	border-bottom: 1px solid #e7e7e7;
-}
-.side-menu #dropdown .panel-body .navbar-nav li:last-child {
-	border-bottom: none;
-}
-.side-menu #dropdown .panel-body .panel > a {
-	margin-left: -20px;
-	padding-left: 35px;
-}
-.side-menu #dropdown .panel-body .panel-body {
-	margin-left: -15px;
-}
-.side-menu #dropdown .panel-body .panel-body li {
-	padding-left: 30px;
-}
-.side-menu #dropdown .panel-body .panel-body li:last-child {
-	border-bottom: 1px solid #e7e7e7;
-}
-.side-menu #search-trigger {
-	background-color: #f3f3f3;
-	border: 0;
-	border-radius: 0;
-	position: absolute;
-	top: 0;
-	right: 0;
-	padding: 15px 18px;
-}
-.side-menu .brand-name-wrapper {
-	min-height: 50px;
-}
-.side-menu .brand-name-wrapper .navbar-brand {
-	display: block;
-}
-.side-menu #search {
-	position: relative;
-	z-index: 1000;
-}
-.side-menu #search .panel-body {
-	padding: 0;
-}
-.side-menu #search .panel-body .navbar-form {
-	padding: 0;
-	padding-right: 50px;
-	width: 100%;
-	margin: 0;
-	position: relative;
-	border-top: 1px solid #e7e7e7;
-}
-.side-menu #search .panel-body .navbar-form .form-group {
-	width: 100%;
-	position: relative;
-}
-.side-menu #search .panel-body .navbar-form input {
-	border: 0;
-	border-radius: 0;
-	box-shadow: none;
-	width: 100%;
-	height: 50px;
-}
-.side-menu #search .panel-body .navbar-form .btn {
-	position: absolute;
-	right: 0;
-	top: 0;
-	border: 0;
-	border-radius: 0;
-	background-color: #f3f3f3;
-	padding: 15px 18px;
-}
-/* Main body section */
-.side-body {
-	margin-left: 310px;
-}
-/* small screen */
-@media (max-width: 768px) {
-	.side-menu {
-		position: relative;
-		width: 100%;
-		height: 0;
-		border-right: 0;
-	}
-
-	.side-menu .navbar {
-		z-index: 999;
-		position: relative;
-		height: 0;
-		min-height: 0;
-		background-color:none !important;
-		border-color: none !important;
-	}
-	.side-menu .brand-name-wrapper .navbar-brand {
-		display: inline-block;
-	}
-	/* Slide in animation */
-	@-moz-keyframes slidein {
-		0% {
-			left: -300px;
-		}
-		100% {
-			left: 10px;
-		}
-	}
-	@-webkit-keyframes slidein {
-		0% {
-			left: -300px;
-		}
-		100% {
-			left: 10px;
-		}
-	}
-	@keyframes slidein {
-		0% {
-			left: -300px;
-		}
-		100% {
-			left: 10px;
-		}
-	}
-	@-moz-keyframes slideout {
-		0% {
-			left: 0;
-		}
-		100% {
-			left: -300px;
-		}
-	}
-	@-webkit-keyframes slideout {
-		0% {
-			left: 0;
-		}
-		100% {
-			left: -300px;
-		}
-	}
-	@keyframes slideout {
-		0% {
-			left: 0;
-		}
-		100% {
-			left: -300px;
-		}
-	}
-
-	.side-menu-container > .navbar-nav.slide-in {
-		-moz-animation: slidein 300ms forwards;
-		-o-animation: slidein 300ms forwards;
-		-webkit-animation: slidein 300ms forwards;
-		animation: slidein 300ms forwards;
-		-webkit-transform-style: preserve-3d;
-		transform-style: preserve-3d;
-	}
-	.side-menu-container > .navbar-nav {
-		position: fixed;
-		left: -300px;
-		width: 300px;
-		top: 43px;
-		height: 100%;
-		border-right: 1px solid #e7e7e7;
-		background-color: #f8f8f8;
-		overflow: auto;
-		-moz-animation: slideout 300ms forwards;
-		-o-animation: slideout 300ms forwards;
-		-webkit-animation: slideout 300ms forwards;
-		animation: slideout 300ms forwards;
-		-webkit-transform-style: preserve-3d;
-		transform-style: preserve-3d;
-	}
-	@-moz-keyframes bodyslidein {
-		0% {
-			left: 0;
-		}
-		100% {
-			left: 300px;
-		}
-	}
-	@-webkit-keyframes bodyslidein {
-		0% {
-			left: 0;
-		}
-		100% {
-			left: 300px;
-		}
-	}
-	@keyframes bodyslidein {
-		0% {
-			left: 0;
-		}
-		100% {
-			left: 300px;
-		}
-	}
-	@-moz-keyframes bodyslideout {
-		0% {
-			left: 300px;
-		}
-		100% {
-			left: 0;
-		}
-	}
-	@-webkit-keyframes bodyslideout {
-		0% {
-			left: 300px;
-		}
-		100% {
-			left: 0;
-		}
-	}
-	@keyframes bodyslideout {
-		0% {
-			left: 300px;
-		}
-		100% {
-			left: 0;
-		}
-	}
-	/* Slide side body*/
-	.side-body {
-		margin-left: 5px;
-		margin-top: 70px;
-		position: relative;
-		-moz-animation: bodyslideout 300ms forwards;
-		-o-animation: bodyslideout 300ms forwards;
-		-webkit-animation: bodyslideout 300ms forwards;
-		animation: bodyslideout 300ms forwards;
-		-webkit-transform-style: preserve-3d;
-		transform-style: preserve-3d;
-	}
-	.body-slide-in {
-		-moz-animation: bodyslidein 300ms forwards;
-		-o-animation: bodyslidein 300ms forwards;
-		-webkit-animation: bodyslidein 300ms forwards;
-		animation: bodyslidein 300ms forwards;
-		-webkit-transform-style: preserve-3d;
-		transform-style: preserve-3d;
-	}
-	/* Hamburger */
-	.navbar-toggle-sidebar {
-		border: 0;
-		float: left;
-		padding: 18px;
-		margin: 0;
-		border-radius: 0;
-		background-color: #f3f3f3;
-	}
-	/* Search */
-	#search .panel-body .navbar-form {
-		border-bottom: 0;
-	}
-	#search .panel-body .navbar-form .form-group {
-		margin: 0;
-	}
-	.side-menu .navbar-header {
-		/* this is probably redundant */
-		position: fixed;
-		z-index: 3;
-		background-color: #f8f8f8;
-	}
-	/* Dropdown tweek */
-	#dropdown .panel-body .navbar-nav {
-		margin: 0;
-	}
-}
 .socmatpbo { margin-top:25px; float:left !important; font-size:20px; margin-top:60px; }
 .social li {
     float: left;
@@ -1060,7 +720,9 @@ h1.page-header {
   text-transform:none;
 }
 
-
+i{
+  padding:10px;
+}
 
 blockquote{
     border-left:none
@@ -1674,6 +1336,281 @@ span.round-tabs.five{
 	.btn-outline-rounded {
 		padding:12px 20px;
 	}
+}
+
+.social-login{
+	text-align:center;
+	font-size:12px;
+}
+.social-login p{
+	margin:15px 0;
+}
+.social-login ul{
+	margin:0;
+	padding:0;
+	list-style-type:none;
+}
+.social-login ul li{
+	width:33%;
+	float:left;
+    clear:fix;
+}
+.social-login ul li a{
+	font-size:13px;
+	color:#fff;
+	text-decoration:none;
+	padding:10px 0;
+	display:block;
+}
+.social-login ul li:nth-child(1) a{
+	background:#3b5998;
+}
+.social-login ul li:nth-child(2) a{
+	background:#e74c3d;
+}
+.social-login ul li:nth-child(3) a{
+	background:#3698d9;
+}
+.input-group{
+    height: 45px;
+    margin-bottom: 15px;
+    border-radius: 0px;
+    color:white;
+    max-height:50px;
+    overflow:hidden
+    background-color:white;
+}
+.input-group-addon{
+    overflow:hidden;
+
+    border-radius:none;
+    padding:0px;
+    line-height:0px;
+    margin:0px;
+    border-style:none;
+    background-color:white;
+}
+
+    /*new*/
+    #accordion .glyphicon { margin-right:10px; }
+      
+    
+    .clickable{
+        cursor: pointer;   
+    }
+
+    .panel-heading span {
+        margin-top: -20px;
+        font-size: 15px;
+    }
+
+    @-webkit-keyframes ld {
+  0%   { transform: rotate(0deg) scale(1); }
+  50%  { transform: rotate(180deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+@-moz-keyframes ld {
+  0%   { transform: rotate(0deg) scale(1); }
+  50%  { transform: rotate(180deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+@-o-keyframes ld {
+  0%   { transform: rotate(0deg) scale(1); }
+  50%  { transform: rotate(180deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+@keyframes ld {
+  0%   { transform: rotate(0deg) scale(1); }
+  50%  { transform: rotate(180deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.m-progress {
+    position: relative;
+    opacity: .8;
+    color: transparent !important;
+    text-shadow: none !important;
+}
+
+.m-progress:hover,
+.m-progress:active,
+.m-progress:focus {
+    cursor: default;
+    color: transparent;
+    outline: none !important;
+    box-shadow: none;
+}
+
+.m-progress:before {
+    content: '';
+    
+    display: inline-block;
+    
+    position: absolute;
+    background: transparent;
+    border: 1px solid #fff;
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    
+    box-sizing: border-box;
+    
+    top: 50%;
+    left: 50%;
+    margin-top: -12px;
+    margin-left: -12px;
+    
+    width: 24px;
+    height: 24px;
+    
+    -webkit-animation: ld 1s ease-in-out infinite;
+    -moz-animation:    ld 1s ease-in-out infinite;
+    -o-animation:      ld 1s ease-in-out infinite;
+    animation:         ld 1s ease-in-out infinite;
+}
+
+.btn-default.m-progress:before {
+    border-left-color: #333333;
+    border-right-color: #333333;
+}
+
+.btn-lg.m-progress:before {
+    margin-top: -16px;
+    margin-left: -16px;
+    
+    width: 32px;
+    height: 32px;
+}
+
+.btn-sm.m-progress:before {
+    margin-top: -9px;
+    margin-left: -9px;
+    
+    width: 18px;
+    height: 18px;
+}
+
+.btn-xs.m-progress:before {
+    margin-top: -7px;
+    margin-left: -7px;
+    
+    width: 14px;
+    height: 14px;
+}
+
+nav.sidebar, .main{
+    -webkit-transition: margin 200ms ease-out;
+      -moz-transition: margin 200ms ease-out;
+      -o-transition: margin 200ms ease-out;
+      transition: margin 200ms ease-out;
+  }
+
+  .main{
+    padding: 10px 10px 0 10px;
+  }
+
+ @media (min-width: 765px) {
+
+    .main{
+      position: absolute;
+      width: calc(100% - 40px); 
+      margin-left: 40px;
+      float: right;
+    }
+
+    nav.sidebar:hover + .main{
+      margin-left: 200px;
+    }
+
+    nav.sidebar.navbar.sidebar>.container .navbar-brand, .navbar>.container-fluid .navbar-brand {
+      margin-left: 0px;
+    }
+
+    nav.sidebar .navbar-brand, nav.sidebar .navbar-header{
+      text-align: center;
+      width: 100%;
+      margin-left: 0px;
+    }
+    
+    nav.sidebar a{
+      padding-right: 13px;
+    }
+
+    nav.sidebar .navbar-nav > li:first-child{
+      border-top: 1px #e5e5e5 solid;
+    }
+
+    nav.sidebar .navbar-nav > li{
+      border-bottom: 1px #e5e5e5 solid;
+    }
+
+    nav.sidebar .navbar-nav .open .dropdown-menu {
+      position: static;
+      float: none;
+      width: auto;
+      margin-top: 0;
+      background-color: transparent;
+      border: 0;
+      -webkit-box-shadow: none;
+      box-shadow: none;
+    }
+
+    nav.sidebar .navbar-collapse, nav.sidebar .container-fluid{
+      padding: 0 0px 0 0px;
+    }
+
+    .navbar-inverse .navbar-nav .open .dropdown-menu>li>a {
+      color: #777;
+    }
+
+    nav.sidebar{
+      width: 100%;
+      float: left;
+      margin-bottom: 0px;
+    }
+
+    nav.sidebar li {
+      width: 100%;
+    }
+
+    nav.sidebar:hover{
+      margin-left: 0px;
+    }
+
+    .forAnimate{
+      opacity: 0;
+    }
+  }
+   
+  @media (min-width: 1330px) {
+
+    .main{
+      width: calc(100% - 200px);
+      margin-left: 200px;
+    }
+
+    nav.sidebar{
+      margin-left: 0px;
+      float: left;
+    }
+
+    nav.sidebar .forAnimate{
+      opacity: 1;
+    }
+  }
+
+  nav.sidebar .navbar-nav .open .dropdown-menu>li>a:hover, nav.sidebar .navbar-nav .open .dropdown-menu>li>a:focus {
+    color: #CCC;
+    background-color: transparent;
+  }
+
+  nav:hover .forAnimate{
+    opacity: 1;
+  }
+  section{
+    padding-left: 15px;
+  }
+
 </style>
  	<script>
    //Facebook like script
@@ -1686,95 +1623,87 @@ span.round-tabs.five{
 	}(document, 'script', 'facebook-jssdk'));
 
   $(document).ready(function(){
-      $.toaster({ priority : 'info',  message : 'Manage your account'})
-      $('.sf-account-menu li').removeAttr('class');
-      $('#AccountPanel').attr('class','active');
+    $.toaster({ priority : 'info',  message : 'Flight search'})
   });
 
-
- 
+  $(document).on('click', '.panel-heading span.clickable', function(e){
+    var $this = $(this);
+    if(!$this.hasClass('panel-collapsed')) {
+		$this.parents('.panel').find('.panel-body').slideUp();
+		$this.addClass('panel-collapsed');
+		$this.find('i').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+	} else {
+		$this.parents('.panel').find('.panel-body').slideDown();
+		$this.removeClass('panel-collapsed');
+		$this.find('i').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
+	}
+})
   </script>
 </head>
+       <body>
 
-<body>
-   <%- partial ('../partials/nav.ejs') %>
-     
-   	<div class="container80 main-container">
-  		<div class="col-md-2 sidebar">
-  			<div class="row">
-
-	<div class="absolute-wrapper"> </div>
-
-	<div class="side-menu">
-		<nav class="navbar navbar-default" role="navigation">
-			<!-- Main Menu -->
-			<div class="side-menu-container">
-				<ul class="nav navbar-nav sf-account-menu">
-					<li id="AccountPanel" class="active"><a href="#"><span class="glyphicon glyphicon-stats"></span> Account panel</a></li>
-					<li id="ChangeDetails"><a href="#"><span class="glyphicon glyphicon-user"></span> Change details</a></li>
-					<li><a href="FlightRequests"><span class="glyphicon glyphicon-plane"></span> Flight requests</a></li>
-
-				
-                    <!--
-					<li class="panel panel-default" id="dropdown">
-						<a data-toggle="collapse" href="#dropdown-lvl1">
-							<span class="glyphicon glyphicon-user"></span> Sub Level <span class="caret"></span>
-						</a>
-
-						<!-- Dropdown level 1 -->
-						<div id="dropdown-lvl1" class="panel-collapse collapse">
-							<div class="panel-body">
-								<ul class="nav navbar-nav">
-									<li><a href="#">Link</a></li>
-									<li><a href="#">Link</a></li>
-									<li><a href="#">Link</a></li>
-
-									<!-- Dropdown level 2 -->
-									<li class="panel panel-default" id="dropdown">
-										<a data-toggle="collapse" href="#dropdown-lvl2">
-											<span class="glyphicon glyphicon-off"></span> Sub Level <span class="caret"></span>
-										</a>
-										<div id="dropdown-lvl2" class="panel-collapse collapse">
-											<div class="panel-body">
-												<ul class="nav navbar-nav">
-													<li><a href="#">Link</a></li>
-													<li><a href="#">Link</a></li>
-													<li><a href="#">Link</a></li>
-												</ul>
-											</div>
-										</div>
-									</li>
-								</ul>
-							</div>
-						</div>
-					</li>
-                    <li><a href="#"><span class="glyphicon 	glyphicon glyphicon-search"></span>Recently searched</a></li>
-					<li><a href="#"><span class="glyphicon 	glyphicon glyphicon-heart"></span>My flight circle</a></li>
-                    <li><a href="#"><span class="glyphicon 	glyphicon glyphicon-heart"></span>Invite friends</a></li>
-                    <li><a href="#"><span class="glyphicon 	glyphicon glyphicon-ok"></span>Accepted flight requests</a></li>
-                     <li><a href="#"><span class="glyphicon glyphicon glyphicon-cloud"></span>API (Developers)</a></li>
-
-				</ul>
-			</div><!-- /.navbar-collapse -->
-		</nav>
-
-	</div>
-</div>  		</div>
-  		<div class="col-md-10 content">
-  			  <div class="panel panel-default">
-	<div class="panel-heading">
-		My Account
-	</div>
-	<div class="panel-body">
-	 <%- body %>
-	</div>
+       <%- partial ('../partials/nav.ejs') %>
+       
+       <div class="container" style="margin-top:150px;">
+       <h2>Get to where you need to go quickly with Seatfilla</h2>
+    <div class="row">
+        <div class="col-sm-3 col-md-3">
+            <nav class="navbar navbar-default sidebar" role="navigation">
+    <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-sidebar-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>      
+    </div>
+    <div class="collapse navbar-collapse" id="bs-sidebar-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Search cheap flights<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-search"></span></a></li>
+         <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Search Seatfilla flights <!--<span class="caret">--></span><span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-plane"></span></a>
+         <!-- <ul class="dropdown-menu forAnimate" role="menu">
+            <li><a href="#">more</a></li>
+            <li><a href="#">morer</a></li>
+            <li><a href="#">some stuff</a></li>
+            <li class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+            <li class="divider"></li>
+            <li><a href="#">more</a></li>
+          </ul>
+        </li>   -->       
+        <li ><a href="#">Make a flight request<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-th-list"></span></a></li>        
+        <li ><a href="#">Tags<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-tags"></span></a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+                  	<button class="btn btn-lg btn-info btn-block m-progress">Search</button>
+        </div>
+        <div class="col-sm-9 col-md-9">
+        
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Search results</h3>
+                </div>
+                <div class="panel-body">
+                 
+                    <div class="pull-right">
+                        <a href="#" class="btn-lg btn-info text-white">
+                        <span class="glyphicon glyphicon-plus"></span> Create flight request</a>
+                    </div> 
+                        
+         
+                    <%- body %>  
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-  		</div>
-
-  	</div>
- 
- <%- partial ('../partials/footer.ejs') %>
- <%- partial ('../partials/toast.ejs') %>
- <%- partial ('../partials/modal.ejs') %>
-</body>
+      
+       <%- partial ('../partials/footer.ejs') %>
+       <%- partial ('../partials/toast.ejs') %>
+       <%- partial ('../partials/modal.ejs') %>
+    </body>
 </html>

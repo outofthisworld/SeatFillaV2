@@ -36,46 +36,47 @@
 */
 
 module.exports.policies = {
-  UserController:{
-    'find':['getPolicy','adminPolicy'],
-    'findOne':['getPolicy','adminPolicy'],
-    'create':['postPolicy','createAccountPolicy','notLoggedInPolicy'],
-    'myaccount':['getPolicy','passportAuth'],
-    'login':['getPolicy']
-  },
-  AuthController:{
-    '*':false,
-    'generateApiToken':['passportAuth'],
-    'local':true,
-    'facebook':true,
-    'instagram':true,
-    'google':true,
-    'googleCallback':true,
-    'facebookCallback':true,
-    'instagramCallback':true,
-    'twitter':true,
-    'twitterCallback':true,
-  },
-  VerifyController:{
-    '*':false,
-    'email':['getPolicy']
-  },
-  FlightOfferController:{
-    '*':false,
-    'create':['apiPolicy'],
-    'delete':['apiPolicy'],
-    'update':['apiPolicy'],
-    'find':['apiPolicy'] //Remove this later
-  },
-  //The following need updating, but are all access for now.
-  RequestController:{
-    '*':true
-  },
-  BidController:{
-    '*':true
-  },
-  ApiUsers:{
-    '*':true
-  }
+    UserController: {
+        'find': ['getPolicy', 'adminPolicy'],
+        'findOne': ['getPolicy', 'adminPolicy'],
+        'create': ['postPolicy', 'createAccountPolicy', 'notLoggedInPolicy'],
+        'myaccount': ['getPolicy'],
+        /*'passportAuth'*/
+        'login': ['getPolicy']
+    },
+    AuthController: {
+        '*': false,
+        'generateApiToken': ['passportAuth'],
+        'local': true,
+        'facebook': true,
+        'instagram': true,
+        'google': true,
+        'googleCallback': true,
+        'facebookCallback': true,
+        'instagramCallback': true,
+        'twitter': true,
+        'twitterCallback': true,
+    },
+    VerifyController: {
+        '*': false,
+        'email': ['getPolicy']
+    },
+    FlightOfferController: {
+        '*': false,
+        'create': ['apiPolicy'],
+        'delete': ['apiPolicy'],
+        'update': ['apiPolicy'],
+        'find': ['apiPolicy'] //Remove this later
+    },
+    //The following need updating, but are all access for now.
+    RequestController: {
+        '*': true
+    },
+    BidController: {
+        '*': true
+    },
+    ApiUsers: {
+        '*': true
+    }
 
 };

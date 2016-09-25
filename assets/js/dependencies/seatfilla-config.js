@@ -1,4 +1,3 @@
-//Create a namespace for this site
 window.seatfilla = window.seatfilla || {};
 window.seatfilla.globals = window.seatfilla.globals || {};
 
@@ -65,18 +64,21 @@ window.seatfilla.globals.isMobile = function() {
 
 window.seatfilla.globals.forms = window.seatfilla.globals.forms || {};
 
+window.seatfilla.globals.forms.validationWarningDiv = $('<div></div>').addClass('alert').addClass('alert-warning').addClass('validation-warning').attr('role', 'alert');
+window.seatfilla.globals.forms.validationSuccessDiv = $('<div></div>').addClass('alert').addClass('alert-success').addClass('validation-success').attr('role', 'alert');
+
 window.seatfilla.globals.forms.validateAndSerialize = function(form, successElement, errorElement, options) {
 
     if (!options || !form || 'endpoint' in options || typeof form !== 'string') {
         throw new Error('Invalid params');
     }
 
-    if (!form.startsWith('#') || !form.startsWith('.')) {
+    if (!form.startsWith('#') && !form.startsWith('.')) {
         form = "#" + form;
     }
 
-    const validationWarningDiv = $('<div></div>').addClass('alert').addClass('alert-warning').addClass('validation-warning').attr('role', 'alert');
-    const validationSuccessDiv = $('<div></div>').addClass('alert').addClass('alert-success').addClass('validation-success').attr('role', 'alert');
+    const validationWarningDiv = window.seatfilla.globals.forms.validationWarningDiv;
+    const validationSuccessDiv = window.seatfilla.globals.forms.validationSuccessDiv;
 
     $(form).validate({
         submitHandler: function(form) {
@@ -118,7 +120,7 @@ window.seatfilla.globals.forms.validateAndSerialize = function(form, successElem
         }
     });
 
-    windows.seatfilla.globals.moveWindowToId = function(id) {
+    window.seatfilla.globals.moveWindowToId = function(id) {
         window.location = ("" + window.location).replace(/#[A-Za-z0-9_]*$/, '') + id;
     }
 }

@@ -48,9 +48,8 @@
 </style>
 
 <script>
-$(document).ready(function () {
-    const validationWarningDiv = $('<div></div>').addClass('alert').addClass('alert-warning').addClass('validation-warning').attr('role','alert');
-    const validationSuccessDiv = $('<div></div>').addClass('alert').addClass('alert-success').addClass('validation-success').attr('role','alert');
+$(window).ready(function () {
+    $.toaster({ priority : 'info',  message : 'Seatfilla registration'})
 
     var navListItems = $('div.setup-panel div a'),
             allWells = $('.setup-content'),
@@ -72,45 +71,35 @@ $(document).ready(function () {
         }
     });
 
+    function nextStep(){
+        var curStep = $('#registrationForm').find(".active"),
+        curStepBtn = curStep.attr("id"),
+        nextStepWizard = $('div.setup-panel div a[href="#' + curStepBtn + '"]').parent().next().children("a")
+        curStep.removeClass('active');
+        nextStepWizard.removeAttr('disabled').addClass('active').trigger('click');
+        console.log('Cur step Btn:' + curStepBtn);
+        return nextStepWizard.attr('id');
+    }
+
+     $('btnNext').on('click',nextStep);
+
    window.seatfilla.globals.forms.validateAndSerialize('#registrationForm', '.success', '.errors', {
+        successMessage:'Thank you for signing up at Seatfilla!',
         success(responseStatus, response, responseMessage) {
-            window.seatfilla.globals.moveWindowToId('#stepOne');
-            nextStepWizard.removeAttr('disabled').trigger('click');
+            var step = nextStep();
+            console.log('Step: ' + step);
+            if(step == 'stepTwo'){
+                $('#validate-email-message').append(
+                    window.seatfilla.globals.forms.validationSuccessDiv.clone().append(
+                        $('<p></p>')
+                         .text('Thank you for registering at Seatfilla ! An email has been dispatched to ' + response.user.email +
+                        '. Please verify this email and then proceed to logging in!')));
+            }
+            window.seatfilla.globals.moveWindowToId('#stepOne');  
         },
         error(responseStatus, response, responseError) {
             window.seatfilla.globals.moveWindowToId('#stepOne');
         }
-            /*
-           $('#registrationForm').validate({
-            submitHandler: function(form) {
-                var curStep = $('#registrationForm').closest(".setup-content"),
-                curStepBtn = curStep.attr("id"),
-                nextStepWizard = $('div.setup-panel div a[href="#' + curStepBtn + '"]').parent().next().children("a")
-                
-                $.ajax({
-                type: "POST",
-                url: '/user/create',
-                data: $('#registrationForm').serialize(),
-                success: function(response){
-                    console.log(response);
-                    console.log(response.user);
-                    $('.errors').html("").text("");
-                    if(response && response.status == 200){
-                        console.log('clicking next step');
-                        $('.errors').html("<p>Succesfully registered</p>");
-                        window.location = (""+window.location).replace(/#[A-Za-z0-9_]*$/,'')+"#stepOne"
-                        nextStepWizard.removeAttr('disabled').trigger('click');
-                    }else{
-                        for(var err in response.error.invalidAttributes){
-                            $('.errors').append(validationWarningDiv.append($('<p></p>').text(response.error.invalidAttributes[err][0].message)));
-                        }
-                    }
-                },
-             });
-            }
-        });
-    */
-
     });
 
     $('#stepOne').trigger('click');
@@ -126,20 +115,20 @@ $(document).ready(function () {
             <p>Step 1</p>
         </div>
         <div class="stepwizard-step">
-            <a href="#step-2" type="button" class="btn btn-default btn-circle" disabled="disabled">2</a>
+            <a id="stepTwo" href="#step-2" type="button" class="btn btn-default btn-circle" disabled="disabled">2</a>
             <p>Step 2</p>
         </div>
         <div class="stepwizard-step">
-            <a href="#step-3" type="button" class="btn btn-default btn-circle" disabled="disabled">3</a>
+            <a id="stepThree" href="#step-3" type="button" class="btn btn-default btn-circle" disabled="disabled">3</a>
             <p>Step 3</p>
         </div>
     </div>
 </div>
 <form role="form" id="registrationForm">
-    <div class="row setup-content" id="step-1">
+    <div class="row setup-content active" id="step-1">
         <div class="container80">
             <div class="col-md-12">
-                <h3> Please fill out the following form:</h3>
+                <h2 class="text-center">Enter your details</h2>
                 <div class="success"></div>
                 <div class="errors"></div>
                 <div class="form-group">
@@ -223,28 +212,21 @@ $(document).ready(function () {
     <div class="row setup-content" id="step-2">
         <div class="col-xs-12">
             <div class="col-md-12">
-                <h3> Step 2</h3>
-                <div class="form-group">
-                    <label class="control-label">Company Name</label>
-                    <input maxlength="200" type="text" required="required" class="form-control" placeholder="Enter Company Name" />
+                <h2 class="text-center">Validate your email</h2>
+                <div id="validate-email-message">
                 </div>
-                <div class="form-group">
-                    <label class="control-label">Company Address</label>
-                    <input maxlength="200" type="text" required="required" class="form-control" placeholder="Enter Company Address"  />
-                </div>
-                <button class="btn btn-primary nextBtn btn-lg pull-right" type="button" >Next</button>
-            </div>
         </div>
     </div>
     <div class="row setup-content" id="step-3">
         <div class="col-xs-12">
             <div class="col-md-12">
-                <h3> Step 3</h3>
-                <button class="btn btn-success btn-lg pull-right" type="submit">Finish!</button>
+                 <h2 class="text-center">Login</h2>
+               <a href="/user/login" > <button class="btn btn-success">Login to seatfilla</button></a>
             </div>
         </div>
     </div>
 </form>
+</div>
 </div>
 
  <%- partial ('../partials/footer.ejs') %>

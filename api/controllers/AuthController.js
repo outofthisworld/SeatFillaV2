@@ -16,6 +16,8 @@ module.exports = {
      * @param {returnType} res - the response object
      */
     local: function(req, res) {
+        if (req.user) res.redirect('/')
+
         sails.log.debug('local auth request: ');
         sails.log.debug(req.allParams());
         passport.authenticate('local', function(err, user, message) {
@@ -44,10 +46,7 @@ module.exports = {
                 if (res.xhr) {
                     return res.json(result);
                 } else {
-                    return res.ok({ result }, {
-                        view: 'index',
-                        title: 'Seatfilla'
-                    });
+                    return res.redirect('/');
                 }
             });
         })(req, res);
@@ -212,6 +211,7 @@ module.exports = {
      * @param {returnType} arg2 - what it is.
      */
     logout: function(req, res) {
+        if (!req.user) res.redirect('/');
         req.logout()
         req.session.destroy()
         res.redirect('/')

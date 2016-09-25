@@ -46,30 +46,33 @@ module.exports = {
                 message: message,
                 read: false
             }).exec(function(err, notification) {
-                if (err) { reject(err); }
+                if (err) { return reject(err); }
                 sails.sockets.blast('SystemNotification', message)
-                resolve('sent')
-                return notification
-            }).then(function(notification) {
-                // Now assign the created notification to system notification users          
-                User.find().exec((err, users) => {
-                    if (err) return Promise.reject(err)
+                resolve(notification);
+            })
+        }).then(function(notification) {
+            // Now assign the created notification to system notification users          
+            User.find().exec((err, users) => {
+                if (err) return Promise.reject(err)
 
-                    var systemNotificationUsers = users.map(user => {
-                        return {
-                            read: false,
-                            systemNotification: notification.id,
-                            user: user.id
-                        }
-                    })
+                var systemNotificationUsers = users.map(user => {
+                    return {
+                        read: false,
+                        systemNotification: notification.id,
+                        user: user.id
+                    }
+                })
 
+                return new Promise(function(resolve, reject) {
                     SystemNotificationUser.create(systemNotificationUsers)
                         .exec(function(err, created) {
-                            if (err) return Promise.reject(err)
-                        })
-                })
+                            if (err) return reject(err)
+                            return resolve({ users: systemNotificationUsers, systemNotifications: systemNotificationUsers });
+                        });
+                });
             })
         })
+
     },
     // Returns a new promise withe the users lastest notifications
     findLatestNotifications: function(req) {
@@ -79,7 +82,7 @@ module.exports = {
                 function(err, systemNotifications) {
                     if (err) return reject(err)
                     if (req.user) {
-                        sails.log.debug('Finding system notifications for user : ' + req.user);
+                        sails.log.debug('Finding system notifications for user : ' + JSON.stringify(req.user));
                         criteria.where = { user: req.user.id }
                         Notifications.find(criteria)
                             .exec(function(err, notifications) {
@@ -91,6 +94,7 @@ module.exports = {
                     }
                 })
         }).then(function(result) {
+            sails.log.debug('Finding latest notifications result: ' + JSON.stringify(result));
             result.sort(function(a, b) {
                 return Date.parse(a.createdAt).getTime() - Date.parse(b.createdAt).getTime()
             })

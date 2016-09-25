@@ -1,13 +1,14 @@
-const uuid = require('uuid');
+const uuid = require('node-uuid');
 
 module.exports = {
     createUser: function(req) {
         return new Promise(function createUser(resolve, reject) {
             User.create(req.allParams()).exec(function create(err, user) {
-                sails.log.debug('in create user')
+                sails.log.debug('Creating user');
 
                 // Well ofc..
                 if (err || !user) {
+                    sails.log.debug('Error creating user');
                     // Debug something
                     return reject(err)
                 }
@@ -16,14 +17,32 @@ module.exports = {
                 delete user.password
                 delete user.passwordConfirmation
 
-                // Register the sign up..
+                return resolve(user)
+            });
+        }).then(function(user) {
+            sails.log.debug('Creating address for user: ' + JSON.stringify(user));
+            user.user = user.id;
+            return new Promise(function(resolve, reject) {
+                Address.create(user).exec(function(err, user) {
+                    if (err || !user) {
+                        sails.log.debug('Error creating address: ' + user + ' ' + err);
+                        return reject({ error: err, message: 'error creating address record' });
+                    } else {
+                        return resolve(user);
+                    }
+                });
+            });
+        }).then(function(user) {
+            sails.log.debug('Creating sign up record for user: ' + user);
+            // Register the sign up..
+            return new Promise(function(resolve, reject) {
                 Signup.create({ ip: req.ip, user_agent: req.headers['user-agent'], user: user.id })
                     .exec(function handleVerificationProcess(err, signup) {
 
                         // Handle error
                         if (err) {
                             sails.log.debug('Error creating sign up record for user id :' + user.id + 'Error: ' + err)
-                            return reject(err)
+                            return reject({ err: err, message: 'error creating sign up record' });
                         }
 
                         // Store verification id 
@@ -40,7 +59,7 @@ module.exports = {
                         }).catch(function(err) {
                             // Error sending email.. handle it
                             sails.log.debug('Failed to send email... ' + message + 'error: ' + err)
-                            reject(err)
+                            return reject({ error: err, message: 'Error sending email' });
                         })
 
                         // Lets broadcast a message..
@@ -48,13 +67,16 @@ module.exports = {
                             title: 'You have succesfully registered!',
                             message: "Thank-you for registering at SeatFilla, don't forget to validate your email!"
                         })
-                    })
-                return resolve(user)
-            })
-        })
+
+                        return resolve(user);
+                    });
+            });
+        });
     },
     // Creates an external passport user.
     createExternalUser: function(req, accessToken, refreshToken, profile) {
+        sails.log.debug('Creating external user');
+
         return new Promise(function(resolve, reject) {
             const providerKey = profile.provider + 'Id'
             const find = { provider: profile.provider }

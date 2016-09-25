@@ -9,18 +9,23 @@ module.exports = {
         UserService.createUser(req).then(function(user) {
             sails.log.debug('Succesfully created user ' + user);
             return res.json({
+                status: 200,
                 user: user
             });
         }).catch(function(err) {
             sails.log.debug('Error creating user in UserController.js/create ' + err);
             return res.json({
+                status: 500,
                 error: err
             });
         });
     },
     //GET [register an account page]
     register: function(req, res) {
-        return res.ok();
+        return res.ok({ user: req.user }, {
+            view: 'user/register',
+            title: req.__('MyAccount')
+        });
     },
     //GET [complete registraion page]
     completeRegistration: function(req, res) {

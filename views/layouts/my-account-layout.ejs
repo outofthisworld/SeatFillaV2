@@ -31,7 +31,7 @@
 
    <style is="custom-style">
     * {
-    border-radius: 0 !important;
+    border-radius: 0;
 
     }
 
@@ -1690,9 +1690,6 @@ span.round-tabs.five{
       $('.sf-account-menu li').removeAttr('class');
       $('#AccountPanel').attr('class','active');
   });
-
-
- 
   </script>
 </head>
 
@@ -1708,29 +1705,93 @@ span.round-tabs.five{
 	<div class="side-menu">
 		<nav class="navbar navbar-default" role="navigation">
 			<!-- Main Menu -->
-			<div class="side-menu-container">
+			<div class="side-menu-container" style="background-color:#fafafa;">
+            
+                <div class="sidebar-nav-fixed">
+               <p>BlackJem</p>
+                <div class="" style="max-width:200px;border-style:solid;border-color:lightgrey;border-width:1px;">
+                <image src="/images/Logo.png" width="200" class="img img-responsive"/>
+                </div>    
+
+    <div class="flight-circle-friends"> 
+    <div class=""">
+    <div class="panel-heading">
+       <span class=""><p>My Flight circle </p></span>
+    </div>
+    <div class="panel-body">
+            <div class="row">
+                <div class="col-xs-4">
+                    <a href="#" class="thumbnail">
+                    <img src="http://placehold.it/150x150" class="img img-responsive">
+                    </a>
+                </div>
+                <div class="col-xs-4">
+                    <a href="#" class="thumbnail">
+                    <img src="http://placehold.it/150x150" class="img img-responsive">
+                    </a>
+                </div>
+                <div class="col-xs-4">
+                    <a href="#" class="thumbnail">
+                    <img src="http://placehold.it/150x150" class="img img-responsive">
+                    </a>
+                </div>
+                <div class="col-xs-4">
+                    <a href="#" class="thumbnail">
+                    <img src="http://placehold.it/150x150" class="img img-responsive">
+                    </a>
+                </div>
+                <div class="col-xs-4">
+                    <a href="#" class="thumbnail">
+                    <img src="http://placehold.it/150x150" class="img img-responsive">
+                    </a>
+                </div>
+                <div class="col-xs-4">
+                    <a href="#" class="thumbnail">
+                    <img src="http://placehold.it/150x150" class="img img-responsive">
+                    </a>
+                </div>
+                <div class="col-xs-4">
+                    <a href="#" class="thumbnail">
+                    <img src="http://placehold.it/150x150" class="img img-responsive">
+                    </a>
+                </div>
+                <div class="col-xs-4">
+                    <a href="#" class="thumbnail">
+                    <img src="http://placehold.it/150x150" class="img img-responsive">
+                    </a>
+                </div>
+                <div class="col-xs-4">
+                    <a href="#" class="thumbnail">
+                    <img src="http://placehold.it/150x150" class="img img-responsive">
+                    </a>
+                </div>
+            </div> <!--row-->
+            </div> <!--panel body-->
+            <div class="panel-footer">
+                <a href="#" class="pull-right"><p>View all</p></a>
+            </div>
+        </div>
+   </div>
 				<ul class="nav navbar-nav sf-account-menu">
 					<li id="AccountPanel" class="active"><a href="#"><span class="glyphicon glyphicon-stats"></span> Account panel</a></li>
-					<li id="ChangeDetails"><a href="#"><span class="glyphicon glyphicon-user"></span> Change details</a></li>
-					<li><a href="FlightRequests"><span class="glyphicon glyphicon-plane"></span> Flight requests</a></li>
-
-				
-                    <!--
+					<li id="ChangeDetails"><a href="#"><span class="glyphicon glyphicon-user"></span> Change my details</a></li>
+					<li><a href="FlightRequests"><span class="glyphicon glyphicon-plane"></span>My Flight requests</a></li>
+                    <li><a href="#"><span class="glyphicon 	glyphicon glyphicon-ok"></span>My accepted flight requests</a></li>
+                    <li><a href="#"><span class="glyphicon 	glyphicon glyphicon-ok"></span>Flight notifications</a></li>
+                
 					<li class="panel panel-default" id="dropdown">
 						<a data-toggle="collapse" href="#dropdown-lvl1">
-							<span class="glyphicon glyphicon-user"></span> Sub Level <span class="caret"></span>
+							<span class="glyphicon glyphicon-user"></span> Notifications <span class="caret"></span>
 						</a>
 
-						<!-- Dropdown level 1 -->
+				
 						<div id="dropdown-lvl1" class="panel-collapse collapse">
 							<div class="panel-body">
 								<ul class="nav navbar-nav">
-									<li><a href="#">Link</a></li>
-									<li><a href="#">Link</a></li>
-									<li><a href="#">Link</a></li>
+									<li><a href="#">Flight notifications</a></li>
+									<li><a href="#">Seatfilla notifications</a></li>
 
-									<!-- Dropdown level 2 -->
-									<li class="panel panel-default" id="dropdown">
+									<!--<li class="panel panel-default" id="dropdown">
 										<a data-toggle="collapse" href="#dropdown-lvl2">
 											<span class="glyphicon glyphicon-off"></span> Sub Level <span class="caret"></span>
 										</a>
@@ -1743,23 +1804,24 @@ span.round-tabs.five{
 												</ul>
 											</div>
 										</div>
-									</li>
+									</li>-->
 								</ul>
 							</div>
 						</div>
 					</li>
                     <li><a href="#"><span class="glyphicon 	glyphicon glyphicon-search"></span>Recently searched</a></li>
 					<li><a href="#"><span class="glyphicon 	glyphicon glyphicon-heart"></span>My flight circle</a></li>
+                    	<li><a href="#"><span class="glyphicon 	glyphicon glyphicon-heart"></span>My flight groups</a></li>
                     <li><a href="#"><span class="glyphicon 	glyphicon glyphicon-heart"></span>Invite friends</a></li>
-                    <li><a href="#"><span class="glyphicon 	glyphicon glyphicon-ok"></span>Accepted flight requests</a></li>
                      <li><a href="#"><span class="glyphicon glyphicon glyphicon-cloud"></span>API (Developers)</a></li>
 
 				</ul>
 			</div><!-- /.navbar-collapse -->
 		</nav>
-
+        
 	</div>
 </div>  		</div>
+<br><br>
   		<div class="col-md-10 content">
   			  <div class="panel panel-default">
 	<div class="panel-heading">

@@ -1,6 +1,6 @@
 $(document).ready(function() {
     $('#login-modal-trigger').on('click', function() {
-        $('#login-modal').load('ajax/login.ejs', function() {
+        $('#login-modal').load('/ajax/login.ejs', function() {
             var $formLogin = $('#login-form');
             var $formLost = $('#lost-form');
             var $formRegister = $('#register-form');

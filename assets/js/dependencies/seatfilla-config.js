@@ -83,7 +83,7 @@ window.seatfilla.globals.forms.validateAndSerialize = function(form, successElem
     $(form).validate({
         submitHandler: function(form) {
             $.ajax({
-                type: options.type || "POST",
+                type: "POST",
                 url: '/user/create',
                 data: $(form).serialize(),
                 success: function(response) {

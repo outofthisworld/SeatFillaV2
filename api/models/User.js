@@ -77,7 +77,7 @@ module.exports = {
         password: {
             type: 'string',
             minLength: 7, //8-25
-            maxLength: 61
+            maxLength: 61,
         },
         passwordConfirmation: {
             type: 'string',
@@ -173,8 +173,7 @@ module.exports = {
             });
         },
         toJSON: function() {
-            delete this.password;
-            delete this.passwordConfirmation;
+
             var obj = this.toObject();
             return obj;
         }

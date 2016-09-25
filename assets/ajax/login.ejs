@@ -10,14 +10,14 @@
                 
               
                 <div id="div-forms">
-                    <form id="login-form">
+                    <form method="POST" action="/auth/local/" id="login-form">
 		                <div class="modal-body">
 				    		<div id="div-login-msg">
                                 <div id="icon-login-msg" class="glyphicon glyphicon-chevron-right"></div>
                                 <span id="text-login-msg">Login.</span>
                             </div>
-				    		<input id="login_username" class="form-control" type="text" placeholder="Username" required>
-				    		<input id="login_password" class="form-control" type="password" placeholder="Password" required>
+				    		<input id="login_username" name="email" class="form-control" type="text" placeholder="Username" required>
+				    		<input id="login_password" name="password"  class="form-control" type="password" placeholder="Password" required>
                             <div class="checkbox">
                                 <label>
                                     <input type="checkbox"> Remember me
@@ -26,7 +26,7 @@
         		    	</div>
 				        <div class="modal-footer">
                             <div>
-                                <button type="submit" class="btn btn-primary btn-lg btn-block">Login</button>
+                                <button id="local-login-button" type="submit" class="btn btn-primary btn-lg btn-block">Login</button>
                                 <br>
                                 <p>Sign in with:</p>
                                 <div class="social-login">

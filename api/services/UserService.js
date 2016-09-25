@@ -21,9 +21,18 @@ module.exports = {
             });
         }).then(function(user) {
             sails.log.debug('Creating address for user: ' + JSON.stringify(user));
-            user.user = user.id;
+
             return new Promise(function(resolve, reject) {
-                Address.create(user).exec(function(err, user) {
+                Address.create({
+                    addressLine: user.addressLine,
+                    addressLineTwo: user.addressLineTwo,
+                    addressLineThree: user.addressLineThree,
+                    country: user.country,
+                    city: user.city,
+                    state: user.state,
+                    postcode: user.postcode,
+                    user: user.id
+                }).exec(function(err, user) {
                     if (err || !user) {
                         sails.log.debug('Error creating address: ' + user + ' ' + err);
                         return reject({ error: err, message: 'error creating address record' });

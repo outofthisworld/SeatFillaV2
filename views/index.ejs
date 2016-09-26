@@ -1,4 +1,61 @@
+<style>
+.featured-jobs {
+  padding: 70px 0px;
+  background-color:#fafafa;
+}
+.featured-jobs .thumbnail {
+  padding: 20px;
+}
+.featured-jobs .thumbnail img {
+  float: left;
+  margin: 0 10px 10px 0;
+}
+.featured-jobs .thumbnail .feature-link {
+  color: #77c7dc;
+}
+.featured-jobs .thumbnail .feature-link h3 {
+  padding-left: 10px;
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+.featured-jobs .thumbnail .meta {
+  color: #f16060;
+  font-size: 11px;
+}
+.featured-jobs .thumbnail p {
+  font-size: 12px;
+  margin: 0 0 5px;
+}
+.featured-jobs .thumbnail .feature-btns {
+  position: absolute;
+  bottom: -13px;
+  left: 15px;
+}
 
+@media only screen and (max-width: 1024px) {
+
+.thumbnail { margin-bottom:50px; }
+
+.featured-jobs .thumbnail .feature-btns { bottom:17px; }
+
+
+    }
+
+@media only screen and (max-width: 790px) {
+
+.thumbnail { margin-bottom:50px; }
+
+.featured-jobs .thumbnail .feature-btns { bottom:-33px; }
+
+
+    }
+.featured-jobs .row{
+  margin-top:45px;
+}
+
+
+
+</style>
  <%- partial ('partials/nav.ejs') %>
       
     
@@ -130,108 +187,9 @@
     </section>
 
 
-
-    <section  class="section how-it-works" id="how-it-works">
-        <div class="container">
-            <div class="row text-center">
-                <div class="how-it-works-heading">
-                    <h2 class="section-title">What is Seatfilla</h2>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12 board">
-                    <div class="board-inner">
-                        <ul class="nav nav-tabs" id="myTab">
-                            <div class="liner"></div>
-                            <li class="active">
-                                <a href="#home"  role="tab" data-toggle="tab">
-                      <span class="round-tabs one">
-                              <i class="">1</i>
-                      </span>
-                                </a></li>
-							
-                            <li><a href="#profile" role="tab" data-toggle="tab">
-                     <span class="round-tabs two">
-                         <i class="">2</i>
-                     </span>
-                            </a>
-                            </li>
-                            <li><a href="#prototyping" role="tab" data-toggle="tab">
-                     <span class="round-tabs three">
-                          <i class="">3</i>
-                     </span> </a>
-                            </li>
-
-                            <li><a href="#uidesign"  role="tab" data-toggle="tab">
-                         <span class="round-tabs four">
-                              <i class="">4</i>
-                         </span>
-                            </a></li>
-
-                            <li><a href="#doner" role="tab" data-toggle="tab">
-                         <span class="round-tabs five">
-                              <i class="">5</i>
-                         </span> </a>
-                            </li>
-
-                        </ul></div>
-
-                    <div class="tab-content">
-                        <div class="tab-pane fade in active" id="home">
-
-                            <h2 class="head text-center">Searching Flights</h2>
-                            <p class="lead text-center">
-                                Seatfilla allows you to search flights to numerous destinations around the world easily and quickly by scanning
-								various sources for the cheapsest flights.
-                            </p>
-                        </div>
-                        <div class="tab-pane fade" id="profile">
-                            <h2 class="head text-center">Requesting Flights</h2>
-                            <p class="lead text-center">
-                                Seatfilla users can request flights between any destinations and dates and be notified by our system
-								should we come accross any flights matching your description. Aditionally, these flight requests
-								are monitored by Seatfilla ticket providers - one of them might just accept your request at a discounted rate!
-                            </p>
-                        </div>
-                        <div class="tab-pane fade" id="prototyping">
-                            <h2 class="head text-center">Purchase/Bid on Flight Tickets</h2>
-                            <p class="lead text-center">
-                                Take advantage of Seatfilla and it's flights offered by our various partners. These flights often are marginally cheaper
-								than the original cost and can either be bidded on/purchased depending on our suppliers choice when supplying the ticket to our platform. 
-                            </p>
-
-                        </div>
-                        <div class="tab-pane fade" id="uidesign">
-                            <h2 class="head text-center">Join our newsletter</h2>
-                            <p class="lead text-center">
-                                Receive updates about the cheapest flights available from your country!
-                            </p>
-
-                        </div>
-                        <div class="tab-pane fade" id="doner">
-                            <div class="text-center">
-                                <i class="img-intro icon-checkmark-circle"></i>
-                            </div>
-                            <h2 class="head text-center">API (For Developers)</h2>
-                            <p class="lead text-center">
-                                If you are a developer, you can take advantage of our API to check out the places people frequently want to travel
-								and the types of prices they're willing to pay. Also, with a verified API key (contact required) you can use our flight
-								offer API endpoint to send flights to us!
-                            </p>
-                          
-                        </div>
-                  
-                    </div>
-
-                </div>
-            </div>
-        </div>
-		</section>
-   
-    <!-- /How it work -->       
-<section> <!--Latest bid section-->
-          <!--Latest bids-->
-          <div class="col-xs-12">
+<section class="featured-jobs">
+    <div class="col-md-4">
+  <div class="col-xs-12">
                  <header>
                 <h2 class="text-center">Latest bids</h2>
               </header>
@@ -344,7 +302,140 @@
             </div>
            </aside>
            </div>
-</section><!--Latest bid section end-->
+    </div>
+    <div class="col-md-8">
+    <h2 class="text-center">Flight deals</h2>
+		<div class="row">
+
+				<!-- first feature job -->
+				<div class="col-sm-6 col-md-4">
+					
+						<div class="thumbnail">
+								<img data-src="holder.js/90x70" alt="advetiser logo">
+								<a href="" class="feature-link"><h3>Job Title heading</h3></a>
+								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia...</p>
+								<span class="meta">Posted by Recruiter - 12/12/2014</span>
+								<div class="feature-btns"><a href="#" class="btn btn-info" role="button"><span class="glyphicon glyphicon-file"></span> View Details</a> <a href="#" class="btn btn-default" role="button"><span class="glyphicon glyphicon-star-empty"></span> Shortlist</a></div>
+						</div>
+					
+				</div>
+
+				<!-- second feature job -->
+				<div class="col-sm-6 col-md-4">
+					
+							<div class="thumbnail">
+								<img data-src="holder.js/90x70" alt="advetiser logo">
+								<a href="" class="feature-link"><h3>Job Title heading</h3></a>
+								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia...</p>
+								<span class="meta">Posted by Recruiter - 12/12/2014</span>
+								<div class="feature-btns"><a href="#" class="btn btn-info" role="button"><span class="glyphicon glyphicon-file"></span> View Details</a> <a href="#" class="btn btn-default" role="button"><span class="glyphicon glyphicon-star-empty"></span> Shortlist</a></div>
+						</div>
+					
+				</div>
+
+				<!-- third feature job -->
+				<div class="col-sm-6 col-md-4">
+					
+							<div class="thumbnail">
+								<img data-src="holder.js/90x70" alt="advetiser logo">
+								<a href="" class="feature-link"><h3>Job Title heading</h3></a>
+								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia...</p>
+								<span class="meta">Posted by Recruiter - 12/12/2014</span>
+								<div class="feature-btns"><a href="#" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-file"></span> View Details</a> <a href="#" class="btn btn-default" role="button"><span class="glyphicon glyphicon-star-empty"></span> Shortlist</a></div>
+						</div>
+					
+				</div>
+
+			</div>
+      <div class="row">
+
+				<!-- first feature job -->
+				<div class="col-sm-6 col-md-4">
+					
+						<div class="thumbnail">
+								<img data-src="holder.js/90x70" alt="advetiser logo">
+								<a href="" class="feature-link"><h3>Job Title heading</h3></a>
+								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia...</p>
+								<span class="meta">Posted by Recruiter - 12/12/2014</span>
+								<div class="feature-btns"><a href="#" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-file"></span> View Details</a> <a href="#" class="btn btn-default" role="button"><span class="glyphicon glyphicon-star-empty"></span> Shortlist</a></div>
+						</div>
+					
+				</div>
+
+				<!-- second feature job -->
+				<div class="col-sm-6 col-md-4">
+					
+							<div class="thumbnail">
+								<img data-src="holder.js/90x70" alt="advetiser logo">
+								<a href="" class="feature-link"><h3>Job Title heading</h3></a>
+								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia...</p>
+								<span class="meta">Posted by Recruiter - 12/12/2014</span>
+								<div class="feature-btns"><a href="#" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-file"></span> View Details</a> <a href="#" class="btn btn-default" role="button"><span class="glyphicon glyphicon-star-empty"></span> Shortlist</a></div>
+						</div>
+					
+				</div>
+
+				<!-- third feature job -->
+				<div class="col-sm-6 col-md-4">
+					
+							<div class="thumbnail">
+								<img data-src="holder.js/90x70" alt="advetiser logo">
+								<a href="" class="feature-link"><h3>Job Title heading</h3></a>
+								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia...</p>
+								<span class="meta">Posted by Recruiter - 12/12/2014</span>
+								<div class="feature-btns"><a href="#" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-file"></span> View Details</a> <a href="#" class="btn btn-default" role="button"><span class="glyphicon glyphicon-star-empty"></span> Shortlist</a></div>
+						</div>
+					
+				</div>
+
+			</div>
+
+       <div class="row">
+
+				<!-- first feature job -->
+				<div class="col-sm-6 col-md-4">
+					
+						<div class="thumbnail">
+								<img data-src="holder.js/90x70" alt="advetiser logo">
+								<a href="" class="feature-link"><h3>Job Title heading</h3></a>
+								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia...</p>
+								<span class="meta">Posted by Recruiter - 12/12/2014</span>
+								<div class="feature-btns"><a href="#" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-file"></span> View Details</a> <a href="#" class="btn btn-default" role="button"><span class="glyphicon glyphicon-star-empty"></span> Shortlist</a></div>
+						</div>
+					
+				</div>
+
+				<!-- second feature job -->
+				<div class="col-sm-6 col-md-4">
+					
+							<div class="thumbnail">
+								<img data-src="holder.js/90x70" alt="advetiser logo">
+								<a href="" class="feature-link"><h3>Job Title heading</h3></a>
+								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia...</p>
+								<span class="meta">Posted by Recruiter - 12/12/2014</span>
+								<div class="feature-btns"><a href="#" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-file"></span> View Details</a> <a href="#" class="btn btn-default" role="button"><span class="glyphicon glyphicon-star-empty"></span> Shortlist</a></div>
+						</div>
+					
+				</div>
+
+				<!-- third feature job -->
+				<div class="col-sm-6 col-md-4">
+					
+							<div class="thumbnail">
+								<img data-src="holder.js/90x70" alt="advetiser logo">
+								<a href="" class="feature-link"><h3>Job Title heading</h3></a>
+								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia...</p>
+								<span class="meta">Posted by Recruiter - 12/12/2014</span>
+								<div class="feature-btns"><a href="#" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-file"></span> View Details</a> <a href="#" class="btn btn-default" role="button"><span class="glyphicon glyphicon-star-empty"></span> Shortlist</a></div>
+						</div>
+					
+				</div>
+		
+	</div>
+</section>
+
+   
+
           
 
 <section>
@@ -631,6 +722,220 @@
     </div>
   </div>
 </section>
+
+<section> <!--Latest bid section-->
+          <!--Latest bids-->
+          <div class="col-xs-12">
+                 <header>
+                <h2 class="text-center">Latest bids</h2>
+              </header>
+          <aside>
+          <div class="row">
+            <section class="content">
+						<div class="table-container">
+							<table class="table table-filter">
+								<tbody>
+									<tr>
+									
+										<td>
+											<a href="javascript:;" class="star">
+												<i class="glyphicon glyphicon-star"></i>
+											</a>
+										</td>
+										<td>
+											<div class="media">
+												<a href="#" class="pull-left">
+																								<img src="https://s3.amazonaws.com/uifaces/faces/twitter/fffabs/128.jpg" class="media-photo img-circle img-responsive">
+												</a>
+												<div class="media-body">
+													<span class="media-meta">Febrero 13, 2016</span>	
+													<p class="summary">Ut enim ad minim veniam, quis nostrud exercitation...</p>
+												</div>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										
+										<td>
+											<a href="javascript:;" class="star">
+												<i class="glyphicon glyphicon-star"></i>
+											</a>
+										</td>
+										<td>
+											<div class="media">
+												<a href="#" class="pull-left">
+													<img src="https://s3.amazonaws.com/uifaces/faces/twitter/fffabs/128.jpg" class="media-photo img-circle img-responsive">
+												</a>
+												<div class="media-body">
+													<span class="media-meta">Febrero 13, 2016</span>
+													
+													<p class="summary">Ut enim ad minim veniam, quis nostrud exercitation...</p>
+												</div>
+											</div>
+										</td>
+									</tr>
+									<tr >
+										
+										<td>
+											<a href="javascript:;" class="star">
+												<i class="glyphicon glyphicon-star"></i>
+											</a>
+										</td>
+										<td>
+											<div class="media">
+												<a href="#" class="pull-left">
+																		<img src="https://s3.amazonaws.com/uifaces/faces/twitter/fffabs/128.jpg" class="media-photo img-circle img-responsive">
+												</a>
+												<div class="media-body">
+													<span class="media-meta">Febrero 13, 2016</span>
+													
+													<p class="summary">Ut enim ad minim veniam, quis nostrud exercitation...</p>
+												</div>
+											</div>
+										</td>
+									</tr>
+									<tr >
+										
+										<td>
+											<a href="javascript:;" class="star star-checked">
+												<i class="glyphicon glyphicon-star"></i>
+											</a>
+										</td>
+										<td>
+											<div class="media">
+												<a href="#" class="pull-left">
+													<img src="https://s3.amazonaws.com/uifaces/faces/twitter/fffabs/128.jpg" class="media-photo img-circle img-responsive">
+												</a>
+												<div class="media-body">
+													<span class="media-meta">Febrero 13, 2016</span>
+													<p class="summary">Ut enim ad minim veniam, quis nostrud exercitation...</p>
+												</div>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										
+										<td>
+											<a href="javascript:;" class="star">
+												<i class="glyphicon glyphicon-star"></i>
+											</a>
+										</td>
+										<td>
+											<div class="media">
+												<a href="#" class="pull-left">
+																									<img src="https://s3.amazonaws.com/uifaces/faces/twitter/fffabs/128.jpg" class="media-photo img-circle img-responsive">
+												</a>
+												<div class="media-body">	
+													<p class="summary">Ut enim ad minim veniam, quis nostrud exercitation...</p>
+												</div>
+											</div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+            </section>
+            </div>
+           </aside>
+           </div>
+</section><!--Latest bid section end-->
+
+ <section  class="section how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="row text-center">
+                <div class="how-it-works-heading">
+                    <h2 class="section-title">What is Seatfilla</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 board">
+                    <div class="board-inner">
+                        <ul class="nav nav-tabs" id="myTab">
+                            <div class="liner"></div>
+                            <li class="active">
+                                <a href="#home"  role="tab" data-toggle="tab">
+                      <span class="round-tabs one">
+                              <i class="">1</i>
+                      </span>
+                                </a></li>
+							
+                            <li><a href="#profile" role="tab" data-toggle="tab">
+                     <span class="round-tabs two">
+                         <i class="">2</i>
+                     </span>
+                            </a>
+                            </li>
+                            <li><a href="#prototyping" role="tab" data-toggle="tab">
+                     <span class="round-tabs three">
+                          <i class="">3</i>
+                     </span> </a>
+                            </li>
+
+                            <li><a href="#uidesign"  role="tab" data-toggle="tab">
+                         <span class="round-tabs four">
+                              <i class="">4</i>
+                         </span>
+                            </a></li>
+
+                            <li><a href="#doner" role="tab" data-toggle="tab">
+                         <span class="round-tabs five">
+                              <i class="">5</i>
+                         </span> </a>
+                            </li>
+
+                        </ul></div>
+
+                    <div class="tab-content">
+                        <div class="tab-pane fade in active" id="home">
+
+                            <h2 class="head text-center">Searching Flights</h2>
+                            <p class="lead text-center">
+                                Seatfilla allows you to search flights to numerous destinations around the world easily and quickly by scanning
+								various sources for the cheapsest flights.
+                            </p>
+                        </div>
+                        <div class="tab-pane fade" id="profile">
+                            <h2 class="head text-center">Requesting Flights</h2>
+                            <p class="lead text-center">
+                                Seatfilla users can request flights between any destinations and dates and be notified by our system
+								should we come accross any flights matching your description. Aditionally, these flight requests
+								are monitored by Seatfilla ticket providers - one of them might just accept your request at a discounted rate!
+                            </p>
+                        </div>
+                        <div class="tab-pane fade" id="prototyping">
+                            <h2 class="head text-center">Purchase/Bid on Flight Tickets</h2>
+                            <p class="lead text-center">
+                                Take advantage of Seatfilla and it's flights offered by our various partners. These flights often are marginally cheaper
+								than the original cost and can either be bidded on/purchased depending on our suppliers choice when supplying the ticket to our platform. 
+                            </p>
+
+                        </div>
+                        <div class="tab-pane fade" id="uidesign">
+                            <h2 class="head text-center">Join our newsletter</h2>
+                            <p class="lead text-center">
+                                Receive updates about the cheapest flights available from your country!
+                            </p>
+
+                        </div>
+                        <div class="tab-pane fade" id="doner">
+                            <div class="text-center">
+                                <i class="img-intro icon-checkmark-circle"></i>
+                            </div>
+                            <h2 class="head text-center">API (For Developers)</h2>
+                            <p class="lead text-center">
+                                If you are a developer, you can take advantage of our API to check out the places people frequently want to travel
+								and the types of prices they're willing to pay. Also, with a verified API key (contact required) you can use our flight
+								offer API endpoint to send flights to us!
+                            </p>
+                          
+                        </div>
+                  
+                    </div>
+
+                </div>
+            </div>
+        </div>
+		</section>
 
 
 

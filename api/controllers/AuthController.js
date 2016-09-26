@@ -59,32 +59,54 @@ module.exports = {
      * @param {returnType} arg2 - what it is.
      */
     generateApiToken: function(req, res) {
-        async.asyncify(function() {
-            ApiService.createApiToken(req, {
-                id: req.user.id,
-                permissions: ['all'],
-                iat: Math.floor(new Date().getTime() / 1000) - 30,
-                aud: 'SeatFilla',
-                sub: 'SeatfillaApiToken'
-            }, function(err, token) {
-                if (err) {
-                    sails.log.debug('Error generating API token, controllers/authcontroller.js')
-                    return res.json({ error: err, errorMessage: err.message })
-                } else {
-                    ApiService.createApiUser(req.user, token).then(function(apiUser) {
-                        return { message: 'Succesfully created API token, it will be validated shortly', token: token }
-                    }).catch(function(err) {
-                        sails.log.debug('Error creating ApiUser in controllers/authcontroller.js')
-                        return { error: err, errorMessage: err.message }
-                    })
-                }
-            })
-        })((result) => {
-            NotificationService.sendDedicatedNotificationAsync(req)({
-                title: 'Api token has been succesfully generated! ',
-                message: 'Your seatfilla API token has been succesfully generated, it will be verified shortly.!'
-            });
-            return res.json(result)
+        const permissions = (function buildPermissions(req) {
+            const requestPermission = {};
+
+            if (req.param('request_permission'))
+                requestPermission['request_permission'] = req.param('request_permission');
+
+            if (req.param('accept_request_permission'))
+                requestPermission['accept_request_permission'] = req.param('accept_request_permission');
+
+            if (req.param('flightoffer_permission'))
+                requestPermission['flightoffer_permission'] = req.param('flightoffer_permission');
+
+            if (req.param('advertisements_permission'))
+                requestPermission['advertisements_permission'] = req.param('advertisements_permission');
+
+            console.log('built API keys permissions: ' + JSON.stringify(requestPermission));
+            return requestPermission;
+        })(req);
+
+        const requestPermissionKeys = Object.keys(permissions);
+
+        if (!req.param('requestURL')) return res.json({ error: 'No request URL was supplied, this is required.' });
+        if (requestPermissionKeys.length <= 0) return res.json({ error: 'At-least one permission must be used to create an API key.' });
+
+        ApiService.createApiToken(req, {
+            id: req.user.id,
+            permissions: requestPermissionKeys,
+            validRequestURL: req.param('requestURL');
+            iat: Math.floor(new Date().getTime() / 1000) - 30,
+            aud: 'SeatFilla',
+            sub: 'SeatfillaApiToken'
+        }, function(err, token) {
+            if (err) {
+                sails.log.debug('Error generating API token, controllers/authcontroller.js')
+                return res.json({ error: err, errorMessage: err.message })
+            } else {
+                ApiService.createApiUser(req.user, token, permissions).then(function(apiUser) {
+                    NotificationService.sendDedicatedNotificationAsync(req)({
+                        title: 'Api token has been succesfully generated! ',
+                        message: 'Your seatfilla API token has been succesfully generated. ' + apiUser.isVerified ?
+                            'It has been automatically verified for your use.' : 'We will verify this token shortly and send you an email when it has been approved.'
+                    });
+                    return res.json({ message: 'Succesfully created API token, it will be validated shortly', token: token });
+                }).catch(function(err) {
+                    sails.log.debug('Error creating ApiUser in controllers/authcontroller.js')
+                    return res.json({ error: err, errorMessage: err.message });
+                })
+            }
         })
     },
 

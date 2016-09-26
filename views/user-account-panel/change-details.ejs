@@ -1,0 +1,248 @@
+
+<script>
+ $(document).ready(function(){
+    $.toaster({ priority : 'info',  message : 'Change your account details'})
+
+      $('.sf-account-menu li').removeAttr('class');
+      $('#ChangeDetails').attr('class','active');
+
+      $('#update-details').on('click',function(){
+           $('input[type="text"]').removeAttr('disabled');
+           $('input[type="password"]').removeAttr('disabled');
+           $('select').removeAttr('disabled');
+      });
+
+       window.seatfilla.globals.forms.validateAndSerialize('#registrationForm', '.success', '.errors', {
+        successMessage:'Your account details have been succesfully changed!',
+        success(responseStatus, response, responseMessage) {
+             
+        },
+        error(responseStatus, response, responseError) {
+            window.seatfilla.globals.moveWindowToId('#stepOne');
+        }
+    });
+  });
+
+
+</script>
+<style>
+#account-details-form .control-label{
+  font-weight:normal;
+}
+</style>
+<div class="container80">
+<div class="row">
+<div class="col-md-10 ">
+<form id="account-details-form" class="form-horizontal">
+<fieldset>
+<p>My Account Details <input type="button" id="update-details" value="Update Details" class="btn btn-info pull-right">Update Details</button></p> 
+<div class="errors"></div>
+<div class="success"></div>
+<hr>
+<br>
+	
+        <!-- Text input-->
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="name">First Name</label>  
+          <div class="col-md-8">
+          <input id="name" name="firstName" type="text" value="<%=req.user.firstName%>" placeholder="First Name" class="form-control input-md" required="" disabled>
+          <span class="help-block">Your first name</span>  
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="name">Middle Name</label>  
+          <div class="col-md-8">
+          <input id="name" name="middleName" type="text" value="<%=req.user.middleName%>" placeholder="Middle Name" class="form-control input-md" required="" disabled>
+          <span class="help-block">Your first name</span>  
+          </div>
+        </div>
+
+         <div class="form-group">
+          <label class="col-md-4 control-label" for="name">Last Name</label>  
+          <div class="col-md-8">
+          <input id="name" name="lastName" type="text" value="<%=req.user.lastName%>" placeholder="Last Name" class="form-control input-md" required="" disabled>
+          <span class="help-block">Your Last Name</span>  
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="Upload photo">Upload photo</label>
+          <div class="col-md-8">
+            <input id="Upload photo" name="Upload photo" class="input-file" type="file" disabled>
+              <span class="help-block">Upload an image to be used for your profile</span> 
+          </div>
+        </div>
+
+        <!-- Text input-->
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="phone">Home Phone</label>  
+          <div class="col-md-8">
+          <input id="phone" name="home" type="text" value="<%=req.user.home%>" placeholder="Home Phone Number" class="form-control input-md" required="" disabled>
+          <span class="help-block">Your home phone</span>  
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="phone">Mobile No.</label>  
+          <div class="col-md-8">
+          <input id="phone" name="home" type="text" value="<%=req.user.mobile%>" placeholder="Mobile Phone Number" class="form-control input-md" required="" disabled>
+          <span class="help-block">Mobile</span>  
+          </div>
+        </div>
+
+        <!-- Text input-->
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="email">Email</label>  
+          <div class="col-md-6">
+          <input id="email" name="email" type="text" value="<%=req.user.email%>" placeholder="Email address" class="form-control input-md" required="" disabled>
+          <span class="help-block">Email will be used for notication messages</span>  
+          </div>
+          <label class="col-md-1 control-label" for="email">Email verified? </label> 
+          <div class="col-md-1">
+              <%if(req.user.isEmailVerified){%>
+                  <input type="checkbox" class="form-control" checked="" disabled/>
+              <%}else{%>
+                  <input type="checkbox" class="form-control" disabled/>
+              <%}%>
+          </div>
+        </div>
+
+        <!-- Password input-->
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="password">Password </label>
+          <div class="col-md-8">
+            <input id="password" name="password" type="password" placeholder="Password " class="form-control input-md" required="" disabled>
+            <span class="help-block">Password </span>
+          </div>
+        </div>
+
+        <!-- Password input-->
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="rpassword">Confirm password</label>
+          <div class="col-md-8">
+            <input id="rpassword" name="rpassword" type="password" placeholder="Password" class="form-control input-md" required="" disabled>
+            <span class="help-block">Retype password</span>
+          </div>
+        </div>
+
+        <!-- Text input-->
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="address1">Address line one</label>  
+          <div class="col-md-8">
+          <input id="address1" name="addressLine" value="<%=req.user.addressLine%>" type="text" placeholder="Address " class="form-control input-md" required="" disabled>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="address1">Address line two</label>  
+          <div class="col-md-8">
+          <input id="address1" name="addressLineTwo" type="text" value="<%=req.user.addressLineTwo%>" placeholder="Address " class="form-control input-md" required="" disabled>
+    
+          </div>
+        </div>
+
+         <div class="form-group">
+          <label class="col-md-4 control-label" for="address1">Address line three</label>  
+          <div class="col-md-8">
+          <input id="address1" name="addressLineThree" type="text" value="<%=req.user.addressLineThree%>" placeholder="Address " class="form-control input-md" required="" disabled>
+    
+          </div>
+        </div>
+
+
+        <!-- Text input-->
+        <div class="form-group">
+          <label class="col-md-8 control-label" for="city">City</label>  
+          <div class="col-md-4">
+          <input id="city" name="city" value="<%=req.user.city%>" type="text" placeholder="City" class="form-control input-md" required="" disabled>
+          </div>
+        </div>
+
+        <!-- Text input-->
+        <div class="form-group">
+          <label class="col-md-8 control-label" value="<%=req.user.mobile%>" for="selectbasic">State</label>
+          <div class="col-md-4">
+            <select id="selectbasic" name="selectbasic" class="form-control" disabled>
+		        <option value="">Choose State:</option>
+		        <option value="AL">Alabama</option>
+		        <option value="AK">Alaska</option>
+		        <option value="AZ">Arizona</option>
+		        <option value="AR">Arkansas</option>
+		        <option value="CA">California</option>
+		        <option value="CO">Colorado</option>
+		        <option value="CT">Connecticut</option>
+		        <option value="DE">Delaware</option>
+		        <option value="FL">Florida</option>
+		        <option value="GA">Georgia</option>
+		        <option value="HI">Hawaii</option>
+		        <option value="ID">Idaho</option>
+		        <option value="IL">Illinois</option>
+		        <option value="IN">Indiana</option>
+		        <option value="IA">Iowa</option>
+		        <option value="KS">Kansas</option>
+		        <option value="KY">Kentucky</option>
+		        <option value="LA">Louisiana</option>
+		        <option value="ME">Maine</option>
+		        <option value="MD">Maryland</option>
+		        <option value="MA">Massachusetts</option>
+		        <option value="MI">Michigan</option>
+		        <option value="MN">Minnesota</option>
+		        <option value="MS">Mississippi</option>
+		        <option value="MO">Missouri</option>
+		        <option value="MT">Montana</option>
+		        <option value="NE">Nebraska</option>
+		        <option value="NV">Nevada</option>
+		        <option value="NH">New Hampshire</option>
+		        <option value="NJ">New Jersey</option>
+		        <option value="NM">New Mexico</option>
+		        <option value="NY">New York</option>
+		        <option value="NC">North Carolina</option>
+		        <option value="ND">North Dakota</option>
+		        <option value="OH">Ohio</option>
+		        <option value="OK">Oklahoma</option>
+		        <option value="OR">Oregon</option>
+		        <option value="PA">Pennsylvania</option>
+		        <option value="RI">Rhode Island</option>
+		        <option value="SC">South Carolina</option>
+		        <option value="SD">South Dakota</option>
+		        <option value="TN">Tennessee</option>
+		        <option value="TX">Texas</option>
+		        <option value="UT">Utah</option>
+		        <option value="VT">Vermont</option>
+		        <option value="VA">Virginia</option>
+		        <option value="WA">Washington</option>
+		        <option value="WV">West Virginia</option>
+		        <option value="WI">Wisconsin</option>
+		        <option value="WY">Wyoming</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Text input-->
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="zip">Post Code</label>  
+          <div class="col-md-4">
+          <input id="zip" name="zip" type="text" value="<%=req.user.postcode%>" placeholder="Zip Code" class="form-control input-md" required="" disabled>
+    
+          </div>
+        </div>
+
+        <!-- Button (Double) -->
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="save"></label>
+          <div class="col-md-8">
+            <button id="save" name="save" class="btn btn-success" disabled>Update</button>
+            <button id="cancel" name="cancel" class="btn btn-danger">Cancel</button>
+          </div>
+        </div>
+</form>
+</div>
+<div class="col-md-2 hidden-xs">
+<img src="/images/Logo.png" class="img-responsive img-thumbnail ">
+  </div>
+</div>
+</div>
+
+
+

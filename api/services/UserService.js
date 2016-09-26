@@ -32,35 +32,35 @@ module.exports = {
                     state: user.state,
                     postcode: user.postcode,
                     user: user.id
-                }).exec(function(err, user) {
+                }).exec(function(err, address) {
                     if (err || !user) {
                         sails.log.debug('Error creating address: ' + user + ' ' + err);
                         return reject({ error: err, message: 'error creating address record' });
                     } else {
-                        return resolve(user);
+                        return resolve({ user, address });
                     }
                 });
             });
         }).then(function(user) {
-            sails.log.debug('Creating sign up record for user: ' + user);
+            sails.log.debug('Creating sign up record for user: ' + JSON.stringify(user));
             // Register the sign up..
             return new Promise(function(resolve, reject) {
-                Signup.create({ ip: req.ip, user_agent: req.headers['user-agent'], user: user.id })
+                Signup.create({ ip: req.ip, user_agent: req.headers['user-agent'], user: user.user.id })
                     .exec(function handleVerificationProcess(err, signup) {
 
                         // Handle error
                         if (err) {
-                            sails.log.debug('Error creating sign up record for user id :' + user.id + 'Error: ' + err)
+                            sails.log.debug('Error creating sign up record for user id :' + user.user.id + 'Error: ' + err)
                             return reject({ err: err, message: 'error creating sign up record' });
                         }
 
                         // Store verification id 
-                        user.verificationId = signup.id
+                        user.user.verificationId = signup.id
 
                         // Get the registration email template
-                        const message = sails.config.email.messageTemplates.registration(user)
+                        const message = sails.config.email.messageTemplates.registration(user.user)
 
-                        sails.log.debug('Created email template ' + message)
+                        sails.log.debug('Created email template ' + JSON.stringify(message))
 
                         // Send an email async
                         EmailService.sendEmailAsync(message).then(function getInfo(info) {

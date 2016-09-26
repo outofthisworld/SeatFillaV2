@@ -1,0 +1,357 @@
+
+<link rel="stylesheet" href="/styles/prettify-jsdoc.css">
+<link rel="stylesheet" href="/styles/jsdoc-default.css">
+<link rel="stylesheet" href="/styles/prettify-tomorrow.css">
+<style>
+
+table.custab{
+    display: block;
+    overflow-y: scroll
+    max-height:460px;
+    height:460px;
+    min-height:460px;
+    overflow:scroll;
+    box-shadow: 3px 3px 2px #ccc;
+    transition: 0.5s;
+    }
+.custab:hover{
+    box-shadow: 3px 3px 0px transparent;
+    transition: 0.5s;
+    }
+
+@import('https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.0/css/bootstrap.min.css') 
+
+.funkyradio div {
+  clear: both;
+  overflow: hidden;
+}
+
+.funkyradio label {
+  width: 100%;
+  border-radius: 3px;
+  border: 1px solid #D1D3D4;
+  font-weight: normal;
+}
+
+.funkyradio input[type="radio"]:empty,
+.funkyradio input[type="checkbox"]:empty {
+  display: none;
+}
+
+.funkyradio input[type="radio"]:empty ~ label,
+.funkyradio input[type="checkbox"]:empty ~ label {
+  position: relative;
+  line-height: 2.5em;
+  text-indent: 3.25em;
+  margin-top: 2em;
+  cursor: pointer;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+
+.funkyradio input[type="radio"]:empty ~ label:before,
+.funkyradio input[type="checkbox"]:empty ~ label:before {
+  position: absolute;
+  display: block;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  content: '';
+  width: 2.5em;
+  background: #D1D3D4;
+  border-radius: 3px 0 0 3px;
+}
+
+.funkyradio input[type="radio"]:hover:not(:checked) ~ label,
+.funkyradio input[type="checkbox"]:hover:not(:checked) ~ label {
+  color: #888;
+}
+
+.funkyradio input[type="radio"]:hover:not(:checked) ~ label:before,
+.funkyradio input[type="checkbox"]:hover:not(:checked) ~ label:before {
+  content: '\2714';
+  text-indent: .9em;
+  color: #C2C2C2;
+}
+
+.funkyradio input[type="radio"]:checked ~ label,
+.funkyradio input[type="checkbox"]:checked ~ label {
+  color: #777;
+}
+
+.funkyradio input[type="radio"]:checked ~ label:before,
+.funkyradio input[type="checkbox"]:checked ~ label:before {
+  content: '\2714';
+  text-indent: .9em;
+  color: #333;
+  background-color: #ccc;
+}
+
+.funkyradio input[type="radio"]:focus ~ label:before,
+.funkyradio input[type="checkbox"]:focus ~ label:before {
+  box-shadow: 0 0 0 3px #999;
+}
+
+.funkyradio-default input[type="radio"]:checked ~ label:before,
+.funkyradio-default input[type="checkbox"]:checked ~ label:before {
+  color: #333;
+  background-color: #ccc;
+}
+
+.funkyradio-primary input[type="radio"]:checked ~ label:before,
+.funkyradio-primary input[type="checkbox"]:checked ~ label:before {
+  color: #fff;
+  background-color: #337ab7;
+}
+
+.funkyradio-success input[type="radio"]:checked ~ label:before,
+.funkyradio-success input[type="checkbox"]:checked ~ label:before {
+  color: #fff;
+  background-color: #5cb85c;
+}
+
+.funkyradio-danger input[type="radio"]:checked ~ label:before,
+.funkyradio-danger input[type="checkbox"]:checked ~ label:before {
+  color: #fff;
+  background-color: #d9534f;
+}
+
+.funkyradio-warning input[type="radio"]:checked ~ label:before,
+.funkyradio-warning input[type="checkbox"]:checked ~ label:before {
+  color: #fff;
+  background-color: #f0ad4e;
+}
+
+.funkyradio-info input[type="radio"]:checked ~ label:before,
+.funkyradio-info input[type="checkbox"]:checked ~ label:before {
+  color: #fff;
+  background-color: #5bc0de;
+}
+</style>
+
+    <div id="main">
+
+        <h2>Seatfilla API User Portal</h2>
+        <small class="pull-right"><p>Manage your api keys</p></small>
+        <hr/>
+
+<div class="container-fluid" style="margin-top:20px;">
+
+<h2> Create an API key </h2>
+<hr/>
+<div class="well well-sm">
+ <!-- Text input-->
+ <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-6">
+        <form>
+          <div class="form-group">
+            <label class="control-label" for="name">Your secret key:</label>  
+            <div class="col-md-12">
+            <input id="name" name="firstName" type="text"  placeholder="First Name" class="form-control input-md" required="">
+            <span class="help-block">Please keep your secret key safe. Once your key has been generated using this secret, we don't keep track of it.</span>  
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="control-label" for="name">Requesting domain</label>  
+            <div class="col-md-12">
+            <input id="name" name="firstName" type="text"  placeholder="First Name" class="form-control input-md" required="">
+            <span class="help-block">Please enter the domain in which requests will be arriving from. Note that this should
+            be a live website.</span>  
+            </div>
+          </div>
+
+  
+        <div class="">
+    <br/>
+        <hr/>
+          <br/>
+        <hr/>
+               <p>Choose your API key permissions: </p>
+        <small> * Please note that the advertisements and flight offer API keys require approval by Seatfilla.</small>
+
+        <div class="funkyradio">
+        <div class="funkyradio-info">
+            <input type="checkbox" name="request_permission" id="checkbox6" checked/>
+            <label for="checkbox6">Flight Request API</label>
+           <span class="help-block">Grants access to the flight request API. View flight requests made at Seatfilla.</span>  
+        </div>
+          <div class="funkyradio-info">
+            <input type="checkbox" name="accept_request_permission" id="checkbox6"/>
+            <label for="checkbox6">Flight Request API Extended.</label>
+           <span class="help-block">Grants extended access to the flight request API allowing acceptance of flight requests made by Seatfilla
+           users.</span>  
+        </div>
+         <div class="funkyradio-info">
+            <input type="checkbox" name="flightoffer_permission" id="checkbox7"/>
+            <label for="checkbox7">Flight Offer API</label>
+             <span class="help-block">Grants access to the flight offer API (Offer flights to Seatfilla)</span>  
+        </div>
+          <div class="funkyradio-info">
+            <input type="checkbox" name="advertisements_permission" id="checkbox7"/>
+            <label for="checkbox7">Advertisements API</label>
+             <span class="help-block">Grants access to the advertisements API. (Create advertisments to be displayed on Seatfilla)</span>  
+        </div>
+        </div>
+        </div>
+          <br/>
+          <button class="btn btn-success btn-block" id="generateApiKey">Generate my API key</button>
+      </form>
+    </div><!--col-->
+    <div class="col-md-6">
+         <p class="text-center">Your Active API keys</p>
+    <div class="well well-sm">
+    <small style="color:red;"> *Remember to include this key along with the secret used when generating the key in every HTTP request you make to Seatfilla</small>
+  
+    </div>
+    <div class="col-md-8-offset-2">
+    <table class="table table-striped custab" style="over">
+    <thead>
+   <!-- <a href="#" class="btn btn-primary btn-xs pull-right"><b>+</b> Add new categories</a>-->
+        <tr>
+            <th>Token</th>
+            <th>Requesting domain:</th>
+            <th class="text-center">Action</th>
+        </tr>
+    </thead>
+            <tr>
+                <td>1</td>
+                <td>News</td>
+                <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span> Edit</a> <a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Del</a></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Products</td>
+                <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span> Edit</a> <a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Del</a></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Blogs</td>
+                <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span> Edit</a> <a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Del</a></td>
+            </tr>
+    </table>
+    </div>
+</div>
+    </div>
+    </div><!--row-->
+
+</div><!--container-->
+
+</div><!--well-->
+
+<br/>
+ 
+
+ <section>
+ <h2>Example HTTP Requests to Seatfilla</h2>
+            <article>
+                <p>The following are examples of requests made to the Seatfilla API using the key/token. 
+                   The key or token should either be included in the query string, body or headers of the request.</p>
+                <pre class="prettyprint source linenums"><code>
+                /* An example GET request */
+
+                GET apiv1/FlightRequest?sfKey=YOUR_SEATFILLA_SECRET_KEY&
+                sfToken=YOUR_SEATFILLA_API_TOKEN HTTP/1.1
+                User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)
+                Host: www.seatfilla.com
+                Accept-Language: en-us
+                Accept-Encoding: gzip, deflate
+                Connection: Keep-Alive
+
+                /* An example POST request */
+
+                POST apiv1/FlightOffer/ HTTP/1.1
+                User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)
+                Host: www.seatfilla.com
+                Content-Type: application/x-www-form-urlencoded
+                Content-Length: length
+                Accept-Language: en-us
+                Accept-Encoding: gzip, deflate
+                Connection: Keep-Alive
+
+                sfKey=YOUR_SEATFILLA_SECRET_KEY&sfToken=YOUR_SEATFILLA_API_TOKEN
+
+                /* An example request using headers */
+
+                // Note that anything in brackets([]) denotes one or the other,
+                // and anything in brackets([]) proceeded with a question mark ('?')
+                // denotes that it is optional.  
+
+                [GET/POST] apiv1/FlightRequest[?query_params] HTTP/1.1
+                User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)
+                Host: www.seatfilla.com
+                Content-Type: application/x-www-form-urlencoded
+                x-seatfilla-key: YOUR_SECRET_API_KEY
+                x-seatfilla-token: YOUR_SECRET_API_TOKEN
+                Content-Length: length
+                Accept-Language: en-us
+                Accept-Encoding: gzip, deflate
+                Connection: Keep-Alive
+                </code></pre>
+            </article>
+   </section>
+
+
+
+        <section>
+            <article>
+                <pre class="prettyprint source linenums"><code>
+    /***************************************************************************************
+    *    
+    *    Integrate your code with our API.
+    * 
+    *    Our api allows offers the following features:
+    * 
+    *  - Track current Seatfilla flight requests to find candidates
+    *    interested in flights to various destinations
+    *    and the planned time of these trips. 
+    
+    *    This could be useful for example, 
+    *    for any entity wishing to have future information about flight 
+    *    statistics. These requests can also be used as input to the accept flight
+    *    request endpoint, should you wish to accept a flight request and provide
+    *    the customer with a flight. 
+    
+    *    It is purely at your discretion whether 
+    *    or not you accept a particular flight request,
+    *    however gadging company statistics may be a helpful way to make the decision.
+    *    For example, if you are an airline
+    *    and you have a flight that departs in the next 3 hours with 20% available seat
+    *    capacity and company statistics show that
+    *    it is unlikely for the flight to be 100% occupied by the time of departure 
+    *    (looking at past ticket sales for the flight), 
+    *    you could gadge how many flights are likely to sell and offer the remaining
+    *    flights to Seatfilla users by accepting their flight requests.
+    
+    *  - Accept a flight request made by one of Seatfillas users.  
+    
+    *    Upon acceptence of a flight request, Seatfilla will notify the user
+    *    that their flight request has been accepted.
+    *
+    *
+    *  - Register a webhook enabling you to be notified when a flight request is made by a Seatfilla user.
+    *   
+    *
+    *  - Offer flights to Seatfilla at a fixed price or offer flights to Seatfilla enabling
+    *    Seatfilla users to bid on the flights.
+    *
+    ****************************************************************************************/
+
+</code></pre>
+            </article>
+        </section>
+
+
+
+
+    </div>
+
+
+    <script>
+        prettyPrint();
+    </script>
+    <script src="scripts/linenumber.js">
+    </script>

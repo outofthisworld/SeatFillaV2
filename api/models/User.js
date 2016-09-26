@@ -115,8 +115,8 @@ module.exports = {
             defaultsTo: false
         },
         //One to many on requests
-        requests: {
-            collection: 'Request',
+        flightRequests: {
+            collection: 'FlightRequest',
             via: 'user'
         },
         //One to many on addresses (may have duplicates however stops synchornization issues)

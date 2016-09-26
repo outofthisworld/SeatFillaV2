@@ -23,7 +23,7 @@ ul.site-tabs{
 .navbar-right li a { color:white;font-size:12px;}
 nav.site-nav{ background: #fff; border-color: #ccc; box-shadow: 0 0 2px 0 #ccc; }
 nav.site-nav a { color: #2196F3; }
-nav.site-nav ul.navbar-nav a { color: #2196F3; border-style: solid; border-width: 0 0 2px 0; border-color: #fff; }
+nav.site-nav ul.navbar-nav a { color: #2196F3; background-color:#fafafa; border-style: solid; border-width: 0 0 2px 0; border-color: #fff; }
 nav.site-nav ul.navbar-nav a:hover,
 nav.site-nav ul.navbar-nav a:visited,
 nav.site-nav ul.navbar-nav a:focus,
@@ -33,8 +33,8 @@ nav.site-nav li.divider { background: #2196F3; }
 nav.site-nav button.navbar-toggle { background: #2196F3; border-radius: 2px; }
 nav.site-nav button.navbar-toggle:hover { background:  #2196F3; }
 nav.site-nav button.navbar-toggle > span.icon-bar { background: #fff; }
-nav.site-nav ul.dropdown-menu { border: 0; background: #fff; border-radius: 4px; margin: 4px 0; box-shadow: 0 0 4px 0 #ccc; }
-nav.site-nav ul.dropdown-menu > li > a { color: #2196F3; }
+nav.site-nav ul.dropdown-menu { border: 0; background: #fff;  border-radius: 4px; margin: 4px 0; box-shadow: 0 0 4px 0 #ccc; }
+nav.site-nav ul.dropdown-menu > li > a { color: #2196F3;  }
 nav.site-nav ul.dropdown-menu > li > a:hover { background:  #2196F3; color: #fff; }
 nav.site-nav span.badge { background: #2196F3; font-weight: normal; font-size: 11px; margin: 0 4px; }
 nav.site-nav span.badge.new { background: rgba(255, 0, 0, 0.8); color: #fff; }
@@ -158,7 +158,7 @@ nav.site-nav span.badge.new { background: rgba(255, 0, 0, 0.8); color: #fff; }
 			<!-- Collect the nav links, forms, and other content for toggling -->
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				
-				<ul class="nav navbar-nav navbar-right" style="">
+				<ul class="nav navbar-nav navbar-right">
                 <br>
                 <li><a href="#">Home</a></li>
 					<li class="dropdown">
@@ -173,10 +173,14 @@ nav.site-nav span.badge.new { background: rgba(255, 0, 0, 0.8); color: #fff; }
           <li><a href="#">Make a flight request</a></li>
           <li><a href="#">About Us</a></li>
           <li><a href="#">Contact us</a></li>
+
+          <li>
+	    <ul class="nav navbar-nav navbar-right">
+          
 				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-fw fa-bell-o"></i> Notifications <span class="badge">2</span></a>
+					<a href="#" style="background-color:white;border-color:#2196F3;border-width:1px;border-style:solid;" class="dropdown-toggle" data-toggle="dropdown" style="background-color:white;" role="button" aria-expanded="false"><i class="fa fa-fw fa-bell-o"></i> Notifications <span class="badge">2</span></a>
 					<ul class="dropdown-menu" role="menu">
-                        <li> Notifications</li>
+            <li> Notifications</li>
 						<li><a href="#"><i class="fa fa-fw fa-tag"></i> <span class="badge">Notification</span> Welcome to Seatfilla</a></li>
 						<li><a href="#"><i class="fa fa-fw fa-thumbs-o-up"></i> <span class="badge">Congratulations</span> You just visited SeatFilla</a></li>
 		
@@ -190,22 +194,24 @@ nav.site-nav span.badge.new { background: rgba(255, 0, 0, 0.8); color: #fff; }
 				</li>
 
         <%if(!req.user){%>
-        <li class="active"><a href="#" class="btn btn-primary btn-lg" id="login-modal-trigger" role="button" data-toggle="modal" data-target="#login-modal">Login</a></li>
-        <%}else{%>
-          <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <span class="glyphicon glyphicon-user pull-right"></span> <%= req.user.email %> </a>
-          <ul class="dropdown-menu">
-            <li><a href="#">Account Settings <span class="glyphicon glyphicon-cog pull-right"></span></a></li>
-            <li class="divider"></li>
-            <li><a href="#">User stats <span class="glyphicon glyphicon-stats pull-right"></span></a></li>
-            <li class="divider"></li>
-            <li><a href="#">Messages <span class="badge pull-right"> 42 </span></a></li>
-            <li class="divider"></li>
-            <li><a href="#">Favourites Snippets <span class="glyphicon glyphicon-heart pull-right"></span></a></li>
-            <li class="divider"></li>
-            <li><a href="#">Sign Out <span class="glyphicon glyphicon-log-out pull-right"></span></a></li>
-          </ul>
-        </li>
+          <li class="active"><a href="#" class="btn btn-primary btn-lg" id="login-modal-trigger" role="button" data-toggle="modal" data-target="#login-modal">Login</a></li>
+          <%}else{%>
+            <li class="dropdown">
+            <a href="#" style="background-color:white;border-color:#2196F3;border-width:1px;border-style:solid;" class="dropdown-toggle" data-toggle="dropdown"> <span class="glyphicon glyphicon-user pull-right"></span> <%= req.user.email %> </a>
+            <ul class="dropdown-menu">
+              <li><a href="/user/myaccount">My Account <span class="glyphicon glyphicon-cog pull-right"></span></a></li>
+              <li class="divider"></li>
+              <li><a href="/user/changedetails">Change Account Info <span class="glyphicon glyphicon-cog pull-right"></span></a></li>
+              <li class="divider"></li>
+              <li><a href="#">My Active Requests <span class="glyphicon glyphicon-stats pull-right"></span></a></li>
+              <li class="divider"></li>
+              <li><a href="#">Notifications class="badge pull-right"> 42 </span></a></li>
+              <li class="divider"></li>
+              <li><a href="#">Accepted Flight Requests <span class="glyphicon glyphicon-heart pull-right"></span></a></li>
+              <li class="divider"></li>
+              <li><a href="#">Sign Out <span class="glyphicon glyphicon-log-out pull-right"></span></a></li>
+            </ul>
+          </li>
         <%}%>
 
         <%if(req.user && req.user.roles.filter(function(role){
@@ -222,9 +228,13 @@ nav.site-nav span.badge.new { background: rgba(255, 0, 0, 0.8); color: #fff; }
 					</ul>
 				</li>
         <%}%>
+        </ul>
+   
+          </li>
       
 			</ul>
-   
+
+      
        
  
 	

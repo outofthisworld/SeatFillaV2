@@ -132,9 +132,9 @@ module.exports = {
                 timeZoneDstOffset: req.body.userLocation.timezone.dstOffset,
                 timeZoneRawOffset: req.body.userLocation.timezone.rawOffset,
             }).then(function(addr) {
-                sails.log.debug('Succesfully created user location: ' + addr);
+                sails.log.debug('Succesfully created user location: ' + JSON.stringify(addr));
             }).catch(function(err) {
-                sails.log.debug('Could not create user location.');
+                sails.log.debug('Could not create user location. Error occurred : ' + JSON.stringify(err));
             })
 
             UserSearch.create({
@@ -161,7 +161,11 @@ module.exports = {
                 destinationAirportLongitude: req.body.destination.Longitude,
                 destinationAirportTimezone: req.body.destination.Timezone,
                 destinationAirportDst: req.body.destination.DST
-            });
+            }).then(function(userSearch) {
+                sails.log.debug('Succesfully created user search ' + JSON.stringify(userSearch));
+            }).catch(function(err) {
+                sails.log.debug('Error creating user search ' + JSON.stringify(err));
+            })
         }
 
         new Promise(function(resolve, reject) {

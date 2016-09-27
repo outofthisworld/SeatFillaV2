@@ -130,6 +130,48 @@ $(document).ready(function() {
             });
         }
 
+        /* Add support for geocoding later.. 
+     
+         Location callback...
+        {
+            coords: {
+                latitude: 37.4224764,
+                longitude: -122.0842499
+            },
+            address: {
+                commonName: "",
+                street: "Amphitheatre Pkwy",
+                route: "Amphitheatre Pkwy",
+                streetNumber: "1600",
+                neighborhood: "",
+                town: "",
+                city: "Mountain View",
+                region: "Santa Clara County",
+                state: "California",
+                stateCode: "CA",
+                postalCode: "94043",
+                country: "United States",
+                countryCode: "US"
+            },
+            formattedAddress: "1600 Amphitheatre Parkway, Mountain View, CA 94043, USA",
+            type: "ROOFTOP",
+            placeId: "ChIJ2eUgeAK6j4ARbn5u_wAGqWA",
+            flag: "//cdnjs.cloudflare.com/ajax/libs/flag-icon-css/2.3.1/flags/4x3/us.svg",
+            map: {
+                element: HTMLElement,
+                instance: Object, // google.maps.Map
+                marker: Object, // google.maps.Marker
+                infoWindow: Object, // google.maps.InfoWindow
+                options: Object // map options
+            },
+            timestamp: 1456795956380
+        }
+        //Address = user address
+        geolocator.geocode(address, function (err, location) {
+            console.log(err || location);
+        });
+        */
+
         /* Retrieve airports data */
         const airport_data = window.seatfilla.globals.sf_retrieveAirportData();
         const airportDataKeys = Object.keys(airport_data).sort(function(one, two) {

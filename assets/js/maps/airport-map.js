@@ -98,7 +98,7 @@ $(document).ready(function() {
             $('#searchFlights').on('click', function() {
                 const data = marker.data;
 
-                console.log('marker: ' + JSON.stringify(marker));
+
                 console.log('destination data: ' + JSON.stringify(data));
                 console.log('origin data:' + JSON.stringify(originAirport));
                 console.log('user position:' + JSON.stringify(sf_map.position));
@@ -110,22 +110,42 @@ $(document).ready(function() {
                 const numAdultTickets = $('#num_adult_tickets').val();
                 const numInfantTickets = $('#num_infant_tickets').val();
 
+                const destinationAirportLngLat = {
+                    longitude: data.Longitude,
+                    latitude: data.Latitude
+                }
 
-                $.ajax({
-                    type: "POST",
-                    url: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo,
-                    data: {
-                        origin: originAirport,
-                        destination: data,
-                        userPosition: sf_map.position,
-                        userLocation: sf_map.location,
-                        userLocale: window.seatfilla.globals.getFirstBrowserLanguage(),
-                        ticketInfo: { numAdultTickets, numChildTickets, numInfantTickets },
-                        dateInfo: { departure, arrival }
-                    },
-                    success: function(response) {
+                console.log(JSON.stringify(destinationAirportLngLat));
 
-                    },
+                const originAirportLngLat = {
+                    longitude: originAirport.Longitude,
+                    latitude: originAirport.Latitude
+                }
+
+
+                console.log(JSON.stringify(originAirportLngLat));
+
+                geolocator.reverseGeocode(destinationAirportLngLat, function(err, destinationAirportLocation) {
+                    geolocator.reverseGeocode(originAirportLngLat, function(err, originAirportLocation) {
+                        $.ajax({
+                            type: "POST",
+                            url: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo,
+                            data: {
+                                origin: originAirport,
+                                destination: data,
+                                destinationAirportLocation,
+                                originAirportLocation,
+                                userPosition: sf_map.position,
+                                userLocation: sf_map.location,
+                                userLocale: window.seatfilla.globals.getFirstBrowserLanguage(),
+                                ticketInfo: { numAdultTickets, numChildTickets, numInfantTickets },
+                                dateInfo: { departure, arrival }
+                            },
+                            success: function(response) {
+
+                            },
+                        });
+                    });
                 });
             });
         }

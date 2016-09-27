@@ -35,9 +35,16 @@ module.exports.http = {
             })
 
             passport.deserializeUser(function(id, done) {
-                User.findOne({ id: id }).populate('roles').exec(function(err, user) {
-                    done(err, user)
-                })
+                User.findOne({ id: id })
+                    .populate('roles')
+                    .popuate('userSettings')
+                    .populate('images')
+                    .populate('addresses')
+                    .populate('flightRequests')
+                    .populate('bids')
+                    .exec(function(err, user) {
+                        done(err, user)
+                    })
             })
         }(),
 

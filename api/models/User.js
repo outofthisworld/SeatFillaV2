@@ -145,6 +145,10 @@ module.exports = {
             collection: 'Notifications',
             via: 'user'
         },
+        userSettings: {
+            collection: 'UserSettings',
+            via: 'user'
+        },
         images: {
             collection: 'UserImage',
             via: 'user'

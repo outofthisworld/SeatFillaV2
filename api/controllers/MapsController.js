@@ -172,14 +172,14 @@ module.exports = {
             const obj = Object.create(SkyScannerFlightService.sessionObj);
 
             obj.country = req.body.userLocation.address.countryCode || req.body.userLocation.address.country;
-            obj.currency = 'ISO currency code/currencies service';
+            obj.currency = req.body.prefferedCurrency || 'USD';
             obj.locale = req.body.userLocale == req.headers['accept-language'] ? req.body.userLocale : req.headers['accept-language'];
             obj.originplace = req.body.origin.IataOrFaaCode;
             obj.destinationplace = req.body.destination.IataOrFaaCode;
             obj.outbounddate = req.body.dates.departure;
             obj.inbounddate = req.body.dates.arrival;
             obj.locationschema = SkyScannerFlightService.locationschemas.Iata;
-            obj.cabinclass = SkyScannerFlightService.cabinclasses.Economy;
+            obj.cabinclass = req.body.prefferedCabinClass || SkyScannerFlightService.cabinclasses.Economy;
             obj.adults = req.body.ticketInfo.numAdultTickets || 1;
             obj.children = req.body.ticketInfo.numChildTickets || 0;
             obj.infants = req.body.ticketInfo.numInfantTickets || 0;
@@ -187,6 +187,9 @@ module.exports = {
 
             resolve(obj);
         }).then(function(sessionObj) {
+            const itinObj = Object.create(SkyScannerFlightService.itinObj);
+
+
 
         });
     },

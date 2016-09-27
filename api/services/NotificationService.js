@@ -8,34 +8,32 @@ module.exports = {
         // Return a function which takes a message..
         return function(message) {
             // Lets run the asyncrounously since we're running database operations and javascript only has one thread..
-            async.asyncify(function() {
-                // Grab the socketID
-                const socketId = req.session.notificationSocketId || sails.sockets.getId(req)
 
-                // If the user is logged on, create a notification for the user.
-                if (req.user) {
-                    Notifications.create({
-                        user: req.user.id,
-                        message: message,
-                        read: false
-                    }).exec(function(err, notification) {
-                        if (err) return done(err, null)
-                    })
-                }
+            // Grab the socketID
+            const socketId = req.session.notificationSocketId || sails.sockets.getId(req)
 
-                // Log it..
-                sails.log.debug('Send async notification via notificationService')
+            // If the user is logged on, create a notification for the user.
+            if (req.user) {
+                Notifications.create({
+                    user: req.user.id,
+                    message: message,
+                    read: false
+                }).then(function(notification) {
+                    if (err && typeof done === 'function') return done(null, notification)
+                }).catch(function(error) {
+                    if (done && typeof done === 'function') return done(null, error);
+                });
+            }
 
-                // Send it to the right socket..
-                sails.sockets.broadcast(socketId, 'NotificationService', message)
+            // Log it..
+            sails.log.debug('Send async notification via notificationService')
 
-                // All good.
-                return 'sent'
-            })(function(result) {
-                // Return to the caller
-                if (done && typeof done === 'function') return done(null, result)
-            })
-        }
+            // Send it to the right socket..
+            sails.sockets.broadcast(socketId, 'NotificationService', message)
+
+            // All good.
+            return 'sent'
+        };
     },
     // Sends a system notification to all users.
     sendSystemNotification: function(message) {

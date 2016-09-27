@@ -80,11 +80,17 @@ window.seatfilla.globals.forms.validateAndSerialize = function(form, successElem
     const validationWarningDiv = window.seatfilla.globals.forms.validationWarningDiv;
     const validationSuccessDiv = window.seatfilla.globals.forms.validationSuccessDiv;
 
+    console.log('validation form');
+
+    const type = options.method || $(form).attr('method') || 'POST';
+    const url = options.url || $(form).attr('action') || '/user/create/';
+    console.log('Sending ' + type + ' request to ' + url);
+    console.log(form);
     $(form).validate({
         submitHandler: function(form) {
             $.ajax({
-                type: "POST",
-                url: '/user/create',
+                type,
+                url,
                 data: $(form).serialize(),
                 success: function(response) {
                     console.log('sending ajax serialized form ');

@@ -47,6 +47,8 @@ module.exports.policies = {
     AuthController: {
         '*': false,
         'generateApiToken': ['passportAuth'],
+        'removeApiToken': ['passportAuth'],
+        'removeAllApiTokens': ['passportAuth'],
         'local': true,
         'facebook': true,
         'instagram': true,

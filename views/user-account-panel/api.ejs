@@ -1,23 +1,11 @@
 
-<link rel="stylesheet" href="/styles/prettify-jsdoc.css">
-<link rel="stylesheet" href="/styles/jsdoc-default.css">
-<link rel="stylesheet" href="/styles/prettify-tomorrow.css">
 <style>
 
-table.custab{
-    display: block;
-    overflow-y: scroll
-    max-height:460px;
-    height:460px;
-    min-height:460px;
-    overflow:scroll;
-    box-shadow: 3px 3px 2px #ccc;
-    transition: 0.5s;
-    }
-.custab:hover{
-    box-shadow: 3px 3px 0px transparent;
-    transition: 0.5s;
-    }
+
+#apiKeysTBody td{
+  overflow:scroll;
+  font-size:12px;
+}
 
 @import('https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.0/css/bootstrap.min.css') 
 
@@ -130,7 +118,68 @@ table.custab{
   background-color: #5bc0de;
 }
 </style>
+<script>
+  $(window).ready(function(){
+      $('#generateApiKey').on('click',function(){
+          const url = '/auth/generateApiToken/';
+          const type = 'POST';
+          const $form = $('#apiKeyForm');
 
+          if (!$form[0].checkValidity()) {
+            $form.find(':submit').click()
+            return;
+          }
+
+          $.ajax({
+                type,
+                url,
+                data: $form.serialize(),
+                success: function(response) {
+                   console.log(response);
+                   if(response.status == 200){
+                    $('#apiKeysTBody').append('<tr>'
+                    + '<td style="max-width:260px;">' + response.token + '</td>'+
+                    '<td style="max-width:20px;">' + response.isVerified + '</td>'+
+                    '<td style="max-width:20px;"> <a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span>Del</a></td>'+
+                    '</tr>');
+                  }else{
+                    $('.errors').html('').append(
+                      window.seatfilla.globals.forms.validationWarningDiv.clone().append(
+                        $('<p></p>').text(response.errorMessage)));
+                  }
+                }
+          });
+      });
+
+      $('.deleteToken').on('click',function(){
+            const url = '/auth/removeApiToken';
+            const type= 'POST';
+            const btn = $(this);
+            const token = btn.attr('data-attr-id');
+            $.ajax({
+                type,
+                url,
+                data: {
+                  token
+                },
+                success: function(response) {
+                  console.log(response);
+                  if(response.status == 200){
+                     $('#apiKeysTBody tr[data-attr-id="' + token + '"]').remove();
+
+                     $('.success').html('').append(
+                      window.seatfilla.globals.forms.validationSuccessDiv.clone().append(
+                        $('<p></p>').text(response.message)));
+                  }else{
+                    $('.errors').html('').append(
+                      window.seatfilla.globals.forms.validationWarningDiv.clone().append(
+                        $('<p></p>').text(response.errorMessage)));
+                  }
+                }
+          });
+      })
+  });
+</script>
     <div id="main">
 
         <h2>Seatfilla API User Portal</h2>
@@ -140,103 +189,93 @@ table.custab{
 <div class="container-fluid" style="margin-top:20px;">
 
 <h2> Create an API key </h2>
+<div class="errors"></div>
+<div class="success"></div>
 <hr/>
 <div class="well well-sm">
  <!-- Text input-->
  <div class="container-fluid">
    <div class="row">
     <div class="col-md-6">
-        <form>
+        <form id="apiKeyForm">
           <div class="form-group">
-            <label class="control-label" for="name">Your secret key:</label>  
+            <label class="control-label" for="sfKey">Your secret key:</label>  
             <div class="col-md-12">
-            <input id="name" name="firstName" type="text"  placeholder="First Name" class="form-control input-md" required="">
-            <span class="help-block">Please keep your secret key safe. Once your key has been generated using this secret, we don't keep track of it.</span>  
+            <input id="sfKey" name="sfKey" type="text"  placeholder="Secret Key" class="form-control input-md" minlength="3" maxlength="20" required="">
+            <span class="help-block">Please keep your secret key safe. Once your key has been generated using this secret, we dont keep track of it. (Min:3, max:20)</span>  
             </div>
           </div>
-
           <div class="form-group">
-            <label class="control-label" for="name">Requesting domain</label>  
+            <label class="control-label" for="requestURL">Requesting domain</label>  
             <div class="col-md-12">
-            <input id="name" name="firstName" type="text"  placeholder="First Name" class="form-control input-md" required="">
-            <span class="help-block">Please enter the domain in which requests will be arriving from. Note that this should
-            be a live website.</span>  
+            <input id="requestURL" name="requestURL" type="url" min="11" pattern="https?://.+" placeholder="Request URL" class="form-control input-md" required="">
+            <span class="help-block">Please enter the domain in which requests will be arriving from in the format [http(s?)://.+] Note that this should
+            be a live website and will not work if the request is not made from the specified domain.</span>  
             </div>
           </div>
-
-  
-        <div class="">
-    <br/>
-        <hr/>
-          <br/>
-        <hr/>
-               <p>Choose your API key permissions: </p>
+       <div class="row">
+        <br/><hr/><br/><hr/>
+        <p>Choose your API key permissions: </p>
         <small> * Please note that the advertisements and flight offer API keys require approval by Seatfilla.</small>
-
         <div class="funkyradio">
-        <div class="funkyradio-info">
-            <input type="checkbox" name="request_permission" id="checkbox6" checked/>
-            <label for="checkbox6">Flight Request API</label>
-           <span class="help-block">Grants access to the flight request API. View flight requests made at Seatfilla.</span>  
-        </div>
-          <div class="funkyradio-info">
-            <input type="checkbox" name="accept_request_permission" id="checkbox6"/>
-            <label for="checkbox6">Flight Request API Extended.</label>
-           <span class="help-block">Grants extended access to the flight request API allowing acceptance of flight requests made by Seatfilla
-           users.</span>  
-        </div>
-         <div class="funkyradio-info">
-            <input type="checkbox" name="flightoffer_permission" id="checkbox7"/>
-            <label for="checkbox7">Flight Offer API</label>
-             <span class="help-block">Grants access to the flight offer API (Offer flights to Seatfilla)</span>  
-        </div>
-          <div class="funkyradio-info">
-            <input type="checkbox" name="advertisements_permission" id="checkbox7"/>
-            <label for="checkbox7">Advertisements API</label>
-             <span class="help-block">Grants access to the advertisements API. (Create advertisments to be displayed on Seatfilla)</span>  
-        </div>
-        </div>
+            <div class="funkyradio-info">
+                <input type="checkbox" name="request_permission" id="checkbox1" checked/>
+                <label for="checkbox1">Flight Request API</label>
+              <span class="help-block">Grants access to the flight request API. View flight requests made at Seatfilla.</span>  
+            </div>
+              <div class="funkyradio-info">
+                <input type="checkbox" name="accept_request_permission" id="checkbox2"/>
+                <label for="checkbox2">Flight Request API Extended.</label>
+              <span class="help-block">Grants extended access to the flight request API allowing acceptance of flight requests made by Seatfilla
+              users.</span>  
+            </div>
+            <div class="funkyradio-info">
+                <input type="checkbox" name="flightoffer_permission" id="checkbox3"/>
+                <label for="checkbox3">Flight Offer API</label>
+                <span class="help-block">Grants access to the flight offer API (Offer flights to Seatfilla)</span>  
+            </div>
+              <div class="funkyradio-info">
+                <input type="checkbox" name="advertisements_permission" id="checkbox4"/>
+                <label for="checkbox4">Advertisements API</label>
+                <span class="help-block">Grants access to the advertisements API. (Create advertisments to be displayed on Seatfilla)</span>  
+            </div>
+        </div><!--checkboxes-->
         </div>
           <br/>
-          <button class="btn btn-success btn-block" id="generateApiKey">Generate my API key</button>
+          <button type="submit" style="display:hidden;"></button>
+          <input type="button" class="btn btn-success btn-block" id="generateApiKey" value="Generate my API key"/>
       </form>
     </div><!--col-->
     <div class="col-md-6">
-         <p class="text-center">Your Active API keys</p>
-    <div class="well well-sm">
-    <small style="color:red;"> *Remember to include this key along with the secret used when generating the key in every HTTP request you make to Seatfilla</small>
-  
-    </div>
-    <div class="col-md-8-offset-2">
-    <table class="table table-striped custab" style="over">
+      <p class="text-center">Your Active API keys</p>
+      <div class="well well-sm">
+      <small style="color:red;"> *Remember to include this key along with the secret used when generating the key in every HTTP request you make to Seatfilla</small>
+      </div>
+      <div class="col-md-12">
+    <table class="table table-striped">
     <thead>
-   <!-- <a href="#" class="btn btn-primary btn-xs pull-right"><b>+</b> Add new categories</a>-->
         <tr>
             <th>Token</th>
-            <th>Requesting domain:</th>
+            <th>Is verified</th>
             <th class="text-center">Action</th>
         </tr>
     </thead>
-            <tr>
-                <td>1</td>
-                <td>News</td>
-                <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span> Edit</a> <a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Del</a></td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td>Products</td>
-                <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span> Edit</a> <a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Del</a></td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td>Blogs</td>
-                <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span> Edit</a> <a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Del</a></td>
-            </tr>
+    <tbody id="apiKeysTBody">
+            <%data.tokens.forEach(function(token){%>
+                <tr data-attr-id="<%=token.apiToken%>">
+                    <td style="max-width:260px;"><%=token.apiToken%></td>
+                    <td style="max-width:20px;"><%=token.isVerified%></td>
+                    <td style="max-width:20px;"> <a class="btn btn-danger btn-xs deleteToken" data-attr-id="<%=token.apiToken%>"><span class="glyphicon glyphicon-remove"></span> Del</a></td>
+                </tr>
+            <%});%>
+    </tbody>
     </table>
     </div>
-</div>
+
+      
+    </div><!--col-->
     </div>
-    </div><!--row-->
+ </div><!--row-->
 
 </div><!--container-->
 
@@ -343,15 +382,6 @@ table.custab{
 </code></pre>
             </article>
         </section>
+</div>
 
 
-
-
-    </div>
-
-
-    <script>
-        prettyPrint();
-    </script>
-    <script src="scripts/linenumber.js">
-    </script>

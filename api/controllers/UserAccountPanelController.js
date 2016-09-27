@@ -69,9 +69,11 @@ module.exports = {
         });
     },
     api(req, res) {
-        return res.ok({ user: req.user }, {
-            view: 'user-account-panel/api',
-            layout: 'layouts/my-account-layout'
-        })
+        ApiService.findApiTokensForUser({ id: req.user.id }).then(function(tokens) {
+            return res.ok({ user: req.user, tokens: tokens }, {
+                view: 'user-account-panel/api',
+                layout: 'layouts/my-account-layout'
+            })
+        });
     }
 }

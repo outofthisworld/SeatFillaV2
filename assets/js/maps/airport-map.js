@@ -89,6 +89,47 @@ $(document).ready(function() {
             content: '<h1>Its an airport!</h1>'
         }
 
+        const findFlightsOnClickHandler = function() {
+            const coords = $(this).attr('data-coords');
+            const marker = sf_map.getMarkerJsonString(coords);
+            const airportDataKey = $('#airports_selections').find(":selected").attr('id');
+            const originAirport = airport_data[airportDataKey];
+
+            $('#searchFlights').on('click', function() {
+                const data = marker.data;
+
+                console.log('marker: ' + JSON.stringify(marker));
+                console.log('destination data: ' + JSON.stringify(data));
+                console.log('origin data:' + JSON.stringify(originAirport));
+                console.log('user position:' + JSON.stringify(sf_map.position));
+                console.log('user location: ' + JSON.stringify(sf_map.location));
+
+                const departure = $('#departure_date').val();
+                const arrival = $('#arrival_date').val();
+                const numChildTickets = $('#num_child_tickets').val();
+                const numAdultTickets = $('#num_adult_tickets').val();
+                const numInfantTickets = $('#num_infant_tickets').val();
+
+
+                $.ajax({
+                    type: "POST",
+                    url: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo,
+                    data: {
+                        origin: originAirport,
+                        destination: data,
+                        userPosition: sf_map.position,
+                        userLocation: sf_map.location,
+                        userLocale: window.seatfilla.globals.getFirstBrowserLanguage(),
+                        ticketInfo: { numAdultTickets, numChildTickets, numInfantTickets },
+                        dateInfo: { departure, arrival }
+                    },
+                    success: function(response) {
+
+                    },
+                });
+            });
+        }
+
         /* Retrieve airports data */
         const airport_data = window.seatfilla.globals.sf_retrieveAirportData();
         const airportDataKeys = Object.keys(airport_data).sort(function(one, two) {
@@ -167,38 +208,7 @@ $(document).ready(function() {
                         class: 'btn btn-primary',
                         'data-toggle': 'modal',
                         on: {
-                            click: function() {
-                                const coords = $(this).attr('data-coords');
-                                const marker = sf_map.getMarkerJsonString(coords);
-                                const airportDataKey = $('#airports_selections').find(":selected").attr('id');
-                                const originAirport = airport_data[airportDataKey];
-
-                                $('#searchFlights').on('click', function() {
-                                    const data = marker.data;
-
-                                    console.log('marker: ' + JSON.stringify(marker));
-                                    console.log('destination data: ' + JSON.stringify(data));
-                                    console.log('origin data:' + JSON.stringify(originAirport));
-                                    console.log('user position:' + JSON.stringify(sf_map.position));
-                                    console.log('user location: ' + JSON.stringify(sf_map.location));
-
-                                    data.Locale = window.seatfilla.globals.getFirstBrowserLanguage();
-
-                                    $.ajax({
-                                        type: "POST",
-                                        url: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo,
-                                        data: {
-                                            origin: originAirport,
-                                            destination: data,
-                                            userposition: sf_map.position,
-                                            userlocation: sf_map.location
-                                        },
-                                        success: function(response) {
-
-                                        },
-                                    });
-                                });
-                            }
+                            click: findFlightsOnClickHandler
                         }
                     });
 

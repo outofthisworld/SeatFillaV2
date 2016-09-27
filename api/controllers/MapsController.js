@@ -4,7 +4,20 @@ module.exports = {
     },
 
     /*
-        //req.body.mapdata
+        //req.body.destination example
+        data {"Name":"Sydney Bankstown",
+              "City":"Sydney",
+              "Country":"Australia",
+              "IataOrFaaCode":"BWU",
+              "IcaoCode":"YSBK",
+              "Latitude":-33.924444,
+              "Longitude":150.988333,
+              "Altitude":29,"Timezone":
+              "Australia/Sydney",
+              "DST":"O"
+            }
+
+       //req.body.arrival example
         data {"Name":"Sydney Bankstown",
               "City":"Sydney",
               "Country":"Australia",
@@ -48,25 +61,35 @@ module.exports = {
                     "dstOffset":3600,"rawOffset":43200
                 }
             }
+
+              origin: originAirport,
+                        destination: data,
+                        userPosition: sf_map.position,
+                        userLocation: sf_map.location,
+                        userLocale: window.seatfilla.globals.getFirstBrowserLanguage(),
+                        ticketInfo: { numAdultTickets, numChildTickets, numInfantTickets },
+                        dateInfo: { departure, arrival }
     */
     retrieveFlightInfo(req, res) {
-        const obj = Object.create(SkyScannerFlightService.sessionObj);
+        new Promise(function(resolve, reject) {
+            const obj = Object.create(SkyScannerFlightService.sessionObj);
 
-        exportObj.sessionObj = {
-            country: req.body.mapdata.country,
-            currency: 'ISO currency code/currencies service',
-            locale: req.param('Locale') || req.headers['accept-language'],
-            originplace: '',
-            destinationplace: req.mapdata.IataOrFaaCode,
-            outbounddate: 'YY-mm-dd',
-            inbounddate: 'YY-mm-dd',
-            locationschema: SkyScannerFlightService.locationschemas.Iata,
-            cabinclass: SkyScannerFlightService.cabinclasses.Economy,
-            adults: 1,
-            children: 0,
-            infants: 0,
-            groupPricing: false
-        }
+            obj.country = req.body.userLocation.address.countryCode || req.body.userLocation.address.country;
+            obj.currency = 'ISO currency code/currencies service';
+            obj.locale = req.body.userLocale == req.headers['accept-language'] ? req.body.userLocale : req.headers['accept-language'];
+            obj.originplace = req.body.origin.IataOrFaaCode;
+            obj.destinationplace = req.body.destination.IataOrFaaCode;
+            obj.outbounddate = req.body.dates.departure;
+            obj.inbounddate = req.body.dates.arrival;
+            obj.locationschema = SkyScannerFlightService.locationschemas.Iata;
+            obj.cabinclass = SkyScannerFlightService.cabinclasses.Economy;
+            obj.adults = req.body.ticketInfo.numAdultTickets || 1;
+            obj.children = req.body.ticketInfo.numChildTickets || 0;
+            obj.infants = req.body.ticketInfo.numInfantTickets || 0;
+            obj.groupPricing = req.body.groupPricing || false;
+        })
+
+
     },
     test(req, res) {
         GettyImagesService.searchAndRetrieveUrls({

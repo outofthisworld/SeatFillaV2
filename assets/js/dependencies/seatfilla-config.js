@@ -12,6 +12,60 @@ window.seatfilla.globals.site = {
     }
 }
 
+window.seatfilla.globals.browserSupportsWebStorage = function() {
+    if (typeof(Storage) !== "undefined") {
+        return true;
+    }
+    return false;
+}
+
+window.seatfilla.globals.cache.put = function(options) {
+    if (!options || !options.key || !options.data)
+        throw new Error('Invalid input into window.seatfilla.globals.cacheData');
+
+    if (!window.seatfilla.globals.browserSupportsWebStorage()) {
+        return false;
+    } else {
+        (function useStore(obj) {
+            obj.setItem(options.key, JSON.stringify(options.data));
+            return true;
+        })(
+            switch (options.type) {
+                case 'session':
+                    return sessionStorage;
+                    break;
+                case 'local':
+                    return localeStorage;
+                    break;
+                default:
+                    return sessionStorage;
+                    break;
+            });
+    }
+}
+
+
+window.seatfilla.globals.cache.get = function(options) {
+    if (!window.seatfilla.globals.browserSupportsWebStorage()) {
+        return false;
+    } else {
+        (function useStore(obj) {
+            return JSON.parse(obj.getItem(options.key));
+        })(
+            switch (options.type) {
+                case 'session':
+                    return sessionStorage;
+                    break;
+                case 'local':
+                    return localeStorage;
+                    break;
+                default:
+                    return sessionStorage;
+                    break;
+            });
+    }
+}
+
 window.seatfilla.globals.getFirstBrowserLanguage = function() {
     var nav = window.navigator,
         browserLanguagePropertyKeys = ['language', 'browserLanguage', 'systemLanguage', 'userLanguage'],
@@ -21,6 +75,7 @@ window.seatfilla.globals.getFirstBrowserLanguage = function() {
         for (i = 0; i < nav.languages.length; i++) {
             language = nav.languages[i];
             if (language && language.length) {
+
                 return language;
             }
         }

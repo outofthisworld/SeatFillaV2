@@ -77,24 +77,6 @@ $(document).ready(function() {
                             strokeColor: '#FFF'
                         })
                     },
-                    function sendServerRequest(event) {
-                        /*if (sf_map.isGeoLocatedPosition(to)) return;
-
-                        const marker = this;
-                        const data = marker.data;
-                        console.log(marker);
-
-                        data.Locale = getFirstBrowserLanguage();
-                        $.ajax({
-                            type: "POST",
-                            url: window.seatfilla.globals.site.baseURL.concat(
-                                window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo),
-                            data: data,
-                            success: function(response) {
-
-                            },
-                        });*/
-                    },
                     function updateSelection(event) {
                         var pos = {
                             lng: event.latLng.lng(),
@@ -107,6 +89,7 @@ $(document).ready(function() {
             content: '<h1>Its an airport!</h1>'
         }
 
+        /* Retrieve airports data */
         const airport_data = window.seatfilla.globals.sf_retrieveAirportData();
         const airportDataKeys = Object.keys(airport_data).sort(function(one, two) {
             const data1 = airport_data[one];
@@ -115,44 +98,56 @@ $(document).ready(function() {
             return data1.City.localeCompare(data2.City);
         });;
 
-        console.log(sf_map.location);
+        /* Populate the text boxes */
         $('#departure_city').val(sf_map.location.address.region);
         $('#departure_country').val(sf_map.location.address.country);
         $('#location').text(sf_map.location.formattedAddress);
         $('#country_flag').attr('src', sf_map.location.flag);
 
+        /* Populate origin airports */
         airportDataKeys.forEach(function(key) {
             const data = airport_data[key];
-            const option = document.createElement('option');
-            option.innerHTML = data.Name;
+            const option = $('<option></option>').attr('id', key).text(data.Name);
 
             if (data.City == sf_map.location.address.region || data.Country == sf_map.location.address.city) {
-                $('#airports_selections').append(option.outerHTML);
+                $('#airports_selections').append(option);
             }
         });
 
         $('#Search').click(function() {
+
+            /* Remove all the markers from the seatfilla map */
             sf_map.removeAllMarkers();
+
+            /* Remove a line if there is one */
             if (line) line.setMap(null)
 
-
+            /* Clear the destination airports select*/
             $('#destination_airports').html("");
-            const departureCity = $('#departure_city').val();
-            const departureCountry = $('#departure_country').val();
 
+            /* Get the destination query */
             const query = $('#destination_query').val();
 
+            /* Locate airports for a particular destination */
             airportDataKeys.forEach(function(key) {
+                /* Get the data */
                 const data = airport_data[key];
+
+                /* If we have a match... */
                 if (data.City == query || data.Country == query) {
+
+                    /* Get the longitude and latitude of the airport */
                     const pos = {
                         lng: data.Longitude,
                         lat: data.Latitude
                     }
 
+                    /* Get the longitude and latitude */
                     const jsonPos = JSON.stringify(pos);
 
                     /* Note that this can be extracted to a sep file, and use ajax.load)*/
+
+                    /* Dynamically create content for the info window of the google map */
                     const div = document.createElement('div');
                     const h2 = document.createElement('h2');
                     const p = document.createElement('p');
@@ -163,42 +158,66 @@ $(document).ready(function() {
                     div.appendChild(h2);
                     div.appendChild(p);
 
-                    const input = $('<input/>').attr('type', 'button')
-                        .attr('class', 'btn btn-primary')
-                        .attr('value', 'Find flights').attr('data-coords', jsonPos).
-                    attr('data-toggle', 'modal').attr('data-target', '#myModal');
 
-                    $(input).on('click', function() {
-                        const coords = $(this).attr('data-coords');
-                        const marker = sf_map.getMarkerJsonString(coords);
-                        $('#searchFlights').on('click', function() {
-                            alert('hello world');
-                            const data = marker.data;
-                            data.Locale = window.seatfilla.globals.getFirstBrowserLanguage();
-                            $.ajax({
-                                type: "POST",
-                                url: window.seatfilla.globals.site.baseURL.concat(
-                                    window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo),
-                                data: data,
-                                success: function(response) {
+                    const input = $('<input />', {
+                        type: 'button',
+                        value: 'Find flights',
+                        'data-coords': jsonPos,
+                        'data-target': '#myModal',
+                        class: 'btn btn-primary',
+                        'data-toggle': 'modal',
+                        on: {
+                            click: function() {
+                                const coords = $(this).attr('data-coords');
+                                const marker = sf_map.getMarkerJsonString(coords);
+                                const airportDataKey = $('#airports_selections').find(":selected").attr('id');
+                                const originAirport = airport_data[airportDataKey];
 
-                                },
-                            });
-                        });
+                                $('#searchFlights').on('click', function() {
+                                    const data = marker.data;
+
+                                    console.log('marker: ' + JSON.stringify(marker));
+                                    console.log('destination data: ' + JSON.stringify(data));
+                                    console.log('origin data:' + JSON.stringify(originAirport));
+                                    console.log('user position:' + JSON.stringify(sf_map.position));
+                                    console.log('user location: ' + JSON.stringify(sf_map.location));
+
+                                    data.Locale = window.seatfilla.globals.getFirstBrowserLanguage();
+
+                                    $.ajax({
+                                        type: "POST",
+                                        url: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo,
+                                        data: {
+                                            origin: originAirport,
+                                            destination: data,
+                                            userposition: sf_map.position,
+                                            userlocation: sf_map.location
+                                        },
+                                        success: function(response) {
+
+                                        },
+                                    });
+                                });
+                            }
+                        }
                     });
 
                     $(div).append(input);
 
                     /*End of dynamic content*/
 
-                    airportMarker.content = div.outerHTML;
+                    //Set the content and position of the airport marker
+                    airportMarker.content = div;
                     airportMarker.position = pos;
 
-
+                    //Also append the destination airports to a select.
                     const element = $('<option></option>').html(data.Name).attr('value', jsonPos);
                     $('#destination_airports').append(element);
 
+                    //Set the markers data to the airport data
                     airportMarker.data = data;
+
+                    //Add the marker to the map.
                     sf_map.addMarker(airportMarker);
                 }
             });

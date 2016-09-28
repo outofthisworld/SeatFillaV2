@@ -1,4 +1,8 @@
-$(document).ready(function(){
+/*
+    Handles live chat logic
+*/
+
+$(document).ready(function() {
     $('#live-chat header').on('click', function() {
 
         $('.chat').slideToggle(300, 'swing');
@@ -9,9 +13,7 @@ $(document).ready(function(){
     $('.chat-close').on('click', function(e) {
         e.preventDefault();
         $('#live-chat').fadeOut(300);
-        
+
         io.socket.post('/LiveChat/userDisconnect');
     });
-    
-    
 });

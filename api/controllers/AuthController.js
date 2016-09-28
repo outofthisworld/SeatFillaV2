@@ -134,7 +134,7 @@ module.exports = {
                     });
 
                     return res.json({
-                        status: 200,
+                        status: ResponseStatus.OK,
                         message: 'Succesfully created API token, it will be validated shortly',
                         token: token,
                         isVerified: apiUser.isVerified
@@ -156,7 +156,7 @@ module.exports = {
 
         ApiService.removeApiUser({ token: req.param('token'), user: req.user }).then(function() {
             return res.json(ResponseStatus.OK, {
-                status: 200,
+                status: ResponseStatus.OK,
                 message: 'Succesfully removed api user token'
             });
         }).catch(function(err) {

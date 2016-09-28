@@ -1,4 +1,8 @@
-//Subscribe to the notification service
+/*
+    Handles recieving notifications from the server.
+
+    Created by Dale.
+*/
 
 $(document).ready(function() {
 

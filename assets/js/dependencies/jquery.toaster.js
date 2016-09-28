@@ -1,3 +1,9 @@
+/*
+    Plugin to show status messages using twitter bootstrap.
+
+    Visualisation of system status.
+*/
+
 (function() {
     if (typeof Array.prototype.indexOf !== 'function') {
         Array.prototype.indexOf = function(searchElement, fromIndex) {

@@ -1,3 +1,10 @@
+/*
+    Handles logging into the website.
+
+    Created by Dale.
+*/
+
+
 $(document).ready(function() {
     $('#login-modal-trigger').on('click', function() {
         $('#login-modal').load('/ajax/login.ejs', function() {

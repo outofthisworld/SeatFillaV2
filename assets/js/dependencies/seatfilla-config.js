@@ -1,3 +1,10 @@
+/*
+    Contains all the configuration and global variables for the Seatfilla website.
+
+    Created by Dale.
+*/
+
+
 window.seatfilla = window.seatfilla || {};
 window.seatfilla.globals = window.seatfilla.globals || {};
 
@@ -7,7 +14,16 @@ window.seatfilla.globals.site = {
     siteName: 'SeatFilla',
     endpoints: {
         maps: {
-            retrieveFlightInfo: '/maps/retrieveFlightInfo'
+            retrieveFlightInfo: {
+                method: 'POST',
+                URL: '/maps/retrieveFlightInfo'
+            }
+        },
+        lookupservice: {
+            getCurrencyCodes: {
+                method: 'GET',
+                url: '/lookupservice/getSkyScannerCurrencyCodes'
+            }
         }
     }
 }
@@ -37,13 +53,10 @@ window.seatfilla.globals.cache.put = function(options) {
                 switch (options.type) {
                     case 'session':
                         return sessionStorage;
-                        break;
                     case 'local':
                         return localeStorage;
-                        break;
                     default:
                         return sessionStorage;
-                        break;
                 }
             })()
         );
@@ -60,13 +73,10 @@ window.seatfilla.globals.cache.get = function(options) {
                 switch (options.type) {
                     case 'session':
                         return sessionStorage;
-                        break;
                     case 'local':
                         return localeStorage;
-                        break;
                     default:
                         return sessionStorage;
-                        break;
                 }
             })()
         );

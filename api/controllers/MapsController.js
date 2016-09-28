@@ -172,7 +172,7 @@ module.exports = {
             const obj = Object.create(SkyScannerFlightService.sessionObj);
 
             obj.country = req.body.userLocation.address.countryCode || req.body.userLocation.address.country;
-            obj.currency = req.body.prefferedCurrency || 'USD';
+            obj.currency = req.user.userSettings.currencyCodePreference || req.session.currencyCodePreference || req.body.prefferedCurrency || 'USD';
             obj.locale = req.body.userLocale == req.headers['accept-language'] ? req.body.userLocale : req.headers['accept-language'];
             obj.originplace = req.body.origin.IataOrFaaCode;
             obj.destinationplace = req.body.destination.IataOrFaaCode;
@@ -189,7 +189,10 @@ module.exports = {
         }).then(function(sessionObj) {
             const itinObj = Object.create(SkyScannerFlightService.itinObj);
 
+            itinObj.pageindex = 0 || req.body.pageIndex;
+            itinObj.pagesize = 10 || req.body.pageSize;
 
+            //Use SkyScannerFlightService to make the request
 
         });
     },

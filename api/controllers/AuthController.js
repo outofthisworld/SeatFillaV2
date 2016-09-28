@@ -19,7 +19,9 @@ module.exports = {
         if (req.user) res.redirect('/')
 
         sails.log.debug('local auth request: ');
+
         sails.log.debug(req.allParams());
+
         passport.authenticate('local', function(err, user, message) {
             new Promise(function(resolve, reject) {
                 if (err || !user) {
@@ -27,24 +29,26 @@ module.exports = {
                     sails.log.debug(err);
                     sails.log.debug(user);
                     sails.log.debug(message);
-                    return resolve({ status: 500, error: err, errorMessage: message });
+                    return resolve({ status: ResponseStatus.CLIENT_BAD_REQUEST, error: err, errorMessage: message });
                 } else {
                     req.login(user, function(err) {
                         sails.log.debug('logging user in');
                         if (err) {
                             sails.log.debug('Failed to log on user to req in controllers/authcontroller.js')
-                            return resolve({ status: 500, error: err, errorMessage: err.message, messagelocal: 'failed to log on user to req in controllers/authcontroller.js' });
+                            return resolve({ status: ResponseStatus.CLIENT_BAD_REQUEST, error: err, errorMessage: err.message, messagelocal: 'failed to log on user to req in controllers/authcontroller.js' });
                         } else {
                             sails.log.debug('Succesfully logged on user via passport in controllers/authcontroller.js')
                             sails.log.debug('User logging in: ' + user);
-                            return resolve({ status: 200, user: req.user });
+                            return resolve({ status: ResponseStatus.OK, user: req.user });
                         }
                     });
                 }
             }).then(function(result) {
                 sails.log.debug(result);
-                if (res.xhr) {
-                    return res.json(result);
+                if (res.xhr && result.status == ResponseStatus.CLIENT_BAD_REQUEST) {
+                    return res.json(ResponseStatus.CLIENT_BAD_REQUEST, result);
+                } else if (res.xhr && result.status == ResponseStatus.OK) {
+                    return res.json(ResponseStatus.OK, result);
                 } else {
                     return res.redirect('/');
                 }
@@ -78,14 +82,30 @@ module.exports = {
         const requestPermissionKeys = Object.keys(permissions);
 
         (function verifyRequest(req) {
-            if (!req.param('requestURL'))
-                return res.json({ status: 500, errorMessage: 'No request URL was supplied, this is required.' });
+            var badRequest = false;
+            const errors = [];
+            if (!req.param('requestURL')) {
+                badRequest = true;
+                errors.push('No request URL was supplied, this is required.');
+            }
 
-            if (requestPermissionKeys.length <= 0)
-                return res.json({ status: 500, errorMessage: 'At-least one permission must be used to create an API key.' });
+            if (requestPermissionKeys.length <= 0) {
+                badRequest = true;
+                errors.push('At-least one permission must be used to create an API key.');
+            }
 
-            if (!req.param('sfKey') && !req.headers['x-seatfilla-key'])
-                return res.json({ status: 500, errorMessage: 'No secret key was provided! Cannot generated token.' });
+            if (!req.param('sfKey') && !req.headers['x-seatfilla-key']) {
+                badRequest = true;
+                errors.push('No secret key was provided! Cannot generated token.');
+            }
+
+            if (badRequest) {
+                return res.json(ResponseStatus.CLIENT_BAD_REQUEST, {
+                    status: ResponseStatus.CLIENT_BAD_REQUEST,
+                    errorMessage: 'Errors occurred verifying the request, was all information supplied?',
+                    errorMessages: errors
+                });
+            }
         })(req);
 
         sails.log.debug('Verified API token request params');
@@ -102,7 +122,7 @@ module.exports = {
             if (err) {
                 sails.log.debug('Error generating API token, controllers/authcontroller.js')
 
-                return res.json({ status: 500, error: err, errorMessage: err.message })
+                return res.json({ status: ResponseStatus.CLIENT_BAD_REQUEST, error: err, errorMessage: err.message })
 
             } else {
                 ApiService.createApiUser(req.user, token, permissions).then(function(apiUser) {
@@ -124,25 +144,23 @@ module.exports = {
 
                     sails.log.debug('Error creating ApiUser in controllers/authcontroller.js')
 
-                    return res.json({ status: 500, error: err, errorMessage: err.message });
+                    return res.json({ status: ResponseStatus.CLIENT_BAD_REQUEST, error: err, errorMessage: err.message });
                 });
             }
         });
     },
-
     /** */
 
     removeApiToken(req, res) {
         sails.log.debug('Removing api token for user: ' + req.user);
 
         ApiService.removeApiUser({ token: req.param('token'), user: req.user }).then(function() {
-            return res.json({
+            return res.json(ResponseStatus.OK, {
                 status: 200,
                 message: 'Succesfully removed api user token'
             });
         }).catch(function(err) {
-            return res.json({
-                status: 500,
+            return res.json(ResponseStatus.CLIENT_BAD_REQUEST, {
                 error: err,
                 errorMessage: err.message
             });
@@ -150,13 +168,12 @@ module.exports = {
     },
     removeAllApiTokens(req, res) {
         ApiService.removeAllApiTokens({ user: req.user.id }).then(function() {
-            return res.json({
-                status: 200,
+            return res.json(ResponseStatus.OK, {
+                status: ResponseStatus.OK,
                 message: 'Succesfully removed users API tokens'
             });
         }).catch(function(err) {
-            return res.json({
-                status: 500,
+            return res.json(ResponseStatus.CLIENT_BAD_REQUEST, {
                 error: err,
                 errorMessage: err.message
             });

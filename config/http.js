@@ -37,11 +37,16 @@ module.exports.http = {
             passport.deserializeUser(function(id, done) {
                 User.findOne({ id: id })
                     .populate('roles')
-                    .popuate('userSettings')
+                    .populate('userSettings')
+                    .populate('userLocations')
+                    .populate('notifications')
+                    .populate('systemNotificationUsers')
                     .populate('images')
                     .populate('addresses')
                     .populate('flightRequests')
                     .populate('bids')
+                    .populate('apiKeys')
+                    .populate('supportTickets')
                     .exec(function(err, user) {
                         done(err, user)
                     })

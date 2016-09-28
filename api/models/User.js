@@ -149,6 +149,10 @@ module.exports = {
             collection: 'UserSettings',
             via: 'user'
         },
+        userLocations: {
+            collection: 'UserLocation',
+            via: 'user'
+        },
         images: {
             collection: 'UserImage',
             via: 'user'

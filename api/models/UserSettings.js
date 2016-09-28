@@ -1,7 +1,14 @@
 module.exports = {
-
-    prefferedCurrencyCode: {
-        type: 'string',
-        defaultsTo: 'USD'
+    attributes: {
+        user: {
+            model: 'user',
+            unique: true,
+            notNull: true
+        },
+        currencyCodePreference: {
+            type: 'string',
+            defaultsTo: 'USD'
+        }
     }
+
 }

@@ -112,11 +112,14 @@ const exportObj = {
                     body: sendData,
                     method: 'POST'
                 }, function(err, res, body) {
-                    if (err) {
-                        return reject(err);
-                    } else {
-                        return resolve({ url: res.headers.location });
-                    }
+                    //Make sure atleast a second has passed so that the session has actually been created
+                    setTimeout(function() {
+                        if (err) {
+                            return reject(err);
+                        } else {
+                            return resolve({ url: res.headers.location });
+                        }
+                    }, 1000);
                 });
             });
         },
@@ -193,10 +196,22 @@ const exportObj = {
             return new Promise((resolve, reject) => {
                 this.obtainSessionKey(sessionKeyObj).then((result) => {
                     console.log('recieved url from obtain session key: ' + result.url)
+
+
                     this.retrieveItin(result.url, itinObj).then((result) => {
-                        console.log('recieved itin ! ')
-                        resolve(result);
-                    }).catch((err) => { return reject(ErrorUtils.createNewError('Error when calling retrieve itin', arguments, err)) });
+                        _itin = JSON.parse(result);
+                        _finalResult = result;
+                        sails.log.debug(_finalResult);
+                        if (_itin.Status == 'UpdatesPending') {
+                            return this.makeLivePricingApiRequest(result.url, itinObj);
+                        } else {
+                            resolve(result);
+                        }
+                    }).catch((err) => {
+                        return reject(ErrorUtils.createNewError('Error when calling retrieve itin', arguments, err))
+                    });
+
+
                 }).catch((err) => { return reject(ErrorUtils.createNewError('Error when calling obtain session key', arguments, err)) })
             });
         },

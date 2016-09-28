@@ -108,7 +108,6 @@ module.exports = {
                 }  
     */
     retrieveFlightInfo(req, res) {
-        sails.log.debug('Retrieving flight info: ' + JSON.stringify(req.body));
 
         if (req.user) {
             UserLocation.create({
@@ -166,39 +165,44 @@ module.exports = {
             }).catch(function(err) {
                 sails.log.debug('Error creating user search ' + JSON.stringify(err));
             })
+        } else {
+            sails.log.debug('User not logged in .. not saving location or search');
         }
         new Promise(function(resolve, reject) {
             const obj = Object.create(SkyScannerFlightService.sessionObj);
 
-            obj.country = req.body.userLocation.address.countryCode || req.body.userLocation.address.country;
+            obj.country = req.body.userLocation.address.countryCode || req.body.userLocation.address.country || (req.user && req.user.address.country);
             obj.currency = req.body.prefferedCurrency || UserSettingsService.getUserCurrencyCodePreference(req);
             obj.locale = req.body.userLocale == req.headers['accept-language'] ? req.body.userLocale : req.headers['accept-language'];
             obj.originplace = req.body.origin.IataOrFaaCode;
             obj.destinationplace = req.body.destination.IataOrFaaCode;
-            obj.outbounddate = req.body.dates.departure || new Date().setMinutes(todayDate.getMinutes() - todayDate.getTimezoneOffset()).toISOString().slice(0, 10);
-            obj.inbounddate = req.body.dates.arrival || null;
+            obj.outbounddate = (req.body.dates && req.body.dates.departure) || (new Date().toISOString().slice(0, 10));
+            obj.inbounddate = (req.body.dates && req.body.dates.arrival) || null;
             obj.locationschema = SkyScannerFlightService.locationschemas.Iata;
             obj.cabinclass = req.body.prefferedCabinClass || SkyScannerFlightService.cabinclasses.Economy;
-            obj.adults = req.body.ticketInfo.numAdultTickets || 1;
-            obj.children = req.body.ticketInfo.numChildTickets || 0;
-            obj.infants = req.body.ticketInfo.numInfantTickets || 0;
+            obj.adults = (req.body.ticketInfo && req.body.ticketInfo.numAdultTickets) || 1;
+            obj.children = (req.body.ticketInfo && req.body.ticketInfo.numChildTickets) || 0;
+            obj.infants = (req.body.ticketInfo && req.body.ticketInfo.numInfantTickets) || 0;
             obj.groupPricing = req.body.groupPricing || false;
 
-            resolve(obj);
-        }).then(function(sessionObj) {
+            sails.log.debug('Created session object: ' + JSON.stringify(obj));
+
             const itinObj = Object.create(SkyScannerFlightService.itinObj);
 
             itinObj.pageindex = 0 || req.body.pageIndex;
             itinObj.pagesize = 10 || req.body.pageSize;
 
+            sails.log.debug('Created itin object: ' + JSON.stringify(itinObj));
+
             //Use SkyScannerFlightService to make the request
-            return SkyScannerFlightService.makeLivePricingApiRequest(sessionObj, itinObj);
-        }).then(function(result) {
-            return res.json(ResponseStatus.OK, result);
-        }).catch(function(error) {
-            sails.log.debug('Error in maps controller' + JSON.stringify(error));
-            return res.json(ResponseStatus.SERVER_ERROR, { error: error });
-        });
+            SkyScannerFlightService.makeLivePricingApiRequest(obj, itinObj).then(function(result) {
+                sails.log.debug(result);
+                return res.json(ResponseStatus.OK, { result: result });
+            }).catch(function(error) {
+                sails.log.debug('Error in maps controller ' + error.message + ' ' + JSON.stringify(error));
+                return res.json(ResponseStatus.SERVER_ERROR, { error: error });
+            });
+        })
     },
     test(req, res) {
         GettyImagesService.searchAndRetrieveUrls({

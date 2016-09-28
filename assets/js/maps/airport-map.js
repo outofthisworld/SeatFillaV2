@@ -124,29 +124,25 @@ $(document).ready(function() {
 
 
                 console.log(JSON.stringify(originAirportLngLat));
-
-                geolocator.reverseGeocode(destinationAirportLngLat, function(err, destinationAirportLocation) {
-                    geolocator.reverseGeocode(originAirportLngLat, function(err, originAirportLocation) {
-                        $.ajax({
-                            type: "POST",
-                            url: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo,
-                            data: {
-                                origin: originAirport,
-                                destination: data,
-                                destinationAirportLocation,
-                                originAirportLocation,
-                                userPosition: sf_map.position,
-                                userLocation: sf_map.location,
-                                userLocale: window.seatfilla.globals.getFirstBrowserLanguage(),
-                                ticketInfo: { numAdultTickets, numChildTickets, numInfantTickets },
-                                dateInfo: { departure, arrival }
-                            },
-                            success: function(response) {
-
-                            },
-                        });
-                    });
+                $.ajax({
+                    type: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo.method,
+                    url: '/maps/retrieveFlightInfo',
+                    data: {
+                        origin: originAirport,
+                        destination: data,
+                        //destinationAirportLocation: result.destinationAirportLocation,
+                        // originAirportLocation: result.originAirportLocation,
+                        userPosition: sf_map.position,
+                        userLocation: sf_map.location,
+                        userLocale: window.seatfilla.globals.getFirstBrowserLanguage(),
+                        ticketInfo: { numAdultTickets, numChildTickets, numInfantTickets },
+                        dateInfo: { departure, arrival }
+                    },
+                    success: function(response) {
+                        console.log(response);
+                    },
                 });
+
             });
         }
 

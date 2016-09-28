@@ -12,11 +12,18 @@ window.seatfilla.globals = window.seatfilla.globals || {};
 window.seatfilla.globals.site = {
     baseURL: '127.0.0.1',
     siteName: 'SeatFilla',
+    pageUrls: [],
     endpoints: {
         maps: {
             retrieveFlightInfo: {
                 method: 'POST',
                 URL: '/maps/retrieveFlightInfo'
+            },
+            retrieveHotelInfo: {
+
+            },
+            retrieveCarInfo: {
+
             }
         },
         lookupservice: {
@@ -24,6 +31,27 @@ window.seatfilla.globals.site = {
                 method: 'GET',
                 url: '/lookupservice/getSkyScannerCurrencyCodes'
             }
+        },
+        seatfillasettings: {
+            setCurrencyCodePreference: {
+                method: 'POST',
+                url: '/seatfillasettings/setCurrencyCodePreference'
+            },
+            getCurrencyCodePreference: {
+                method: 'GET',
+                url: '/seatfillasettings/getCurrencyCodePreference'
+            },
+            setTimeZonePreference: {
+                method: 'POST',
+                url: '/seatfillasettings/setTimeZonePreference'
+            },
+            getTimeZonePreference: {
+                method: 'GET',
+                url: '/seatfillasettings/getTimeZonePreference'
+            }
+        },
+        auth: {
+
         }
     }
 }
@@ -35,6 +63,63 @@ window.seatfilla.globals.browserSupportsWebStorage = function() {
     return false;
 }
 
+
+/*
+    Object: window.seatfilla.globals.locale
+    Comprises of the locale functions for seatfilla. 
+*/
+
+window.seatfilla.globals.locale = window.seatfilla.globals.locale || {};
+
+window.seatfilla.globals.locale.setPrefferedCurrency = function(currencyCode, cb) {
+    const url = window.seatfilla.globals.site.endpoints.seatfillasettings.setCurrencyCodePreference.url;
+    const type = window.seatfilla.globals.site.endpoints.seatfillasettings.setCurrencyCodePreference.type;
+    window.seatfilla.globals.cache.put({
+        key: 'sfCurPref',
+        type: 'session',
+        data: currencyCode
+    });
+    $.ajax({
+        type,
+        url,
+        data: {
+            currencyCodePreference: currencyCode
+        },
+        success: function(response, textstatus, xhr) {
+            cb(xhr.status);
+        }
+    });
+}
+
+window.seatfilla.globals.locale.getPrefferedCurrency = function(cb) {
+    if (!typeof cb === 'function') throw new Error('Invalid params');
+
+    const cacheVal = window.seatfilla.globals.cache.get({ key: 'sfCurPref', type: 'session' });
+    if (cacheVal) {
+        cb(200, cacheVal);
+    } else {
+        const getCurrencyCodeEndpointUrl = window.seatfilla.globals.site.endpoints.seatfillasettings.getCurrencyCodePreference.url;
+        const getCurrencCodeEndpointType = window.seatfilla.globals.site.endpoints.seatfillasettings.getCurrencyCodePreference.type;
+        $.ajax({
+            type: getCurrencCodeEndpointType,
+            url: getCurrencyCodeEndpointUrl,
+            success: function(response, textstatus, xhr) {
+                cb(xhr.status, response.currencyCodePreference || 'USD');
+            }
+        });
+    }
+}
+
+
+/* End locale functions */
+
+
+
+/* 
+    Object: window.seatfilla.globals.cache 
+    Comprises of the global cache, uses session or local storage to reduce the number
+    of requests made to the server.
+*/
 
 window.seatfilla.globals.cache = window.seatfilla.globals.cache || {};
 
@@ -52,6 +137,7 @@ window.seatfilla.globals.cache.put = function(options) {
         })(((options.type == 'session' ? sessionStorage : localStorage) || sessionStorage));
     }
 }
+
 window.seatfilla.globals.cache.get = function(options) {
     if (!options || !options.key)
         throw new Error('Invalid input into window.seatfilla.globals.cache.get');
@@ -66,6 +152,8 @@ window.seatfilla.globals.cache.get = function(options) {
         })((options.type == 'session' ? sessionStorage : localStorage) || sessionStorage)
     }
 }
+
+/* End cache */
 
 
 window.seatfilla.globals.getFirstBrowserLanguage = function() {

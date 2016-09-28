@@ -93,7 +93,7 @@ module.exports = {
     getCurrencyCodes() {
         return new Promise((resolve, reject) => {
             const endPoint = supportedCurrenciesApiEndPoint + '?apiKey=' + apiKey;
-            request({
+            return Promise.resolve(request({
                     headers: {
                         'Accept': 'application/json'
                     },
@@ -102,8 +102,8 @@ module.exports = {
                 },
                 function(err, res, body) {
                     if (err) return reject(ErrorUtils.createNewError('Error in response when calling getCurrencyCodes', arguments, err))
-                    else return resolve(res.body.Currencies);
-                });
+                    else return resolve(res.body);
+                }));
         });
     },
     /*

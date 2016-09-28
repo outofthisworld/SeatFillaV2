@@ -40,46 +40,30 @@ window.seatfilla.globals.cache = window.seatfilla.globals.cache || {};
 
 window.seatfilla.globals.cache.put = function(options) {
     if (!options || !options.key || !options.data)
-        throw new Error('Invalid input into window.seatfilla.globals.cacheData');
+        throw new Error('Invalid input into window.seatfilla.globals.cache.put');
 
     if (!window.seatfilla.globals.browserSupportsWebStorage()) {
+        console.log('No browser support for cache');
         return false;
     } else {
         (function useStore(obj) {
             obj.setItem(options.key, JSON.stringify(options.data));
             return true;
-        })(
-            (function() {
-                switch (options.type) {
-                    case 'session':
-                        return sessionStorage;
-                    case 'local':
-                        return localeStorage;
-                    default:
-                        return sessionStorage;
-                }
-            })()
-        );
+        })(((options.type == 'session' ? sessionStorage : localStorage) || sessionStorage));
     }
 }
 window.seatfilla.globals.cache.get = function(options) {
+    if (!options || !options.key)
+        throw new Error('Invalid input into window.seatfilla.globals.cache.get');
+
     if (!window.seatfilla.globals.browserSupportsWebStorage()) {
+        console.log('No browser support for cache');
         return false;
     } else {
-        (function useStore(obj) {
-            return JSON.parse(obj.getItem(options.key));
-        })(
-            (function() {
-                switch (options.type) {
-                    case 'session':
-                        return sessionStorage;
-                    case 'local':
-                        return localeStorage;
-                    default:
-                        return sessionStorage;
-                }
-            })()
-        );
+        return (function useStore(obj) {
+            const value = obj.getItem(options.key);
+            return JSON.parse(value);
+        })((options.type == 'session' ? sessionStorage : localStorage) || sessionStorage)
     }
 }
 

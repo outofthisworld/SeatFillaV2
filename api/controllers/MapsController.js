@@ -167,17 +167,16 @@ module.exports = {
                 sails.log.debug('Error creating user search ' + JSON.stringify(err));
             })
         }
-
         new Promise(function(resolve, reject) {
             const obj = Object.create(SkyScannerFlightService.sessionObj);
 
             obj.country = req.body.userLocation.address.countryCode || req.body.userLocation.address.country;
-            obj.currency = req.user.userSettings.currencyCodePreference || req.session.currencyCodePreference || req.body.prefferedCurrency || 'USD';
+            obj.currency = req.body.prefferedCurrency || UserSettingsService.getUserCurrencyCodePreference(req);
             obj.locale = req.body.userLocale == req.headers['accept-language'] ? req.body.userLocale : req.headers['accept-language'];
             obj.originplace = req.body.origin.IataOrFaaCode;
             obj.destinationplace = req.body.destination.IataOrFaaCode;
-            obj.outbounddate = req.body.dates.departure;
-            obj.inbounddate = req.body.dates.arrival;
+            obj.outbounddate = req.body.dates.departure || new Date().setMinutes(todayDate.getMinutes() - todayDate.getTimezoneOffset()).toISOString().slice(0, 10);
+            obj.inbounddate = req.body.dates.arrival || null;
             obj.locationschema = SkyScannerFlightService.locationschemas.Iata;
             obj.cabinclass = req.body.prefferedCabinClass || SkyScannerFlightService.cabinclasses.Economy;
             obj.adults = req.body.ticketInfo.numAdultTickets || 1;
@@ -193,7 +192,12 @@ module.exports = {
             itinObj.pagesize = 10 || req.body.pageSize;
 
             //Use SkyScannerFlightService to make the request
-
+            return SkyScannerFlightService.makeLivePricingApiRequest(sessionObj, itinObj);
+        }).then(function(result) {
+            return res.json(ResponseStatus.OK, result);
+        }).catch(function(error) {
+            sails.log.debug('Error in maps controller' + JSON.stringify(error));
+            return res.json(ResponseStatus.SERVER_ERROR, { error: error });
         });
     },
     test(req, res) {

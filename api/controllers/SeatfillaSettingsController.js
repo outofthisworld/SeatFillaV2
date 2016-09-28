@@ -12,33 +12,14 @@ module.exports = {
         javascript, however it may become a bit tedious sending the currency in each request.
     */
     setCurrencyCodePreference(req, res) {
-        if (req.user) {
-            UserSettings.findOrCreate({
-                user: req.user.id
-            }, { user: req.user.id }).then(function(userSettings) {
-                userSettings.currencyCodePreference = req.param('currencyCodePreference');
-
-                userSettings.save(function(error) {
-                    if (error) {
-                        sails.log.debug('Error when saving user settings ' + JSON.stringify(error));
-                    }
-                });
-                return res.json(ResponseStatus.OK, {});
-            }).catch(function(err) {
-                sails.log.debug('Error when creating user settings ' + JSON.stringify(err));
-                res.json(ResponseStatus.SERVER_ERROR, { error: err });
-            })
-        } else {
-            req.session.currencyCodePreference = req.param('currencyCodePreference');
+        UserSettingsService.setUserCurrencyCodePreference(req, req.param('currencyCodePreference')).then(function() {
             return res.json(ResponseStatus.OK, {});
-        }
+        }).catch(function(err) {
+            return res.json(ResponseStatus.SERVER_ERROR, { error: err });
+        });
     },
     getCurrencyCodePreference(req, res) {
-        if (req.user) {
-            return res.json(ReponseStatus.OK, { currencyCodePreference: req.user.userSettings.currencyCodePreference });
-        } else {
-            return res.json(Response.OK, req.session.currencyCodePreference);
-        }
+        return res.json(ResponseStatus.OK, { currencyCodePreference: UserSettingsService.getUserCurrencyCodePreference(req) });
     },
     setPrefferedTimezone(req, res) {
 

@@ -14,6 +14,25 @@ $(document).ready(function() {
             maxOpenMarkers: 1
         });
 
+        /* Populate the text boxes */
+        $('#departure_city').val(sf_map.location.address.region);
+        $('#departure_country').val(sf_map.location.address.country);
+        $('#location').text(sf_map.location.formattedAddress);
+        $('#country_flag').attr('src', sf_map.location.flag);
+
+
+        const airportData = window.seatfilla.globals.retrieveGeoData();
+
+        /* Retrieve airports data */
+        const airport_data = window.seatfilla.globals.sf_retrieveAirportData();
+        const airportDataKeys = Object.keys(airport_data).sort(function(one, two) {
+            const data1 = airport_data[one];
+            const data2 = airport_data[two];
+
+            return data1.City.localeCompare(data2.City);
+        });;
+
+
         var line;
 
         //SVG path for a plane
@@ -78,11 +97,17 @@ $(document).ready(function() {
                         })
                     },
                     function updateSelection(event) {
-                        var pos = {
-                            lng: event.latLng.lng(),
-                            lat: event.latLng.lat()
+                        _marker = this;
+                        /* Get the longitude and latitude of the airport */
+                        const pos = {
+                            lng: _marker.data.Longitude,
+                            lat: _marker.data.Latitude
                         }
-                        $('#destination_airports').val(JSON.stringify(pos));
+
+                        /* Get the longitude and latitude */
+                        const jsonPos = JSON.stringify(pos);
+
+                        $('#destination_airports option[value=\'' + jsonPos + '\']').attr('selected', true);
                     }
                 ]
             },
@@ -92,12 +117,50 @@ $(document).ready(function() {
         const findFlightsOnClickHandler = function() {
             const coords = $(this).attr('data-coords');
             const marker = sf_map.getMarkerJsonString(coords);
-            const airportDataKey = $('#airports_selections').find(":selected").attr('id');
-            const originAirport = airport_data[airportDataKey];
+
+            const $selectedOriginAirport = $('#airports_selections').find(":selected");
+            const continentIdx = $selectedOriginAirport.attr('data-continent-index', continentIndex);
+            const countryIdx = $selectedOriginAirport.attr('data-country-index', countryIndex);
+            const cityIdx = $selectedOriginAirport.attr('data-city-index', key);
+            const airportIdx = $selectedOriginAirport.attr('data-airport-index', airportIndex);
+
+            const airportPos = JSON.parse($selectedOriginAirport.attr('value'));
+
+            airportData.Continents[continentIdx].Id
+            airportData.Continents[continentIdx].Name
+            const countryName = country.Name;
+            const countryId = country.Id;
+            const currency = country.CurrencyId
+
+            /*Build our final data*/
+            const origin = Object.assign({}, {
+                continentId: airportData.Continents[continentIdx].Id,
+                continentName: airportData.Continents[continentIdx].Name
+            }, {
+                countryName: airportData.Continents[continentIdx].Countries[countryIdx].Name,
+                countryId: airportData.Continents[continentIdx].Countries[countryIdx].Id,
+                currency: airportData.Continents[continentIdx].Countries[countryIdx].CurrencyId
+            }, {
+                countryId: airportData.Continents[continentIdx].Countries[countryIdx].Cities[cityIdx].CountryId,
+                location: airportData.Continents[continentIdx].Countries[countryIdx].Cities[cityIdx].Location,
+                iataCode: airportData.Continents[continentIdx].Countries[countryIdx].Cities[cityIdx].IataCode,
+                id: airportData.Continents[continentIdx].Countries[countryIdx].Cities[cityIdx].Id,
+                name: airportData.Continents[continentIdx].Countries[countryIdx].Cities[cityIdx].Name
+            }, {
+                airportPos: pos,
+                airportName: airportData.Continents[continentIdx].Countries[countryIdx].Cities[cityIdx].Airports[airportIdx].Name,
+                airportId: airportData.Continents[continentIdx].Countries[countryIdx].Cities[cityIdx].Airports[airportIdx].Id,
+                airportyCityId: airportData.Continents[continentIdx].Countries[countryIdx].Cities[cityIdx].Airports[airportIdx].CityId,
+                airportCountryId: airportData.Continents[continentIdx].Countries[countryIdx].Cities[cityIdx].Airports[airportIdx].CountryId,
+                airportLocation: airportData.Continents[continentIdx].Countries[countryIdx].Cities[cityIdx].Airports[airportIdx].Location
+            });
 
             $('#searchFlights').on('click', function() {
-                const data = marker.data;
+                _button = $(this);
+                _button.addClass('m-progress');
+                var data = marker.data;
 
+                console.log(data);
 
                 console.log('destination data: ' + JSON.stringify(data));
                 console.log('origin data:' + JSON.stringify(originAirport));
@@ -110,20 +173,10 @@ $(document).ready(function() {
                 const numAdultTickets = $('#num_adult_tickets').val();
                 const numInfantTickets = $('#num_infant_tickets').val();
 
-                const destinationAirportLngLat = {
-                    longitude: data.Longitude,
-                    latitude: data.Latitude
-                }
+                const key = $('#destination_airports option:selected').attr('data-airport-key');
+                data = airport_data[key];
+                console.log('destination data two: ' + JSON.stringify(data));
 
-                console.log(JSON.stringify(destinationAirportLngLat));
-
-                const originAirportLngLat = {
-                    longitude: originAirport.Longitude,
-                    latitude: originAirport.Latitude
-                }
-
-
-                console.log(JSON.stringify(originAirportLngLat));
                 $.ajax({
                     type: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo.method,
                     url: '/maps/retrieveFlightInfo',
@@ -139,7 +192,63 @@ $(document).ready(function() {
                         dateInfo: { departure, arrival }
                     },
                     success: function(response) {
-                        console.log(response);
+                        if (response.errors) {
+                            console.log(response);
+                            window.alert(JSON.stringify(response.errors));
+                        } else {
+                            const obj = JSON.parse(response.result);
+                            console.log(response.result);
+                            $("#flightResults").append(
+                                $('<div></div>', { class: 'well well-sm' }).text(JSON.stringify(obj.Query)));
+
+                            obj.Itineraries.forEach(function(itin, index) {
+                                const liEle = $('<li></li>', {
+
+                                    class: 'list-group-item',
+                                }).append(
+                                    $('<div></div>', {
+                                        class: 'row toggle',
+                                        'data-toggle': 'detail-' + index,
+                                        on: {
+                                            click: function() {
+                                                $input = $(this);
+                                                $target = $('#' + $input.attr('data-toggle'));
+                                                $target.slideToggle();
+                                            }
+                                        }
+                                    }).append(
+                                        $('<div></div>', {
+                                            class: 'col-xs-12 text-center',
+                                        }).append(
+                                            $('<div></div>', { class: 'panel panel-default container-fluid' })
+                                            .append($('<div></div>', { class: 'panel panel-heading' }).text('Item-Name').append($('<i></i>', {
+                                                class: 'fa fa-chevron-down pull-right',
+                                            })))
+                                            .append($('<div></div>', { class: 'panel panel-body' }).append(
+                                                $('<div></div>', {
+                                                    class: 'col-xs-2',
+                                                    'data-toggle': 'detail-' + index,
+                                                })))))
+                                ).append(
+                                    $('<div></div>', {
+                                        id: 'detail-' + index,
+                                    }).append($('<hr/>'))
+                                    .append(
+                                        $('<div></div>', {
+                                            class: 'container80'
+                                        }).append(
+                                            $('<div></div>', {
+                                                class: 'fluid-row',
+                                            }).text(JSON.stringify(itin))
+                                        )
+                                    )
+                                );
+                                $("#flightResults").append(liEle);
+                            });
+                        }
+
+                        $('[id^=detail-]').hide();
+                        _button.removeClass('m-progress');
                     },
                 });
 
@@ -188,30 +297,145 @@ $(document).ready(function() {
         });
         */
 
-        /* Retrieve airports data */
-        const airport_data = window.seatfilla.globals.sf_retrieveAirportData();
-        const airportDataKeys = Object.keys(airport_data).sort(function(one, two) {
-            const data1 = airport_data[one];
-            const data2 = airport_data[two];
 
-            return data1.City.localeCompare(data2.City);
-        });;
 
-        /* Populate the text boxes */
-        $('#departure_city').val(sf_map.location.address.region);
-        $('#departure_country').val(sf_map.location.address.country);
-        $('#location').text(sf_map.location.formattedAddress);
-        $('#country_flag').attr('src', sf_map.location.flag);
+        /*
+ {"coords":{"latitude":-36.7835855,"longitude":174.4630076,"altitude":null,"accuracy":30,"altitudeAccuracy":null,"heading":null,"speed":null},"address":{"commonName":"","streetNumber":"117","street":"Mahana Road","route":"Mahana Road","neighborhood":"","town":"","city":"Waimauku","region":"Auckland","postalCode":"0881","state":"","stateCode":"","country":"New Zealand","countryCode":"NZ"},"formattedAddress":"117 Mahana Rd, Waimauku 0881, New Zealand","type":"ROOFTOP","placeId":"ChIJ2z3AlvUSDW0RdDxZXdsqHn0","timestamp":1475039323869,"flag":"//cdnjs.cloudflare.com/ajax/libs/flag-icon-css/2.3.1/flags/4x3/nz.svg","timezone":{"id":"Pacific/Auckland","name":"New Zealand Daylight Time","abbr":"NZDT","dstOffset":3600,"rawOffset":43200}}
+        */
 
         /* Populate origin airports */
-        airportDataKeys.forEach(function(key) {
-            const data = airport_data[key];
-            const option = $('<option></option>').attr('id', key).text(data.Name);
+        /*airportDataKeys.forEach(function(key) {
+             const data = airport_data[key];
+             const option = $('<option></option>').attr('id', key).text(data.Name);
 
-            if (data.City == sf_map.location.address.region || data.Country == sf_map.location.address.city) {
-                $('#airports_selections').append(option);
-            }
-        });
+             if (data.City == sf_map.location.address.region || data.Country == sf_map.location.address.city) {
+                 $('#airports_selections').append(option);
+             }
+         });*/
+
+
+        var count = 0;
+
+        function populate(query, $element, options) {
+            const option = $('<option></option>');
+            airportData.Continents.forEach(function(continent, continentIndex) {
+                const continentId = continent["Id"];
+                const continentName = continent["Name"];
+
+                continent.Countries.forEach(function(country, countryIndex) {
+                    const countryName = country.Name;
+                    const countryId = country.Id;
+                    const currency = country.CurrencyId
+
+
+                    loop: for (var key in country.Cities) {
+                        //sf_map.location.address.region
+                        //sf_map.location.address.city
+
+                        const countryId = country.Cities[key]["CountryId"];
+                        const location = country.Cities[key]["Location"];
+                        const iataCode = country.Cities[key]["IataCode"];
+                        const id = country.Cities[key]["Id"];
+                        const name = country.Cities[key]["Name"];
+                        var any = false;
+                        for (var k in query) {
+                            var q = query[k];
+
+                            if (name == q ||
+                                countryName == q ||
+                                countryId == q ||
+                                id == q ||
+                                iataCode == q) {
+                                any = true;
+                            }
+                        }
+
+                        if (!any) {
+                            continue loop;
+                        }
+
+                        console.log(JSON.stringify(country.Cities))
+                        for (var airportIndex in country.Cities[key].Airports) {
+
+                            const loc = country.Cities[key].Airports[airportIndex]["Location"].split(', ');
+                            /* Get the longitude and latitude of the airport */
+                            console.log('loc = ' + loc);
+                            const pos = {
+                                lng: parseInt(loc[0]),
+                                lat: parseInt(loc[1])
+                            }
+
+                            /* Get the longitude and latitude */
+                            const jsonPos = JSON.stringify(pos);
+
+                            $element
+                                .append($('<option></option>')
+                                    .attr('data-continent-index', continentIndex)
+                                    .attr('data-country-index', countryIndex)
+                                    .attr('data-city-index', key)
+                                    .attr('data-airport-index', airportIndex)
+                                    .attr('value', jsonPos)
+                                    .text(country.Cities[key].Airports[airportIndex]["Name"] + ', ' + name + ', ' + countryName + ', ' + continentName));
+
+                            /* Dynamically create content for the info window of the google map */
+                            if (options && options.addMarkers) {
+                                const div = document.createElement('div');
+                                const h2 = document.createElement('h2');
+                                const p = document.createElement('p');
+
+                                h2.innerHTML = country.Cities[key].Airports[airportIndex]["Name"];
+                                p.innerHTML = 'Country: ' + countryName + '<br>' + 'City: ' + name + '<br>';
+
+                                div.appendChild(h2);
+                                div.appendChild(p);
+
+
+                                const input = $('<input />', {
+                                    type: 'button',
+                                    value: 'Find flights',
+                                    'data-coords': jsonPos,
+                                    'data-target': '#myModal',
+                                    class: 'btn btn-primary',
+                                    'data-toggle': 'modal',
+                                    on: {
+                                        click: findFlightsOnClickHandler
+                                    }
+                                });
+
+                                $(div).append(input);
+
+                                /*End of dynamic content*/
+
+                                //Set the content and position of the airport marker
+                                airportMarker.content = div;
+                                airportMarker.position = pos;
+
+                                //Set the markers data to the airport data
+                                airportMarker.data = Object.assign({}, { continentId, continentName }, { countryName, countryId, currency }, { countryId, location, iataCode, id, name }, //city
+                                    {
+                                        airportPos: pos,
+                                        airportName: country.Cities[key].Airports[airportIndex].Name,
+                                        airportId: country.Cities[key].Airports[airportIndex].Id,
+                                        airportyCityId: country.Cities[key].Airports[airportIndex].CityId,
+                                        airportCountryId: country.Cities[key].Airports[airportIndex].CountryId,
+                                        airportLocation: country.Cities[key].Airports[airportIndex].Location
+                                    });
+
+                                if (count == 0) {
+                                    console.log(airportMarker.data);
+                                    count++;
+                                }
+                                //Add the marker to the map.
+                                sf_map.addMarker(airportMarker);
+                            }
+                        }
+                    }
+
+                });
+            });
+        }
+        populate([sf_map.location.address.region, sf_map.location.address.city], $('#airports_selections'));
+
 
         $('#Search').click(function() {
 
@@ -227,68 +451,9 @@ $(document).ready(function() {
             /* Get the destination query */
             const query = $('#destination_query').val();
 
-            /* Locate airports for a particular destination */
-            airportDataKeys.forEach(function(key) {
-                /* Get the data */
-                const data = airport_data[key];
-
-                /* If we have a match... */
-                if (data.City == query || data.Country == query) {
-
-                    /* Get the longitude and latitude of the airport */
-                    const pos = {
-                        lng: data.Longitude,
-                        lat: data.Latitude
-                    }
-
-                    /* Get the longitude and latitude */
-                    const jsonPos = JSON.stringify(pos);
-
-                    /* Note that this can be extracted to a sep file, and use ajax.load)*/
-
-                    /* Dynamically create content for the info window of the google map */
-                    const div = document.createElement('div');
-                    const h2 = document.createElement('h2');
-                    const p = document.createElement('p');
-
-                    h2.innerHTML = data.Name;
-                    p.innerHTML = 'Country: ' + data.Country + '<br>' + 'City: ' + data.City + '<br>';
-
-                    div.appendChild(h2);
-                    div.appendChild(p);
+            populate([query], $('#destination_airports'), { addMarkers: true });
 
 
-                    const input = $('<input />', {
-                        type: 'button',
-                        value: 'Find flights',
-                        'data-coords': jsonPos,
-                        'data-target': '#myModal',
-                        class: 'btn btn-primary',
-                        'data-toggle': 'modal',
-                        on: {
-                            click: findFlightsOnClickHandler
-                        }
-                    });
-
-                    $(div).append(input);
-
-                    /*End of dynamic content*/
-
-                    //Set the content and position of the airport marker
-                    airportMarker.content = div;
-                    airportMarker.position = pos;
-
-                    //Also append the destination airports to a select.
-                    const element = $('<option></option>').html(data.Name).attr('value', jsonPos);
-                    $('#destination_airports').append(element);
-
-                    //Set the markers data to the airport data
-                    airportMarker.data = data;
-
-                    //Add the marker to the map.
-                    sf_map.addMarker(airportMarker);
-                }
-            });
         });
 
         $('#destination_airports').on('change', function() {

@@ -1,144 +1,6 @@
-<style>
 
-
-.top_bar {background-color:#2196F3;padding:2px;border-color:none;}
-
-
-@media (max-width: 600px) {
-    .top_bar {
-        display:none;
-    }
-}
-
-ul.site-tabs{
-    position:relative;
-    top:30px;
-    right:10px;
-}
-
-.rightc { list-style-type:none; margin-bottom:0px; float:right;}
-.rightc li { margin:0px 10px; font-size:13px; float:left; line-height:40px; color:white;}
-.rightc li a {   color:black; }
-
-.navbar-right li a { color:white;font-size:12px;}
-nav.site-nav{ background: #fff; border-color: #ccc; box-shadow: 0 0 2px 0 #ccc; }
-nav.site-nav a { color: #2196F3; }
-nav.site-nav ul.navbar-nav a { color: #2196F3; background-color:#fafafa; border-style: solid; border-width: 0 0 2px 0; border-color: #fff; }
-nav.site-nav ul.navbar-nav a:hover,
-nav.site-nav ul.navbar-nav a:visited,
-nav.site-nav ul.navbar-nav a:focus,
-nav.site-nav ul.navbar-nav a:active { background: #fff; }
-nav.site-nav ul.navbar-nav a:hover { border-color: #2196F3; }
-nav.site-nav li.divider { background: #2196F3; }
-nav.site-nav button.navbar-toggle { background: #2196F3; border-radius: 2px; }
-nav.site-nav button.navbar-toggle:hover { background:  #2196F3; }
-nav.site-nav button.navbar-toggle > span.icon-bar { background: #fff; }
-nav.site-nav ul.dropdown-menu { border: 0; background: #fff;  border-radius: 4px; margin: 4px 0; box-shadow: 0 0 4px 0 #ccc; }
-nav.site-nav ul.dropdown-menu > li > a { color: #2196F3;  }
-nav.site-nav ul.dropdown-menu > li > a:hover { background:  #2196F3; color: #fff; }
-nav.site-nav span.badge { background: #2196F3; font-weight: normal; font-size: 11px; margin: 0 4px; }
-nav.site-nav span.badge.new { background: rgba(255, 0, 0, 0.8); color: #fff; }
-
-
-@import url(http://fonts.googleapis.com/css?family=Roboto);
-
-/****** LOGIN MODAL ******/
-.loginmodal-container {
-  padding: 30px;
-  max-width: 350px;
-  width: 100% !important;
-  background-color: #F7F7F7;
-  margin: 0 auto;
-  border-radius: 2px;
-  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
-  font-family: roboto;
-}
-
-.loginmodal-container h1 {
-  text-align: center;
-  font-size: 1.8em;
-  font-family: roboto;
-}
-
-.loginmodal-container input[type=submit] {
-  width: 100%;
-  display: block;
-  margin-bottom: 10px;
-  position: relative;
-}
-
-.loginmodal-container input[type=text], input[type=password] {
-  height: 44px;
-  font-size: 16px;
-  width: 100%;
-  margin-bottom: 10px;
-  -webkit-appearance: none;
-  background: #fff;
-  border: 1px solid #d9d9d9;
-  border-top: 1px solid #c0c0c0;
-  /* border-radius: 2px; */
-  padding: 0 8px;
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-}
-
-.loginmodal-container input[type=text]:hover, input[type=password]:hover {
-  border: 1px solid #b9b9b9;
-  border-top: 1px solid #a0a0a0;
-  -moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
-  -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
-}
-
-.loginmodal {
-  text-align: center;
-  font-size: 14px;
-  font-family: 'Arial', sans-serif;
-  font-weight: 700;
-  height: 36px;
-  padding: 0 8px;
-/* border-radius: 3px; */
-/* -webkit-user-select: none;
-  user-select: none; */
-}
-
-.loginmodal-submit {
-  /* border: 1px solid #3079ed; */
-  border: 0px;
-  color: #fff;
-  text-shadow: 0 1px rgba(0,0,0,0.1); 
-  background-color: #4d90fe;
-  padding: 17px 0px;
-  font-family: roboto;
-  font-size: 14px;
-  /* background-image: -webkit-gradient(linear, 0 0, 0 100%,   from(#4d90fe), to(#4787ed)); */
-}
-
-.loginmodal-submit:hover {
-  /* border: 1px solid #2f5bb7; */
-  border: 0px;
-  text-shadow: 0 1px rgba(0,0,0,0.3);
-  background-color: #357ae8;
-  /* background-image: -webkit-gradient(linear, 0 0, 0 100%,   from(#4d90fe), to(#357ae8)); */
-}
-
-.loginmodal-container a {
-  text-decoration: none;
-  color: #666;
-  font-weight: 400;
-  text-align: center;
-  display: inline-block;
-  opacity: 0.6;
-  transition: opacity ease 0.5s;
-} 
-
-.login-help{
-  font-size: 12px;
-}
-</style>
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
-<header class="site-header">
+<header>
 </div>
 <!--top_bar-->
 <nav class="navbar navbar-default navbar-fixed-top site-nav" role="navigation">
@@ -152,14 +14,13 @@ nav.site-nav span.badge.new { background: rgba(255, 0, 0, 0.8); color: #fff; }
 					<span class="icon-bar"></span>
 				</button>
                 <br>
-				<a class="" href="#" style="position:relative;bottom:10px;left:5px;"><img src="/images/Logo.png" width="64" height="64"> Seatfilla</a>
+				<a class="" href="#" style="position:relative;bottom:80px;left:5px;"><img src="/images/Logo.png" width="44" height="44"><h2 style="position:relative;display:inline-block;left:10px;top:5px;">Seatfilla</h2></a>
 			</div>
 
 			<!-- Collect the nav links, forms, and other content for toggling -->
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				
 				<ul class="nav navbar-nav navbar-right">
-                <br>
                 <li><a href="#">Home</a></li>
 					<li class="dropdown">
 						<a href="/search/" class="dropdown-toggle" data-toggle="dropdown">Find flights</a>
@@ -177,8 +38,8 @@ nav.site-nav span.badge.new { background: rgba(255, 0, 0, 0.8); color: #fff; }
           <li>
 	    <ul class="nav navbar-nav navbar-right">
           
-				<li class="dropdown">
-					<a href="#" style="background-color:white;border-color:#2196F3;border-width:1px;border-style:solid;" class="dropdown-toggle" data-toggle="dropdown" style="background-color:white;" role="button" aria-expanded="false"><i class="fa fa-fw fa-bell-o"></i> Notifications <span class="badge">2</span></a>
+				<li class="dropdown" style="position:relative;bottom:6px;right:10px;">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown"  role="button" aria-expanded="false"><i class="fa fa-fw fa-bell-o"></i> Notifications <span class="badge">2</span></a>
 					<ul class="dropdown-menu" role="menu">
             <li> Notifications</li>
 						<li><a href="#"><i class="fa fa-fw fa-tag"></i> <span class="badge">Notification</span> Welcome to Seatfilla</a></li>
@@ -197,7 +58,7 @@ nav.site-nav span.badge.new { background: rgba(255, 0, 0, 0.8); color: #fff; }
           <li class="active"><a href="#" class="btn btn-primary btn-lg" id="login-modal-trigger" role="button" data-toggle="modal" data-target="#login-modal">Login</a></li>
           <%}else{%>
             <li class="dropdown">
-            <a href="#" style="background-color:white;border-color:#2196F3;border-width:1px;border-style:solid;" class="dropdown-toggle" data-toggle="dropdown"> <span class="glyphicon glyphicon-user pull-right"></span> <%= req.user.email %> </a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <span class="glyphicon glyphicon-user pull-right"></span> <%= req.user.email %> </a>
             <ul class="dropdown-menu">
               <li><a href="/user/myaccount">My Account <span class="glyphicon glyphicon-cog pull-right"></span></a></li>
               <li class="divider"></li>
@@ -251,9 +112,11 @@ nav.site-nav span.badge.new { background: rgba(255, 0, 0, 0.8); color: #fff; }
             <div class="col-xs-7 col-md-6">
             <ul class="rightc">
             <li><i class="fa fa-envelope-o"></i> customer@seatfilla.com </li>
-            <li><i class="fa fa-user"></i> <a href="/user/register" class="text-white" >Register</a></li> 
+            <%if(!req.user){%>
+            <li><i class="fa fa-user"></i> <a href="/user/register" style="color:white;" >Register</a></li> 
+            <%}%>
             <li>Preffered Currency:</li>
-            <li><i class="fa fa-currency"></i><select class="input input-sm form-control" id="seatfilla_currencies"></select></li>     
+            <li><i class="fa fa-currency"></i><select class="input input-sm form-control" style="position:relative;bottom:15px;" id="seatfilla_currencies"></select></li>     
             </ul>
             </div>
             </div>

@@ -199,8 +199,8 @@ module.exports = {
                 sails.log.debug(result);
                 return res.json(ResponseStatus.OK, { result: result });
             }).catch(function(error) {
-                sails.log.debug('Error in maps controller ' + error.message + ' ' + JSON.stringify(error));
-                return res.json(ResponseStatus.SERVER_ERROR, { error: error });
+                sails.log.debug('Error in maps controller ' + JSON.stringify(error));
+                return res.json(ResponseStatus.OK, { errors: error.error });
             });
         })
     },

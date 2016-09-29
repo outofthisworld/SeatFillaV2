@@ -102,7 +102,7 @@ const exportObj = {
                 obj.apiKey = apiKey;
                 const sendData = querystring.stringify(obj);
                 const contentLength = sendData.length;
-
+                const _this = this;
                 request({
                     headers: {
                         'Content-Length': contentLength,
@@ -112,14 +112,17 @@ const exportObj = {
                     body: sendData,
                     method: 'POST'
                 }, function(err, res, body) {
-                    //Make sure atleast a second has passed so that the session has actually been created
-                    setTimeout(function() {
-                        if (err) {
-                            return reject(err);
+                    if (err) {
+                        return reject(err);
+                    } else {
+                        sails.log.debug(res.headers);
+                        const result = JSON.parse(res.body);
+                        if (result.ValidationErrors) {
+                            return reject({ error: result.ValidationErrors });
                         } else {
                             return resolve({ url: res.headers.location });
                         }
-                    }, 1000);
+                    }
                 });
             });
         },
@@ -179,6 +182,8 @@ const exportObj = {
 
                 //Encode the obj as a query string..
                 const queryString = querystring.stringify(obj);
+
+                const _this = this;
                 request({
                     headers: {
                         'Accept': 'application/json'
@@ -187,32 +192,32 @@ const exportObj = {
                     method: 'GET'
                 }, function(err, res, body) {
                     if (err) return reject(ErrorUtils.createNewError('Error recieved via request in retrieveItin', arguments, err))
-                    else return resolve(res.body); //Le,go
+
+                    if (res.body.Status == 'UpdatesPending') {
+                        return _this.retrieveItin(res.body.url, obj);
+                    } else {
+                        return resolve(res.body);
+                    }
                 });
             });
         },
         //Obtains a session key and itinerary using the specified request objects and returns the interneraries.
         makeLivePricingApiRequest(sessionKeyObj, itinObj) {
+            const _this = this;
             return new Promise((resolve, reject) => {
-                this.obtainSessionKey(sessionKeyObj).then((result) => {
+                _this.obtainSessionKey(sessionKeyObj).then((result) => {
                     console.log('recieved url from obtain session key: ' + result.url)
-
-
-                    this.retrieveItin(result.url, itinObj).then((result) => {
-                        _itin = JSON.parse(result);
-                        _finalResult = result;
-                        sails.log.debug(_finalResult);
-                        if (_itin.Status == 'UpdatesPending') {
-                            return this.makeLivePricingApiRequest(result.url, itinObj);
-                        } else {
-                            resolve(result);
-                        }
+                    _this.retrieveItin(result.url, itinObj).then((result) => {
+                        sails.log.debug(result);
+                        return resolve(result);
                     }).catch((err) => {
-                        return reject(ErrorUtils.createNewError('Error when calling retrieve itin', arguments, err))
+                        sails.log.debug('Error retrieving itin ' + JSON.stringify(err));
+                        return reject(err);
                     });
-
-
-                }).catch((err) => { return reject(ErrorUtils.createNewError('Error when calling obtain session key', arguments, err)) })
+                }).catch((err) => {
+                    sails.log.debug('Error obtaining session key ' + JSON.stringify(err));
+                    return reject(err);
+                })
             });
         },
         /*

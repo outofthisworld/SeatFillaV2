@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-    (function initMap(options) {
+(function initMap(options) {
         var sf_map = _seat_filla_map({
             enableHighAccuracy: true,
             timeout: 6000,
@@ -119,10 +119,10 @@ $(document).ready(function() {
             const marker = sf_map.getMarkerJsonString(coords);
 
             const $selectedOriginAirport = $('#airports_selections').find(":selected");
-            const continentIdx = $selectedOriginAirport.attr('data-continent-index', continentIndex);
-            const countryIdx = $selectedOriginAirport.attr('data-country-index', countryIndex);
-            const cityIdx = $selectedOriginAirport.attr('data-city-index', key);
-            const airportIdx = $selectedOriginAirport.attr('data-airport-index', airportIndex);
+            const continentIdx = $selectedOriginAirport.attr('data-continent-index');
+            const countryIdx = $selectedOriginAirport.attr('data-country-index');
+            const cityIdx = $selectedOriginAirport.attr('data-city-index');
+            const airportIdx = $selectedOriginAirport.attr('data-airport-index');
 
             const airportPos = JSON.parse($selectedOriginAirport.attr('value'));
 
@@ -147,7 +147,7 @@ $(document).ready(function() {
                 id: airportData.Continents[continentIdx].Countries[countryIdx].Cities[cityIdx].Id,
                 name: airportData.Continents[continentIdx].Countries[countryIdx].Cities[cityIdx].Name
             }, {
-                airportPos: pos,
+                airportPos,
                 airportName: airportData.Continents[continentIdx].Countries[countryIdx].Cities[cityIdx].Airports[airportIdx].Name,
                 airportId: airportData.Continents[continentIdx].Countries[countryIdx].Cities[cityIdx].Airports[airportIdx].Id,
                 airportyCityId: airportData.Continents[continentIdx].Countries[countryIdx].Cities[cityIdx].Airports[airportIdx].CityId,
@@ -163,7 +163,7 @@ $(document).ready(function() {
                 console.log(data);
 
                 console.log('destination data: ' + JSON.stringify(data));
-                console.log('origin data:' + JSON.stringify(originAirport));
+                console.log('origin data:' + JSON.stringify(origin));
                 console.log('user position:' + JSON.stringify(sf_map.position));
                 console.log('user location: ' + JSON.stringify(sf_map.location));
 
@@ -173,9 +173,29 @@ $(document).ready(function() {
                 const numAdultTickets = $('#num_adult_tickets').val();
                 const numInfantTickets = $('#num_infant_tickets').val();
 
-                const key = $('#destination_airports option:selected').attr('data-airport-key');
-                data = airport_data[key];
-                console.log('destination data two: ' + JSON.stringify(data));
+
+                /*
+                destination data: 
+                {"continentId":"N","
+                continentName":"North America",
+                "countryName":"Canada",
+                "countryId":"CA",
+                "currency":"CAD",
+                "location":"-60.1829,
+                 46.1378",
+                 "iataCode":"YQY",
+                 "id":"YQYA",
+                 "name":"Sydney",
+                 "airportPos":{"lng":-60,"lat":46},
+                 "airportName":"Sydney",
+                 "airportId":"YQY",
+                 "airportyCityId":"YQYA",
+                 "airportCountryId":"CA",
+                 "airportLocation":"-60.05, 46.166667"}
+
+                airport-map.js:166 origin data:{"continentId":"O","continentName":"Oceania","countryName":"New Zealand","countryId":"NZ","currency":"NZD","location":"174.739869, -36.840417","iataCode":"AKL","id":"AKLN","name":"Auckland","airportPos":{"lng":174,"lat":-37},"airportName":"Auckland International","airportId":"AKL","airportyCityId":"AKLN","airportCountryId":"NZ","airportLocation":"174.799167, -37.011111"}
+                */
+
 
                 $.ajax({
                     type: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo.method,
@@ -252,10 +272,14 @@ $(document).ready(function() {
                     },
                 });
 
-            });
-        }
+           
 
-        /* Add support for geocoding later.. 
+
+
+        });
+}
+
+/* Add support for geocoding later.. 
      
          Location callback...
         {
@@ -299,192 +323,192 @@ $(document).ready(function() {
 
 
 
-        /*
+/*
  {"coords":{"latitude":-36.7835855,"longitude":174.4630076,"altitude":null,"accuracy":30,"altitudeAccuracy":null,"heading":null,"speed":null},"address":{"commonName":"","streetNumber":"117","street":"Mahana Road","route":"Mahana Road","neighborhood":"","town":"","city":"Waimauku","region":"Auckland","postalCode":"0881","state":"","stateCode":"","country":"New Zealand","countryCode":"NZ"},"formattedAddress":"117 Mahana Rd, Waimauku 0881, New Zealand","type":"ROOFTOP","placeId":"ChIJ2z3AlvUSDW0RdDxZXdsqHn0","timestamp":1475039323869,"flag":"//cdnjs.cloudflare.com/ajax/libs/flag-icon-css/2.3.1/flags/4x3/nz.svg","timezone":{"id":"Pacific/Auckland","name":"New Zealand Daylight Time","abbr":"NZDT","dstOffset":3600,"rawOffset":43200}}
         */
 
-        /* Populate origin airports */
-        /*airportDataKeys.forEach(function(key) {
-             const data = airport_data[key];
-             const option = $('<option></option>').attr('id', key).text(data.Name);
+/* Populate origin airports */
+/*airportDataKeys.forEach(function(key) {
+     const data = airport_data[key];
+     const option = $('<option></option>').attr('id', key).text(data.Name);
 
-             if (data.City == sf_map.location.address.region || data.Country == sf_map.location.address.city) {
-                 $('#airports_selections').append(option);
-             }
-         });*/
-
-
-        var count = 0;
-
-        function populate(query, $element, options) {
-            const option = $('<option></option>');
-            airportData.Continents.forEach(function(continent, continentIndex) {
-                const continentId = continent["Id"];
-                const continentName = continent["Name"];
-
-                continent.Countries.forEach(function(country, countryIndex) {
-                    const countryName = country.Name;
-                    const countryId = country.Id;
-                    const currency = country.CurrencyId
+     if (data.City == sf_map.location.address.region || data.Country == sf_map.location.address.city) {
+         $('#airports_selections').append(option);
+     }
+ });*/
 
 
-                    loop: for (var key in country.Cities) {
-                        //sf_map.location.address.region
-                        //sf_map.location.address.city
+var count = 0;
 
-                        const countryId = country.Cities[key]["CountryId"];
-                        const location = country.Cities[key]["Location"];
-                        const iataCode = country.Cities[key]["IataCode"];
-                        const id = country.Cities[key]["Id"];
-                        const name = country.Cities[key]["Name"];
-                        var any = false;
-                        for (var k in query) {
-                            var q = query[k];
+function populate(query, $element, options) {
+    const option = $('<option></option>');
+    airportData.Continents.forEach(function(continent, continentIndex) {
+        const continentId = continent["Id"];
+        const continentName = continent["Name"];
 
-                            if (name == q ||
-                                countryName == q ||
-                                countryId == q ||
-                                id == q ||
-                                iataCode == q) {
-                                any = true;
-                            }
-                        }
-
-                        if (!any) {
-                            continue loop;
-                        }
-
-                        console.log(JSON.stringify(country.Cities))
-                        for (var airportIndex in country.Cities[key].Airports) {
-
-                            const loc = country.Cities[key].Airports[airportIndex]["Location"].split(', ');
-                            /* Get the longitude and latitude of the airport */
-                            console.log('loc = ' + loc);
-                            const pos = {
-                                lng: parseInt(loc[0]),
-                                lat: parseInt(loc[1])
-                            }
-
-                            /* Get the longitude and latitude */
-                            const jsonPos = JSON.stringify(pos);
-
-                            $element
-                                .append($('<option></option>')
-                                    .attr('data-continent-index', continentIndex)
-                                    .attr('data-country-index', countryIndex)
-                                    .attr('data-city-index', key)
-                                    .attr('data-airport-index', airportIndex)
-                                    .attr('value', jsonPos)
-                                    .text(country.Cities[key].Airports[airportIndex]["Name"] + ', ' + name + ', ' + countryName + ', ' + continentName));
-
-                            /* Dynamically create content for the info window of the google map */
-                            if (options && options.addMarkers) {
-                                const div = document.createElement('div');
-                                const h2 = document.createElement('h2');
-                                const p = document.createElement('p');
-
-                                h2.innerHTML = country.Cities[key].Airports[airportIndex]["Name"];
-                                p.innerHTML = 'Country: ' + countryName + '<br>' + 'City: ' + name + '<br>';
-
-                                div.appendChild(h2);
-                                div.appendChild(p);
+        continent.Countries.forEach(function(country, countryIndex) {
+            const countryName = country.Name;
+            const countryId = country.Id;
+            const currency = country.CurrencyId
 
 
-                                const input = $('<input />', {
-                                    type: 'button',
-                                    value: 'Find flights',
-                                    'data-coords': jsonPos,
-                                    'data-target': '#myModal',
-                                    class: 'btn btn-primary',
-                                    'data-toggle': 'modal',
-                                    on: {
-                                        click: findFlightsOnClickHandler
-                                    }
-                                });
+            loop: for (var key in country.Cities) {
+                //sf_map.location.address.region
+                //sf_map.location.address.city
 
-                                $(div).append(input);
+                const countryId = country.Cities[key]["CountryId"];
+                const location = country.Cities[key]["Location"];
+                const iataCode = country.Cities[key]["IataCode"];
+                const id = country.Cities[key]["Id"];
+                const name = country.Cities[key]["Name"];
+                var any = false;
+                for (var k in query) {
+                    var q = query[k];
 
-                                /*End of dynamic content*/
+                    if (name == q ||
+                        countryName == q ||
+                        countryId == q ||
+                        id == q ||
+                        iataCode == q) {
+                        any = true;
+                    }
+                }
 
-                                //Set the content and position of the airport marker
-                                airportMarker.content = div;
-                                airportMarker.position = pos;
+                if (!any) {
+                    continue loop;
+                }
 
-                                //Set the markers data to the airport data
-                                airportMarker.data = Object.assign({}, { continentId, continentName }, { countryName, countryId, currency }, { countryId, location, iataCode, id, name }, //city
-                                    {
-                                        airportPos: pos,
-                                        airportName: country.Cities[key].Airports[airportIndex].Name,
-                                        airportId: country.Cities[key].Airports[airportIndex].Id,
-                                        airportyCityId: country.Cities[key].Airports[airportIndex].CityId,
-                                        airportCountryId: country.Cities[key].Airports[airportIndex].CountryId,
-                                        airportLocation: country.Cities[key].Airports[airportIndex].Location
-                                    });
+                console.log(JSON.stringify(country.Cities))
+                for (var airportIndex in country.Cities[key].Airports) {
 
-                                if (count == 0) {
-                                    console.log(airportMarker.data);
-                                    count++;
-                                }
-                                //Add the marker to the map.
-                                sf_map.addMarker(airportMarker);
-                            }
-                        }
+                    const loc = country.Cities[key].Airports[airportIndex]["Location"].split(', ');
+                    /* Get the longitude and latitude of the airport */
+                    console.log('loc = ' + loc);
+                    const pos = {
+                        lng: parseInt(loc[0]),
+                        lat: parseInt(loc[1])
                     }
 
-                });
-            });
-        }
-        populate([sf_map.location.address.region, sf_map.location.address.city], $('#airports_selections'));
+                    /* Get the longitude and latitude */
+                    const jsonPos = JSON.stringify(pos);
+
+                    $element
+                        .append($('<option></option>')
+                            .attr('data-continent-index', continentIndex)
+                            .attr('data-country-index', countryIndex)
+                            .attr('data-city-index', key)
+                            .attr('data-airport-index', airportIndex)
+                            .attr('value', jsonPos)
+                            .text(country.Cities[key].Airports[airportIndex]["Name"] + ', ' + name + ', ' + countryName + ', ' + continentName));
+
+                    /* Dynamically create content for the info window of the google map */
+                    if (options && options.addMarkers) {
+                        const div = document.createElement('div');
+                        const h2 = document.createElement('h2');
+                        const p = document.createElement('p');
+
+                        h2.innerHTML = country.Cities[key].Airports[airportIndex]["Name"];
+                        p.innerHTML = 'Country: ' + countryName + '<br>' + 'City: ' + name + '<br>';
+
+                        div.appendChild(h2);
+                        div.appendChild(p);
 
 
-        $('#Search').click(function() {
+                        const input = $('<input />', {
+                            type: 'button',
+                            value: 'Find flights',
+                            'data-coords': jsonPos,
+                            'data-target': '#myModal',
+                            class: 'btn btn-primary',
+                            'data-toggle': 'modal',
+                            on: {
+                                click: findFlightsOnClickHandler
+                            }
+                        });
 
-            /* Remove all the markers from the seatfilla map */
-            sf_map.removeAllMarkers();
+                        $(div).append(input);
 
-            /* Remove a line if there is one */
-            if (line) line.setMap(null)
+                        /*End of dynamic content*/
 
-            /* Clear the destination airports select*/
-            $('#destination_airports').html("");
+                        //Set the content and position of the airport marker
+                        airportMarker.content = div;
+                        airportMarker.position = pos;
 
-            /* Get the destination query */
-            const query = $('#destination_query').val();
+                        //Set the markers data to the airport data
+                        airportMarker.data = Object.assign({}, { continentId, continentName }, { countryName, countryId, currency }, { countryId, location, iataCode, id, name }, //city
+                            {
+                                airportPos: pos,
+                                airportName: country.Cities[key].Airports[airportIndex].Name,
+                                airportId: country.Cities[key].Airports[airportIndex].Id,
+                                airportyCityId: country.Cities[key].Airports[airportIndex].CityId,
+                                airportCountryId: country.Cities[key].Airports[airportIndex].CountryId,
+                                airportLocation: country.Cities[key].Airports[airportIndex].Location
+                            });
 
-            populate([query], $('#destination_airports'), { addMarkers: true });
-
+                        if (count == 0) {
+                            console.log(airportMarker.data);
+                            count++;
+                        }
+                        //Add the marker to the map.
+                        sf_map.addMarker(airportMarker);
+                    }
+                }
+            }
 
         });
+    });
+}
+populate([sf_map.location.address.region, sf_map.location.address.city], $('#airports_selections'));
 
-        $('#destination_airports').on('change', function() {
-            var to = JSON.parse($(this).val());
-            const marker = sf_map.getMarker(to);
-            if (line) line.setMap(null);
 
-            line = sf_map.createAnimatedLineSymbol({
-                path: [from, to],
-                icons: [{
-                    icon: planeSymbol,
-                    offset: '0%',
-                    repeat: '100px'
-                }],
-                strokeOpacity: 0.5,
-                strokeColor: '#FFF'
-            })
+$('#Search').click(function() {
 
-            marker.infowindow.open(sf_map.map, marker.marker);
-        });
+    /* Remove all the markers from the seatfilla map */
+    sf_map.removeAllMarkers();
 
-        const legend = document.getElementById('legend');
-        for (var key in icons) {
-            var type = icons[key];
-            var name = key;
-            var icon = type.url;
-            var div = document.createElement('div');
-            div.innerHTML = '<img src="' + icon + '"> ' + name;
-            legend.appendChild(div);
-        }
+    /* Remove a line if there is one */
+    if (line) line.setMap(null)
 
-        sf_map.addLegend(legend, google.maps.ControlPosition.TOP_LEFT);
-    })();
+    /* Clear the destination airports select*/
+    $('#destination_airports').html("");
+
+    /* Get the destination query */
+    const query = $('#destination_query').val();
+
+    populate([query], $('#destination_airports'), { addMarkers: true });
+
+
+});
+
+$('#destination_airports').on('change', function() {
+    var to = JSON.parse($(this).val());
+    const marker = sf_map.getMarker(to);
+    if (line) line.setMap(null);
+
+    line = sf_map.createAnimatedLineSymbol({
+        path: [from, to],
+        icons: [{
+            icon: planeSymbol,
+            offset: '0%',
+            repeat: '100px'
+        }],
+        strokeOpacity: 0.5,
+        strokeColor: '#FFF'
+    })
+
+    marker.infowindow.open(sf_map.map, marker.marker);
+});
+
+const legend = document.getElementById('legend');
+for (var key in icons) {
+    var type = icons[key];
+    var name = key;
+    var icon = type.url;
+    var div = document.createElement('div');
+    div.innerHTML = '<img src="' + icon + '"> ' + name;
+    legend.appendChild(div);
+}
+
+sf_map.addLegend(legend, google.maps.ControlPosition.TOP_LEFT);
+})();
 });

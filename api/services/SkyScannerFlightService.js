@@ -118,6 +118,7 @@ const exportObj = {
                         sails.log.debug(res.headers);
                         const result = JSON.parse(res.body);
                         if (result.ValidationErrors) {
+                            console.log(body);
                             return reject({ error: result.ValidationErrors });
                         } else {
                             return resolve({ url: res.headers.location });
@@ -192,10 +193,11 @@ const exportObj = {
                     method: 'GET'
                 }, function(err, res, body) {
                     if (err) return reject(ErrorUtils.createNewError('Error recieved via request in retrieveItin', arguments, err))
-
+                
                     if (res.body.Status == 'UpdatesPending') {
                         return _this.retrieveItin(res.body.url, obj);
                     } else {
+                            console.log(body);
                         return resolve(res.body);
                     }
                 });
@@ -208,7 +210,6 @@ const exportObj = {
                 _this.obtainSessionKey(sessionKeyObj).then((result) => {
                     console.log('recieved url from obtain session key: ' + result.url)
                     _this.retrieveItin(result.url, itinObj).then((result) => {
-                        sails.log.debug(result);
                         return resolve(result);
                     }).catch((err) => {
                         sails.log.debug('Error retrieving itin ' + JSON.stringify(err));

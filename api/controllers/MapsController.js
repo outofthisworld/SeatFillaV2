@@ -134,32 +134,35 @@ module.exports = {
                 sails.log.debug('Succesfully created user location: ' + JSON.stringify(addr));
             }).catch(function(err) {
                 sails.log.debug('Could not create user location. Error occurred : ' + JSON.stringify(err));
-            })
-
+            });
             UserSearch.create({
                 user: req.user.id,
-                originAirportName: req.body.origin.Name,
-                originAirportCity: req.body.origin.City,
-                originAirportCountry: req.body.origin.Country,
-                originAirportCountryCode: req.body.originAirportLocation.address.countryCode,
-                originAirportFormattedAddress: req.body.originAirportLocation.address.formattedAddress,
-                originAirportIataOrFaaCode: req.body.origin.IataOrFaaCode,
+                originAirportName: req.body.origin.airportName,
+                originAirportCity: req.body.origin.name,
+                originAirportCityId: req.body.origin.airportCityId,
+                originAirportCountry: req.body.origin.countryName,
+                originAirportCountryCode: req.body.origin.countryId,
+                originAirportCurrency: req.body.origin.currency,
+                originAirportId: req.body.origin.airportId,
+                originAirportIataOrFaaCode: req.body.origin.iataCode,
                 originAirportIcaoCode: req.body.origin.IcaoCode,
-                originAirportLatitude: req.body.origin.Latitude,
-                originAirportLongitude: req.body.origin.Longitude,
-                originAirportTimezone: req.body.origin.Timezone,
-                originAirportDst: req.body.origin.DST,
-                destinationAirportName: req.body.destination.Name,
-                destinationAirportCity: req.body.destination.City,
-                destinationAirportCountry: req.body.destination.Country,
-                destinationAirportCountryCode: req.body.destinationAirport.address.countryCode,
-                destinationAirportFormattedAddress: req.body.destinationAirport.address.formattedAddress,
-                destinationAirportIataOrFaaCode: req.body.destination.IataOrFaaCode,
+                originAirportLatitude: req.body.origin.airportPos.lat,
+                originAirportLongitude: req.body.origin.airportPos.lng,
+                originAirportContinent: req.body.origin.continentName,
+                originAirportContinentId: req.body.origin.continentId,
+                destinationAirportName: req.body.destination.airportName,
+                destinationAirportCity: req.body.destination.name,
+                destinationAirportCityId: req.body.destination.airportCityId,
+                destinationAirportCountry: req.body.destination.countryName,
+                destinationAirportCountryCode: req.body.destination.origincountryId,
+                destinationAirportCurrency: req.body.destination.currency,
+                destinationAirportId: req.body.destination.airportId,
+                destinationAirportIataOrFaaCode: req.body.destination.iataCode,
                 destinationAirportIcaoCode: req.body.destination.IcaoCode,
-                destinationAirportLatitude: req.body.destination.Latitude,
-                destinationAirportLongitude: req.body.destination.Longitude,
-                destinationAirportTimezone: req.body.destination.Timezone,
-                destinationAirportDst: req.body.destination.DST
+                destinationAirportLatitude: req.body.destination.airportPos.lat,
+                destinationAirportLongitude: req.body.destination.airportPos.lng,
+                destinationAirportContinent: req.body.destination.continentName,
+                destinationAirportContinentId: req.body.destination.continentId
             }).then(function(userSearch) {
                 sails.log.debug('Succesfully created user search ' + JSON.stringify(userSearch));
             }).catch(function(err) {
@@ -168,41 +171,41 @@ module.exports = {
         } else {
             sails.log.debug('User not logged in .. not saving location or search');
         }
-        new Promise(function(resolve, reject) {
-            const obj = Object.create(SkyScannerFlightService.sessionObj);
 
-            obj.country = req.body.userLocation.address.countryCode || req.body.userLocation.address.country || (req.user && req.user.address.country);
-            obj.currency = req.body.prefferedCurrency || UserSettingsService.getUserCurrencyCodePreference(req);
-            obj.locale = req.body.userLocale == req.headers['accept-language'] ? req.body.userLocale : req.headers['accept-language'];
-            obj.originplace = req.body.origin.IataOrFaaCode;
-            obj.destinationplace = req.body.destination.IataOrFaaCode;
-            obj.outbounddate = (req.body.dates && req.body.dates.departure) || (new Date().toISOString().slice(0, 10));
-            obj.inbounddate = (req.body.dates && req.body.dates.arrival) || null;
-            obj.locationschema = SkyScannerFlightService.locationschemas.Iata;
-            obj.cabinclass = req.body.prefferedCabinClass || SkyScannerFlightService.cabinclasses.Economy;
-            obj.adults = (req.body.ticketInfo && req.body.ticketInfo.numAdultTickets) || 1;
-            obj.children = (req.body.ticketInfo && req.body.ticketInfo.numChildTickets) || 0;
-            obj.infants = (req.body.ticketInfo && req.body.ticketInfo.numInfantTickets) || 0;
-            obj.groupPricing = req.body.groupPricing || false;
+        const obj = Object.create(SkyScannerFlightService.sessionObj);
 
-            sails.log.debug('Created session object: ' + JSON.stringify(obj));
+        obj.country = req.body.userLocation.address.countryCode || req.body.origin.airportCountryId || req.body.userLocation.address.country || (req.user && req.user.address.country);
+        obj.currency = req.body.prefferedCurrency || UserSettingsService.getUserCurrencyCodePreference(req);
+        obj.locale = req.headers['accept-language'];
+        obj.originplace = req.body.origin.iataCode;
+        obj.destinationplace = req.body.destination.iataCode;
+        obj.outbounddate = (req.body.dates && req.body.dates.departure) || (new Date().toISOString().slice(0, 10));
+        obj.inbounddate = (req.body.dates && req.body.dates.arrival) || null;
+        obj.locationschema = SkyScannerFlightService.locationschemas.Iata;
+        obj.cabinclass = req.body.prefferedCabinClass || SkyScannerFlightService.cabinclasses.Economy;
+        obj.adults = (req.body.ticketInfo && req.body.ticketInfo.numAdultTickets) || 1;
+        obj.children = (req.body.ticketInfo && req.body.ticketInfo.numChildTickets) || 0;
+        obj.infants = (req.body.ticketInfo && req.body.ticketInfo.numInfantTickets) || 0;
+        obj.groupPricing = req.body.groupPricing || false;
 
-            const itinObj = Object.create(SkyScannerFlightService.itinObj);
+        sails.log.debug('Created session object: ' + JSON.stringify(obj));
 
-            itinObj.pageindex = 0 || req.body.pageIndex;
-            itinObj.pagesize = 10 || req.body.pageSize;
+        const itinObj = Object.create(SkyScannerFlightService.itinObj);
 
-            sails.log.debug('Created itin object: ' + JSON.stringify(itinObj));
+        itinObj.pageindex = 0 || req.body.pageIndex;
+        itinObj.pagesize = 10 || req.body.pageSize;
 
-            //Use SkyScannerFlightService to make the request
-            SkyScannerFlightService.makeLivePricingApiRequest(obj, itinObj).then(function(result) {
-                sails.log.debug(result);
-                return res.json(ResponseStatus.OK, { result: result });
-            }).catch(function(error) {
-                sails.log.debug('Error in maps controller ' + JSON.stringify(error));
-                return res.json(ResponseStatus.OK, { errors: error.error });
-            });
-        })
+        sails.log.debug('Created itin object: ' + JSON.stringify(itinObj));
+
+        //Use SkyScannerFlightService to make the request
+        SkyScannerFlightService.makeLivePricingApiRequest(obj, itinObj).then(function(result) {
+            sails.log.debug(result);
+            return res.json(ResponseStatus.OK, { result: result });
+        }).catch(function(error) {
+            sails.log.debug('Error in maps controller ' + JSON.stringify(error));
+            return res.json(ResponseStatus.OK, { errors: error.error });
+        });
+
     },
     test(req, res) {
         GettyImagesService.searchAndRetrieveUrls({

@@ -194,10 +194,9 @@ const exportObj = {
                 }, function(err, res, body) {
                     if (err) return reject(ErrorUtils.createNewError('Error recieved via request in retrieveItin', arguments, err))
                 
-                    if (res.body.Status == 'UpdatesPending') {
+                    if (res.body.Status == 'UpdatesPending' || !body) {
                         return _this.retrieveItin(res.body.url, obj);
                     } else {
-                            console.log(body);
                         return resolve(res.body);
                     }
                 });
@@ -209,6 +208,7 @@ const exportObj = {
             return new Promise((resolve, reject) => {
                 _this.obtainSessionKey(sessionKeyObj).then((result) => {
                     console.log('recieved url from obtain session key: ' + result.url)
+                    if(!result.url) return Promise.reject(new Error('Could not obtain session key from our services'));
                     _this.retrieveItin(result.url, itinObj).then((result) => {
                         return resolve(result);
                     }).catch((err) => {

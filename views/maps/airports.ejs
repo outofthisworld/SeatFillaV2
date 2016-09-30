@@ -120,19 +120,74 @@
 
 
 <div class="container-fluid">
-	<div class="panel panel-primary">
+	<div class="panel panel-info">
         <div class="panel-heading">
-            <h3 class="panel-title">Flight results</h3>
-        </div>   
-
+            <p>You're nearly there! we just need a little more information.</p>
+             <hr/><br/>
+        </div>
         <div class="panel-content">
+        <form id="datesForm" class="form-horizontal container80">
+        <fieldset>
+        <br/>
+        <div class="input-group" style="width:100%;background-color:transparent;">
 
-        <ul id="flightResults" class="list-group" style="overflow:scroll;">
+          <div class="form-group">
+
+              <label class="col-md-2 control-label text-black" for="name">Departure Date</label>  
+              <div class="col-md-4">
+              <input name="departureDate" id="departure_date" type="date" placeholder="Departure Date" class="form-control input-md" required="">
+              <span class="help-block">The date of flight departure</span>  
+              </div>
+
+
+              <label class="col-md-2 control-label text-black" for="name">Return Date</label>  
+              <div class="col-md-4">
+              <input id="return_date" name="returnDate" type="date" placeholder="Return Date" class="form-control input-md">
+              <span class="help-block">Enter the return flight date (If return is required)</span>  
+              </div>
+            
+
+            </div><!-- form group-->
+
+            <div class="form-group">
+              <div class="row">
+
+            
+                <div class="col-xs-12">
+
+                  <label class="col-md-2 control-label text-black" for="num_adult_tickets">Number of adult tickets</label>  
+                  <div class="col-md-2">
+                  <input name="departureDate" id="num_adult_tickets" type="number" value="1" class="form-control input-sm" required="">
+                  </div>
+
+                  <label class="col-md-2 control-label text-black" for="num_child_tickets">Number of child tickets</label>  
+                  <div class="col-md-2">
+                  <input id="num_child_tickets" type="number" class="form-control input-sm" value="0" required="">
+                  </div>
+                
+                  <label class="col-md-2 control-label text-black" for="num_infant_tickets">Number of infant tickets</label>  
+                  <div class="col-md-2">
+                  <input id="num_infant_tickets" type="number" class="form-control input-sm" value="0" required="">
+                  </div>
+                </div
+
+              </div>
+            </div>
+       
           
-        </ul>
+     
+            </div><!--input group-->
+            <button type="submit" style="display:hidden"></button>
+                  </fieldset>
+            </form>
+  
+      
+            <ul id="flightResults" class="list-group" style="overflow:scroll;">
+              
+            </ul>
         </div><!--panel body-->
-	</div>
-</div>
+        </div>
+      </div>
 
       </div>
       <div class="modal-footer">

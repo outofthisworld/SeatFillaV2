@@ -158,8 +158,16 @@ $(document).ready(function() {
                 console.log('user position:' + JSON.stringify(sf_map.position));
                 console.log('user location: ' + JSON.stringify(sf_map.location));
 
+                /* If we dont have the correct dates, submit the form to show native HTML5 errors */
+                var $datesForm = $('#datesForm')
+                if (!$datesForm[0].checkValidity()) {
+                    $datesForm.find(':submit').click()
+                    _button.removeClass('m-progress');
+                    return;
+                }
+
                 const departure = $('#departure_date').val();
-                const arrival = $('#arrival_date').val();
+                const arrival = $('#return_date').val();
                 const numChildTickets = $('#num_child_tickets').val();
                 const numAdultTickets = $('#num_adult_tickets').val();
                 const numInfantTickets = $('#num_infant_tickets').val();
@@ -170,8 +178,6 @@ $(document).ready(function() {
                     data: {
                         origin,
                         destination: data,
-                        //destinationAirportLocation: result.destinationAirportLocation,
-                        // originAirportLocation: result.originAirportLocation,
                         userPosition: sf_map.position,
                         userLocation: sf_map.location,
                         userLocale: window.seatfilla.globals.getFirstBrowserLanguage(),

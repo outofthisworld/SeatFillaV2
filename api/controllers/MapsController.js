@@ -219,11 +219,11 @@ module.exports = {
                     return resolve(res.json(ResponseStatus.OK, { result: result, cityImages: arr }));
                 }).catch(function(err) {
                     sails.log.debug(err.message + ' ' + JSON.stringify(err));
-                    return reject(ResponseStatus.OK, { result: result, error: err , errorType:'gettyImageServiceRequest' });
+                    return reject(ResponseStatus.OK, { result: result, error: err, errorType: 'gettyImageServiceRequest' });
                 });
             }).catch(function(error) {
                 sails.log.debug('Error in maps controller ' + JSON.stringify(error));
-                return reject(res.json(ResponseStatus.OK, { errors: error.error, errorType:'livePricingApiRequest' }));
+                return reject(res.json(ResponseStatus.OK, { errors: error.error, errorType: 'livePricingApiRequest' }));
             });
 
         });

@@ -185,7 +185,7 @@ $(document).ready(function() {
 
                 $.ajax({
                     type: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo.method,
-                    url: '/maps/retrieveFlightInfo',
+                    url: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo.url,
                     data: {
                         origin,
                         destination: data,
@@ -213,45 +213,57 @@ $(document).ready(function() {
                             obj.Itineraries.forEach(function(itin, index) {
                                 const image = (cityImages && cityImages[index] && cityImages[index].image) || '';
 
-                                const panelInfo = $('<div></div>', { class: 'panel panel-info' });
-                                const panelContent = $('<div></div>', { class: 'panel panel-content' });
-                                const panelContent2 = $('<div></div>', { class: 'panel panel-content' });
-                                const row = $('<div></div>', { 'class': 'row' });
-                                const col2 = $('<div></div>', { 'class': 'col-xs-2' });
-                                const gettyImg = $('<img></img>').attr('height', '100px').attr('width', '100px').css({ 'width': '200px', 'height': '150px', 'min-width': '100px', 'min-height': '100px', 'margin-left': '20px' }).attr('src', image).attr('class', 'img img-responsive img-thumbnail');
-                                const col10 = $('<div></div>', { 'class': 'col-xs-10' }).text(JSON.stringify(itin));
-                                const panelFooter = $('<div></div>', { 'class': 'panel-footer' });
-                                const getBookingDetailsButton = $('<input/>', {
+                                const $dropDownContent = $('<div></div>', { id: 'detail-' + index, }).append($('<div></div>', { class: 'fluid-row', }).text('booking details'));
+                                const $liEle = $('<li></li>', { class: 'list-group-item', });
+                                const $panelInfo = $('<div></div>', { class: 'panel panel-info' });
+                                const $panelContent = $('<div></div>', { class: 'panel panel-content' });
+                                const $panelContent2 = $('<div></div>', { class: 'panel panel-content' });
+                                const $row = $('<div></div>', { 'class': 'row' });
+                                const $col2 = $('<div></div>', { 'class': 'col-xs-2' });
+                                const $gettyImg = $('<img></img>').attr('height', '100px').attr('width', '100px').css({ 'width': '200px', 'height': '150px', 'min-width': '100px', 'min-height': '100px', 'margin-left': '20px' }).attr('src', image).attr('class', 'img img-responsive img-thumbnail');
+                                const $col10 = $('<div></div>', { 'class': 'col-xs-10' }).text(JSON.stringify(itin));
+                                const $panelFooter = $('<div></div>', { 'class': 'panel-footer' }).css({ 'min-height': '50px' });
+                                const $getBookingDetailsButton = $('<input/>', {
                                     value: 'Get booking details',
                                     type: 'button',
                                     class: 'btn  btn-info btn-sm pull-right',
                                     'data-toggle': 'detail-' + index,
+                                    'data-attr-booking-link': '',
                                     on: {
                                         click: function() {
+                                            $('#notification').attr('opened', 'true').attr('text', 'Booking details will be loaded shortly');
                                             $input = $(this);
                                             $target = $('#' + $input.attr('data-toggle'));
-                                            $target.slideToggle();
+                                            const bookingDetailsLink = $(this).attr('data-attr-booking-link');
+                                            $input.addClass('m-progress');
+                                            $.ajax({
+                                                type: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo.method,
+                                                url: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo.url,
+                                                data: {
+                                                    bookingDetailsLink
+                                                },
+                                                success: function(response, x, xhr) {
+                                                    if (xhr.status == 200) {
+                                                        $target.slideToggle('slow', function() {
+                                                            $input.removeClass('m-progress');
+                                                        });
+                                                    } else {
+                                                        alert(response);
+                                                    }
+                                                }
+                                            });
+
                                         }
                                     }
                                 });
 
-                                const dropDownContent = $('<div></div>', {
-                                    id: 'detail-' + index,
-                                }).append($('<div></div>', {
-                                    class: 'fluid-row',
-                                }).text('booking details'));
-
-                                const liEle = $('<li></li>', {
-                                    class: 'list-group-item',
-                                })
-
-                                panelContent.append(row.append(col2.append(gettyImg)).append(col10));
-                                panelInfo.append(panelContent);
-                                panelInfo.append(dropDownContent);
-                                panelFooter.append(getBookingDetailsButton);
-                                panelInfo.append(panelFooter);
-                                liEle.append(panelInfo);
-                                $('#flightResults').append(liEle);
+                                $panelContent.append($row.append($col2.append($gettyImg)).append($col10));
+                                $panelInfo.append($panelContent);
+                                $panelInfo.append($dropDownContent);
+                                $panelFooter.append($getBookingDetailsButton);
+                                $panelInfo.append($panelFooter);
+                                $liEle.append($panelInfo);
+                                $('#flightResults').append($liEle);
 
                             });
                         }
@@ -308,8 +320,6 @@ $(document).ready(function() {
                     console.log(err || location);
                 });
                 */
-
-        var count = 0;
 
         function populate(query, $element, options) {
             const option = $('<option></option>');
@@ -416,10 +426,7 @@ $(document).ready(function() {
                                         airportLocation: country.Cities[key].Airports[airportIndex].Location
                                     });
 
-                                if (count == 0) {
-                                    console.log(airportMarker.data);
-                                    count++;
-                                }
+
                                 //Add the marker to the map.
                                 sf_map.addMarker(airportMarker);
                             }

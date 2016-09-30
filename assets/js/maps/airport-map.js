@@ -118,8 +118,6 @@ $(document).ready(function() {
 
             const airportPos = JSON.parse($selectedOriginAirport.attr('value'));
 
-            airportData.Continents[continentIdx].Id
-            airportData.Continents[continentIdx].Name
             const countryName = country.Name;
             const countryId = country.Id;
             const currency = country.CurrencyId
@@ -147,18 +145,19 @@ $(document).ready(function() {
                 airportLocation: airportData.Continents[continentIdx].Countries[countryIdx].Cities[cityIdx].Airports[airportIdx].Location
             });
 
+            var now = new Date();
+            var day = ("0" + now.getDate()).slice(-2);
+            var month = ("0" + (now.getMonth() + 1)).slice(-2);
+            var today = now.getFullYear() + "-" + (month) + "-" + (day);
+
+            $('#departure_date').attr('min', today).val(today);
+
             function handleClick() {
+
                 $("#flightResults").html("");
+
                 _button = $(this);
                 _button.addClass('m-progress');
-                var data = marker.data;
-
-                console.log(data);
-
-                console.log('destination data: ' + JSON.stringify(data));
-                console.log('origin data:' + JSON.stringify(origin));
-                console.log('user position:' + JSON.stringify(sf_map.position));
-                console.log('user location: ' + JSON.stringify(sf_map.location));
 
                 /* If we dont have the correct dates, submit the form to show native HTML5 errors */
                 var $datesForm = $('#datesForm')
@@ -168,11 +167,21 @@ $(document).ready(function() {
                     return;
                 }
 
+                const data = marker.data;
+
+                console.log(data);
+                console.log('destination data: ' + JSON.stringify(data));
+                console.log('origin data:' + JSON.stringify(origin));
+                console.log('user position:' + JSON.stringify(sf_map.position));
+                console.log('user location: ' + JSON.stringify(sf_map.location));
+
                 const departure = $('#departure_date').val();
                 const arrival = $('#return_date').val();
                 const numChildTickets = $('#num_child_tickets').val();
                 const numAdultTickets = $('#num_adult_tickets').val();
                 const numInfantTickets = $('#num_infant_tickets').val();
+                const prefferedCabinClass = $("#cabin_class").val();
+                const groupPricing = $("#group_pricing").val();
 
                 $.ajax({
                     type: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo.method,
@@ -184,7 +193,9 @@ $(document).ready(function() {
                         userLocation: sf_map.location,
                         userLocale: window.seatfilla.globals.getFirstBrowserLanguage(),
                         ticketInfo: { numAdultTickets, numChildTickets, numInfantTickets },
-                        dateInfo: { departure, arrival }
+                        dateInfo: { departure, arrival },
+                        prefferedCabinClass,
+                        groupPricing
                     },
                     success: function(response) {
                         if ((response.errors || response.error) && response.errorType != 'gettyImageServiceRequest') {
@@ -221,8 +232,8 @@ $(document).ready(function() {
                                             class: 'col-xs-12 text-center',
                                         }).append(
                                             $('<div></div>', { class: 'panel panel-info container-fluid' })))
-                                    .append($('<div></div>', { class: 'panel panel-content col-xs-10' }).append(
-                                        $('<img></img>').attr('height', '100px').attr('width', '100px').css({ 'width': '200px', 'height': '150px', 'min-width': '100px', 'min-height': '100px' })
+                                    .append($('<div></div>', { class: 'panel panel-content' }).append(
+                                        $('<img></img>').attr('height', '100px').attr('width', '100px').css({ 'width': '200px', 'height': '150px', 'min-width': '100px', 'min-height': '100px', 'margin-left': '20px' })
                                         .attr('src', image).attr('class', 'img img-responsive img-thumbnail')))
                                     .append($('<input/>', { value: 'Get booking details', type: 'button', class: 'btn  btn-info btn-sm pull-right', 'data-toggle': 'detail-' + index })
                                         .text('Item-Name')

@@ -182,7 +182,7 @@ module.exports = {
             obj.outbounddate = (req.body.dates && req.body.dates.departure) || (new Date().toISOString().slice(0, 10));
             obj.inbounddate = (req.body.dates && req.body.dates.arrival) || null;
             obj.locationschema = SkyScannerFlightService.locationschemas.Iata;
-            obj.cabinclass = req.body.prefferedCabinClass || SkyScannerFlightService.cabinclasses.Economy;
+            obj.cabinclass = SkyScannerFlightService.cabinclasses[req.body.prefferedCabinClass] || SkyScannerFlightService.cabinclasses.Economy;
             obj.adults = (req.body.ticketInfo && req.body.ticketInfo.numAdultTickets) || 1;
             obj.children = (req.body.ticketInfo && req.body.ticketInfo.numChildTickets) || 0;
             obj.infants = (req.body.ticketInfo && req.body.ticketInfo.numInfantTickets) || 0;
@@ -219,11 +219,11 @@ module.exports = {
                     return resolve(res.json(ResponseStatus.OK, { result: result, cityImages: arr }));
                 }).catch(function(err) {
                     sails.log.debug(err.message + ' ' + JSON.stringify(err));
-                    return reject(ResponseStatus.OK, { result: result, error: err });
+                    return reject(ResponseStatus.OK, { result: result, error: err , errorType:'gettyImageServiceRequest' });
                 });
             }).catch(function(error) {
                 sails.log.debug('Error in maps controller ' + JSON.stringify(error));
-                return reject(res.json(ResponseStatus.OK, { errors: error.error }));
+                return reject(res.json(ResponseStatus.OK, { errors: error.error, errorType:'livePricingApiRequest' }));
             });
 
         });

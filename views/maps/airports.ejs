@@ -123,7 +123,7 @@
 	<div class="panel panel-info">
         <div class="panel-heading">
             <p>You're nearly there! we just need a little more information.</p>
-             <hr/><br/>
+            <br/>
         </div>
         <div class="panel-content">
         <form id="datesForm" class="form-horizontal container80">
@@ -136,7 +136,7 @@
               <label class="col-md-2 control-label text-black" for="name">Departure Date</label>  
               <div class="col-md-4">
               <input name="departureDate" id="departure_date" type="date" placeholder="Departure Date" class="form-control input-md" required="">
-              <span class="help-block">The date of flight departure</span>  
+              <span class="help-block">The departure date of the flight (Must be today, or in the future)</span>  
               </div>
 
 
@@ -148,6 +148,29 @@
             
 
             </div><!-- form group-->
+                   <hr/><br/>
+
+             <div class="form-group">
+
+                <label class="col-md-2 control-label text-black" for="name">Cabin class</label>  
+                <div class="col-md-4">
+                <select name="cabinClass" id="cabin_class"  class="form-control input-md" required="">
+                  <option value="Economy" selected="">Economy class</option>
+                  <option value="PremiumEconomy"> Premium Economy class</option>
+                  <option value="Business">Business class</option>
+                  <option value="First">First class</option>
+                </select>
+                <span class="help-block">The cabin class required when flying.</span>  
+                </div>
+
+                <label class="col-md-2 control-label text-black" for="name">Group pricing</label>  
+                <div class="col-md-4">
+                <input id="group_pricing" name="groupPricing" type="checkbox" placeholder="Return Date" class="form-control input-md">
+                <span class="help-block">If checked, the result prices will be the total for all tickets rather than one adult.</span>  
+                </div>
+            
+             </div>
+             <hr/><br/>
 
             <div class="form-group">
               <div class="row">
@@ -201,7 +224,6 @@
 <script type="text/javascript" src="/bower_components/geolocator/dist/geolocator.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDBWrH7DuCZ8wNlOXgINCtI_gT9NkDRq4"></script>
 <script type="text/javascript" src="/js/maps/sf-map.js"></script>
-<script type="text/javascript" src="/js/maps/airport-data.js"></script>
 <script type="text/javascript" src="/js/maps/airport-data2.js"></script>
 <script type="text/javascript" src="/js/maps/airport-map.js"></script>
   </body>

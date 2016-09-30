@@ -212,50 +212,47 @@ $(document).ready(function() {
 
                             obj.Itineraries.forEach(function(itin, index) {
                                 const image = (cityImages && cityImages[index] && cityImages[index].image) || '';
-                                console.log(image);
-                                const liEle = $('<li></li>', {
 
-                                    class: 'list-group-item',
-                                }).append(
-                                    $('<div></div>', {
-                                        class: 'row toggle',
-                                        'data-toggle': 'detail-' + index,
-                                        on: {
-                                            click: function() {
-                                                $input = $(this);
-                                                $target = $('#' + $input.attr('data-toggle'));
-                                                $target.slideToggle();
-                                            }
+                                const panelInfo = $('<div></div>', { class: 'panel panel-info' });
+                                const panelContent = $('<div></div>', { class: 'panel panel-content' });
+                                const panelContent2 = $('<div></div>', { class: 'panel panel-content' });
+                                const row = $('<div></div>', { 'class': 'row' });
+                                const col2 = $('<div></div>', { 'class': 'col-xs-2' });
+                                const gettyImg = $('<img></img>').attr('height', '100px').attr('width', '100px').css({ 'width': '200px', 'height': '150px', 'min-width': '100px', 'min-height': '100px', 'margin-left': '20px' }).attr('src', image).attr('class', 'img img-responsive img-thumbnail');
+                                const col10 = $('<div></div>', { 'class': 'col-xs-10' }).text(JSON.stringify(itin));
+                                const panelFooter = $('<div></div>', { 'class': 'panel-footer' });
+                                const getBookingDetailsButton = $('<input/>', {
+                                    value: 'Get booking details',
+                                    type: 'button',
+                                    class: 'btn  btn-info btn-sm pull-right',
+                                    'data-toggle': 'detail-' + index,
+                                    on: {
+                                        click: function() {
+                                            $input = $(this);
+                                            $target = $('#' + $input.attr('data-toggle'));
+                                            $target.slideToggle();
                                         }
-                                    }).append(
-                                        $('<div></div>', {
-                                            class: 'col-xs-12 text-center',
-                                        }).append(
-                                            $('<div></div>', { class: 'panel panel-info container-fluid' })))
-                                    .append($('<div></div>', { class: 'panel panel-content' }).append(
-                                        $('<img></img>').attr('height', '100px').attr('width', '100px').css({ 'width': '200px', 'height': '150px', 'min-width': '100px', 'min-height': '100px', 'margin-left': '20px' })
-                                        .attr('src', image).attr('class', 'img img-responsive img-thumbnail')))
-                                    .append($('<input/>', { value: 'Get booking details', type: 'button', class: 'btn  btn-info btn-sm pull-right', 'data-toggle': 'detail-' + index })
-                                        .text('Item-Name')
-                                        .append($('<i></i>', {
-                                            class: 'fa fa-chevron-down pull-right',
-                                        })))
+                                    }
+                                });
 
-                                ).append(
-                                    $('<div></div>', {
-                                        id: 'detail-' + index,
-                                    }).append($('<hr/>'))
-                                    .append(
-                                        $('<div></div>', {
-                                            class: 'container80'
-                                        }).append(
-                                            $('<div></div>', {
-                                                class: 'fluid-row',
-                                            }).text(JSON.stringify(itin))
-                                        )
-                                    )
-                                );
-                                $("#flightResults").append(liEle);
+                                const dropDownContent = $('<div></div>', {
+                                    id: 'detail-' + index,
+                                }).append($('<div></div>', {
+                                    class: 'fluid-row',
+                                }).text('booking details'));
+
+                                const liEle = $('<li></li>', {
+                                    class: 'list-group-item',
+                                })
+
+                                panelContent.append(row.append(col2.append(gettyImg)).append(col10));
+                                panelInfo.append(panelContent);
+                                panelInfo.append(dropDownContent);
+                                panelFooter.append(getBookingDetailsButton);
+                                panelInfo.append(panelFooter);
+                                liEle.append(panelInfo);
+                                $('#flightResults').append(liEle);
+
                             });
                         }
 

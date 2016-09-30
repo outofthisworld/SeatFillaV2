@@ -176,7 +176,7 @@ const exportObj = {
         retrieveItin(urlEndpoint, obj) {
             return new Promise((resolve, reject) => {
                 if (!obj || !urlEndpoint) {
-                    return reject(ErrorUtils.createNewError('Invalid parameters when calling retrieve itin ', arguments));
+                    return reject(new Error('Invalid parameters when calling retrieve itin '));
                 }
 
                 obj.apiKey = apiKey;
@@ -185,6 +185,7 @@ const exportObj = {
                 const queryString = querystring.stringify(obj);
 
                 const _this = this;
+                var failCount = 0;
                 request({
                     headers: {
                         'Accept': 'application/json'
@@ -192,13 +193,30 @@ const exportObj = {
                     uri: urlEndpoint + '?' + (queryString || ''),
                     method: 'GET'
                 }, function(err, res, body) {
-                    if (err) return reject(ErrorUtils.createNewError('Error recieved via request in retrieveItin', arguments, err))
-                
-                    if (res.body.Status == 'UpdatesPending' || !body) {
-                        return _this.retrieveItin(res.body.url, obj);
-                    } else {
-                        return resolve(res.body);
+                    if (err) return reject(err)
+
+                    try {
+
+                        const bd = JSON.parse(res.body);
+
+                        if (!bd.SessionKey) {
+                            console.log('Response body: ' + res.body);
+                            return resolve(_this.retrieveItin(urlEndpoint, obj));
+                        } else if (res.body.Status == 'UpdatesPending') {
+                            return resolve(_this.retrieveItin(urlEndpoint, obj));
+                        } else {
+                            return resolve(res.body);
+                        }
+
+                    } catch (err) {
+                        if (failCount < 3) {
+                            failCount++;
+                            return resolve(_this.retrieveItin(urlEndpoint, obj));
+                        } else {
+                            return reject(err);
+                        }
                     }
+
                 });
             });
         },
@@ -208,11 +226,11 @@ const exportObj = {
             return new Promise((resolve, reject) => {
                 _this.obtainSessionKey(sessionKeyObj).then((result) => {
                     console.log('recieved url from obtain session key: ' + result.url)
-                    if(!result.url) return Promise.reject(new Error('Could not obtain session key from our services'));
+                    if (!result.url) return Promise.reject(new Error('Could not obtain session key from our services'));
                     _this.retrieveItin(result.url, itinObj).then((result) => {
                         return resolve(result);
                     }).catch((err) => {
-                        sails.log.debug('Error retrieving itin ' + JSON.stringify(err));
+                        sails.log.debug('Error retrieving itin ' + JSON.stringify(err) + err.message);
                         return reject(err);
                     });
                 }).catch((err) => {

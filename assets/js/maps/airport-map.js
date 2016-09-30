@@ -1,3 +1,11 @@
+/*
+    Logic for the airport map.
+
+    Created by Dale.
+
+*/
+
+
 $(document).ready(function() {
 
     (function initMap(options) {
@@ -203,6 +211,7 @@ $(document).ready(function() {
                             window.alert(JSON.stringify(response.errors));
                         } else {
                             const obj = response.result;
+
                             console.log(response.result);
                             $("#flightResults").html("");
                             $("#flightResults").append(
@@ -211,6 +220,34 @@ $(document).ready(function() {
                             const cityImages = response.cityImages || null;
 
                             obj.Itineraries.forEach(function(itin, index) {
+
+                                /*Origin Station information*/
+                                const originStationId = itin.OriginStation.Id;
+                                const originStationName = itin.OriginStation.Name;
+                                const originStationCode = itin.OriginStation.Code;
+                                const originStationType = itin.OriginStation.Type;
+                                const originStationParentId = itin.OriginState.ParentId;
+
+                                /*Destination station information*/
+                                const destinationStationId = itin.OriginStation.Id;
+                                const destinationStationName = itin.OriginStation.Name;
+                                const destinationtationCode = itin.OriginStation.Code;
+                                const destinationStationType = itin.OriginStation.Type;
+                                const destinationStationParentId = itin.OriginState.ParentId;
+
+                                /*Booking information*/
+                                const bookingDetailsLink = itin.BookingDetailsLink.Uri;
+                                const body = itin.BookingDetailsLink.Body;
+                                const method = itin.BookingDetailsLink.Method;
+
+                                /*Itinery information*/
+                                const departureDate = itin.Departure;
+                                const arrivalDate = itin.Arrival;
+                                const flightDUration = itin.Duration;
+                                const journeyMode = itin.JourneyMode;
+                                const stopsArr = itin.Stops;
+                                const carriers = itin.Carriers;
+
                                 const image = (cityImages && cityImages[index] && cityImages[index].image) || '';
 
                                 const $dropDownContent = $('<div></div>', { id: 'detail-' + index, }).append($('<div></div>', { class: 'fluid-row', }).text('booking details'));
@@ -228,19 +265,21 @@ $(document).ready(function() {
                                     type: 'button',
                                     class: 'btn  btn-info btn-sm pull-right',
                                     'data-toggle': 'detail-' + index,
-                                    'data-attr-booking-link': '',
                                     on: {
                                         click: function() {
                                             $('#notification').attr('opened', 'true').attr('text', 'Booking details will be loaded shortly');
                                             $input = $(this);
                                             $target = $('#' + $input.attr('data-toggle'));
-                                            const bookingDetailsLink = $(this).attr('data-attr-booking-link');
+
                                             $input.addClass('m-progress');
                                             $.ajax({
-                                                type: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo.method,
-                                                url: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo.url,
+                                                type: window.seatfilla.globals.site.endpoints.maps.retrieveBookingDetails.method,
+                                                url: window.seatfilla.globals.site.endpoints.maps.retrieveBookingDetails.url,
                                                 data: {
-                                                    bookingDetailsLink
+                                                    sessionkey: obj.SessionKey,
+                                                    outboundLegId: obj.OutboundLegId.Id,
+                                                    inboundLegId: obj.OutboundLegId.Id,
+                                                    bookingDetailsLink: obj.bookingDetailsLink
                                                 },
                                                 success: function(response, x, xhr) {
                                                     if (xhr.status == 200) {

@@ -17,7 +17,11 @@ window.seatfilla.globals.site = {
         maps: {
             retrieveFlightInfo: {
                 method: 'POST',
-                URL: '/maps/retrieveFlightInfo'
+                url: '/maps/retrieveFlightInfo'
+            },
+            retrieveBookingDetails: {
+                method: 'POST',
+                url: '/maps/retrieveBookingDetails'
             },
             retrieveHotelInfo: {
 

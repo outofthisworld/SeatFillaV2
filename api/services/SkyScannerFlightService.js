@@ -304,7 +304,7 @@ const exportObj = {
         pollBookingDetails(pollingUrl, obj) {
             return new Promise(function(resolve, reject) {
                 if (!obj || !pollingUrl) {
-                    return reject(ErrorUtils.createNewError('Invalid parameters when calling pollBookingDetails', arguments));
+                    return reject(new Error('Invalid parameters when calling pollBookingDetails'));
                 }
 
                 if (!obj.apiKey)
@@ -319,7 +319,7 @@ const exportObj = {
                     uri: pollingUrl + '?' + querystring,
                     method: 'GET'
                 }, function(err, res, body) {
-                    if (err) return reject(ErrorUtils.createNewError('Error in request response in pollBookingDetails ', arguments, err))
+                    if (err) return reject(new Error('Error in request response in pollBookingDetails '))
                     else return resolve({
                         body: res.body,
                         nextPollUrl: res.headers.location
@@ -340,9 +340,9 @@ const exportObj = {
                             console.log(nextPollUrl);
 
                             resolve(resolvedObj);
-                        }).catch((error) => reject(ErrorUtils.createNewError('Error occured polling booking details', arguments, error)))
+                        }).catch((error) => reject(new Error('Error occured polling booking details'))
                     }
-                ).catch((error) => reject(ErrorUtils.createNewError('Error occurred requesting booking details', arguments, error)));
+                ).catch((error) => reject(new Error('Error occurred requesting booking details')));
             });
         }
     }

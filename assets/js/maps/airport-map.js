@@ -221,32 +221,94 @@ $(document).ready(function() {
 
                             obj.Itineraries.forEach(function(itin, index) {
 
-                                /*Origin Station information*/
-                                const originStationId = itin.OriginStation.Id;
-                                const originStationName = itin.OriginStation.Name;
-                                const originStationCode = itin.OriginStation.Code;
-                                const originStationType = itin.OriginStation.Type;
-                                const originStationParentId = itin.OriginState.ParentId;
+                                /* Inbound and outbound leg ids */
+                                const outboundLegId = itin.OutboundLegId.id;
+                                const inboundLegId = itin.OutboundLegId.id;
 
-                                /*Destination station information*/
-                                const destinationStationId = itin.OriginStation.Id;
-                                const destinationStationName = itin.OriginStation.Name;
-                                const destinationtationCode = itin.OriginStation.Code;
-                                const destinationStationType = itin.OriginStation.Type;
-                                const destinationStationParentId = itin.OriginState.ParentId;
+                                /* outbound info */
+                                const o_originStationId = itin.OutboundLegId.OriginStation.Id;
+                                const o_originStationName = itin.OutboundLegId.OriginStation.Name;
+                                const o_originStationCode = itin.OutboundLegId.OriginStation.Code;
+                                const o_originStationType = itin.OutboundLegId.OriginStation.Type;
+                                const o_originStationParentId = itin.OutboundLegId.OriginStation.ParentId;
 
-                                /*Booking information*/
+                                const o_destinationStationId = itin.OutboundLegId.OriginStation.Id;
+                                const o_destinationStationName = itin.OutboundLegId.OriginStation.Name;
+                                const o_destinationtationCode = itin.OutboundLegId.OriginStation.Code;
+                                const o_destinationStationType = itin.OutboundLegId.OriginStation.Type;
+                                const o_destinationStationParentId = itin.OutboundLegId.OriginState.ParentId;
+
+                                const o_departureDate = itin.OutboundLegId.Departure;
+                                const o_arrivalDate = itin.OutboundLegId.Arrival;
+                                const o_duration = itin.OutboundLegId.Duration;
+                                const o_journeyMode = itin.OutboundLegId.JourneyMode;
+                                const o_stops = itin.OutboundLegId.Stops;
+                                const o_numStops = o.stops.Length;
+
+                                /*
+                                {
+                                    "FlightNumber": "1463",
+                                    "CarrierId": 881,
+                                    "Carrier": {
+                                        "Id": 881,
+                                        "Code": "BA",
+                                        "Name": "British Airways",
+                                        "ImageUrl": "http://s1.apideeplink.com/images/airlines/BA.png",
+                                        "DisplayCode": "BA"
+                                    }
+                                }
+                                */
+                                const o_flightAndCarrierDataArray = itin.OutboundLegId.FlightNumbers;
+
+
+                                /* inbound info */
+                                const i_originStationId = itin.InboundLegId.OriginStation.Id;
+                                const i_originStationName = itin.InboundLegId.OriginStation.Name;
+                                const i_originStationCode = itin.InboundLegId.OriginStation.Code;
+                                const i_originStationType = itin.InboundLegId.OriginStation.Type;
+                                const i_originStationParentId = itin.InboundLegId.OriginStation.ParentId;
+
+                                const i_destinationStationId = itin.InboundLegId.OriginStation.Id;
+                                const i_destinationStationName = itin.InboundLegId.OriginStation.Name;
+                                const i_destinationtationCode = itin.InboundLegId.OriginStation.Code;
+                                const i_destinationStationType = itin.InboundLegId.OriginStation.Type;
+                                const i_destinationStationParentId = itin.InboundLegId.OriginState.ParentId;
+
+                                const i_departureDate = itin.InboundLegId.Departure;
+                                const i_arrivalDate = itin.InboundLegId.Arrival;
+                                const i_duration = itin.InboundLegId.Duration;
+                                const i_journeyMode = itin.InboundLegId.JourneyMode;
+                                const i_stops = itin.InboundLegId.Stops;
+                                const i_numStops = i.stops.Length;
+
+                                /*
+                                {
+                                    "FlightNumber": "1463",
+                                    "CarrierId": 881,
+                                    "Carrier": {
+                                        "Id": 881,
+                                        "Code": "BA",
+                                        "Name": "British Airways",
+                                        "ImageUrl": "http://s1.apideeplink.com/images/airlines/BA.png",
+                                        "DisplayCode": "BA"
+                                    }
+                                }
+                                */
+                                const i_flightAndCarrierDataArray = itin.InboundLegId.FlightNumbers;
+
+
+
+                                /*Itinerary information*/
+
+                                const pricingOptions = itin.PricingOptions;
+
                                 const bookingDetailsLink = itin.BookingDetailsLink.Uri;
                                 const body = itin.BookingDetailsLink.Body;
                                 const method = itin.BookingDetailsLink.Method;
+                                const formattedData = itin.FormattedData;
 
-                                /*Itinery information*/
-                                const departureDate = itin.Departure;
-                                const arrivalDate = itin.Arrival;
-                                const flightDUration = itin.Duration;
-                                const journeyMode = itin.JourneyMode;
-                                const stopsArr = itin.Stops;
-                                const carriers = itin.Carriers;
+
+
 
                                 const image = (cityImages && cityImages[index] && cityImages[index].image) || '';
 
@@ -254,6 +316,7 @@ $(document).ready(function() {
                                 const $liEle = $('<li></li>', { class: 'list-group-item', });
                                 const $panelInfo = $('<div></div>', { class: 'panel panel-info' });
                                 const $panelContent = $('<div></div>', { class: 'panel panel-content' });
+
                                 const $panelContent2 = $('<div></div>', { class: 'panel panel-content' });
                                 const $row = $('<div></div>', { 'class': 'row' });
                                 const $col2 = $('<div></div>', { 'class': 'col-xs-2' });
@@ -277,8 +340,8 @@ $(document).ready(function() {
                                                 url: window.seatfilla.globals.site.endpoints.maps.retrieveBookingDetails.url,
                                                 data: {
                                                     sessionkey: obj.SessionKey,
-                                                    outboundLegId: obj.OutboundLegId.Id,
-                                                    inboundLegId: obj.OutboundLegId.Id,
+                                                    outboundLegId,
+                                                    inboundLegId,
                                                     bookingDetailsLink: obj.bookingDetailsLink
                                                 },
                                                 success: function(response, x, xhr) {
@@ -295,6 +358,22 @@ $(document).ready(function() {
                                         }
                                     }
                                 });
+
+                                const $col5_1 = ('</div></div>', { 'class': 'col-xs-5' }).append(
+                                    $('<h2></h2>').text('Departure information')
+                                ).append(
+                                    $('<p></p>').text('Origin Airport: ' + o_originStationName)
+                                ).append(
+                                     $('<p></p>').text('Origin Airport: ' + o_originStationName)
+                                )
+
+                                const $col5_2 = ('</div></div>', { 'class': 'col-xs-5' }).append(
+                                             $('<h2></h2>').text('Departure information')
+                                );
+
+                                const $row2 = $('<div></div>', { 'class': 'row' });
+                                const $col6_1 = ('</div></div>', { 'class': 'col-xs-6' });
+                                const $col6_2 = ('</div></div>', { 'class': 'col-xs-6' });
 
                                 $panelContent.append($row.append($col2.append($gettyImg)).append($col10));
                                 $panelInfo.append($panelContent);

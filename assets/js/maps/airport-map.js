@@ -308,8 +308,6 @@ $(document).ready(function() {
                                 const formattedData = itin.FormattedData;
 
 
-
-
                                 const image = (cityImages && cityImages[index] && cityImages[index].image) || '';
 
                                 const $dropDownContent = $('<div></div>', { id: 'detail-' + index, }).append($('<div></div>', { class: 'fluid-row', }).text('booking details'));
@@ -321,7 +319,7 @@ $(document).ready(function() {
                                 const $row = $('<div></div>', { 'class': 'row' });
                                 const $col2 = $('<div></div>', { 'class': 'col-xs-2' });
                                 const $gettyImg = $('<img></img>').attr('height', '100px').attr('width', '100px').css({ 'width': '200px', 'height': '150px', 'min-width': '100px', 'min-height': '100px', 'margin-left': '20px' }).attr('src', image).attr('class', 'img img-responsive img-thumbnail');
-                                const $col10 = $('<div></div>', { 'class': 'col-xs-10' }).text(JSON.stringify(itin));
+                                const $col10 = $('<div></div>', { 'class': 'col-xs-10' }) //.text(JSON.stringify(itin));
                                 const $panelFooter = $('<div></div>', { 'class': 'panel-footer' }).css({ 'min-height': '50px' });
                                 const $getBookingDetailsButton = $('<input/>', {
                                     value: 'Get booking details',
@@ -359,23 +357,44 @@ $(document).ready(function() {
                                     }
                                 });
 
-                                const $col5_1 = ('</div></div>', { 'class': 'col-xs-5' }).append(
-                                    $('<h2></h2>').text('Departure information')
+                                const $row2 = $('<div></div>', { 'class': 'row' });
+
+                                //Outbound flight information
+                                const $col5_1 = $('</div></div>', { 'class': 'col-xs-5' }).append(
+                                    $('<h2></h2>').text('Flight Departure Information (Outbound)')
                                 ).append(
                                     $('<p></p>').text('Origin Airport: ' + o_originStationName)
                                 ).append(
-                                     $('<p></p>').text('Origin Airport: ' + o_originStationName)
-                                )
-
-                                const $col5_2 = ('</div></div>', { 'class': 'col-xs-5' }).append(
-                                             $('<h2></h2>').text('Departure information')
+                                    $('<p></p>').text('Destination Airport: ' + o_destinationStationName)
+                                ).append(
+                                    $('<p></p>').text('Departure Date: ' + o_departureDate)
+                                ).append(
+                                    $('<p></p>').text('Arrival Date: ' + o_arrivalDate)
+                                ).append(
+                                    $('<p></p>').text('Number of stops: ' + o_numStops)
                                 );
 
-                                const $row2 = $('<div></div>', { 'class': 'row' });
+                                //Inbound flight information
+                                const $col5_2 = $('</div></div>', { 'class': 'col-xs-5' }).append(
+                                    $('<h2></h2>').text('Return Flight Information (Inbound)')
+                                ).append(
+                                    $('<p></p>').text('Origin Airport: ' + i_originStationName)
+                                ).append(
+                                    $('<p></p>').text('Destination Airport: ' + i_destinationStationName)
+                                ).append(
+                                    $('<p></p>').text('Departure Date: ' + i_departureDate)
+                                ).append(
+                                    $('<p></p>').text('Arrival Date: ' + i_arrivalDate)
+                                ).append(
+                                    $('<p></p>').text('Number of stops: ' + i_numStops)
+                                );
+
+
+                                const $row3 = $('<div></div>', { 'class': 'row' });
                                 const $col6_1 = ('</div></div>', { 'class': 'col-xs-6' });
                                 const $col6_2 = ('</div></div>', { 'class': 'col-xs-6' });
 
-                                $panelContent.append($row.append($col2.append($gettyImg)).append($col10));
+                                $panelContent.append($row.append($col2.append($gettyImg)).append($col10.append($row2.append($col5_1).append($col5_2))));
                                 $panelInfo.append($panelContent);
                                 $panelInfo.append($dropDownContent);
                                 $panelFooter.append($getBookingDetailsButton);

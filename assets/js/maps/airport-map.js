@@ -219,94 +219,70 @@ $(document).ready(function() {
 
                             const cityImages = response.cityImages || null;
 
-                            obj.Itineraries.forEach(function(itin, index) {
+                            const mapItin = function(itin, legId) {
+                                const bookingDetailsUri = itin.BookingDetailsLink.Uri;
+                                const bookingDetailsBody = itin.BookingDetailsLink.Body;
+                                const bookingDetailsMethod = itin.BookingDetailsLink.Method;
 
-                                /* Inbound and outbound leg ids */
-                                const outboundLegId = itin.OutboundLegId.id;
-                                const inboundLegId = itin.OutboundLegId.id;
+                                itin.PricingOptions.map((pricingOption) => {
+                                    pricingOption.Agents = pricingOption.Agents.map((agentId) => {
+                                        const agents = itin.Agents.filter((agent) => {
+                                            agent.Id = agentId;
+                                        });
+                                        return agents;
+                                    });
+                                    return pricingOption;
+                                });
 
-                                /* outbound info */
-                                const o_originStationId = itin.OutboundLegId.OriginStation.Id;
-                                const o_originStationName = itin.OutboundLegId.OriginStation.Name;
-                                const o_originStationCode = itin.OutboundLegId.OriginStation.Code;
-                                const o_originStationType = itin.OutboundLegId.OriginStation.Type;
-                                const o_originStationParentId = itin.OutboundLegId.OriginStation.ParentId;
+                                //atm outbound legs
+                                itin.Legs.filter(function(leg) {
+                                    return leg.Id == legId;
+                                }).map(function(leg) {
 
-                                const o_destinationStationId = itin.OutboundLegId.OriginStation.Id;
-                                const o_destinationStationName = itin.OutboundLegId.OriginStation.Name;
-                                const o_destinationtationCode = itin.OutboundLegId.OriginStation.Code;
-                                const o_destinationStationType = itin.OutboundLegId.OriginStation.Type;
-                                const o_destinationStationParentId = itin.OutboundLegId.OriginState.ParentId;
+                                    leg.FlightNumbers = leg.FlightNumbers.map(function(flightNumberObj) {
+                                        const carrierId = flightNumberObj.CarrierId;
+                                        flightNumberObj.CarrierId = itin.Carriers.filter((carrier) => {
+                                            carrier.Id == carrierId;
+                                        });
+                                        return flightNumberObj;
+                                    });
 
-                                const o_departureDate = itin.OutboundLegId.Departure;
-                                const o_arrivalDate = itin.OutboundLegId.Arrival;
-                                const o_duration = itin.OutboundLegId.Duration;
-                                const o_journeyMode = itin.OutboundLegId.JourneyMode;
-                                const o_stops = itin.OutboundLegId.Stops;
-                                const o_numStops = o.stops.Length;
+                                    leg.SegmentIds = leg.SegmentIds.map(function(segmentId) {
+                                        return itin.Segments.filter(function(segment) {
+                                            segment.Id == segment;
+                                        });
+                                    });
 
-                                /*
-                                {
-                                    "FlightNumber": "1463",
-                                    "CarrierId": 881,
-                                    "Carrier": {
-                                        "Id": 881,
-                                        "Code": "BA",
-                                        "Name": "British Airways",
-                                        "ImageUrl": "http://s1.apideeplink.com/images/airlines/BA.png",
-                                        "DisplayCode": "BA"
-                                    }
+                                    const destinationStationId = leg.DestinationStation;
+                                    leg.DestinationStation = itin.Places.filter(function(place) {
+                                        place.Id == destinationStationId;
+                                    })
+
+                                    const originStation = leg.OriginStation;
+                                    leg.OriginStation = itin.Places.filter(function(place) {
+                                        place.Id == originStation;
+                                    })
+
+                                    return leg;
+                                });
+
+                                return itin;
+                            }
+
+                            obj.Itineraries.map(function(itin) {
+                                const outboundLegId = itin.OutboundLegId;
+                                const inboundLegId = itin.InboundLegId;
+
+                                mapItin(itin, outboundLegId);
+
+                                if (inboundLegId) {
+                                    mapItin(itin, inboundLegId);
                                 }
-                                */
-                                const o_flightAndCarrierDataArray = itin.OutboundLegId.FlightNumbers;
+                                return itin;
 
+                            }).forEach(function(itin, index) {
 
-                                /* inbound info */
-                                const i_originStationId = itin.InboundLegId.OriginStation.Id;
-                                const i_originStationName = itin.InboundLegId.OriginStation.Name;
-                                const i_originStationCode = itin.InboundLegId.OriginStation.Code;
-                                const i_originStationType = itin.InboundLegId.OriginStation.Type;
-                                const i_originStationParentId = itin.InboundLegId.OriginStation.ParentId;
-
-                                const i_destinationStationId = itin.InboundLegId.OriginStation.Id;
-                                const i_destinationStationName = itin.InboundLegId.OriginStation.Name;
-                                const i_destinationtationCode = itin.InboundLegId.OriginStation.Code;
-                                const i_destinationStationType = itin.InboundLegId.OriginStation.Type;
-                                const i_destinationStationParentId = itin.InboundLegId.OriginState.ParentId;
-
-                                const i_departureDate = itin.InboundLegId.Departure;
-                                const i_arrivalDate = itin.InboundLegId.Arrival;
-                                const i_duration = itin.InboundLegId.Duration;
-                                const i_journeyMode = itin.InboundLegId.JourneyMode;
-                                const i_stops = itin.InboundLegId.Stops;
-                                const i_numStops = i.stops.Length;
-
-                                /*
-                                {
-                                    "FlightNumber": "1463",
-                                    "CarrierId": 881,
-                                    "Carrier": {
-                                        "Id": 881,
-                                        "Code": "BA",
-                                        "Name": "British Airways",
-                                        "ImageUrl": "http://s1.apideeplink.com/images/airlines/BA.png",
-                                        "DisplayCode": "BA"
-                                    }
-                                }
-                                */
-                                const i_flightAndCarrierDataArray = itin.InboundLegId.FlightNumbers;
-
-
-
-                                /*Itinerary information*/
-
-                                const pricingOptions = itin.PricingOptions;
-
-                                const bookingDetailsLink = itin.BookingDetailsLink.Uri;
-                                const body = itin.BookingDetailsLink.Body;
-                                const method = itin.BookingDetailsLink.Method;
-                                const formattedData = itin.FormattedData;
-
+                                console.log(itin);
 
                                 const image = (cityImages && cityImages[index] && cityImages[index].image) || '';
 

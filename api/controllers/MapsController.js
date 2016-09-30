@@ -195,12 +195,32 @@ module.exports = {
             itinObj.pageindex = 0 || req.body.pageIndex;
             itinObj.pagesize = 10 || req.body.pageSize;
 
-            sails.log.debug('Created itin object: ' + JSON.stringify(itinObj));
+            sails.log.debug('Created itinerary object: ' + JSON.stringify(itinObj));
 
             //Use SkyScannerFlightService to make the request
             SkyScannerFlightService.makeLivePricingApiRequest(obj, itinObj).then(function(result) {
-                sails.log.debug(result);
-                return resolve(res.json(ResponseStatus.OK, { result: result }));
+                GettyImagesService.searchAndRetrieveUrls({
+                    phrase: req.body.destination.name + ' city skyline',
+                    page: 1,
+                    pageSize: result.Itineraries.length
+                }).then(function(data) {
+                    sails.log.debug('image data- ' + data);
+
+                    var arr = [];
+
+                    for (var i = 0; i < result.Itineraries.length && data.length; i++) {
+                        arr.push({
+                            name: 'image-' + i,
+                            image: (data[i] && data[i].displaySizeImage) || ''
+                        });
+                    }
+
+                    sails.log.debug(result);
+                    return resolve(res.json(ResponseStatus.OK, { result: result, cityImages: arr }));
+                }).catch(function(err) {
+                    sails.log.debug(err.message + ' ' + JSON.stringify(err));
+                    return reject(ResponseStatus.OK, { result: result, error: err });
+                });
             }).catch(function(error) {
                 sails.log.debug('Error in maps controller ' + JSON.stringify(error));
                 return reject(res.json(ResponseStatus.OK, { errors: error.error }));

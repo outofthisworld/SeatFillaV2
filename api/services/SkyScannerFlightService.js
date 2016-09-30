@@ -205,7 +205,7 @@ const exportObj = {
                         } else if (res.body.Status == 'UpdatesPending') {
                             return resolve(_this.retrieveItin(urlEndpoint, obj));
                         } else {
-                            return resolve(res.body);
+                            return resolve(bd);
                         }
 
                     } catch (err) {

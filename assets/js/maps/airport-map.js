@@ -106,6 +106,7 @@ $(document).ready(function() {
         }
 
         const findFlightsOnClickHandler = function() {
+
             const coords = $(this).attr('data-coords');
             const marker = sf_map.getMarkerJsonString(coords);
 
@@ -147,6 +148,7 @@ $(document).ready(function() {
             });
 
             function handleClick() {
+                $("#flightResults").html("");
                 _button = $(this);
                 _button.addClass('m-progress');
                 var data = marker.data;
@@ -185,16 +187,21 @@ $(document).ready(function() {
                         dateInfo: { departure, arrival }
                     },
                     success: function(response) {
-                        if (response.errors) {
+                        if ((response.errors || response.error) && response.errorType != 'gettyImageServiceRequest') {
                             console.log(response);
                             window.alert(JSON.stringify(response.errors));
                         } else {
-                            const obj = JSON.parse(response.result);
+                            const obj = response.result;
                             console.log(response.result);
+                            $("#flightResults").html("");
                             $("#flightResults").append(
                                 $('<div></div>', { class: 'well well-sm' }).text(JSON.stringify(obj.Query)));
 
+                            const cityImages = response.cityImages || null;
+
                             obj.Itineraries.forEach(function(itin, index) {
+                                const image = (cityImages && cityImages[index] && cityImages[index].image) || '';
+                                console.log(image);
                                 const liEle = $('<li></li>', {
 
                                     class: 'list-group-item',
@@ -213,15 +220,16 @@ $(document).ready(function() {
                                         $('<div></div>', {
                                             class: 'col-xs-12 text-center',
                                         }).append(
-                                            $('<div></div>', { class: 'panel panel-default container-fluid' })
-                                            .append($('<div></div>', { class: 'panel panel-heading' }).text('Item-Name').append($('<i></i>', {
-                                                class: 'fa fa-chevron-down pull-right',
-                                            })))
-                                            .append($('<div></div>', { class: 'panel panel-body' }).append(
-                                                $('<div></div>', {
-                                                    class: 'col-xs-2',
-                                                    'data-toggle': 'detail-' + index,
-                                                })))))
+                                            $('<div></div>', { class: 'panel panel-info container-fluid' })))
+                                    .append($('<div></div>', { class: 'panel panel-content col-xs-10' }).append(
+                                        $('<img></img>').attr('height', '100px').attr('width', '100px').css({ 'width': '200px', 'height': '150px', 'min-width': '100px', 'min-height': '100px' })
+                                        .attr('src', image).attr('class', 'img img-responsive img-thumbnail')))
+                                    .append($('<input/>', { value: 'Get booking details', type: 'button', class: 'btn  btn-info btn-sm pull-right', 'data-toggle': 'detail-' + index })
+                                        .text('Item-Name')
+                                        .append($('<i></i>', {
+                                            class: 'fa fa-chevron-down pull-right',
+                                        })))
+
                                 ).append(
                                     $('<div></div>', {
                                         id: 'detail-' + index,

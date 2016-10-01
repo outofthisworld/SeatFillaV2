@@ -222,15 +222,18 @@ $(document).ready(function() {
 
                             const mapItin = function(itin, directionality, legId) {
 
-                                itin.PricingOptions.forEach((pricingOption) => {
-                                    pricingOption.Agents = pricingOption.Agents.map((agentId) => {
-                                        return {
-                                            agentId,
-                                            agentInfo: sf_result.Agents.filter((agent) => {
-                                                agent.Id = agentId;
-                                            })
-                                        }
-                                    });
+                                itin.PricingOptions.map((pricingOption) => {
+                                    return {
+                                        pricingOption,
+                                        agents: pricingOption.Agents.map((agentId) => {
+                                            return {
+                                                agentId,
+                                                agentInfo: sf_result.Agents.filter((agent) => {
+                                                    agent.Id = agentId;
+                                                })
+                                            }
+                                        })
+                                    }
                                 });
 
                                 itin[directionality + 'Legs'] = sf_result.Legs.filter(function(leg) {
@@ -310,22 +313,21 @@ $(document).ready(function() {
                                 const $dropDownContentInfo = $('<div></div>', { class: 'fluid-row', }).text('booking details');
 
                                 const $col12 = $('<div></div>', { 'class': 'col-xs-12' });
-                                const $getCarrierInfoDropDown = $('<div></div>', { id: 'carrier-' + index, });
-                                const $getCarrierInfoDropdownContent = $('<div></div>', { class: 'fluid-row', }).slideToggle();
-                                const $carrierInfoTable = $('<table></table>', { 'class': 'table table-striped' });
+                                const $getCarrierInfoDropDown = $('<div></div>', { id: 'carrier-' + index, }).slideToggle();
+                                const $getCarrierInfoDropdownContent = $('<div></div>', { class: 'container80', });
+                                const $carrierInfoTable = $('<table></table>', { 'class': 'table table-responsive table-striped' });
                                 $carrierInfoTable.append(
-                                    $('<th></th>').append(
-                                        $('<td></td>').text('')
+                                    $('<tr></tr>').append(
+                                        $('<th></th>').text('')
                                     ).append(
-                                        $('<td></td>').text('Carrier name')
+                                        $('<th></th>').text('Carrier name')
                                     ).append(
-                                        $('<td></td>').text('Carrier code')
+                                        $('<th></th>').text('Carrier code')
                                     ).append(
-                                        $('<td></td>').text('Flight number')
+                                        $('<th></th>').text('Flight number')
                                     ).append(
-                                        $('<td></td>').text('Directionality')
-                                    )
-                                );
+                                        $('<th></th>').text('Directionality')
+                                    ));
                                 $getCarrierInfoDropdownContent.append($carrierInfoTable);
 
                                 const $getCarrierInfoButton = $('<input/>', {
@@ -338,7 +340,13 @@ $(document).ready(function() {
                                             $('#notification').attr('opened', 'true').attr('text', 'Showing carrier details');
                                             $input = $(this);
                                             $target = $('#' + $input.attr('data-toggle'));
-                                            $target.slideToggle('slow');
+                                            $target.slideToggle('fast', function() {
+                                                if ($target.is(':visible')) {
+                                                    $input.val('Hide carrier info');
+                                                } else {
+                                                    $input.val('Show carrier info');
+                                                }
+                                            });
                                         }
                                     }
                                 });
@@ -390,7 +398,7 @@ $(document).ready(function() {
                                             const $carrierImage = $('<img/>', { 'class': 'img img-responsive' }).attr('src', carrierImage);
 
                                             const $t_row = $('<tr></tr>');
-                                            const $td_carrierImage = $('<td></td>').append(carrierImage);
+                                            const $td_carrierImage = $('<td></td>').append($carrierImage);
                                             const $td_carrierName = $('<td></td>').text(carrierName);
                                             const $td_carrierCode = $('<td></td>').text(carrierCode);
                                             const $td_flightNumber = $('<td></td>').text(fNum);
@@ -430,7 +438,7 @@ $(document).ready(function() {
                                 /***********************************/
 
                                 const $liEle = $('<li></li>', { class: 'list-group-item', });
-                                const $panelInfo = $('<div></div>', { class: 'panel panel-info' });
+                                const $panelInfo = $('<div></div>', { class: 'panel panel-default' });
                                 const $panelHeading = $('<div></div>', { class: 'panel panel-heading' }).css({ 'min-height': '50px' });
                                 const $panelContent = $('<div></div>', { class: 'panel panel-content' }).css({ 'padding': '20px' });
                                 const $row = $('<div></div>', { 'class': 'row' });
@@ -519,8 +527,14 @@ $(document).ready(function() {
 
                                 $panelInfo.append($getCarrierInfoDropDown);
                                 $panelInfo.append($dropDownContent);
-                                $panelFooter.append($getCarrierInfoButton);
-                                $panelFooter.append($getBookingDetailsButton);
+
+                                const $in_group = $('<ul></ul>', { 'class': 'pull-right' }).css({ 'background-color': 'transparent', 'display': 'flex', 'position': 'relative', 'bottom': '6px' });
+                                const $li = $('<li></li>').css({ 'padding': '5px', 'display': 'inline-block' });
+                                $in_group.append($li.clone().append($getBookingDetailsButton));
+                                $in_group.append($li.clone().append($getCarrierInfoButton));
+                                $panelFooter.append($in_group);
+
+
                                 $panelInfo.append($panelFooter);
                                 $liEle.append($panelInfo);
 

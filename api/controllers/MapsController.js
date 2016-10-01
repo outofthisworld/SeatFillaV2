@@ -192,9 +192,6 @@ module.exports = {
 
             const itinObj = Object.create(SkyScannerFlightService.itinObj);
 
-            itinObj.pageindex = 0 || req.body.pageIndex;
-            itinObj.pagesize = 10 || req.body.pageSize;
-
             sails.log.debug('Created itinerary object: ' + JSON.stringify(itinObj));
 
             //Use SkyScannerFlightService to make the request
@@ -202,7 +199,7 @@ module.exports = {
                 GettyImagesService.searchAndRetrieveUrls({
                     phrase: req.body.destination.name + ' city skyline',
                     page: 1,
-                    pageSize: result.Itineraries.length > 100? result.Itineraries.length : 100
+                    pageSize: result.Itineraries.length > 100 ? result.Itineraries.length : 100
                 }).then(function(data) {
                     sails.log.debug('image data- ' + data);
 

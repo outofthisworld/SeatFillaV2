@@ -360,7 +360,7 @@ exportObj.sessionObj = {
         adults: 1,
         children: 0,
         infants: 0,
-        groupPricing: false
+        groupPricing: false,
     }
     //Itinerary request object
 exportObj.itinObj = {
@@ -380,9 +380,6 @@ exportObj.itinObj = {
         duration: exportObj.maxduration, //Max flight duration
         includecarriers: null, //Iata carrier codes
         excludecarriers: null, //Iata carrier codes
-        pageindex: 0,
-        pagesize: 10,
-
     }
     //Booking details request object
 exportObj.bookingDetailsObj = {

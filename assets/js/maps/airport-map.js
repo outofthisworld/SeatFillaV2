@@ -219,12 +219,7 @@ $(document).ready(function() {
                             $("#flightResults").html("");
                             $("#flightResults").append($('<div></div>', { class: 'well well-sm' }).text(JSON.stringify(sf_result.Query)));
 
-                            const mapItin = function(itin, legId) {
-                                const bookingDetailsUri = itin.BookingDetailsLink.Uri;
-                                const bookingDetailsBody = itin.BookingDetailsLink.Body;
-                                const bookingDetailsMethod = itin.BookingDetailsLink.Method;
-
-
+                            const mapItin = function(itin, directionality, legId) {
                                 itin.PricingOptions.forEach((pricingOption) => {
                                     pricingOption.Agents = pricingOption.Agents.map((agentId) => {
                                         return {
@@ -236,12 +231,11 @@ $(document).ready(function() {
                                     });
                                 });
 
-                                //atm outbound legs
-                                itin.Legs = sf_result.Legs.filter(function(leg) {
+                                itin[directionality + 'Legs'] = sf_result.Legs.filter(function(leg) {
                                     return leg.Id == legId;
                                 }).map(function(leg) {
 
-                                    leg.FlightNumbers.forEach(function(flightNumberObj) {
+                                    leg.FlightNumbers.map(function(flightNumberObj) {
                                         const carrierId = flightNumberObj.CarrierId;
                                         flightNumberObj.CarrierId = {
                                             carrierId,
@@ -281,10 +275,10 @@ $(document).ready(function() {
                                 const outboundLegId = itin.OutboundLegId;
                                 const inboundLegId = itin.InboundLegId;
 
-                                mapItin(itin, outboundLegId);
+                                mapItin(itin, 'Outbound', outboundLegId);
 
                                 if (inboundLegId) {
-                                    mapItin(itin, inboundLegId);
+                                    mapItin(itin, 'Inbound', inboundLegId);
                                 }
                                 return itin;
 
@@ -292,14 +286,101 @@ $(document).ready(function() {
 
                                 console.log(itin);
 
+                                /* The outbound and inbound leg ids*/
+                                const outboundLegId = itin.OutboundLegId;
+                                const inboundLegId = itin.InboundLegId;
+
+                                /* Now we retrieve the mapped info.. */
+                                const bookingDetailsUri = itin.BookingDetailsLink.Uri;
+                                const bookingDetailsBody = itin.BookingDetailsLink.Body;
+                                const bookingDetailsMethod = itin.BookingDetailsLink.Method;
+
+                                const numberOfOutboundLegs = itin.OutboundLegs.length;
+                                const numberOfInboundLegs = (itin.InboundLegs && itin.InboundLegs.length) || 0;
+
                                 const cityImages = response.cityImages || null;
                                 const image = (cityImages && cityImages[index] && cityImages[index].image) || '';
 
-                                const $dropDownContent = $('<div></div>', { id: 'detail-' + index, }).append($('<div></div>', { class: 'fluid-row', }).text('booking details'));
+                                //Booking details drop down.
+                                const $dropDownContent = $('<div></div>', { id: 'detail-' + index, });
+                                const $dropDownContentInfo = $('<div></div>', { class: 'fluid-row', }).text('booking details');
+
+                                const createLegUl = function($ulEle, legAttr) {
+                                    itin[legAttr].forEach(function(leg) {
+                                        const departureTime = leg.Departure;
+                                        const arrivalTime = leg.Arrival;
+                                        const destinationStationCode = leg.DestinationStation.Code;
+                                        const destinationStationName = leg.DestinationStation.Name;
+                                        const originStationName = leg.OriginStation.Name;
+                                        const originStationCode = leg.OriginStation.Code;
+
+                                        const directionality = leg.Directionality;
+                                        const flightDuration = leg.Duration;
+
+                                        const numberOfStops = leg.Stops.length;
+                                        const numberOfSegments = leg.SegmentIds.length;
+
+                                        //Multiple
+                                        const carriers = leg.Carriers;
+                                        const $outbound_info_li = $('<li></li>')
+                                            .append(
+                                                $('<p></p>').text('Origin Station Name: ' + originStationName)
+                                            ).append(
+                                                $('<p></p>').text('Origin Station Code: ' + originStationCode)
+                                            ).append(
+                                                $('<p></p>').text('Destination Station Name: ' + destinationStationName)
+                                            ).append(
+                                                $('<p></p>').text('Destination Station Code: ' + destinationStationCode)
+                                            ).append(
+                                                $('<p></p>').text('Departure Time: ' + departureTime)
+                                            ).append(
+                                                $('<p></p>').text('Arrival Time: ' + arrivalTime)
+                                            ).append(
+                                                $('<p></p>').text('Number of stops: ' + numberOfStops)
+                                            ).append(
+                                                $('<p></p>').text('Number of segments: ' + numberOfSegments)
+                                            );
+                                        $ulEle.append($outbound_info_li);
+                                    });
+                                    return $ulEle;
+                                }
+
+                                /*Outbound legs drop down */
+                                const $outboundLegsDropDown = $('<div></div>', { id: 'outbound-' + index, });
+                                const $outboundInfoButton = $('<input/>', {
+                                    value: 'View outbound details',
+                                    type: 'button',
+                                    class: 'btn  btn-info btn-sm pull-right',
+                                    'data-toggle': 'outbound-' + index,
+                                });
+
+                                const $outboundUl = $('<ul></ul>');
+                                createLegUl($outboundUl, 'OutboundLegs');
+                                $outboundLegsDropDown.append($outboundUl);
+                                /***********************************/
+
+                                /*Inbound legs drop down */
+                                const $inboundLegsDropDown = $('<div></div>', { id: 'outbound-' + index, });
+                                const $inboundInfoButton = $('<input/>', {
+                                    value: 'View Inbound Details',
+                                    type: 'button',
+                                    class: 'btn  btn-info btn-sm pull-right',
+                                    'data-toggle': 'outbound-' + index,
+                                });
+                                /***********************************/
+
+                                //Inbound isn't required, so check we have it..
+                                if (itin.InboundLegs) {
+                                    const $outboundUl = $('<ul></ul>');
+                                    createLegUl($outboundUl, 'InboundLegs');
+                                    $inboundLegsDropDown.append($outboundUl);
+                                }
+
                                 const $liEle = $('<li></li>', { class: 'list-group-item', });
                                 const $panelInfo = $('<div></div>', { class: 'panel panel-info' });
-                                const $panelContent = $('<div></div>', { class: 'panel panel-content' });
+                                const $panelHeading = $('<div></div>', { class: 'panel panel-heading' }).css({ 'min-height': '50px' });
 
+                                const $panelContent = $('<div></div>', { class: 'panel panel-content' });
                                 const $panelContent2 = $('<div></div>', { class: 'panel panel-content' });
                                 const $row = $('<div></div>', { 'class': 'row' });
                                 const $col2 = $('<div></div>', { 'class': 'col-xs-2' });
@@ -332,6 +413,7 @@ $(document).ready(function() {
                                                         $target.slideToggle('slow', function() {
                                                             $input.removeClass('m-progress');
                                                         });
+                                                        //apend response to dropDownContentInfo
                                                     } else {
                                                         alert(response);
                                                     }
@@ -342,51 +424,27 @@ $(document).ready(function() {
                                     }
                                 });
 
-                                const $row2 = $('<div></div>', { 'class': 'row' });
+                                $panelHeading.append($outboundInfoButton);
+                                $col10.append($outboundLegsDropDown);
 
-                                //Outbound flight information
-                                const $col5_1 = $('</div></div>', { 'class': 'col-xs-5' }).append(
-                                    $('<h2></h2>').text('Flight Departure Information (Outbound)')
-                                ).append(
-                                    $('<p></p>').text('Origin Airport: ' + o_originStationName)
-                                ).append(
-                                    $('<p></p>').text('Destination Airport: ' + o_destinationStationName)
-                                ).append(
-                                    $('<p></p>').text('Departure Date: ' + o_departureDate)
-                                ).append(
-                                    $('<p></p>').text('Arrival Date: ' + o_arrivalDate)
-                                ).append(
-                                    $('<p></p>').text('Number of stops: ' + o_numStops)
-                                );
+                                if (itin.InboundLegs) {
+                                    $panelHeading.append($inboundInfoButton);
+                                    $col10.append($inboundLegsDropDown);
+                                }
 
-                                //Inbound flight information
-                                const $col5_2 = $('</div></div>', { 'class': 'col-xs-5' }).append(
-                                    $('<h2></h2>').text('Return Flight Information (Inbound)')
-                                ).append(
-                                    $('<p></p>').text('Origin Airport: ' + i_originStationName)
-                                ).append(
-                                    $('<p></p>').text('Destination Airport: ' + i_destinationStationName)
-                                ).append(
-                                    $('<p></p>').text('Departure Date: ' + i_departureDate)
-                                ).append(
-                                    $('<p></p>').text('Arrival Date: ' + i_arrivalDate)
-                                ).append(
-                                    $('<p></p>').text('Number of stops: ' + i_numStops)
-                                );
+                                $panelContent.append($row.append($col2.append($gettyImg)).append($col10));
 
-
-                                const $row3 = $('<div></div>', { 'class': 'row' });
-                                const $col6_1 = ('</div></div>', { 'class': 'col-xs-6' });
-                                const $col6_2 = ('</div></div>', { 'class': 'col-xs-6' });
-
-                                $panelContent.append($row.append($col2.append($gettyImg)).append($col10.append($row2.append($col5_1).append($col5_2))));
+                                $panelInfo.append($panelHeading);
                                 $panelInfo.append($panelContent);
+                                $dropDownContent.append($dropDownContentInfo);
+
+
                                 $panelInfo.append($dropDownContent);
                                 $panelFooter.append($getBookingDetailsButton);
                                 $panelInfo.append($panelFooter);
                                 $liEle.append($panelInfo);
-                                $('#flightResults').append($liEle);
 
+                                $('#flightResults').append($liEle);
                             });
                         }
 

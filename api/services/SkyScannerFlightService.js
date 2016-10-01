@@ -202,7 +202,7 @@ const exportObj = {
                         if (!bd.SessionKey) {
                             console.log('Response body: ' + res.body);
                             return resolve(_this.retrieveItin(urlEndpoint, obj));
-                        } else if (res.body.Status == 'UpdatesPending') {
+                        } else if (bd.Status == 'UpdatesPending') {
                             return resolve(_this.retrieveItin(urlEndpoint, obj));
                         } else {
                             return resolve(bd);
@@ -330,73 +330,73 @@ const exportObj = {
 
         requestAndPollBookingDetails(bookingDetailsObj, pollingDetailsObj) {
             return new Promise((resolve, reject) => {
-                    this.requestForBookingDetails(bookingDetailsObj).then(
-                        (result) => {
-                            this.pollBookingDetails(result, pollingDetailsObj).then((resolvedObj) => {
-                                const responseBody = resolvedObj.body;
-                                const nextPollUrl = resolvedObj.nextPollUrl;
+                this.requestForBookingDetails(bookingDetailsObj).then(
+                    (result) => {
+                        this.pollBookingDetails(result, pollingDetailsObj).then((resolvedObj) => {
+                            const responseBody = resolvedObj.body;
+                            const nextPollUrl = resolvedObj.nextPollUrl;
 
-                                console.log(responseBody);
-                                console.log(nextPollUrl);
+                            console.log(responseBody);
+                            console.log(nextPollUrl);
 
-                                resolve(resolvedObj);
-                            }).catch((error) => reject(new Error('Error occured polling booking details')))
-                            }
-                        ).catch((error) => reject(new Error('Error occurred requesting booking details')));
-                    });
-            }
+                            resolve(resolvedObj);
+                        }).catch((error) => reject(new Error('Error occured polling booking details')))
+                    }
+                ).catch((error) => reject(new Error('Error occurred requesting booking details')));
+            });
         }
-        //The session request object
-        exportObj.sessionObj = {
-            country: 'ISO country code',
-            currency: 'ISO currency code/currencies service',
-            locale: 'ISO locale code (language and country)/Locales Service',
-            originplace: 'Origin City/Airport as specified in location schema',
-            destinationplace: 'Dest City/Airport as specified in location schema',
-            outbounddate: 'YY-mm-dd',
-            inbounddate: 'YY-mm-dd',
-            locationschema: exportObj.locationschemas.Iata,
-            cabinclass: exportObj.cabinclasses.Economy,
-            adults: 1,
-            children: 0,
-            infants: 0,
-            groupPricing: false
-        }
-        //Itinerary request object
-        exportObj.itinObj = {
-            locationschema: exportObj.locationschemas.Iata, //location schema
-            carrierschema: exportObj.carrierschemas.Iata, // carrier schema
-            sorttype: exportObj.sorttypes.price,
-            sortorder: exportObj.sortorders.asc, // 'asc' || 'desc'
-            originairports: null, //Filter outgoing airports delim by ';'
-            destinationairports: null, //Filter incoming airports delim by ';'
-            maxStops: 10, //Max number of stops
-            outbounddeparttime: exportObj.departtimes.join(';'),
-            outbounddepartstarttime: null, //Start of depart time 'hh:mm'
-            outbounddepartendtime: null, //End of depart time 'hh:mm'
-            inbounddeparttime: exportObj.departtimes.join(';'),
-            inbounddepartstarttime: null, //Start of depart time 'hh:mm'
-            inbounddepartendtime: null, //Start of depart time 'hh:mm'
-            duration: exportObj.maxduration, //Max flight duration
-            includecarriers: null, //Iata carrier codes
-            excludecarriers: null, //Iata carrier codes
-            pageindex: 0,
-            pagesize: 10,
+    }
+    //The session request object
+exportObj.sessionObj = {
+        country: 'ISO country code',
+        currency: 'ISO currency code/currencies service',
+        locale: 'ISO locale code (language and country)/Locales Service',
+        originplace: 'Origin City/Airport as specified in location schema',
+        destinationplace: 'Dest City/Airport as specified in location schema',
+        outbounddate: 'YY-mm-dd',
+        inbounddate: 'YY-mm-dd',
+        locationschema: exportObj.locationschemas.Iata,
+        cabinclass: exportObj.cabinclasses.Economy,
+        adults: 1,
+        children: 0,
+        infants: 0,
+        groupPricing: false
+    }
+    //Itinerary request object
+exportObj.itinObj = {
+        locationschema: exportObj.locationschemas.Iata, //location schema
+        carrierschema: exportObj.carrierschemas.Iata, // carrier schema
+        sorttype: exportObj.sorttypes.price,
+        sortorder: exportObj.sortorders.asc, // 'asc' || 'desc'
+        originairports: null, //Filter outgoing airports delim by ';'
+        destinationairports: null, //Filter incoming airports delim by ';'
+        maxStops: 10, //Max number of stops
+        outbounddeparttime: exportObj.departtimes.join(';'),
+        outbounddepartstarttime: null, //Start of depart time 'hh:mm'
+        outbounddepartendtime: null, //End of depart time 'hh:mm'
+        inbounddeparttime: exportObj.departtimes.join(';'),
+        inbounddepartstarttime: null, //Start of depart time 'hh:mm'
+        inbounddepartendtime: null, //Start of depart time 'hh:mm'
+        duration: exportObj.maxduration, //Max flight duration
+        includecarriers: null, //Iata carrier codes
+        excludecarriers: null, //Iata carrier codes
+        pageindex: 0,
+        pagesize: 10,
 
-        }
-        //Booking details request object
-        exportObj.bookingDetailsObj = {
-            outboundlegid: null,
-            inboundlegid: null,
-            adults: 1,
-            children: 0,
-            infants: 0,
-            sessionkey: null
-        }
-        //Booking details polling object
-        exportObj.bookingDetailsPollingObj = {
-            locationschema: exportObj.locationschemas.Iata,
-            carrierschema: exportObj.carrierschemas.Iata
-        }
+    }
+    //Booking details request object
+exportObj.bookingDetailsObj = {
+        outboundlegid: null,
+        inboundlegid: null,
+        adults: 1,
+        children: 0,
+        infants: 0,
+        sessionkey: null
+    }
+    //Booking details polling object
+exportObj.bookingDetailsPollingObj = {
+    locationschema: exportObj.locationschemas.Iata,
+    carrierschema: exportObj.carrierschemas.Iata
+}
 
-        module.exports = exportObj;
+module.exports = exportObj;

@@ -87,7 +87,7 @@ module.exports = {
             const reqObject = {
                 phrase: options.phrase,
                 page: options.page,
-                page_size: options.pageSize,
+                page_size: 100,
                 exclude_nudity: true,
                 embed_content_only: options['embed_content_only'] || true
             }

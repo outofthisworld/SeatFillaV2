@@ -202,7 +202,7 @@ module.exports = {
                 GettyImagesService.searchAndRetrieveUrls({
                     phrase: req.body.destination.name + ' city skyline',
                     page: 1,
-                    pageSize: result.Itineraries.length
+                    pageSize: result.Itineraries.length > 100? result.Itineraries.length : 100
                 }).then(function(data) {
                     sails.log.debug('image data- ' + data);
 

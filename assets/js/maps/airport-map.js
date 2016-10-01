@@ -217,6 +217,8 @@ $(document).ready(function() {
                             console.log(response);
                             const sf_result = response.result;
 
+                            /* Maybe change it to client side polling... */
+
                             $("#flightResults").html("");
                             $("#flightResults").append($('<div></div>', { class: 'well well-sm' }).text(JSON.stringify(sf_result.Query)));
 
@@ -241,7 +243,7 @@ $(document).ready(function() {
                                 }).map(function(leg) {
                                     const _output = Object.assign({}, leg);
 
-                                    _output.FliguhtNumbers = leg.FlightNumbers.map(function(flightNumberObj) {
+                                    _output.FlightNumbers = leg.FlightNumbers.map(function(flightNumberObj) {
                                         const carrierId = flightNumberObj.CarrierId;
                                         return {
                                             flightNumber: flightNumberObj.FlightNumber,

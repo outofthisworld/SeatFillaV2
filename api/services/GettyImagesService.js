@@ -116,9 +116,9 @@ module.exports = {
                             return reject(new Error('Error with request to ' + gettyAuthEndpoint + ' could not parse body'));
                         } else if (obj.ErrorCode) {
                             return reject(new Error('Error with request to ' + gettyAuthEndpoint + JSON.stringify(obj)))
+                        } else {
+                            return resolve(obj);
                         }
-
-                        return resolve(obj);
                     }
                 });
             });

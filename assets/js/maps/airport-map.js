@@ -160,7 +160,10 @@ $(document).ready(function() {
 
             $('#departure_date').attr('min', today).val(today);
 
+
             function handleClick() {
+
+                console.log(now);
 
                 $("#flightResults").html("");
 
@@ -184,6 +187,7 @@ $(document).ready(function() {
                 console.log('user location: ' + JSON.stringify(sf_map.location));
 
                 const departure = $('#departure_date').val();
+                console.log(departure);
                 const arrival = $('#return_date').val();
                 const numChildTickets = $('#num_child_tickets').val();
                 const numAdultTickets = $('#num_adult_tickets').val();
@@ -201,7 +205,7 @@ $(document).ready(function() {
                         userLocation: sf_map.location,
                         userLocale: window.seatfilla.globals.getFirstBrowserLanguage(),
                         ticketInfo: { numAdultTickets, numChildTickets, numInfantTickets },
-                        dateInfo: { departure, arrival },
+                        dates: { departure, arrival },
                         prefferedCabinClass,
                         groupPricing
                     },
@@ -210,58 +214,61 @@ $(document).ready(function() {
                             console.log(response);
                             window.alert(JSON.stringify(response.errors));
                         } else {
-                            const obj = response.result;
+                            const sf_result = response.result;
 
-                            console.log(response.result);
                             $("#flightResults").html("");
-                            $("#flightResults").append(
-                                $('<div></div>', { class: 'well well-sm' }).text(JSON.stringify(obj.Query)));
-
-                            const cityImages = response.cityImages || null;
+                            $("#flightResults").append($('<div></div>', { class: 'well well-sm' }).text(JSON.stringify(sf_result.Query)));
 
                             const mapItin = function(itin, legId) {
                                 const bookingDetailsUri = itin.BookingDetailsLink.Uri;
                                 const bookingDetailsBody = itin.BookingDetailsLink.Body;
                                 const bookingDetailsMethod = itin.BookingDetailsLink.Method;
 
-                                itin.PricingOptions.map((pricingOption) => {
+
+                                itin.PricingOptions.forEach((pricingOption) => {
                                     pricingOption.Agents = pricingOption.Agents.map((agentId) => {
-                                        const agents = itin.Agents.filter((agent) => {
-                                            agent.Id = agentId;
-                                        });
-                                        return agents;
+                                        return {
+                                            agentId,
+                                            agentInfo: sf_result.Agents.filter((agent) => {
+                                                agent.Id = agentId;
+                                            })
+                                        }
                                     });
-                                    return pricingOption;
                                 });
 
                                 //atm outbound legs
-                                itin.Legs.filter(function(leg) {
+                                itin.Legs = sf_result.Legs.filter(function(leg) {
                                     return leg.Id == legId;
                                 }).map(function(leg) {
 
-                                    leg.FlightNumbers = leg.FlightNumbers.map(function(flightNumberObj) {
+                                    leg.FlightNumbers.forEach(function(flightNumberObj) {
                                         const carrierId = flightNumberObj.CarrierId;
-                                        flightNumberObj.CarrierId = itin.Carriers.filter((carrier) => {
-                                            carrier.Id == carrierId;
-                                        });
-                                        return flightNumberObj;
+                                        flightNumberObj.CarrierId = {
+                                            carrierId,
+                                            carrierInfo: sf_result.Carriers.filter((carrier) => {
+                                                return carrier.Id == carrierId;
+                                            }).pop()
+                                        }
                                     });
 
                                     leg.SegmentIds = leg.SegmentIds.map(function(segmentId) {
-                                        return itin.Segments.filter(function(segment) {
-                                            segment.Id == segment;
-                                        });
+                                        return {
+                                            segmentId,
+                                            segmentInfo: sf_result.Segments.filter(function(segment) {
+                                                return segment.Id == segmentId;
+                                            })
+                                        }
                                     });
 
                                     const destinationStationId = leg.DestinationStation;
-                                    leg.DestinationStation = itin.Places.filter(function(place) {
-                                        place.Id == destinationStationId;
-                                    })
+                                    leg.DestinationStation = sf_result.Places.filter(function(place) {
+                                        return place.Id == destinationStationId;
+                                    }).pop();
 
                                     const originStation = leg.OriginStation;
-                                    leg.OriginStation = itin.Places.filter(function(place) {
-                                        place.Id == originStation;
-                                    })
+                                    leg.OriginStation = sf_result.Places.filter(function(place) {
+                                        return place.Id == originStation;
+                                    }).pop();
 
                                     return leg;
                                 });
@@ -269,7 +276,8 @@ $(document).ready(function() {
                                 return itin;
                             }
 
-                            obj.Itineraries.map(function(itin) {
+
+                            sf_result.Itineraries.map(function(itin) {
                                 const outboundLegId = itin.OutboundLegId;
                                 const inboundLegId = itin.InboundLegId;
 
@@ -284,6 +292,7 @@ $(document).ready(function() {
 
                                 console.log(itin);
 
+                                const cityImages = response.cityImages || null;
                                 const image = (cityImages && cityImages[index] && cityImages[index].image) || '';
 
                                 const $dropDownContent = $('<div></div>', { id: 'detail-' + index, }).append($('<div></div>', { class: 'fluid-row', }).text('booking details'));
@@ -313,10 +322,10 @@ $(document).ready(function() {
                                                 type: window.seatfilla.globals.site.endpoints.maps.retrieveBookingDetails.method,
                                                 url: window.seatfilla.globals.site.endpoints.maps.retrieveBookingDetails.url,
                                                 data: {
-                                                    sessionkey: obj.SessionKey,
+                                                    sessionkey: sf_result.SessionKey,
                                                     outboundLegId,
                                                     inboundLegId,
-                                                    bookingDetailsLink: obj.bookingDetailsLink
+                                                    bookingDetailsLink: sf_result.bookingDetailsLink
                                                 },
                                                 success: function(response, x, xhr) {
                                                     if (xhr.status == 200) {

@@ -221,6 +221,7 @@ $(document).ready(function() {
                             $("#flightResults").append($('<div></div>', { class: 'well well-sm' }).text(JSON.stringify(sf_result.Query)));
 
                             const mapItin = function(itin, directionality, legId) {
+
                                 itin.PricingOptions.forEach((pricingOption) => {
                                     pricingOption.Agents = pricingOption.Agents.map((agentId) => {
                                         return {
@@ -310,12 +311,25 @@ $(document).ready(function() {
 
                                 const $col12 = $('<div></div>', { 'class': 'col-xs-12' });
                                 const $getCarrierInfoDropDown = $('<div></div>', { id: 'carrier-' + index, });
-                                const $getCarrierInfoDropdownContent = $('<div></div>', { class: 'fluid-row', }).text('booking details');
+                                const $getCarrierInfoDropdownContent = $('<div></div>', { class: 'fluid-row', }).slideToggle();
                                 const $carrierInfoTable = $('<table></table>', { 'class': 'table table-striped' });
+                                $carrierInfoTable.append(
+                                    $('<th></th>').append(
+                                        $('<td></td>').text('')
+                                    ).append(
+                                        $('<td></td>').text('Carrier name')
+                                    ).append(
+                                        $('<td></td>').text('Carrier code')
+                                    ).append(
+                                        $('<td></td>').text('Flight number')
+                                    ).append(
+                                        $('<td></td>').text('Directionality')
+                                    )
+                                );
                                 $getCarrierInfoDropdownContent.append($carrierInfoTable);
 
                                 const $getCarrierInfoButton = $('<input/>', {
-                                    value: 'Get booking details',
+                                    value: 'Show carrier info',
                                     type: 'button',
                                     class: 'btn  btn-info btn-sm pull-right',
                                     'data-toggle': 'carrier-' + index,
@@ -324,6 +338,7 @@ $(document).ready(function() {
                                             $('#notification').attr('opened', 'true').attr('text', 'Showing carrier details');
                                             $input = $(this);
                                             $target = $('#' + $input.attr('data-toggle'));
+                                            $target.slideToggle('slow');
                                         }
                                     }
                                 });
@@ -374,19 +389,19 @@ $(document).ready(function() {
 
                                             const $carrierImage = $('<img/>', { 'class': 'img img-responsive' }).attr('src', carrierImage);
 
-                                            const t_row = $('<tr></tr>');
-                                            const td_carrierImage = $('<td></td>').append(carrierImage);
-                                            const td_carrierName = $('<td></td>').text(carrierName);
-                                            const td_carrierCode = $('<td></td>').text(carrierCode);
-                                            const td_flightNumber = $('<td></td>').text(fNum);
-                                            const td_directionality = $('<td></td>').text(directionality);
+                                            const $t_row = $('<tr></tr>');
+                                            const $td_carrierImage = $('<td></td>').append(carrierImage);
+                                            const $td_carrierName = $('<td></td>').text(carrierName);
+                                            const $td_carrierCode = $('<td></td>').text(carrierCode);
+                                            const $td_flightNumber = $('<td></td>').text(fNum);
+                                            const $td_directionality = $('<td></td>').text(directionality);
 
                                             $table.append($t_row
-                                                .append(td_carrierImage)
-                                                .append(td_carrierName)
-                                                .append(td_carrierCode)
-                                                .append(td_flightNumber)
-                                                .append(td_directionality)
+                                                .append($td_carrierImage)
+                                                .append($td_carrierName)
+                                                .append($td_carrierCode)
+                                                .append($td_flightNumber)
+                                                .append($td_directionality)
                                             );
                                         });
 
@@ -399,7 +414,7 @@ $(document).ready(function() {
                                 /* Outbound legs drop down */
                                 const $outboundLegsDropDown = $('<div></div>', { id: 'outbound-' + index, });
                                 const $outboundUl = $('<ul></ul>');
-                                createDynamicLegContent($outboundUl, 'OutboundLegs');
+                                createDynamicLegContent($carrierInfoTable, $outboundUl, 'OutboundLegs');
                                 $outboundLegsDropDown.append($outboundUl);
                                 /***********************************/
 
@@ -409,7 +424,7 @@ $(document).ready(function() {
                                 //Inbound isn't required, so check we have it..
                                 if (itin.InboundLegs) {
                                     const $outboundUl = $('<ul></ul>');
-                                    createDynamicLegContent($outboundUl, 'InboundLegs');
+                                    createDynamicLegContent($carrierInfoTable, $outboundUl, 'InboundLegs');
                                     $inboundLegsDropDown.append($outboundUl);
                                 }
                                 /***********************************/
@@ -434,14 +449,6 @@ $(document).ready(function() {
                                     .attr('src', image).attr('class', 'img img-responsive img-thumbnail');
                                 const $col10 = $('<div></div>', { 'class': 'col-xs-8' }) //.text(JSON.stringify(itin));
                                 const $panelFooter = $('<div></div>', { 'class': 'panel-footer' }).css({ 'min-height': '50px' });
-
-
-                                itin.OutboundLegs.FlightNumbers.forEach(function(flightNumber) {
-                                    const fNum = flightNumber.flightNumber;
-                                    const carrierName = flightNumber.carrierInfo.Name;
-                                    const carrierImage = flightNumber.carrierInfo.ImageUrl;
-                                    const carrierCode = flightNumber.carrierInfo.DisplayCode;
-                                });
 
                                 const $getBookingDetailsButton = $('<input/>', {
                                     value: 'Get booking details',

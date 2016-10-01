@@ -241,7 +241,7 @@ $(document).ready(function() {
                                 }).map(function(leg) {
                                     const _output = Object.assign({}, leg);
 
-                                    _output.FlightNumbers = leg.FlightNumbers.map(function(flightNumberObj) {
+                                    _output.FliguhtNumbers = leg.FlightNumbers.map(function(flightNumberObj) {
                                         const carrierId = flightNumberObj.CarrierId;
                                         return {
                                             flightNumber: flightNumberObj.FlightNumber,

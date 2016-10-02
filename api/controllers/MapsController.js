@@ -3,110 +3,6 @@ module.exports = {
         return res.ok();
     },
 
-    /*
-        //req.body.destination example
-        data {"Name":"Sydney Bankstown",
-              "City":"Sydney",
-              "Country":"Australia",
-              "IataOrFaaCode":"BWU",
-              "IcaoCode":"YSBK",
-              "Latitude":-33.924444,
-              "Longitude":150.988333,
-              "Altitude":29,"Timezone":
-              "Australia/Sydney",
-              "DST":"O"
-            }
-
-       //req.body.arrival example
-        data {"Name":"Sydney Bankstown",
-              "City":"Sydney",
-              "Country":"Australia",
-              "IataOrFaaCode":"BWU",
-              "IcaoCode":"YSBK",
-              "Latitude":-33.924444,
-              "Longitude":150.988333,
-              "Altitude":29,"Timezone":
-              "Australia/Sydney",
-              "DST":"O"
-            }
-        
-            //req.body.location
-            user location: {"coords":{"latitude":-36.7835812,
-            "longitude":174.462987,
-            "altitude":null,
-            "accuracy":30,
-            "altitudeAccuracy":null,
-            "heading":null,"speed":null},
-            "address":{
-                "commonName":"",
-                "streetNumber":"117",
-                "street":"Mahana Road",
-                "route":"Mahana Road",
-                "neighborhood":"",
-                "town":"",
-                "city":"Waimauku",
-                "region":"Auckland",
-                "postalCode":"0881",
-                "state":"","stateCode":"",
-                "country":"New Zealand",
-                "countryCode":"NZ"},
-                "formattedAddress":"117 Mahana Rd, Waimauku 0881, New Zealand",
-                "type":"ROOFTOP","placeId":"ChIJ2z3AlvUSDW0RdDxZXdsqHn0",
-                "timestamp":1474950287342,
-                "flag":"//cdnjs.cloudflare.com/ajax/libs/flag-icon-css/2.3.1/flags/4x3/nz.svg",
-                "timezone":{
-                    "id":"Pacific/Auckland",
-                    "name":"New Zealand Daylight Time",
-                    "abbr":"NZDT",
-                    "dstOffset":3600,"rawOffset":43200
-                }
-            }
-
-              origin: originAirport,
-                        destination: data,
-                        userPosition: sf_map.position,
-                        userLocation: sf_map.location,
-                        userLocale: window.seatfilla.globals.getFirstBrowserLanguage(),
-                        ticketInfo: { numAdultTickets, numChildTickets, numInfantTickets },
-                        dateInfo: { departure, arrival }
-
-            
-                
-                This is the information sent from our map...*
-                
-                {
-                    
-                "origin":{"Name":"Auckland Intl","City":"","Country":"","IataOrFaaCode"
-                :"AKL","IcaoCode":"NZAA","Latitude":"","Longitude":"","Altitude":"23","Timezone":"Pacific/Auckland","D
-                ST":"Z"},
-                
-                "destination":{"Name":"Sydney Bankstown","City":"Sydney","Country":"Australia","IataOrFaaCode":"BWU","IcaoCode":"
-                YSBK","Latitude":"-33.924444","Longitude":"150.988333","Altitude":"29","Timezone":"Australia/Sydney","DST":"O"},
-                
-                "destinationAirportLocation":{"coords":{"latitude":"-33.9243756","longitude":"150.9877047"},"address":{"commonName":"","streetNumber
-                ":"45L","street":"Starkey Drive","route":"Starkey Drive","neighborhood":"","town":"Bankstown City Council","city":"Banksto
-                wn Aerodrome","region":"Bankstown City Council","postalCode":"2198","state":"","stateCode":"","country":"Australia","count
-                ryCode":"AU"},"formattedAddress":"45L Starkey Dr, Bankstown Aerodrome NSW 2198, Australia","type":"ROOFTOP","placeId":"ChI
-                JAdDoHnC-EmsRFWCT7iKf_hE","timestamp":"1474966127767","flag":"//cdnjs.cloudflare.com/ajax/libs/flag-icon-css/2.3.1/flags/4
-                x3/au.svg"},
-                
-                "originAirportLocation":{"coords":{"latitude":"-37.00640569999999","longitude":"174.7909958"},"address":{"comm
-                onName":"","streetNumber":"2","street":"Andrew Mckee Avenue","route":"Andrew Mckee Avenue","neighborhood":"","town":"","ci
-                ty":"Auckland","region":"Auckland","postalCode":"2022","state":"","stateCode":"","country":"New Zealand","countryCode":"NZ
-                "},"formattedAddress":"2 Andrew Mckee Ave, Auckland Airport, Auckland 2022, New Zealand","type":"ROOFTOP","placeId":"ChIJF
-                xK70uZPDW0Rarh_m5lVv3A","timestamp":"1474966127989","flag":"//cdnjs.cloudflare.com/ajax/libs/flag-icon-css/2.3.1/flags/4x3
-                /nz.svg"},
-                
-                "userLocation":{"coords":{"latitude":"","longitude":"","altitude":"","accuracy":"30","altit
-                udeAccuracy":"","heading":"","speed":""},"address":{"commonName":"","streetNumber":"","street":"","route":"","neighborhood":"","town":"","city":"","region":"","postalCode":"","state":"","stateCode":"
-                ","country":"","countryCode":""},"formattedAddress":"","type":"ROOFT
-                OP","placeId":"ChIJ2z3AlvUSDW0RdDxZXdsqHn0","timestamp":"1474950287342","flag":"//cdnjs.cloudflare.com/ajax/libs/flag-icon
-                -css/2.3.1/flags/4x3/nz.svg","timezone":{"id":"Pacific/Auckland","name":"New Zealand Daylight Time","abbr":"NZDT","dstOffs
-                et":"3600","rawOffset":"43200"}},
-                
-                "userLocale":"en-US"
-                }  
-    */
     retrieveFlightInfo(req, res) {
         new Promise(function(resolve, reject) {
             if (req.user) {
@@ -215,11 +111,11 @@ module.exports = {
                     sails.log.debug(result);
                     return resolve(res.json(ResponseStatus.OK, { result: result, cityImages: arr }));
                 }).catch(function(err) {
-                    sails.log.debug(err.message + ' ' + JSON.stringify(err));
+                    sails.log.error(err);
                     return reject(ResponseStatus.OK, { result: result, error: err, errorType: 'gettyImageServiceRequest' });
                 });
             }).catch(function(error) {
-                sails.log.debug('Error in maps controller ' + JSON.stringify(error));
+                sails.log.error(error);
                 return reject(res.json(ResponseStatus.OK, { errors: error.error, errorType: 'livePricingApiRequest' }));
             });
 

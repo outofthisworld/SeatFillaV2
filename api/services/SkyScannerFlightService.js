@@ -60,9 +60,7 @@ const exportObj = {
         /*
             POST request details:
             URL: http://partners.api.skyscanner.net/apiservices/pricing/v1.0
-
             [Required	Description	Data Type	Constraints]
-
             apiKey	Yes	The API Key to identify the customer	String	Must be a valid API Key
             country	Yes	The user’s market country	String	ISO country code, or specified location schema
             currency	Yes	The user’s currency	String	ISO currency code
@@ -77,20 +75,15 @@ const exportObj = {
             children	No	The number of children	Int	Defaults to 0, maximum 8
             infants	No	The number of infants	Int	Defaults to 0, cannot exceed adults
             groupPricing	No	Show price-per-adult (false), or price for all passengers (true)	bool	Defaults to false
-
             EXTRA INFO:
-
             Code	Values
             currency	The Currencies Service is available to display supported currencies.
             locale	The Locales Service is available to display supported locales.
             locationschema	Iata, GeoNameCode, GeoNameId, Rnid*, Sky
             cabinclass	Economy*, PremiumEconomy, Business, First
-
             Response Details
-
             A successful response contains no content. The URL to poll the booking details is specified in the Location header of the response.
             An unsuccessful response will detail the validation failure or state that there was an error.
-
             Response Headers
             Location Header	Contains the URL for polling the newly created session.
         */
@@ -131,9 +124,7 @@ const exportObj = {
         /*
             GET REQUEST information: 
             (Note that this request must be sent AFTER first obtaining a session key from skyscanner.)
-
             [param  required  type notes] - REQUEST DETAILS
-
             apiKey	Yes	The API Key to identify the customer	String	Must be a valid API Key
             locationschema	No	The code schema used for locations	String	The supported codes are below
             carrierschema	No	The code schema to use for carriers	String	The supported codes are below
@@ -151,7 +142,6 @@ const exportObj = {
             duration	No	Filter for maximum duration in minutes	Int	Between 0 and 1800
             includecarriers	No	Filter flights by the specified carriers	String	Must be semicolon-separated Iata carrier codes.
             excludecarriers	No	Filter flights by any but the specified carriers	String	Must be semicolon-separated Iata carrier codes.
-
             OPTIONAL:
             pageindex	0	The desired page number	Int
             pagesize	10	The number of itineraries per page	Int
@@ -162,7 +152,6 @@ const exportObj = {
             includeBookingDetailsLink	false	Whether or not to show the BookingDetailsLink for each itinerary in the subsequent poll session. If false, the client will have to build this booking details link manually
                     
             RESPONSE BODY:
-
             SessionKey	The Session key to identify the session.
             Query	A copy of the query which was submitted.
             Status	The status of the session – ‘UpdatesPending’ or ‘UpdatesComplete’.
@@ -241,7 +230,6 @@ const exportObj = {
         },
         /*
             PUT request:http://partners.api.skyscanner.net/apiservices/pricing/v1.0/{session key}/booking?apiKey={apiKey}
-
             [Parameter	Required	Description	Data Type	Constraints]
             apiKey	Yes	The API Key to identify the customer	String	Must be a valid API Key
             outboundlegid	Yes	The outbound leg Id of the itinerary	String	Must be a valid leg ID
@@ -249,10 +237,8 @@ const exportObj = {
             adults	No	The number of adults	Int	Defaults to 1, maximum 8
             children	No	The number of children	Int	Defaults to 0, maximum 8
             infants	No	The number of infants	Int	Defaults to 0, cannot exceed adults
-
             A successful response contains no content. The URL to poll the booking details is specified in the Location header of the response.
             An unsuccessful response will detail the validation failure or state that there was an error.
-
             The Response
             Location Header	Contains the URL for polling the the booking details.
         */
@@ -283,19 +269,14 @@ const exportObj = {
         /*
             Polling the Booking Details (GET)
             http://partners.api.skyscanner.net/apiservices/pricing/v1.0/{session key}/booking/{itinerary key}?apiKey={apiKey}
-
             Getting the session key and itinerary key: the full polling URL, including the session key and itinerary key,
             is obtained from the Location header in the response to the Booking Details request.
-
             Parameters (Query string)
-
             [Parameter	Required	Description	Data Type	Constraints]
             apiKey	Yes	The API Key to identify the customer	String	Must be a valid API Key
             locationschema	No	The code schema used for locations	String	The supported codes are below
             carrierschema	No	The code schema to use for carriers	String	The supported codes are below
-
             Optional Parameters for Mobile Usage
-
             Parameter	Sample Value	Description	Data Type
             includeQuery	false	Whether or not to repeat the query in the subsequent polls	Boolean
             skipCarrierLookup	1050;881;1859	A semicolon separated list of carried Ids which have already been sent to the client in this booking details session, and hence will not be re-sent in subsequent polls	List of integers

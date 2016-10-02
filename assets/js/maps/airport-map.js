@@ -1,8 +1,6 @@
 /*
     Logic for the airport map.
-
     Created by Dale.
-
 */
 
 
@@ -113,6 +111,476 @@ $(document).ready(function() {
             content: '<h1>Its an airport!</h1>'
         }
 
+        function handleClick() {
+            _button = $('#searchFlights');
+            _button.addClass('m-progress');
+
+            /* If we dont have the correct dates, submit the form to show native HTML5 errors */
+            var $datesForm = $('#datesForm')
+            if (!$datesForm[0].checkValidity()) {
+                $datesForm.find(':submit').click()
+                _button.removeClass('m-progress');
+                return;
+            }
+
+            const data = this.marker.data;
+            const origin = this.origin;
+
+            console.log(data);
+            console.log('destination data: ' + JSON.stringify(data));
+            console.log('origin data:' + JSON.stringify(origin));
+            console.log('user position:' + JSON.stringify(sf_map.position));
+            console.log('user location: ' + JSON.stringify(sf_map.location));
+
+            const departure = $('#departure_date').val();
+            const arrival = $('#return_date').val();
+            const numChildTickets = $('#num_child_tickets').val();
+            const numAdultTickets = $('#num_adult_tickets').val();
+            const numInfantTickets = $('#num_infant_tickets').val();
+            const prefferedCabinClass = $("#cabin_class").val();
+            const groupPricing = $("#group_pricing").val();
+
+            $.ajax({
+                type: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo.method,
+                url: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo.url,
+                data: {
+                    origin,
+                    destination: data,
+                    userPosition: sf_map.position,
+                    userLocation: sf_map.location,
+                    userLocale: window.seatfilla.globals.getFirstBrowserLanguage(),
+                    ticketInfo: { numAdultTickets, numChildTickets, numInfantTickets },
+                    dates: { departure, arrival },
+                    prefferedCabinClass,
+                    groupPricing
+                },
+                success: function(response) {
+                    if ((response.errors || response.error) && response.errorType != 'gettyImageServiceRequest') {
+                        console.log(response);
+                        window.alert(JSON.stringify(response.errors));
+                    } else {
+                        console.log(response);
+                        const sf_result = response.result;
+
+                        /* Maybe change it to client side polling... */
+
+
+                        $("#flightResults").append($('<div></div>', { class: 'well well-sm' }).text(JSON.stringify(sf_result.Query)));
+
+                        const mapItin = function(itin, directionality, legId) {
+
+                            if (!itin.PricingOptionsMapped) {
+                                itin.PricingOptions = itin.PricingOptions.map((pricingOption) => {
+                                    return {
+                                        pricingOption,
+                                        agents: pricingOption.Agents.map((agentId) => {
+                                            return {
+                                                agentId,
+                                                agent: sf_result.Agents.filter((agent) => {
+                                                    return agent.Id == agentId;
+                                                }).pop()
+                                            }
+                                        })
+                                    }
+                                });
+                                itin.PricingOptionsMapped = true;
+                            }
+
+                            itin[directionality + 'Legs'] = sf_result.Legs.filter(function(leg) {
+                                return leg.Id == legId;
+                            }).map(function(leg) {
+                                const _output = Object.assign({}, leg);
+
+                                _output.FlightNumbers = leg.FlightNumbers.map(function(flightNumberObj) {
+                                    const carrierId = flightNumberObj.CarrierId;
+                                    return {
+                                        flightNumber: flightNumberObj.FlightNumber,
+                                        carrierId,
+                                        carrierInfo: sf_result.Carriers.filter((carrier) => {
+                                            return carrier.Id == carrierId;
+                                        }).pop()
+                                    }
+                                });
+
+                                _output.SegmentIds = leg.SegmentIds.map(function(segmentId) {
+                                    return {
+                                        segmentId,
+                                        segmentInfo: sf_result.Segments.filter(function(segment) {
+                                            return segment.Id == segmentId;
+                                        })
+                                    }
+                                });
+
+                                const destinationStationId = leg.DestinationStation;
+                                _output.DestinationStation = sf_result.Places.filter(function(place) {
+                                    return place.Id == destinationStationId;
+                                }).pop();
+
+                                const originStation = leg.OriginStation;
+                                _output.OriginStation = sf_result.Places.filter(function(place) {
+                                    return place.Id == originStation;
+                                }).pop();
+
+                                return _output;
+                            });
+
+                            return itin;
+                        }
+
+
+                        sf_result.Itineraries.map(function(itin) {
+                            const outboundLegId = itin.OutboundLegId;
+                            const inboundLegId = itin.InboundLegId;
+
+                            mapItin(itin, 'Outbound', outboundLegId);
+
+                            if (inboundLegId) {
+                                mapItin(itin, 'Inbound', inboundLegId);
+                            }
+                            return itin;
+
+                        }).forEach(function(itin, index) {
+
+                            console.log(itin);
+
+                            /* The outbound and inbound leg ids*/
+                            const outboundLegId = itin.OutboundLegId;
+                            const inboundLegId = itin.InboundLegId;
+
+                            /* Now we retrieve the mapped info.. */
+                            const bookingDetailsUri = itin.BookingDetailsLink.Uri;
+                            const bookingDetailsBody = itin.BookingDetailsLink.Body;
+                            const bookingDetailsMethod = itin.BookingDetailsLink.Method;
+
+                            const numberOfOutboundLegs = itin.OutboundLegs.length;
+                            const numberOfInboundLegs = (itin.InboundLegs && itin.InboundLegs.length) || 0;
+
+                            const cityImages = response.cityImages || null;
+                            const image = (cityImages && cityImages[index] && cityImages[index].image) || '';
+
+                            //Booking details drop down.
+                            const $dropDownContent = $('<div></div>', { id: 'detail-' + index, });
+                            const $dropDownContentInfo = $('<div></div>', { class: 'fluid-row', }).text('booking details');
+
+                            /* Outbound legs drop down */
+                            const $outboundLegsDropDown = $('<div></div>', { id: 'outbound-' + index, });
+                            const $inboundLegsDropDown = $('<div></div>', { id: 'outbound-' + index, });
+                            const $outboundUl = $('<ul></ul>');
+
+                            const $col12 = $('<div></div>', { 'class': 'col-xs-12' });
+                            const $getCarrierInfoDropDown = $('<div></div>', { id: 'carrier-' + index, }).slideToggle();
+                            const $getCarrierInfoDropdownContent = $('<div></div>', { class: 'container-fluid', });
+                            const $carrierInfoTable = $('<table></table>', { 'class': 'table table-responsive table-bordered table-filtered' });
+                            $carrierInfoTable.append(
+                                $('<tr></tr>').append(
+                                    $('<th></th>').text('')
+                                ).append(
+                                    $('<th></th>').text('Carrier name')
+                                ).append(
+                                    $('<th></th>').text('Carrier code')
+                                ).append(
+                                    $('<th></th>').text('Flight number')
+                                ).append(
+                                    $('<th></th>').text('Directionality')
+                                ));
+                            $getCarrierInfoDropdownContent.append($carrierInfoTable);
+
+                            const $getCarrierInfoButton = $('<input/>', {
+                                value: 'Show Carrier Details',
+                                type: 'button',
+                                class: 'btn  btn-info btn-sm pull-right',
+                                'data-toggle': 'carrier-' + index,
+                                on: {
+                                    click: function() {
+                                        $('#notification').attr('opened', 'true').attr('text', 'Showing carrier details');
+                                        $input = $(this);
+                                        $target = $('#' + $input.attr('data-toggle'));
+                                        $target.slideToggle('fast', function() {
+                                            if ($target.is(':visible')) {
+                                                $input.val('Hide carrier info');
+                                            } else {
+                                                $input.val('Show carrier info');
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+
+                            const $liEle = $('<li></li>', { class: 'list-group-item', });
+                            const $panelInfo = $('<div></div>', { class: 'panel panel-default' });
+                            const $panelHeading = $('<div></div>', { class: 'panel panel-heading' }).css({ 'min-height': '50px' });
+                            const $panelContent = $('<div></div>', { class: 'panel panel-content' }).css({ 'padding': '20px' });
+                            const $in_group = $('<ul></ul>', { 'class': 'pull-right' }).css({ 'background-color': 'transparent', 'display': 'flex', 'position': 'relative', 'bottom': '6px' });
+                            const $li = $('<li></li>').css({ 'padding': '5px', 'display': 'inline-block' });
+                            const $row = $('<div></div>', { 'class': 'row' });
+                            const $col2 = $('<div></div>', { 'class': 'col-xs-4' });
+                            const $gettyImg = $('<img></img>').attr('height', '100px').attr('width', '100px')
+                                .css({
+                                    'width': '200px',
+                                    'height': '150px',
+                                    'min-width': '100px',
+                                    'min-height': '100px',
+                                    'padding': '10px',
+                                    'position': 'relative',
+                                    'top': '60px',
+                                    'left': '40px'
+                                })
+                                .attr('src', image).attr('class', 'img img-responsive img-thumbnail');
+                            const $col10 = $('<div></div>', { 'class': 'col-xs-8' }) //.text(JSON.stringify(itin));
+                            const $panelFooter = $('<div></div>', { 'class': 'panel-footer' }).css({ 'min-height': '50px' });
+
+                            const $getBookingDetailsButton = $('<input/>', {
+                                value: 'Get Booking Details',
+                                type: 'button',
+                                class: 'btn  btn-info btn-sm pull-right',
+                                'data-toggle': 'detail-' + index,
+                                on: {
+                                    click: function() {
+                                        $('#notification').attr('opened', 'true').attr('text', 'Booking details will be loaded shortly');
+                                        $input = $(this);
+                                        $target = $('#' + $input.attr('data-toggle'));
+
+                                        $input.addClass('m-progress');
+                                        $.ajax({
+                                            type: window.seatfilla.globals.site.endpoints.maps.retrieveBookingDetails.method,
+                                            url: window.seatfilla.globals.site.endpoints.maps.retrieveBookingDetails.url,
+                                            data: {
+                                                sessionkey: sf_result.SessionKey,
+                                                outboundLegId,
+                                                inboundLegId,
+                                                bookingDetailsLink: sf_result.bookingDetailsLink
+                                            },
+                                            success: function(response, x, xhr) {
+                                                if (xhr.status == 200) {
+                                                    $target.slideToggle('slow', function() {
+                                                        $input.removeClass('m-progress');
+                                                    });
+                                                    //apend response to dropDownContentInfo
+                                                } else {
+                                                    alert(response);
+                                                }
+                                            }
+                                        });
+
+                                    }
+                                }
+                            });
+
+                            const createDynamicLegContent = function($table, $ulEle, legAttr) {
+                                itin[legAttr].forEach(function(leg) {
+                                    console.log(leg);
+
+                                    const departureTime = leg.Departure;
+                                    const arrivalTime = leg.Arrival;
+                                    const destinationStationCode = leg.DestinationStation.Code;
+                                    const destinationStationName = leg.DestinationStation.Name;
+                                    const originStationName = leg.OriginStation.Name;
+                                    const originStationCode = leg.OriginStation.Code;
+                                    const directionality = leg.Directionality;
+                                    const flightDuration = leg.Duration;
+                                    const numberOfStops = leg.Stops.length;
+                                    const numberOfSegments = leg.SegmentIds.length;
+                                    //Multiple
+                                    const carriers = leg.Carriers;
+
+                                    const $outbound_info_li = $('<li></li>')
+                                        .append(
+                                            $('<p></p>').text('Origin Station Name: ' + originStationName)
+                                        ).append(
+                                            $('<p></p>').text('Origin Station Code: ' + originStationCode)
+                                        ).append(
+                                            $('<p></p>').text('Destination Station Name: ' + destinationStationName)
+                                        ).append(
+                                            $('<p></p>').text('Destination Station Code: ' + destinationStationCode)
+                                        ).append(
+                                            $('<p></p>').text('Departure Time: ' + departureTime)
+                                        ).append(
+                                            $('<p></p>').text('Arrival Time: ' + arrivalTime)
+                                        ).append(
+                                            $('<p></p>').text('Duration: ' + flightDuration)
+                                        ).append(
+                                            $('<p></p>').text('Number of stops: ' + numberOfStops)
+                                        ).append(
+                                            $('<p></p>').text('Number of segments: ' + numberOfSegments)
+                                        );
+
+                                    leg.FlightNumbers.forEach(function(flightNumber) {
+                                        const fNum = flightNumber.flightNumber;
+                                        const carrierName = flightNumber.carrierInfo.Name;
+                                        const carrierImage = flightNumber.carrierInfo.ImageUrl;
+                                        const carrierCode = flightNumber.carrierInfo.DisplayCode;
+
+                                        const $carrierImage = $('<img/>', { 'class': 'img img-responsive' }).attr('src', carrierImage);
+
+                                        const $t_row = $('<tr></tr>');
+                                        const $td_carrierImage = $('<td></td>').append($carrierImage);
+                                        const $td_carrierName = $('<td></td>').text(carrierName);
+                                        const $td_carrierCode = $('<td></td>').text(carrierCode);
+                                        const $td_flightNumber = $('<td></td>').text(fNum);
+                                        const $td_directionality = $('<td></td>').text(directionality);
+
+                                        $table.append($t_row
+                                            .append($td_carrierImage)
+                                            .append($td_carrierName)
+                                            .append($td_carrierCode)
+                                            .append($td_flightNumber)
+                                            .append($td_directionality)
+                                        );
+                                    });
+
+
+                                    $ulEle.append($outbound_info_li);
+                                });
+                                return $ulEle;
+                            }
+
+                            createDynamicLegContent($carrierInfoTable, $outboundUl, 'OutboundLegs');
+                            $outboundLegsDropDown.append($outboundUl);
+
+                            if (itin.InboundLegs) {
+                                const $outboundUl = $('<ul></ul>');
+                                createDynamicLegContent($carrierInfoTable, $outboundUl, 'InboundLegs');
+                                $inboundLegsDropDown.append($outboundUl);
+                            }
+
+                            const $getPricingInfoDropDown = $('<div></div>', { id: 'pricing-' + index, }).slideToggle();
+                            const $getPricingInfoDropdownContent = $('<div></div>', { class: 'container-fluid', });
+                            const $pricingInfoTable = $('<table></table>', { 'class': 'table table-responsive table-bordered' });
+                            const $getPricingDetailsButton = $('<input/>', {
+                                value: 'Show Pricing Details',
+                                type: 'button',
+                                class: 'btn  btn-info btn-sm pull-right',
+                                'data-toggle': 'pricing-' + index,
+                                on: {
+                                    click: function() {
+                                        $('#notification').attr('opened', 'true').attr('text', 'Showing carrier details');
+                                        $input = $(this);
+                                        $target = $('#' + $input.attr('data-toggle'));
+                                        $target.slideToggle('fast', function() {
+                                            if ($target.is(':visible')) {
+                                                $input.val('Hide pricing info');
+                                            } else {
+                                                $input.val('Show pricing info');
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                            $pricingInfoTable.append(
+                                $('<tr></tr>').append(
+                                    $('<th></th>').text('')
+                                ).append(
+                                    $('<th></th>').text('Booking Number')
+                                ).append(
+                                    $('<th></th>').text('Name')
+                                ).append(
+                                    $('<th></th>').text('Type')
+                                ).append(
+                                    $('<th></th>').text('Price')
+                                ).append(
+                                    $('<th></th>').text('Quote Age (Mins)')
+                                ).append(
+                                    $('<th></th>').text('Booking URL')
+                                ));
+
+                            $getPricingInfoDropdownContent.append($pricingInfoTable);
+
+
+                            itin.PricingOptions.forEach((op) => {
+                                const deepLinkUrl = op.pricingOption.DeeplinkUrl;
+                                const price = op.pricingOption.Price;
+                                const quoteAgeInMinutes = op.pricingOption.QuoteAgeInMinutes;
+
+                                op.agents.forEach((agent) => {
+                                    const $t_row = $('<tr></tr>');
+                                    const a = agent.agent;
+                                    const bookingNumber = a.BookingNumber;
+                                    const imgUrl = a.ImageUrl;
+                                    const name = a.Name;
+                                    const type = a.Type;
+
+                                    const $td_bookingNum = $('<td></td>').text(bookingNumber);
+                                    const $td_image = $('<td></td>').append(
+                                        $('<img></img>', { 'class': 'img img-responsive' }).attr('src', imgUrl)
+                                    );
+                                    const $td_name = $('<td></td>').text(name);
+                                    const $td_type = $('<td></td>').text(type);
+                                    const $td_price = $('<td></td>').text(price);
+                                    const $td_quoteAge = $('<td></td>').text(quoteAgeInMinutes);
+                                    const $td_deepLinkUrl = $('<td></td>').append($('<a></a>', {
+                                        href: deepLinkUrl,
+                                        text: 'Book with this ' + type,
+                                    }));
+
+                                    $t_row.append($td_image)
+                                        .append($td_bookingNum)
+                                        .append($td_name)
+                                        .append($td_type)
+                                        .append($td_price)
+                                        .append($td_quoteAge)
+                                        .append($td_deepLinkUrl);
+
+                                    $pricingInfoTable.append($t_row);
+                                });
+                            });
+
+                            $panelHeading.text('Flight result ' + (index + 1));
+
+                            if (!itin.InboundLegs) {
+                                $col10.append($outboundLegsDropDown);
+                            } else {
+                                const $col10_row = $('<div></div>', { 'class': 'row' });
+
+                                //Outbound column
+                                const $col_5_o = $('<div></div>', { 'class': 'col-xs-5' });
+                                $col_5_o.append($('<h2></h2>').text('Outbound Details'));
+                                $col_5_o.append($outboundLegsDropDown);
+                                $col10_row.append($col_5_o);
+
+                                //Inbound column
+                                const $col_5_i = $('<div></div>', { 'class': 'col-xs-5' });
+                                $col_5_i.append($('<h2></h2>').text('Inbound Details'));
+                                $col_5_i.append($inboundLegsDropDown);
+                                $col10_row.append($col_5_i);
+
+                                $col10.append($col10_row);
+                            }
+
+
+                            const $hr = $('<hr/>');
+                            $panelContent.append($row.append($col2.append($gettyImg)).append($col10));
+
+                            $panelInfo.append($panelHeading);
+
+                            $panelInfo.append($panelContent);
+                            $getPricingInfoDropDown.append($getPricingInfoDropdownContent);
+                            $getCarrierInfoDropDown.append($getCarrierInfoDropdownContent);
+                            $dropDownContent.append($dropDownContentInfo);
+
+                            $panelInfo.append($getPricingInfoDropDown).append($hr.clone());
+                            $panelInfo.append($getCarrierInfoDropDown).append($hr.clone());
+                            $panelInfo.append($dropDownContent).append($hr.clone());
+
+                            $in_group.append($li.clone().append($getCarrierInfoButton));
+                            $in_group.append($li.clone().append($getPricingDetailsButton));
+                            $in_group.append($li.clone().append($getBookingDetailsButton));
+
+
+                            $panelFooter.append($in_group);
+
+                            $panelInfo.append($panelFooter);
+                            $liEle.append($panelInfo);
+
+                            $('#flightResults').append($liEle);
+                        });
+                    }
+
+                    $('[id^=detail-]').hide();
+                    _button.removeClass('m-progress');
+                },
+            });
+        }
+
         const findFlightsOnClickHandler = function() {
 
             const coords = $(this).attr('data-coords');
@@ -159,400 +627,14 @@ $(document).ready(function() {
             var today = now.getFullYear() + "-" + (month) + "-" + (day);
 
             $('#departure_date').attr('min', today).val(today);
-
-
-            function handleClick() {
-
-                console.log(now);
-
-                $("#flightResults").html("");
-
-                _button = $(this);
-                _button.addClass('m-progress');
-
-                /* If we dont have the correct dates, submit the form to show native HTML5 errors */
-                var $datesForm = $('#datesForm')
-                if (!$datesForm[0].checkValidity()) {
-                    $datesForm.find(':submit').click()
-                    _button.removeClass('m-progress');
-                    return;
-                }
-
-                const data = marker.data;
-
-                console.log(data);
-                console.log('destination data: ' + JSON.stringify(data));
-                console.log('origin data:' + JSON.stringify(origin));
-                console.log('user position:' + JSON.stringify(sf_map.position));
-                console.log('user location: ' + JSON.stringify(sf_map.location));
-
-                const departure = $('#departure_date').val();
-                console.log(departure);
-                const arrival = $('#return_date').val();
-                const numChildTickets = $('#num_child_tickets').val();
-                const numAdultTickets = $('#num_adult_tickets').val();
-                const numInfantTickets = $('#num_infant_tickets').val();
-                const prefferedCabinClass = $("#cabin_class").val();
-                const groupPricing = $("#group_pricing").val();
-
-                $.ajax({
-                    type: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo.method,
-                    url: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo.url,
-                    data: {
-                        origin,
-                        destination: data,
-                        userPosition: sf_map.position,
-                        userLocation: sf_map.location,
-                        userLocale: window.seatfilla.globals.getFirstBrowserLanguage(),
-                        ticketInfo: { numAdultTickets, numChildTickets, numInfantTickets },
-                        dates: { departure, arrival },
-                        prefferedCabinClass,
-                        groupPricing
-                    },
-                    success: function(response) {
-                        if ((response.errors || response.error) && response.errorType != 'gettyImageServiceRequest') {
-                            console.log(response);
-                            window.alert(JSON.stringify(response.errors));
-                        } else {
-                            console.log(response);
-                            const sf_result = response.result;
-
-                            /* Maybe change it to client side polling... */
-
-                            $("#flightResults").html("");
-                            $("#flightResults").append($('<div></div>', { class: 'well well-sm' }).text(JSON.stringify(sf_result.Query)));
-
-                            const mapItin = function(itin, directionality, legId) {
-
-                                itin.PricingOptions.map((pricingOption) => {
-                                    return {
-                                        pricingOption,
-                                        agents: pricingOption.Agents.map((agentId) => {
-                                            return {
-                                                agentId,
-                                                agentInfo: sf_result.Agents.filter((agent) => {
-                                                    agent.Id = agentId;
-                                                })
-                                            }
-                                        })
-                                    }
-                                });
-
-                                itin[directionality + 'Legs'] = sf_result.Legs.filter(function(leg) {
-                                    return leg.Id == legId;
-                                }).map(function(leg) {
-                                    const _output = Object.assign({}, leg);
-
-                                    _output.FlightNumbers = leg.FlightNumbers.map(function(flightNumberObj) {
-                                        const carrierId = flightNumberObj.CarrierId;
-                                        return {
-                                            flightNumber: flightNumberObj.FlightNumber,
-                                            carrierId,
-                                            carrierInfo: sf_result.Carriers.filter((carrier) => {
-                                                return carrier.Id == carrierId;
-                                            }).pop()
-                                        }
-                                    });
-
-                                    _output.SegmentIds = leg.SegmentIds.map(function(segmentId) {
-                                        return {
-                                            segmentId,
-                                            segmentInfo: sf_result.Segments.filter(function(segment) {
-                                                return segment.Id == segmentId;
-                                            })
-                                        }
-                                    });
-
-                                    const destinationStationId = leg.DestinationStation;
-                                    _output.DestinationStation = sf_result.Places.filter(function(place) {
-                                        return place.Id == destinationStationId;
-                                    }).pop();
-
-                                    const originStation = leg.OriginStation;
-                                    _output.OriginStation = sf_result.Places.filter(function(place) {
-                                        return place.Id == originStation;
-                                    }).pop();
-
-                                    return _output;
-                                });
-
-                                return itin;
-                            }
-
-
-                            sf_result.Itineraries.map(function(itin) {
-                                const outboundLegId = itin.OutboundLegId;
-                                const inboundLegId = itin.InboundLegId;
-
-                                mapItin(itin, 'Outbound', outboundLegId);
-
-                                if (inboundLegId) {
-                                    mapItin(itin, 'Inbound', inboundLegId);
-                                }
-                                return itin;
-
-                            }).forEach(function(itin, index) {
-
-                                console.log(itin);
-
-                                /* The outbound and inbound leg ids*/
-                                const outboundLegId = itin.OutboundLegId;
-                                const inboundLegId = itin.InboundLegId;
-
-                                /* Now we retrieve the mapped info.. */
-                                const bookingDetailsUri = itin.BookingDetailsLink.Uri;
-                                const bookingDetailsBody = itin.BookingDetailsLink.Body;
-                                const bookingDetailsMethod = itin.BookingDetailsLink.Method;
-
-                                const numberOfOutboundLegs = itin.OutboundLegs.length;
-                                const numberOfInboundLegs = (itin.InboundLegs && itin.InboundLegs.length) || 0;
-
-                                const cityImages = response.cityImages || null;
-                                const image = (cityImages && cityImages[index] && cityImages[index].image) || '';
-
-                                //Booking details drop down.
-                                const $dropDownContent = $('<div></div>', { id: 'detail-' + index, });
-                                const $dropDownContentInfo = $('<div></div>', { class: 'fluid-row', }).text('booking details');
-
-                                const $col12 = $('<div></div>', { 'class': 'col-xs-12' });
-                                const $getCarrierInfoDropDown = $('<div></div>', { id: 'carrier-' + index, }).slideToggle();
-                                const $getCarrierInfoDropdownContent = $('<div></div>', { class: 'container80', });
-                                const $carrierInfoTable = $('<table></table>', { 'class': 'table table-responsive table-striped' });
-                                $carrierInfoTable.append(
-                                    $('<tr></tr>').append(
-                                        $('<th></th>').text('')
-                                    ).append(
-                                        $('<th></th>').text('Carrier name')
-                                    ).append(
-                                        $('<th></th>').text('Carrier code')
-                                    ).append(
-                                        $('<th></th>').text('Flight number')
-                                    ).append(
-                                        $('<th></th>').text('Directionality')
-                                    ));
-                                $getCarrierInfoDropdownContent.append($carrierInfoTable);
-
-                                const $getCarrierInfoButton = $('<input/>', {
-                                    value: 'Show carrier info',
-                                    type: 'button',
-                                    class: 'btn  btn-info btn-sm pull-right',
-                                    'data-toggle': 'carrier-' + index,
-                                    on: {
-                                        click: function() {
-                                            $('#notification').attr('opened', 'true').attr('text', 'Showing carrier details');
-                                            $input = $(this);
-                                            $target = $('#' + $input.attr('data-toggle'));
-                                            $target.slideToggle('fast', function() {
-                                                if ($target.is(':visible')) {
-                                                    $input.val('Hide carrier info');
-                                                } else {
-                                                    $input.val('Show carrier info');
-                                                }
-                                            });
-                                        }
-                                    }
-                                });
-
-                                const createDynamicLegContent = function($table, $ulEle, legAttr) {
-                                    itin[legAttr].forEach(function(leg) {
-                                        console.log(leg);
-
-                                        const departureTime = leg.Departure;
-                                        const arrivalTime = leg.Arrival;
-                                        const destinationStationCode = leg.DestinationStation.Code;
-                                        const destinationStationName = leg.DestinationStation.Name;
-                                        const originStationName = leg.OriginStation.Name;
-                                        const originStationCode = leg.OriginStation.Code;
-                                        const directionality = leg.Directionality;
-                                        const flightDuration = leg.Duration;
-                                        const numberOfStops = leg.Stops.length;
-                                        const numberOfSegments = leg.SegmentIds.length;
-                                        //Multiple
-                                        const carriers = leg.Carriers;
-
-                                        const $outbound_info_li = $('<li></li>')
-                                            .append(
-                                                $('<p></p>').text('Origin Station Name: ' + originStationName)
-                                            ).append(
-                                                $('<p></p>').text('Origin Station Code: ' + originStationCode)
-                                            ).append(
-                                                $('<p></p>').text('Destination Station Name: ' + destinationStationName)
-                                            ).append(
-                                                $('<p></p>').text('Destination Station Code: ' + destinationStationCode)
-                                            ).append(
-                                                $('<p></p>').text('Departure Time: ' + departureTime)
-                                            ).append(
-                                                $('<p></p>').text('Arrival Time: ' + arrivalTime)
-                                            ).append(
-                                                $('<p></p>').text('Duration: ' + flightDuration)
-                                            ).append(
-                                                $('<p></p>').text('Number of stops: ' + numberOfStops)
-                                            ).append(
-                                                $('<p></p>').text('Number of segments: ' + numberOfSegments)
-                                            );
-
-                                        leg.FlightNumbers.forEach(function(flightNumber) {
-                                            const fNum = flightNumber.flightNumber;
-                                            const carrierName = flightNumber.carrierInfo.Name;
-                                            const carrierImage = flightNumber.carrierInfo.ImageUrl;
-                                            const carrierCode = flightNumber.carrierInfo.DisplayCode;
-
-                                            const $carrierImage = $('<img/>', { 'class': 'img img-responsive' }).attr('src', carrierImage);
-
-                                            const $t_row = $('<tr></tr>');
-                                            const $td_carrierImage = $('<td></td>').append($carrierImage);
-                                            const $td_carrierName = $('<td></td>').text(carrierName);
-                                            const $td_carrierCode = $('<td></td>').text(carrierCode);
-                                            const $td_flightNumber = $('<td></td>').text(fNum);
-                                            const $td_directionality = $('<td></td>').text(directionality);
-
-                                            $table.append($t_row
-                                                .append($td_carrierImage)
-                                                .append($td_carrierName)
-                                                .append($td_carrierCode)
-                                                .append($td_flightNumber)
-                                                .append($td_directionality)
-                                            );
-                                        });
-
-
-                                        $ulEle.append($outbound_info_li);
-                                    });
-                                    return $ulEle;
-                                }
-
-                                /* Outbound legs drop down */
-                                const $outboundLegsDropDown = $('<div></div>', { id: 'outbound-' + index, });
-                                const $outboundUl = $('<ul></ul>');
-                                createDynamicLegContent($carrierInfoTable, $outboundUl, 'OutboundLegs');
-                                $outboundLegsDropDown.append($outboundUl);
-                                /***********************************/
-
-                                /*Inbound legs drop down */
-                                const $inboundLegsDropDown = $('<div></div>', { id: 'outbound-' + index, });
-
-                                //Inbound isn't required, so check we have it..
-                                if (itin.InboundLegs) {
-                                    const $outboundUl = $('<ul></ul>');
-                                    createDynamicLegContent($carrierInfoTable, $outboundUl, 'InboundLegs');
-                                    $inboundLegsDropDown.append($outboundUl);
-                                }
-                                /***********************************/
-
-                                const $liEle = $('<li></li>', { class: 'list-group-item', });
-                                const $panelInfo = $('<div></div>', { class: 'panel panel-default' });
-                                const $panelHeading = $('<div></div>', { class: 'panel panel-heading' }).css({ 'min-height': '50px' });
-                                const $panelContent = $('<div></div>', { class: 'panel panel-content' }).css({ 'padding': '20px' });
-                                const $row = $('<div></div>', { 'class': 'row' });
-                                const $col2 = $('<div></div>', { 'class': 'col-xs-4' });
-                                const $gettyImg = $('<img></img>').attr('height', '100px').attr('width', '100px')
-                                    .css({
-                                        'width': '200px',
-                                        'height': '150px',
-                                        'min-width': '100px',
-                                        'min-height': '100px',
-                                        'padding': '10px',
-                                        'position': 'relative',
-                                        'top': '60px',
-                                        'left': '40px'
-                                    })
-                                    .attr('src', image).attr('class', 'img img-responsive img-thumbnail');
-                                const $col10 = $('<div></div>', { 'class': 'col-xs-8' }) //.text(JSON.stringify(itin));
-                                const $panelFooter = $('<div></div>', { 'class': 'panel-footer' }).css({ 'min-height': '50px' });
-
-                                const $getBookingDetailsButton = $('<input/>', {
-                                    value: 'Get booking details',
-                                    type: 'button',
-                                    class: 'btn  btn-info btn-sm pull-right',
-                                    'data-toggle': 'detail-' + index,
-                                    on: {
-                                        click: function() {
-                                            $('#notification').attr('opened', 'true').attr('text', 'Booking details will be loaded shortly');
-                                            $input = $(this);
-                                            $target = $('#' + $input.attr('data-toggle'));
-
-                                            $input.addClass('m-progress');
-                                            $.ajax({
-                                                type: window.seatfilla.globals.site.endpoints.maps.retrieveBookingDetails.method,
-                                                url: window.seatfilla.globals.site.endpoints.maps.retrieveBookingDetails.url,
-                                                data: {
-                                                    sessionkey: sf_result.SessionKey,
-                                                    outboundLegId,
-                                                    inboundLegId,
-                                                    bookingDetailsLink: sf_result.bookingDetailsLink
-                                                },
-                                                success: function(response, x, xhr) {
-                                                    if (xhr.status == 200) {
-                                                        $target.slideToggle('slow', function() {
-                                                            $input.removeClass('m-progress');
-                                                        });
-                                                        //apend response to dropDownContentInfo
-                                                    } else {
-                                                        alert(response);
-                                                    }
-                                                }
-                                            });
-
-                                        }
-                                    }
-                                });
-
-                                $panelHeading.text('Flight Info');
-
-                                if (!itin.InboundLegs) {
-                                    $col10.append($outboundLegsDropDown);
-                                } else {
-                                    const $col10_row = $('<div></div>', { 'class': 'row' });
-
-                                    //Outbound column
-                                    const $col_5_o = $('<div></div>', { 'class': 'col-xs-5' });
-                                    $col_5_o.append($('<h2></h2>').text('Outbound Details'));
-                                    $col_5_o.append($outboundLegsDropDown);
-                                    $col10_row.append($col_5_o);
-
-                                    //Inbound column
-                                    const $col_5_i = $('<div></div>', { 'class': 'col-xs-5' });
-                                    $col_5_i.append($('<h2></h2>').text('Inbound Details'));
-                                    $col_5_i.append($inboundLegsDropDown);
-                                    $col10_row.append($col_5_i);
-
-                                    $col10.append($col10_row);
-                                }
-
-
-                                $panelContent.append($row.append($col2.append($gettyImg)).append($col10)).append($('<hr/>'));
-
-                                $panelInfo.append($panelHeading);
-                                $panelInfo.append($panelContent);
-                                $getCarrierInfoDropDown.append($getCarrierInfoDropdownContent);
-                                $dropDownContent.append($dropDownContentInfo);
-
-                                $panelInfo.append($getCarrierInfoDropDown);
-                                $panelInfo.append($dropDownContent);
-
-                                const $in_group = $('<ul></ul>', { 'class': 'pull-right' }).css({ 'background-color': 'transparent', 'display': 'flex', 'position': 'relative', 'bottom': '6px' });
-                                const $li = $('<li></li>').css({ 'padding': '5px', 'display': 'inline-block' });
-                                $in_group.append($li.clone().append($getBookingDetailsButton));
-                                $in_group.append($li.clone().append($getCarrierInfoButton));
-                                $panelFooter.append($in_group);
-
-
-                                $panelInfo.append($panelFooter);
-                                $liEle.append($panelInfo);
-
-                                $('#flightResults').append($liEle);
-                            });
-                        }
-
-                        $('[id^=detail-]').hide();
-                        _button.removeClass('m-progress');
-                    },
-                });
-            }
+            $("#flightResults").html("");
 
             //Unbind any existing listeners so we dont send the request more than once
             $('#searchFlights').off('click');
-            $('#searchFlights').on('click', handleClick);
+            $('#searchFlights').on('click', handleClick.bind({
+                origin,
+                marker
+            }));
         }
 
         /* Add support for geocoding later.. 

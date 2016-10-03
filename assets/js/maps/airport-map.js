@@ -557,8 +557,8 @@ $(document).ready(function() {
                             $getCarrierInfoDropDown.append($getCarrierInfoDropdownContent);
                             $dropDownContent.append($dropDownContentInfo);
 
-                            $panelInfo.append($getPricingInfoDropDown).append($hr.clone());
                             $panelInfo.append($getCarrierInfoDropDown).append($hr.clone());
+                            $panelInfo.append($getPricingInfoDropDown).append($hr.clone());
                             $panelInfo.append($dropDownContent).append($hr.clone());
 
                             $in_group.append($li.clone().append($getCarrierInfoButton));

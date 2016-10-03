@@ -123,11 +123,11 @@ $(document).ready(function() {
                 return;
             }
 
-            const data = this.marker.data;
+            const destination = this.marker.data;
             const origin = this.origin;
 
-            console.log(data);
-            console.log('destination data: ' + JSON.stringify(data));
+            console.log(destination);
+            console.log('destination data: ' + JSON.stringify(destination));
             console.log('origin data:' + JSON.stringify(origin));
             console.log('user position:' + JSON.stringify(sf_map.position));
             console.log('user location: ' + JSON.stringify(sf_map.location));
@@ -139,18 +139,20 @@ $(document).ready(function() {
             const numInfantTickets = $('#num_infant_tickets').val();
             const prefferedCabinClass = $("#cabin_class").val();
             const groupPricing = $("#group_pricing").val();
-
+            const dates = { departure, arrival };
+            const ticketInfo = { numAdultTickets, numChildTickets, numInfantTickets };
+            const userLocation = sf_map.location;
             $.ajax({
                 type: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo.method,
                 url: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo.url,
                 data: {
                     origin,
-                    destination: data,
+                    destination,
                     userPosition: sf_map.position,
-                    userLocation: sf_map.location,
+                    userLocation,
                     userLocale: window.seatfilla.globals.getFirstBrowserLanguage(),
-                    ticketInfo: { numAdultTickets, numChildTickets, numInfantTickets },
-                    dates: { departure, arrival },
+                    ticketInfo,
+                    dates,
                     prefferedCabinClass,
                     groupPricing
                 },
@@ -561,13 +563,68 @@ $(document).ready(function() {
                             $panelInfo.append($getPricingInfoDropDown).append($hr.clone());
                             $panelInfo.append($dropDownContent).append($hr.clone());
 
+                            const $continueWithSeatfillaButton = $('<button></button>', {
+                                value: 'Choose this itinerary',
+                                type: 'submit',
+                                text: 'Choose this itinerary',
+                                class: 'btn  btn-success btn-sm pull-right',
+                            });
+
+                            const $continueWithSeatfillaForm = $('<form></form>', {
+                                action: '/Search/Listings/Hotels',
+                                method: 'POST'
+                            });
+
+                            const $userLocationInput = $('<input/>', {
+                                type: 'hidden',
+                                name: 'userLocation',
+                                value: JSON.stringify(userLocation)
+                            });
+
+                            const $userDestinationInput = $('<input/>', {
+                                type: 'hidden',
+                                name: 'destination',
+                                value: JSON.stringify(destination)
+                            });
+
+                            const $datesInput = $('<input/>', {
+                                type: 'hidden',
+                                name: 'dates',
+                                value: JSON.stringify(dates)
+                            });
+
+                            const $ticketInfoInput = $('<input/>', {
+                                type: 'hidden',
+                                name: 'ticketInfo',
+                                value: JSON.stringify(ticketInfo)
+                            });
+
+                            const $chosenItinInput = $('<input/>', {
+                                type: 'hidden',
+                                name: 'chosenItinerary',
+                                value: JSON.stringify(itin)
+                            });
+                            const $originInput = $('<input/>', {
+                                type: 'hidden',
+                                name: 'origin',
+                                value: JSON.stringify(origin)
+                            });
+
+                            $continueWithSeatfillaForm
+                                .append($userLocationInput)
+                                .append($datesInput)
+                                .append($ticketInfoInput)
+                                .append($chosenItinInput)
+                                .append($userDestinationInput)
+                                .append($originInput)
+                                .append($continueWithSeatfillaButton);
+
+                            $in_group.append($li.clone().append($continueWithSeatfillaForm));
                             $in_group.append($li.clone().append($getCarrierInfoButton));
                             $in_group.append($li.clone().append($getPricingDetailsButton));
                             $in_group.append($li.clone().append($getBookingDetailsButton));
 
-
                             $panelFooter.append($in_group);
-
                             $panelInfo.append($panelFooter);
                             $liEle.append($panelInfo);
 

@@ -72,5 +72,5 @@ module.exports = {
                 return reject(res.json(ResponseStatus.OK, { errors: error.error, errorType: 'livePricingApiRequest' }));
             });
         });
-    },
+    }
 }

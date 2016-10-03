@@ -25,7 +25,7 @@ const hotelSortOrders = {
 
 const exportObj = {
     getHotelSortColumns: function() { return Object.create(hotelSortColumns) },
-    getHotelSortOrders: function() { return Object.create() },
+    getHotelSortOrders: function() { return Object.create(hotelSortOrders) },
     createPriceFilterString: function(min, max) { return min + '-' + max },
     createSession(obj) {
         return new Promise((resolve, reject) => {
@@ -35,13 +35,11 @@ const exportObj = {
             obj.apiKey = apiKey;
 
             const queryString = querystring.stringify(obj);
-            const contentLength = sendData.length;
             const _this = this;
 
             request({
                 headers: {
                     'Accept': 'application/json',
-                    'Content-Length': contentLength
                 },
                 uri: skyScannerApiEndpoint + '?' + (queryString || ''),
                 method: 'GET'
@@ -61,14 +59,13 @@ const exportObj = {
                         return resolve({ url: res.headers.location });
                     }
                 } catch (err) {
+                    sails.log.error(err);
                     return reject({ error: err });
                 }
             });
         });
     },
     requestHotelDetails(urlEndPoint, obj) {
-        if (!sessionKey || !obj) throw new Error('Invalid params to request hotel details in SkyScannerHotelService.js');
-
         return new Promise((resolve, reject) => {
             if (!sessionKey || !urlEndpoint) {
                 return reject(new Error('Invalid parameters when calling retrieve itin '));
@@ -103,20 +100,28 @@ const exportObj = {
                         return resolve({ body: result, nextPollUrl: res.headers.Location || urlEndPoint });
                     }
                 } catch (err) {
-                    sails.log.debug(err);
+                    sails.log.error(err);
                     return reject({ error: err });
                 }
             });
         });
     },
-    initiateFirstSession(sessionObj, hotelRequestObj){
-        return new Promise(function(resolve,reject){
-        this.createSession(sessionObj).then(function(response){
-            const nextPollUrl = response.url;
-            this.
-        })
+    initiateFirstSession(sessionObj, hotelRequestObj) {
+        const _self = this;
+        return new Promise(function(resolve, reject) {
+            _self.createSession(sessionObj).then(function(response) {
+                const nextPollUrl = response.url;
+                _self.requestHotelDetails(nextPollUrl, hotelRequestObj).then(function(result) {
+                    return resolve(result);
+                }).catch(function(err) {
+                    sails.log.error(err);
+                    return reject(err);
+                })
+            }).catch(function(err) {
+                sails.log.error(err);
+                return reject(err);
+            })
         });
-
     },
     getDefaultSessionObject() {
         return {
@@ -148,3 +153,5 @@ const exportObj = {
         }
     }
 }
+
+module.exports = exportObj;

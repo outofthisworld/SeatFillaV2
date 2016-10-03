@@ -19,12 +19,11 @@ module.exports = {
                 user.isEmailVerified = true;
                 user.save(function(err){
                     if(err) return res.badRequest('Something went wrong, could not validate email');
-                    return res.redirect('user/login');
+                    return res.redirect('/user/login');
                 });
             }else{
                 return res.badRequest('Email is already verified');
             }
-
         });
 
     }

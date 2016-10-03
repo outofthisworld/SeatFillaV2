@@ -189,10 +189,12 @@ const exportObj = {
 
                         const bd = JSON.parse(res.body);
 
-                        if (!bd.SessionKey || bd.ValidationErrors) {
-                            sails.log.debug(JSON.stringify(obj));
-                            console.log('Response body: ' + res.body);
-                            return resolve(_this.retrieveItin(urlEndpoint, obj));
+                        if (bd.ValidationErrors) {
+                            const error = new Error('Validation errors when retriving itinerary from SkyScannerService');
+                            sails.log.error(error);
+                            return reject(error);
+                        } else if (!bd.SessionKey || res.statusCode != 200) {
+                            throw new Error('Invalid response when retrieving itinerary in SkyScannerFlightSever.js');
                         } else if (bd.Status == 'UpdatesPending') {
                             return resolve(_this.retrieveItin(urlEndpoint, obj));
                         } else {

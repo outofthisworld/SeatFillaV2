@@ -2,13 +2,11 @@
 const request = require('request');
 //Used to encode form data
 const querystring = require('querystring');
-//Error utils for more details errors
-const ErrorUtils = require('./../utils').ErrorUtils;
+
 //Making requests to SS.
 const apiKey = sails.config.skyscanner.apiKey;
 
 const skyScannerApiEndpoint = 'http://partners.api.skyscanner.net/apiservices/hotels/liveprices/v2/';
-
 
 const hotelSortColumns = {
     Rating: 'rating',
@@ -32,10 +30,9 @@ const exportObj = {
     createSession(obj) {
         return new Promise((resolve, reject) => {
 
-            if (!obj) return reject(new Error('Invalid object supplied to createSession in SkyScannerHotelService.js: ' + arguments.toString()));
+            if (!obj) return reject(new Error('Invalid params supplied to createSession in SkyScannerHotelService.js'));
 
             obj.apiKey = apiKey;
-
 
             const queryString = querystring.stringify(obj);
             const contentLength = sendData.length;
@@ -46,12 +43,80 @@ const exportObj = {
                     'Accept': 'application/json',
                     'Content-Length': contentLength
                 },
-                uri: urlEndpoint + '?' + (queryString || ''),
+                uri: skyScannerApiEndpoint + '?' + (queryString || ''),
                 method: 'GET'
             }, function(err, res, body) {
-                if (err) return reject(err);
+                if (err) return reject({ error: err });
+                try {
+                    const result = JSON.parse(body);
+
+                    if (result.ValidationErrors) {
+                        sails.log.error(new Error(result.ValidationErrors[0]));
+                        return reject({ error: result.ValidationErrors });
+                    } else if (res.statusCode != 200) {
+                        const error = new Error('Invalid response code when creating new session in SkyScannerHotelServer.js: response was: ' + res.statusCode);
+                        sails.log.error(error);
+                        return reject({ error });
+                    } else {
+                        return resolve({ url: res.headers.location });
+                    }
+                } catch (err) {
+                    return reject({ error: err });
+                }
             });
         });
+    },
+    requestHotelDetails(urlEndPoint, obj) {
+        if (!sessionKey || !obj) throw new Error('Invalid params to request hotel details in SkyScannerHotelService.js');
+
+        return new Promise((resolve, reject) => {
+            if (!sessionKey || !urlEndpoint) {
+                return reject(new Error('Invalid parameters when calling retrieve itin '));
+            }
+            obj.apiKey = apiKey;
+
+            //Encode the obj as a query string..
+            const queryString = querystring.stringify(obj);
+
+            const _this = this;
+            var failCount = 0;
+            request({
+                headers: {
+                    'Accept': 'application/json'
+                },
+                uri: urlEndPoint + '?' + (queryString || ''),
+                method: 'GET'
+            }, function(err, res, body) {
+                if (err) return reject({ error: err })
+
+                try {
+                    const result = JSON.parse(body);
+
+                    if (result.ValidationErrors) {
+                        sails.log.error(new Error(result.ValidationErrors[0]));
+                        return reject({ error: result.ValidationErrors });
+                    } else if (res.statusCode != 200) {
+                        const error = new Error('Invalid response code when creating new session in SkyScannerHotelServer.js: response was: ' + res.statusCode);
+                        sails.log.error(error);
+                        return reject({ error });
+                    } else {
+                        return resolve({ body: result, nextPollUrl: res.headers.Location || urlEndPoint });
+                    }
+                } catch (err) {
+                    sails.log.debug(err);
+                    return reject({ error: err });
+                }
+            });
+        });
+    },
+    initiateFirstSession(sessionObj, hotelRequestObj){
+        return new Promise(function(resolve,reject){
+        this.createSession(sessionObj).then(function(response){
+            const nextPollUrl = response.url;
+            this.
+        })
+        });
+
     },
     getDefaultSessionObject() {
         return {
@@ -77,9 +142,9 @@ const exportObj = {
             sortColumn: hotelSortColumns.Rating
         }
     },
-    getDefaultHotelDetailsObject(){
+    getDefaultHotelDetailsObject() {
         return {
-            hotelIds:[]
+            hotelIds: []
         }
     }
 }

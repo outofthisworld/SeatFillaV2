@@ -84,7 +84,7 @@ const exportObj = {
                 uri: urlEndPoint + '?' + (queryString || ''),
                 method: 'GET'
             }, function(err, res, body) {
-                if (err) return reject({ error: err })
+                if (err) return reject({ error: err });
 
                 try {
                     const result = JSON.parse(body);

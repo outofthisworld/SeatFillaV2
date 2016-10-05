@@ -34,7 +34,13 @@ module.exports.routes = {
 
     'get /': 'HomeController.index',
     'get /FlightRequest': {
-        view: 'user-account-panel/flight-request',
+        view: 'flightrequest/create',
+        locals: {
+            layout: 'layouts/my-account-layout.ejs'
+        }
+    },
+    'get /FlightRequest/create': {
+        view: 'flightrequest/create',
         locals: {
             layout: 'layouts/my-account-layout.ejs'
         }

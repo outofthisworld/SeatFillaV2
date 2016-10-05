@@ -334,7 +334,18 @@
    .main-container {
        background: #fafafa;
        padding: 0px;
-       padding-top: 35px;
+       margin-top: 110px;
+   }
+   
+   .panel>.panel-heading,
+   .panel-title {
+       background-image: none;
+       background-color: #fafafa;
+       font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', 'Geneva, Verdana, sans-serif';
+       font-weight: 400;
+       font-size: 12px;
+       text-transform: uppercase;
+       color: black;
    }
    
    .footer {
@@ -683,7 +694,7 @@
        .side-menu .navbar-header {
            /* this is probably redundant */
            position: fixed;
-           z-index: 3;
+           z-index: 600;
            background-color: #f8f8f8;
        }
        /* Dropdown tweek */
@@ -2186,9 +2197,10 @@
    }
    
    .top_bar {
-       position: absolute;
-       top: 45px;
        width: 100%;
+       position: fixed;
+       z-index: 3;
+       top: 55px;
    }
    
    .navbar-right li a {
@@ -2200,7 +2212,7 @@
        background: #fff;
        border-color: #ccc;
        box-shadow: 0 0 2px 0 #ccc;
-       max-height: 40px;
+       background-color: white;
    }
    
    nav.site-nav a {
@@ -2208,12 +2220,20 @@
    }
    
    nav.site-nav ul.navbar-nav {
-       max-height: 40px;
+       background-color: white;
+   }
+   
+   @media(min-width:1200px) {
+       nav.site-nav {
+           max-height: 60px;
+       }
+       nav.site-nav ul.navbar-nav {
+           max-height: 45px;
+       }
    }
    
    nav.site-nav ul.navbar-nav a {
        color: #2196F3;
-       background-color: #fafafa;
        border-style: solid;
        border-width: 0 0 2px 0;
        border-color: #fff;

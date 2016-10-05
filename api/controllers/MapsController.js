@@ -72,5 +72,53 @@ module.exports = {
                 return reject(res.json(ResponseStatus.OK, { errors: error.error, errorType: 'livePricingApiRequest' }));
             });
         });
+    },
+    retrieveHotelInfo(req, res) {
+        const hotelRequestObject = SkyScannerHotelService.getDefaultHotelRequestObject();
+        const sessionObject = SkyScannerHotelService.getDefaultSessionObject();
+
+        try {
+            req.body.userLocation = req.param('userLocation');
+            req.body.dates = req.param('dates');
+            req.body.ticketInfo = req.param('ticketInfo');
+            req.body.destination = req.param('destination');
+            req.body.origin = req.param('origin');
+        } catch (err) {
+            sails.log.debug('Error parsing JSON in ListingsController.js/hotels');
+            sails.log.error(err);
+        }
+
+        if (req.param('chosenItinerary')) {
+            req.body.chosenItinerary = req.param('chosenItinerary');
+
+            if (!req.session.itineraries)
+                req.session.itineraries = [];
+
+            req.session.itineraries.push(req.body.chosenItinerary);
+        }
+
+        hotelRequestObject.city = req.body.destination.airportCityId;
+        sessionObject.market = req.body.destination.countryId; //req.body.userLocation.address.countryCode || req.body.origin.airportCountryId || req.body.userLocation.address.country || (req.user && req.user.address.country);
+        sessionObject.currency = req.body.prefferedCurrency || UserSettingsService.getUserCurrencyCodePreference(req);
+        sessionObject.locale = req.headers['accept-language'];
+        sessionObject.entityId = req.body.destination.airportPos.lat + ',' + req.body.destination.airportPos.lng + '-latlong';
+        sessionObject.checkindate = (req.body.dates && req.body.dates.departure) || (new Date().toISOString().slice(0, 10));
+        sessionObject.checkoutdate = (req.body.dates && req.body.dates.arrival) || null;
+        sessionObject.guests = parseInt(((req.body.ticketInfo && req.body.ticketInfo.numAdultTickets)) || 1) +
+            parseInt(((req.body.ticketInfo && req.body.ticketInfo.numChildTickets)) || 0) +
+            parseInt(((req.body.ticketInfo && req.body.ticketInfo.numInfantTickets) || 0));
+        sessionObject.rooms = req.body.numRooms || 1;
+
+        sails.log.debug('Created hotels session object : ' + JSON.stringify(sessionObject));
+
+        SkyScannerHotelService.createSession(sessionObject).then(function(result) {
+            return res.json({ result: result.body, nextPollUrl: result.url });
+        }).catch(function(err) {
+            sails.log.debug('Error in ListingsController.js/hotels');
+            sails.log.error(err);
+            sails.log.debug(err.error);
+            sails.log.debug(JSON.stringify(error));
+            return res.json(ResponseStatus.SERVER_ERROR, {});
+        });
     }
 }

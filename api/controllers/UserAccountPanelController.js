@@ -41,15 +41,6 @@ module.exports = {
             title: req.__('FlightNotifications')
         });
     },
-    flight_requests(req, res) {
-        return res.ok({
-            user: req.user
-        }, {
-            layout: 'layouts/my-account-layout',
-            view: 'user-account-panel/flight-request',
-            title: req.__('FlightRequest')
-        });
-    },
     my_flight_circle(req, res) {
         return res.ok({
             user: req.user

@@ -1,5 +1,5 @@
 module.exports = {
-    newUserMapSearch(user,origin,destination) {
+    newUserMapSearch(user, origin, destination) {
         return UserSearch.create({
             user: req.user.id,
             originAirportName: origin.airportName,
@@ -19,7 +19,7 @@ module.exports = {
             destinationAirportCity: destination.name,
             destinationAirportCityId: destination.airportCityId,
             destinationAirportCountry: destination.countryName,
-            destinationAirportCountryCode: destination.origincountryId,
+            destinationAirportCountryCode: destination.countryId,
             destinationAirportCurrency: destination.currency,
             destinationAirportId: destination.airportId,
             destinationAirportIataOrFaaCode: destination.iataCode,

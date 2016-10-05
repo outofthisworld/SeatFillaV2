@@ -101,7 +101,7 @@ var _seat_filla_map = function(options) {
         if (options.infowindow) {
             var infoWindow = new google.maps.InfoWindow({ map: _instance.map });
             infoWindow.setPosition(options.pos);
-            infoWindow.setContent(options.infowindowContent);
+            infoWindow.setContent(options.infoWindowContent);
         }
 
         if (options.centerMap) {
@@ -233,9 +233,8 @@ var _seat_filla_map = function(options) {
 
         const lat = markerOpts.position.lat;
         const lng = markerOpts.position.lng;
-        console.log('Position: ' + JSON.stringify(markerOpts.position))
+
         _instance.markers[JSON.stringify(markerOpts.position)] = marker;
-        console.log(_instance.markers);
         return marker;
     }
 

@@ -2,9 +2,33 @@
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 <header>
 </div>
+
 <!--top_bar-->
+         <div class="top_bar">
+            <div class="container">
+            <div class="col-xs-5 col-md-6">
+            <ul class="social" style="position:absolute;left:0px;">
+            <li><a target="_blank" href=""><i class="fa fa-facebook text-white"></i></a></li>
+            <li><a target="_blank" href=""><i class="fa fa-twitter text-white"></i></a></li>
+            <li><a target="_blank" href=""><i class="fa fa-instagram text-white"></i></a></li>
+            </ul></div>
+            <div class="col-xs-7 col-md-6">
+            <ul class="rightc">
+            <li><i class="fa fa-envelope-o"></i> customer@seatfilla.com </li>
+            <%if(!req.user){%>
+            <li><i class="fa fa-user"></i> <a href="/user/register" style="color:white;" >Register</a></li> 
+            <%}%>
+            <li>Preffered Currency:</li>
+            <li><i class="fa fa-currency"></i><select class="input input-sm form-control" style="position:relative;bottom:15px;" id="seatfilla_currencies"></select></li>     
+            </ul>
+            </div>
+            </div>
+        </div>
+
 <nav class="navbar navbar-default navbar-fixed-top site-nav" role="navigation">
+
     	<div class="container">
+      
 			<!-- Brand and toggle get grouped for better mobile display -->
 			<div class="navbar-header">
 				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
@@ -14,7 +38,7 @@
 					<span class="icon-bar"></span>
 				</button>
                 <br>
-				<a class="" href="#" style="position:relative;bottom:80px;left:5px;"><img src="/images/Logo.png" width="44" height="44"><h2 style="position:relative;display:inline-block;left:10px;top:5px;">Seatfilla</h2></a>
+				<a class="" href="#" style="position:relative;bottom:18px;left:30px;"><img src="/images/Logo.png" width="52" height="52"/></a>
 			</div>
 
 			<!-- Collect the nav links, forms, and other content for toggling -->
@@ -101,26 +125,7 @@
 
             
 		</div><!-- /.container-fluid -->
-         <div class="top_bar">
-            <div class="container">
-            <div class="col-xs-5 col-md-6">
-            <ul class="social" style="position:absolute;left:0px;">
-            <li><a target="_blank" href=""><i class="fa fa-facebook text-white"></i></a></li>
-            <li><a target="_blank" href=""><i class="fa fa-twitter text-white"></i></a></li>
-            <li><a target="_blank" href=""><i class="fa fa-instagram text-white"></i></a></li>
-            </ul></div>
-            <div class="col-xs-7 col-md-6">
-            <ul class="rightc">
-            <li><i class="fa fa-envelope-o"></i> customer@seatfilla.com </li>
-            <%if(!req.user){%>
-            <li><i class="fa fa-user"></i> <a href="/user/register" style="color:white;" >Register</a></li> 
-            <%}%>
-            <li>Preffered Currency:</li>
-            <li><i class="fa fa-currency"></i><select class="input input-sm form-control" style="position:relative;bottom:15px;" id="seatfilla_currencies"></select></li>     
-            </ul>
-            </div>
-            </div>
-        </div>
+
 	</nav>
     
 </header>

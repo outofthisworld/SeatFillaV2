@@ -36,6 +36,80 @@
         min-height:80%;
   }
 
+.service1-items {
+	padding: 0px 0 0px 0;
+	float: left;
+	position: relative;
+	overflow: hidden;
+	max-width: 100%;
+	height: 321px;
+	width: 130px;
+}
+
+.service1-item {
+	height: 107px;
+	width: 120px;
+	display: block;
+	float: left;
+	position: relative;
+	padding-right: 20px;
+	border-right: 1px solid #DDD;
+	border-top: 1px solid #DDD;
+	border-bottom: 1px solid #DDD;
+}
+
+.service1-item > img {
+	max-height: 110px;
+	max-width: 110px;
+	opacity: 0.6;
+	transition: all .2s ease-in;
+	-o-transition: all .2s ease-in;
+	-moz-transition: all .2s ease-in;
+	-webkit-transition: all .2s ease-in;
+}
+
+.content-wrapper {
+	max-width: 1140px;
+	background: #fff;
+	margin: 0 auto;
+	margin-top: 25px;
+	margin-bottom: 10px;
+	border: 0px;
+	border-radius: 0px;
+}
+
+
+
+.view-wrapper {
+	float: right;
+	max-width: 70%;
+	margin-top: 25px;
+}
+
+.container {
+	padding-left: 0px;
+	padding-right: 0px;
+	max-width: 100%;
+}
+
+
+.service1-item > img:hover {
+	cursor: pointer;
+	opacity: 1;
+}
+
+.service-image-left {
+	padding-right: 50px;
+}
+
+.service-image-right {
+	padding-left: 50px;
+}
+
+.service-image-left > center > img,.service-image-right > center > img{
+	max-height: 155px;
+}
+
 </style>
 
 <script>
@@ -193,11 +267,8 @@
                   <input id="num_infant_tickets" type="number" class="form-control input-sm" value="0" required="">
                   </div>
                 </div
-
               </div>
             </div>
-       
-          
      
             </div><!--input group-->
             <button type="submit" style="display:hidden"></button>
@@ -214,11 +285,11 @@
 
       </div>
       <div class="modal-footer">
-              	<button id="searchFlights" class="btn btn-lg btn-info btn-block">Load results</button>
+          <button id="searchFlights" class="btn btn-lg btn-info btn-block">Load results</button>
       </div>
     </div>
   </div>
-    </div>
+</div>
 
 
 <script type="text/javascript" src="/bower_components/geolocator/dist/geolocator.min.js"></script>

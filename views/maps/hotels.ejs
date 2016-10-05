@@ -1,0 +1,16 @@
+<body>
+ <%- partial ('../partials/nav.ejs') %>
+
+  <div class="container-fluid">  
+        <div id="map-canvas" style="width:100vw;height:100vh;padding:0px;margin:0px;"></div>
+        <div id="legend">
+             <small>Map symbols</small>
+        </div>
+  </div>
+
+
+<script type="text/javascript" src="/bower_components/geolocator/dist/geolocator.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDBWrH7DuCZ8wNlOXgINCtI_gT9NkDRq4"></script>
+<script type="text/javascript" src="/js/maps/sf-map.js"></script>
+<script type="text/javascript" src="/js/maps/hotel-map.js"></script>
+</body>

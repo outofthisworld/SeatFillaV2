@@ -31,59 +31,142 @@
     <link rel="stylesheet" href="/styles/main.css">
     <!--STYLES END-->
 
-  
+
  	<script>
   $(document).ready(function(){
-    $.toaster({ priority : 'info',  message : 'Flight search'})
+    $.toaster({ priority : 'info',  message : 'Search deals'});
+
+    $('#flight-search-details').load('/ajax/flight-search-nav.ejs',function finished(){
+       const airportData = window.seatfilla.globals.retrieveGeoData();
+       const arr = [];
+       airportData.Continents.forEach(function(continent, continentIndex) {
+                const continentId = continent["Id"];
+                const continentName = continent["Name"];
+
+                continent.Countries.forEach(function(country, countryIndex) {
+                    const countryName = country.Name;
+                    const countryId = country.Id;
+                    const currency = country.CurrencyId
+
+
+                    for (var key in country.Cities) {
+                        //sf_map.location.address.region
+                        //sf_map.location.address.city
+
+                        const countryId = country.Cities[key]["CountryId"];
+                        const location = country.Cities[key]["Location"];
+                        const iataCode = country.Cities[key]["IataCode"];
+                        const id = country.Cities[key]["Id"];
+                        const name = country.Cities[key]["Name"];
+
+                        const $opt = $('<option></option>', {value:iataCode,'data-val-cityname':name}).text(name);
+                        arr.push({
+                          continentId,
+                          continentName,
+                          countryName,
+                          countryId,
+                          currency,
+                          countryId,
+                          location,
+                          iataCode,
+                          id,
+                          name
+                        });
+                    }
+            });
+        });
+        arr.sort(function(item1,item2){
+            return item1.name.localeCompare(item2.name);
+        }).forEach(function(item){
+            $('.cities').append($('<option></option>', {value:item.iataCode,'data-val-cityname':item.name}).text(item.name + ', ' + item.countryName));
+        })
+    });
   });
 
-  $(document).on('click', '.panel-heading span.clickable', function(e){
-    var $this = $(this);
-    if(!$this.hasClass('panel-collapsed')) {
-		$this.parents('.panel').find('.panel-body').slideUp();
-		$this.addClass('panel-collapsed');
-		$this.find('i').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
-	} else {
-		$this.parents('.panel').find('.panel-body').slideDown();
-		$this.removeClass('panel-collapsed');
-		$this.find('i').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
-	}
+    $(document).on('click', '.panel-heading span.clickable', function(e){
+      var $this = $(this);
+      if(!$this.hasClass('panel-collapsed')) {
+      $this.parents('.panel').find('.panel-body').slideUp();
+      $this.addClass('panel-collapsed');
+      $this.find('i').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+    } else {
+      $this.parents('.panel').find('.panel-body').slideDown();
+      $this.removeClass('panel-collapsed');
+      $this.find('i').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
+    }
 })
   </script>
+  <style>
+   .panel > .panel-heading,.panel-title {
+    background-image:none;
+    background-color: #fafafa;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', 'Geneva, Verdana, sans-serif';
+    font-weight: 400;
+    font-size: 12px;
+    text-transform:uppercase;
+    color: black;
+  }
+
+  #flight-search-details{
+      background-color:white;border-style:solid;border-color:lightblue;border-width:3px;border-width:1px;
+  }
+
+  .panel{
+    border-style:solid;border-color:lightblue;border-width:3px;border-width:1px;
+  }
+
+  #flight-search-details label,h2{
+    color:black;
+  }
+  </style>
+
 </head>
        <body>
 
        <%- partial ('../partials/nav.ejs') %>
-       
+     
        <div class="container" style="margin-top:150px;">
-       <h2>Get to where you need to go quickly with Seatfilla</h2>
+      
+    
+    <div id="flight-search-details" class="container-fluid">
+  
+    </div>
+  <br/>
     <div class="row">
-        <div class="col-sm-3 col-md-3">
-            <nav class="navbar navbar-default sidebar" role="navigation">
+    <div class="col-sm-3 col-md-3">
+    <nav class="navbar navbar-default sidebar" role="navigation">
     <div class="container-fluid">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-sidebar-navbar-collapse-1">
+      <button type="button" class="navbar-toggle btn" data-toggle="collapse" data-target="#bs-sidebar-navbar-collapse-1">
         <span class="sr-only">Toggle navigation</span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>      
     </div>
+      
+    <div class="panel panel-default">
+    	 <div class="panel-heading">
+		  	<h3 class="panel-title">Filter results</h3>
+				<span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-up"></i></span>
+				</div>
+				<div class="panel-body">Panel content</div>
+	  </div>
+
     <div class="collapse navbar-collapse" id="bs-sidebar-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Search cheap flights<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-search"></span></a></li>
+        <li class="active"><a href="#">Search Flights<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-search"></span></a></li>
          <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Search Seatfilla flights <!--<span class="caret">--></span><span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-plane"></span></a>
-         <!-- <ul class="dropdown-menu forAnimate" role="menu">
-            <li><a href="#">more</a></li>
-            <li><a href="#">morer</a></li>
-            <li><a href="#">some stuff</a></li>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Search Seatfilla Flights <!--<span class="caret">--></span><span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-plane"></span></a>
+         <ul class="dropdown-menu forAnimate" role="menu">
+            <li><a href="#">Fixed price flight offers</a></li>
+          
             <li class="divider"></li>
-            <li><a href="#">Separated link</a></li>
-            <li class="divider"></li>
-            <li><a href="#">more</a></li>
+            <li><a href="#">Flight auctions</a></li>
           </ul>
-        </li>   -->       
+        </li>       
+        <li ><a href="#">Search hotels<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-th-list"></span></a></li> 
+        <li ><a href="#">Search cars<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-th-list"></span></a></li> 
         <li ><a href="#">Make a flight request<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-th-list"></span></a></li>        
         <li ><a href="#">Tags<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-tags"></span></a></li>
       </ul>

@@ -64860,3 +64860,50 @@ window.seatfilla.globals.retrieveGeoData = function() {
         ]
     }
 }
+
+    window.seatfilla.globals.inputs = window.seatfilla.globals.inputs || {};
+    window.seatfilla.globals.inputs.data = window.seatfilla.globals.inputs.data || {};
+    window.seatfilla.globals.inputs.data.retrieveCityData = function() {
+        const airportData = window.seatfilla.globals.retrieveGeoData();
+        const arr = [];
+        airportData.Continents.forEach(function(continent, continentIndex) {
+            const continentId = continent["Id"];
+            const continentName = continent["Name"];
+
+            continent.Countries.forEach(function(country, countryIndex) {
+                const countryName = country.Name;
+                const countryId = country.Id;
+                const currency = country.CurrencyId
+
+
+                for (var key in country.Cities) {
+                    //sf_map.location.address.region
+                    //sf_map.location.address.city
+
+                    const countryId = country.Cities[key]["CountryId"];
+                    const location = country.Cities[key]["Location"];
+                    const iataCode = country.Cities[key]["IataCode"];
+                    const id = country.Cities[key]["Id"];
+                    const name = country.Cities[key]["Name"];
+
+                    const $opt = $('<option></option>', { value: iataCode, 'data-val-cityname': name }).text(name);
+                    arr.push({
+                        continentId,
+                        continentName,
+                        countryName,
+                        countryId,
+                        currency,
+                        location,
+                        iataCode,
+                        id,
+                        name
+                    });
+                }
+            });
+        });
+
+        arr.sort(function(item1, item2) {
+            return item1.name.localeCompare(item2.name);
+        });
+        return arr;
+}

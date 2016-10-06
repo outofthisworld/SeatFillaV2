@@ -1,5 +1,13 @@
 const timeUtils = require('../utils/TimeUtils');
 
+/*
+    A scheduled executor service for scheduling tasks to execute periodically and after a certain initial delay.
+
+    This module is intended to be used to schedule execution for flight notifications on a daily basis of the cheapest flights.
+    Among any other scheduled tasks in which it may be useful for.
+
+    Created by Dale. 
+*/
 module.exports = {
 
     /*

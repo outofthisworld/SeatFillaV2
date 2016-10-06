@@ -35,12 +35,24 @@ module.exports = {
                 }).exec(function(err, address) {
                     if (err || !user) {
                         sails.log.debug('Error creating address: ' + user + ' ' + err);
-                        return reject({ error: err, message: 'error creating address record' });
+                        return Promise.reject({ error: err, message: 'error creating address record' });
                     } else {
-                        return resolve({ user, address });
+                        return Promise.resolve({ user, address });
                     }
                 });
             });
+        }).then(function(user) {
+            UserSettings.create({
+                id: user.user.id,
+                localePreference: req.headers['Accept-Language'] || 'en-US',
+            }).exec(function(err, userSettings) {
+                if (err) {
+                    sails.log.error(err);
+                    return Promise.reject(err)
+                } else {
+                    return Promise.resolve({ user.user, user.address, userSettings });
+                }
+            })
         }).then(function(user) {
             sails.log.debug('Creating sign up record for user: ' + JSON.stringify(user));
             // Register the sign up..

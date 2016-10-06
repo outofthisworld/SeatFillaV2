@@ -25,7 +25,7 @@ module.exports = {
 
             obj.country = req.body.userLocation.address.countryCode || req.body.origin.airportCountryId || req.body.userLocation.address.country || (req.user && req.user.address.country);
             obj.currency = req.body.prefferedCurrency || UserSettingsService.getUserCurrencyCodePreference(req);
-            obj.locale = req.headers['accept-language'];
+            obj.locale = req.headers['Accept-Language'] || 'en-US';
             obj.originplace = req.body.origin.iataCode;
             obj.destinationplace = req.body.destination.iataCode;
             obj.outbounddate = (req.body.dates && req.body.dates.departure) || (new Date().toISOString().slice(0, 10));

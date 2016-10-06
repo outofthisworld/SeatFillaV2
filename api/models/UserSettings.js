@@ -8,7 +8,10 @@ module.exports = {
         currencyCodePreference: {
             type: 'string',
             defaultsTo: 'USD'
+        },
+        localePreference{
+            type:'string',
+            defaultsTo: 'en-gb'
         }
     }
-
 }

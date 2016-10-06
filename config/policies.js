@@ -1,9 +1,7 @@
 /*
-
-  -- Dale 
   Here we set up any policies on our controllers,
   Policies act as preconditions, things that must be true in order to
-  proceed to a controller action.Because sails services all http methods
+  proceed to a controller action. Because sails services all http methods
   (GET,PUT,DELETE,POST...ect) for each and every controller method/function/action/behaviour,
   it is our responsibility to make sure that each controller action is being invoked via the
   right method to avoid any security implications. 
@@ -33,22 +31,30 @@
   9. moderatorPolicy: ensures that the user is logged in and that they are a moderator.
 
   10. notLoggedInPolcy: ensures that the user is not logged in.
+
+  11. whiteListedDomainPolicy: ensures that the request originated from a whitelisted domain as specified in config/domain-whitelist.js
+
+  12. ipBlacklistPolicy: ensures that the request is not madde from an I.P address that has been blacklisted.
+
+  Created by Dale.
+
+  This file will be continously updated.. and is not yet complete.
 */
 
 module.exports.policies = {
     UserController: {
-        'find': ['getPolicy', 'adminPolicy'],
-        'findOne': ['getPolicy', 'adminPolicy'],
-        'create': ['postPolicy', 'createAccountPolicy', 'notLoggedInPolicy'],
-        'myaccount': ['getPolicy'],
+        'find': ['getPolicy', 'adminPolicy', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
+        'findOne': ['getPolicy', 'adminPolicy', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
+        'create': ['postPolicy', 'createAccountPolicy', 'notLoggedInPolicy', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
+        'myaccount': ['getPolicy', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
         /*'passportAuth'*/
-        'login': ['getPolicy']
+        'login': ['getPolicy', 'whiteListedDomainPolicy', 'ipBlacklistPolicy']
     },
     AuthController: {
         '*': false,
-        'generateApiToken': ['passportAuth'],
-        'removeApiToken': ['passportAuth'],
-        'removeAllApiTokens': ['passportAuth'],
+        'generateApiToken': ['passportAuth', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
+        'removeApiToken': ['passportAuth', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
+        'removeAllApiTokens': ['passportAuth', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
         'local': true,
         'facebook': true,
         'instagram': true,

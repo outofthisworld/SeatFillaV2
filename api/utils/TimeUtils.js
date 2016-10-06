@@ -55,8 +55,7 @@ module.exports = {
         return minutes * 60 * 1000;
     },
     createTimeUnit(value) {
-        const methods = this;
-        const self = this;
+        const _self = this;
 
         if (!value) value = 0;
 
@@ -87,17 +86,17 @@ module.exports = {
                 setValue,
                 toString() { return value + 'Hour(s)'; },
                 toMilliseconds() {
-                    return self.createTimeUnit(methods.hoursToMilliseconds(value)).Milliseconds;
+                    return _self.createTimeUnit(_self.hoursToMilliseconds(value)).Milliseconds;
                 },
                 toMinutes() {
-                    return self.createTimeUnit(methods.hoursToMinutes(value)).Minutes;
+                    return _self.createTimeUnit(_self.hoursToMinutes(value)).Minutes;
                 },
                 toHours() {
                     return this;
                 },
                 toSeconds() {
 
-                    return self.createTimeUnit(methods.hoursToSeconds(value)).Seconds;
+                    return _self.createTimeUnit(_self.hoursToSeconds(value)).Seconds;
                 }
             },
 
@@ -113,15 +112,15 @@ module.exports = {
                     return this;
                 },
                 toMinutes() {
-                    return self.createTimeUnit(methods.millisecondsToMinutes(value)).Minutes;
+                    return _self.createTimeUnit(_self.millisecondsToMinutes(value)).Minutes;
                 },
                 toHours() {
-                    return self.createTimeUnit(methods.millisecondsToHours(value)).Hours;
+                    return _self.createTimeUnit(_self.millisecondsToHours(value)).Hours;
                 },
                 toSeconds() {
                     console.log('in milli');
-                    console.log(methods.millisecondsToSeconds(value));
-                    return self.createTimeUnit(methods.millisecondsToSeconds(value)).Seconds;
+                    console.log(_self.millisecondsToSeconds(value));
+                    return _self.createTimeUnit(_self.millisecondsToSeconds(value)).Seconds;
                 }
             },
 
@@ -134,16 +133,16 @@ module.exports = {
                 setValue,
                 toString() { return valuet + 'Minutes(s)'; },
                 toMilliseconds() {
-                    return self.createTimeUnit(methods.minutesToMilliseconds(value)).Milliseconds;
+                    return _self.createTimeUnit(_self.minutesToMilliseconds(value)).Milliseconds;
                 },
                 toMinutes() {
                     return this;
                 },
                 toHours() {
-                    return self.createTimeUnit(methods.minutesToHours(value)).Hours;
+                    return _self.createTimeUnit(_self.minutesToHours(value)).Hours;
                 },
                 toSeconds() {
-                    return self.createTimeUnit(methods.minutesToSeconds(value)).Seconds;
+                    return _self.createTimeUnit(_self.minutesToSeconds(value)).Seconds;
                 }
             },
 
@@ -156,13 +155,13 @@ module.exports = {
                 setValue,
                 toString() { return value + 'Second(s)'; },
                 toMilliseconds() {
-                    return self.createTimeUnit(methods.secondsToMilliseconds(value)).Milliseconds;
+                    return _self.createTimeUnit(_self.secondsToMilliseconds(value)).Milliseconds;
                 },
                 toMinutes() {
-                    return self.createTimeUnit(methods.secondsToMinutes(value)).Minutes;
+                    return _self.createTimeUnit(_self.secondsToMinutes(value)).Minutes;
                 },
                 toHours() {
-                    return self.createTimeUnit(methods.secondsToHours(value)).Hours;
+                    return _self.createTimeUnit(self.secondsToHours(value)).Hours;
                 },
                 toSeconds() {
                     return this;

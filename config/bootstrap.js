@@ -10,7 +10,15 @@
  */
 
 
-
+const timeUtils = require('../api/utils/TimeUtils');
 module.exports.bootstrap = function(callback) {
-  callback();
+    sails.config.scheduledtasks.forEach(function(task) {
+        try {
+            ScheduledExecutorService.execute(task.task, task.initialDelay, task.repeatingDelay);
+        } catch (err) {
+            sails.log.err('Error bootstrapping scheduled task in bootstrap.js');
+            sails.log.err(err);
+        }
+    });
+    callback();
 };

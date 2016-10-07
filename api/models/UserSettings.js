@@ -9,7 +9,7 @@ module.exports = {
             type: 'string',
             defaultsTo: 'USD'
         },
-        localePreference{
+        localePreference: {
             type:'string',
             defaultsTo: 'en-gb'
         }

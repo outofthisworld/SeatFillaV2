@@ -1,169 +1,131 @@
 /**
  * Request.js
- *
+ *  obj.country = req.body.userLocation.address.countryCode || req.body.origin.airportCountryId || req.body.userLocation.address.country || (req.user && req.user.address.country);
+            obj.currency = req.body.prefferedCurrency || UserSettingsService.getUserCurrencyCodePreference(req);
+            obj.locale = req.headers['Accept-Language'] || 'en-US';
+            obj.originplace = req.body.origin.iataCode;
+            obj.destinationplace = req.body.destination.iataCode;
+            obj.outbounddate = (req.body.dates && req.body.dates.departure) || (new Date().toISOString().slice(0, 10));
+            obj.inbounddate = (req.body.dates && req.body.dates.arrival) || null;
+            obj.locationschema = SkyScannerFlightService.locationschemas.Iata;
+            obj.cabinclass = SkyScannerFlightService.cabinclasses[req.body.prefferedCabinClass] || SkyScannerFlightService.cabinclasses.Economy;
+            obj.adults = (req.body.ticketInfo && req.body.ticketInfo.numAdultTickets) || 1;
+            obj.children = (req.body.ticketInfo && req.body.ticketInfo.numChildTickets) || 0;
+            obj.infants = (req.body.ticketInfo && req.body.ticketInfo.numInfantTickets) || 0;
+            obj.groupPricing = req.body.groupPricing || false;
  */
 module.exports = {
-  attributes: {
-    departureAirport:{
-      type:'string',
-      required:true,
-      notNull:true
-    },
-    arrivalAirport:{
-      type:'string',
-      required:true,
-      notNull:true
-    },
-    seatsRequired:{
-      type: 'number',
-      required:true,
-      int:true,
-      notNull:true,
-      min:1,
-      max:5
-    },
-    earliestDepartureDay:{
-      type: 'number',
-      integer:true,
-      required:true,
-      min: -1,
-      max: 32,
-      notNull:true
-    },
-    earliestDepartureMonth:{
-      type: 'number',
-      integer:true,
-      required:true,
-      min:0,
-      max:13,
-      notNull:true
-    },
-    earliestDepartureYear:{
-      type: 'number',
-      integer:true,
-      required:true,
-      notNull:true
-    },
-    latestDepartureDay:{
-      type: 'number',
-      integer:true,
-      required:true,
-      min: -1,
-      max: 32,
-      notNull:true
-    },
-    latestDepartureMonth:{
-      type: 'number',
-      integer:true,
-      required:true,
-      min:0,
-      max:13,
-      notNull:true
-    },
-    latestDepartureYear:{
-      type: 'number',
-      integer:true,
-      required:true,
-      notNull:true
-    },
-    requiresReturn: {
-      type:'boolean',
-      required:true
-    },
-    earliestReturnDay:{
-      type: 'number',
-      integer:true,
-      min: -1,
-      max: 32,
-      defaultsTo:0
-    },
-    earliestReturnMonth:{
-      type: 'number',
-      min:0,
-      max:13,
-      defaultsTo:0
-    },
-    earliestReturnYear:{
-      type: 'number',
-      defaultsTo: 0
-    },
-    latestReturnDay:{
-      type: 'number',
-      integer:true,
-      min: -1,
-      max: 32,
-      defaultsTo:0
-    },
-    latestReturnMonth:{
-      type: 'number',
-      integer:true,
-      min:0,
-      max:13,
-      defaultsTo:0
-    },
-    latestReturnYear:{
-      type: 'number',
-      integer:true,
-      defaultsTo:0
-    },
-    currency:{
-      type:'string'
-    },
-    maximumPayment:{
-      type:'number',
-      decimal:true,
-      min:0,
-      max:10001
-    },
-    willTakeOffers:{
-      type:'boolean',
-      required:true,
-      notNull:true
-    },
-    //One to many (User can have many requests,
-    //request can have one user.)
-    user:{
-      model:'user'
-    }
-  },
-  beforeCreate: function(record,cb){
-    //Checks we have valid date ranges
-
-    new Promise((resolve,reject)=>{
-      resolve(((record)=>{
-        
-        const earliestDeparture = new Date(parseInt(record.earliestDepartureYear),
-        parseInt(record.earliestDepartureMonth)-1,parseInt(record,earliestDepartureDay));
-
-        const latestDeparture = new Date(parseInt(record.latestDepartureYear),
-        parseInt(record,latestDepartureMonth)-1,parseInt(record.latestDepartureYear));
-
-        return latestDeparture >= earliestDeparture;
-      })(record) && ((record)=>{
-        if(!record.requiresReturn) {
-          delete record.earliestReturnDay;
-          delete record.earliestReturnYear;
-          delete record.earliestReturnMonth;
-          delete record.latestReturnDay;
-          delete record.latestReturnYear;
-          delete record.latestReturnMonth;
-          return true;
-        }else{
-          const earliestReturn = new Date(parseInt(record.earliestReturnYear),
-          parseInt(record.earliestReturnMonth)-1,parseInt(record,earliestReturnDay));
-
-          const latestReturn = new Date(parseInt(record.latestReturnYear),
-          parseInt(record,latestReturnMonth)-1,parseInt(record.latestReturnYear));
-
-          return latestReturn >= earliestReturn;
+    attributes: {
+        departureAirportName: {
+            type: 'string',
+            required: true,
+            notNull: true
+        },
+        departureIataCode: {
+            type: 'string',
+            required: true,
+            notNull: true
+        },
+        arrivalAirportName: {
+            type: 'string',
+            required: true,
+            notNull: true
+        },
+        arrivalIataCode: {
+            type: 'string',
+            required: true,
+            notNull: true
+        },
+        requestLocale: {
+            type: 'string',
+            required: true,
+            notNull: true
+        },
+        groupPricing: {
+            type: 'boolean',
+            required: true,
+            defaultsTo: true
+        },
+        departureDateStart: {
+            type: 'string',
+            required: true,
+            notNull: true
+        },
+        departureDateEnd: {
+            type: 'string',
+            required: true,
+            notNull: true
+        },
+        returnDateStart: {
+            type: 'string',
+            defaultsTo: null
+        },
+        returnDateEnd: {
+            type: 'string',
+            defaultsTo: null
+        },
+        adults: {
+            type: 'number',
+            required: true,
+            defaultTo: 1
+        },
+        children: {
+            type: 'number',
+            defaultsTo: 0
+        },
+        infants: {
+            type: 'number'
+            defaultsTo: 0
         }
-      })(record))}).then((isValid)=>{
-        if(!isValid) cb(new Error('Error, invalid dates'));
-        else cb();
-      }).catch((err)=>{
-        //Oops...
-        cb(err);
-      });
-  }
-};
+        currency: {
+            type: 'string'
+            notNull: true,
+            required: true
+        },
+        maximumPayment: {
+            type: 'number',
+            decimal: true,
+            min: 0,
+            max: 20001
+        },
+        willTakeOffers: {
+            type: 'boolean',
+            required: true,
+            notNull: true
+        },
+        //One to many (User can have many requests,
+        //request can have one user.)
+        user: {
+            model: 'user'
+        }
+    },
+    beforeCreate: function(record, cb) {
+        //Checks we have valid date ranges
 
+        new Promise((resolve, reject) => {
+            const departureDateStart = new Date(record.departureDateStart);
+            const departureDateEnd = new Date(record.departureDateEnd);
+
+            if (!(departureDateStart < departureDateEnd)) {
+                return cb(new Error('Departure start date must be less than departure end date'));
+            }
+
+            if (record.returnDateStart) {
+                const returnDateStart = new Date(record.returnDateStart);
+
+                if (!(returnDateStart >= departureDateStart) || !(returnDateStart >= departureDateEnd)) {
+                    return cb(new Error('Return date must be after departure date'));
+                }
+
+                if (record.returnDateEnd) {
+                    const returnDateEnd = new Date(record.returnDateEnd);
+
+                    if (!(returnDateEnd >= returnDateStart)) {
+                        return cb(new Error('Return date range end must be after the start return date'));
+                    }
+                }
+            }
+            return cb();
+        });
+    }
+};

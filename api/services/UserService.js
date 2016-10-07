@@ -50,7 +50,7 @@ module.exports = {
                     sails.log.error(err);
                     return Promise.reject(err)
                 } else {
-                    return Promise.resolve({ user.user, user.address, userSettings });
+                    return Promise.resolve({ user: user.user, address: user.address, userSettings });
                 }
             })
         }).then(function(user) {

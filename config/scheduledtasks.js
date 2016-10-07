@@ -198,14 +198,14 @@ const flightRequestScheduledTask = {
                     return Promise.reject(err);
                 })
             })
-        }).catch(function(err)) {
+        }).catch(function(err) {
             sails.log.error(err);
-        };
+        });
     }
 };
 
 const hourTimeUnit = timeUtils.createTimeUnit(24).Hours;
-modules.exports.scheduledtasks = [{
+module.exports.scheduledtasks = [{
     task: flightRequestScheduledTask,
     initialDelay: hourTimeUnit,
     repeatingDelay: hourTimeUnit

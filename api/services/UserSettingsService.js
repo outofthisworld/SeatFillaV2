@@ -47,20 +47,20 @@ module.exports = {
     getUserSetting(req, settingKey) {
         if (req.user) {
             return req.user.userSettings[settingKey];
-        }else{
+        } else {
             return req.session[settingKey];
         }
-    }
+    },
     setUserCurrencyCodePreference(req, currencyCode) {
         return this.setUserSetting(req, 'currencyCodePreference', currencyCode);
     },
     getUserCurrencyCodePreference(req) {
-        return this.getUserSetting(req,'currencyCodePreference') || 'USD';
+        return this.getUserSetting(req, 'currencyCodePreference') || 'USD';
     },
     setUserLocalePreference(req, localePreference) {
         return this.setUserSetting(req, 'localePreference', localePreference);
     },
     getUserLocalePreference(req) {
-        return this.getUserSetting(req,'localePreference') || 'USD';
+        return this.getUserSetting(req, 'localePreference') || 'USD';
     }
 }

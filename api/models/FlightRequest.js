@@ -16,7 +16,37 @@
  */
 module.exports = {
     attributes: {
-        departureAirportName: {
+        departureCity: {
+            type: 'string',
+            required: true,
+            notNull: true
+        },
+        departureCityId: {
+            type: 'string',
+            notNull: true,
+            required: true
+        },
+        departureContinent: {
+            type: 'string',
+            required: true,
+            notNull: true
+        },
+        departureContinentId: {
+            type: 'string',
+            required: true,
+            notNull: true
+        },
+        departureCountry: {
+            type: 'string',
+            required: true,
+            notNull: true
+        },
+        departureCountryId: {
+            type: 'stirng',
+            required: true,
+            notNull: true
+        },
+        departureCountryCurrency: {
             type: 'string',
             required: true,
             notNull: true
@@ -26,8 +56,37 @@ module.exports = {
             required: true,
             notNull: true
         },
-        arrivalAirportName: {
+        arrivalCity: {
             type: 'string',
+            required: true,
+            notNull: true
+        },
+        arrivalCityId: {
+            type: 'string',
+            required: true,
+            notNull: true
+        },
+        arrivalContinent: {
+            type: 'string',
+            required: true,
+            notNull: true
+        },
+        arrivalContinentId: {
+            type: 'string',
+            required: true,
+            notNull: true
+        },
+        arrivalCountry: {
+            type: 'string',
+            required: true,
+            notNull: true
+        },
+        arrivalCountryId: {
+            type: 'string',
+            required: true,
+            notNull: true
+        },
+        arrivalCountryCurrency: {
             required: true,
             notNull: true
         },
@@ -74,13 +133,15 @@ module.exports = {
             defaultsTo: 0
         },
         infants: {
-            type: 'number'
+            type: 'number',
             defaultsTo: 0
-        }
+        },
         currency: {
             type: 'string'
-            notNull: true,
-            required: true
+        },
+        cabinClass: {
+            type: 'string',
+            enum: ['economy', 'premiumeconomy', 'firstClass', 'business']
         },
         maximumPayment: {
             type: 'number',
@@ -88,7 +149,7 @@ module.exports = {
             min: 0,
             max: 20001
         },
-        willTakeOffers: {
+        notifySeatfillaFlights: {
             type: 'boolean',
             required: true,
             notNull: true

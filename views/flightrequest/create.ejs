@@ -114,7 +114,7 @@
 			<h2 class="modal-title" id="lineModalLabel">Flight request information</h2>
 		</div>
 		<div class="modal-body">
-			<form>
+			<form id="flightRequestForm">
               <div class="form-group">
                 <label for="flight_type">Type of request</label>
                 <select id="flight_type" class="form-control">
@@ -124,33 +124,75 @@
               </div>
               <div class="row">
                     <div class="col-xs-6">
-                        <label for="departure_date">Departure date</label>   
-                        <input type="date" id="departure_date" class="form-control"/>
+                        <label for="departureDateStart">Departure Date</label>   
+                        <input type="date" name="departureDateStart" id="departure_date" class="form-control" required/>
                     </div>
                     <div class="col-xs-6">
-                        <label  for="return_date">Return date</label> 
-                        <input type="date" id="return_date" class="form-control"/>
+                        <label for="departureDateEnd">Latest Departure Date</label>   
+                        <input type="date" name="departureDateEnd" id="departureDateEnd" class="form-control"/>
+                    </div>
+              </div>
+              <div class="row">
+                    <div class="col-xs-6">
+                        <label  for="returnDateStart">Return Date</label> 
+                        <input type="date" name="returnDateStart" id="return_date" class="form-control" required/>
+                    </div>
+                    <div class="col-xs-6">
+                        <label  for="returnDateEnd">Latest Return Date</label> 
+                        <input type="date" name="returnDateEnd" id="returnDateEnd" class="form-control"/>
                     </div>
               </div>
               <div class="row">
                 <div class="col-xs-6">
                         <label for="departure_city">From city</label>   
-                        <select id="departure_city" class="form-control cities" required/> 
+                        <select id="departure_city" name="departureIataCode" class="form-control cities" required/> 
                         </select>
                 </div>
                 <div class="col-xs-6">
                         <label  for="to_city">To city</label> 
-                        <select id="to_city" class="form-control cities" required/>
+                        <select id="to_city" name="arrivalIataCode" class="form-control cities" required/>
                         </select>
                 </div>
               </div>
-              <label for="departure_city">Cabin class</label>   
-              <div class="form-group" id="cabin_class">
-                <label class="checkbox-inline"><input type="checkbox" value="">Economy</label>
-                <label class="checkbox-inline"><input type="checkbox" value="">Premium economy</label>
-                <label class="checkbox-inline"><input type="checkbox" value="">Business</label>
-                <label class="checkbox-inline"><input type="checkbox" value="">First class</label>
+              <div class="row">
+              <div class="col-xs-8">
+              <label for="cabin_class">Cabin class</label>   
+                <select id="cabin_class" name="cabin_class" class="form-control" required/>
+                <option value="Economy" selected>Economy</option>
+                <option value="PremiumEconomy">Premium Economy</option>
+                <option value="Business">Business</option>
+                <option value="First">First class</option>
+                </select>
+                </div>
               </div>
+              <div class="row">
+                <div class="col-xs-4">
+                        <label for="adults">No. adults</label>   
+                        <input id="adults" name="adults" type="number" class="form-control" value="1" required/>
+                </div>
+                <div class="col-xs-4">
+                        <label  for="children">No. Children</label> 
+                           <input id="children" name="children" type="number" class="form-control" value="0" required/>
+                </div>
+                  <div class="col-xs-4">
+                        <label  for="infants">No. infants</label> 
+                        <input id="infants" name="infants" type="number" class="form-control" value="0" required/>
+                </div>
+              </div>
+              <br/>
+            <div class="row">
+                <div class="col-xs-8">
+                   <label  for="maxPrice">Find flights cheaper than (Not required): </label> 
+                   <input id="maxPrice" name="maxPrice" class="form-control" type="number" value="0"/> 
+                </div>
+        
+                <div class="col-xs-4">
+                <label for="currency">Currency</label>   
+                <select id="currency" name="currency" class="form-control" required/>
+                </select>
+                </div>
+            </div>
+            <button style="display:hidden;" type="submit"></button>
             </form>
 		</div>
 		<div class="modal-footer">
@@ -160,10 +202,8 @@
 					<button type="button" class="btn btn-danger" data-dismiss="modal"  role="button">Close</button>
 				</div>
 
-                <p id="pGraph"></p>
-			
 			</div>
-                   	<button type="button" id="sub" class="btn btn-info btn-block" role="button">Create request</button>
+                     <input type="button" id="sub" class="btn btn-info btn-block" value="Create request"/>
 		</div>
 	</div>
   </div>
@@ -180,8 +220,20 @@
                  lastSelected = null;
             });
 
+        
+
              window.seatfilla.globals.inputs.data.retrieveCityData().forEach(function(item) {
-                $('.cities').append($('<option></option>', { value: item.iataCode, 'data-val-cityname': item.name })
+                $('.cities').append($('<option></option>', { 
+                      value: item.iataCode,
+                     'data-val-city': item.name,
+                     'data-val-continentId':item.continentId,
+                     'data-val-continentName':item.continentName,
+                     'data-val-countryName':item.countryName,
+                     'data-val-countryId':item.countryId,
+                     'data-val-currency':item.currency,
+                     'data-val-location':item.location,
+                     'data-val-cityId':item.id
+                     })
                 .text(item.name + ', ' + item.countryName));
              });
 
@@ -212,6 +264,15 @@
 				selectHelper: true,
 				select: function(start, end, allDay)
 				{
+                    var check = start._d.toJSON().slice(0,10); 
+                    var today = new Date().toJSON().slice(0,10);
+                    if(check < today)
+                    {
+                        alert('Selected date has already been');
+                        calendar.fullCalendar('unselect');	
+                        return;
+                    }
+ 
 					if (lastSelected){		
 
                             const startDate = new Date(lastSelected.start);
@@ -238,27 +299,77 @@
                             $('#return_date').val(return_date);
 
                             $('#squarespaceModal').modal('show');
-                            $('#pGraph').text('You are currently looking for a flight that will be departing on ' + startDate
-                            + ' and return on ' + endDate);
-                          
+
+                            $('#currency').html("");
+                            $('#currency').append($('<option></option>',{
+                                text: $('#seatfilla_currencies').val(),
+                                value:$('#seatfilla_currencies').val()
+                            }));
+
+                            $('#departure_city').on('change',function(){
+                                const cur =  $('#departure_city:selected').attr('data-val-currency');
+                                $('#currency').append($('<option></option>',{
+                                    text: cur,
+                                    value: cur
+                                }));
+                            });
+                                    
                             $('#sub').on('click',function(){
-                                calendar.fullCalendar('renderEvent',
-                                            {
-                                                title: 'hi',
-                                                start: lastSelected.start,
-                                                end:e.toISOString(),
-                                                allDay: allDay,
-                                                color: eventColors[Math.ceil(Math.random() * eventColors.length) % eventColors.length]
-                                            },
-                                            true // make the event "stick"
-                                );
-                             $('#sub').off('click');
-                             calendar.fullCalendar('unselect');	
-                            $('#squarespaceModal').modal('hide');
-                        });
-					}else{
-                         lastSelected = {start,end,allDay};
-                    }
+                                    var $flightRequestForm = $('#flightRequestForm')
+                                    if (!$flightRequestForm[0].checkValidity()) {
+                                        $flightRequestForm.find(':submit').click()
+                                    }else{
+                                        const data = Object.assign({},$flightRequestForm.serialize());
+                                        const depCity = $('#departure_city');
+                                        const arrivalCity = $('#departure_city');
+
+                                        data.departureCity = depCity.attr('data-val-city');
+                                        data.departureCityId = depCity.attr('data-val-cityId');
+                                        data.departureContinent = depCity.attr('data-val-continentName');
+                                        data.departureContinentId = depCity.attr('data-val-continentId');
+                                        data.departureCountry = depCity.attr('data-val-countryName');
+                                        data.departureCountryId = depCity.attr('data-val-countryId');
+                                        data.departureCountryCurrency = depCity.attr('data-val-currency');
+                                        data.departureCityLocation = depCity.attr('data-val-location');
+
+                                        data.arrivalCity = arrivalCity.attr('data-val-city');
+                                        data.arrivalCityId = arrivalCity.attr('data-val-cityId');
+                                        data.arrivalContinent = arrivalCity.attr('data-val-continentName');
+                                        data.arrivalContinentId = arrivalCity.attr('data-val-continentId');
+                                        data.arrivalCountry = arrivalCity.attr('data-val-countryName');
+                                        data.arrivalCountryId = arrivalCity.attr('data-val-countryId');
+                                        data.arrivalCountryCurrency = arrivalCity.attr('data-val-currency');
+                                        data.arrivalCityLocation = arrivalCity.attr('data-val-location');
+
+
+                                        $.ajax({
+                                            type: "POST",
+                                            url: '/FlightRequest/Create',
+                                            data: data,
+                                            success: function(res,s,xhr){
+                                                if(xhr.statusCode==200){
+                                                    calendar.fullCalendar('renderEvent',
+                                                        {
+                                                            title: 'Flight Request ' + $('#departure_date').val() + '-' + $('return_date').val(),
+                                                            start: lastSelected.start,
+                                                            end:e.toISOString(),
+                                                            allDay: allDay,
+                                                            color: eventColors[Math.ceil(Math.random() * eventColors.length) % eventColors.length]
+                                                        },
+                                                        true);
+                                                    $('#sub').off('click');
+                                                    calendar.fullCalendar('unselect');	
+                                                    $('#squarespaceModal').modal('hide');
+                                                }else{
+                                                    alert('Error saving event');
+                                                }
+                                            }
+                                        });
+                                    }
+                               });
+                            }else{
+                                lastSelected = {start,end,allDay};
+                            }
 					
 				},
 				editable: true,

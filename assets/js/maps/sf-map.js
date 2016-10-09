@@ -281,34 +281,45 @@ var _seat_filla_map = function(options) {
     if (!options || !options.coords) {
         (function init(cb) {
             geolocator.config({ language: 'en', google: { version: '3', key: 'AIzaSyDDBWrH7DuCZ8wNlOXgINCtI_gT9NkDRq4' } });
+
+            window.seatfilla.globals.geolocation.getUserLocation(function(status, result) {
+                if (status != 200 || !result) {
+                    geolocator.locate(options, function(err, location) {
+                        if (err) {
+                            if (!navigator.geolocation) {
+                                console.log('Error when locating position ' + err + '. Defaulting coordinates');
+                                cb(defaultLoc);
+                            } else {
+                                navigator.geolocation.getCurrentPosition(function(position) {
+                                    cb(position);
+
+                                }, function error() {
+                                    console.log('Error when using navigator geolocation');
+                                    cb(defaultLoc);
+                                });
+                            }
+                        } else {
+                            console.log('Creating map, used geolocator (uncached) to retrieve location ' + location);
+                            window.seatfilla.globals.geolocation.setUserLocation(location, function(status) {
+                                if (status == 200) {
+                                    return cb(location);
+                                } else {
+                                    return cb(defaultLoc);
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    cb(result);
+                }
+            });
             defaultLoc = { coords: { longitude: 0, latitude: 0 } };
             if (options && options.useCache && typeof Storage !== "undefined" && sessionStorage.getItem('location')) {
                 var location = JSON.parse(sessionStorage.getItem('location'));
                 cb(location);
             } else {
                 console.log('Could not find location in session storage');
-                geolocator.locate(options, function(err, location) {
-                    if (err) {
-                        if (!navigator.geolocation) {
-                            console.log('Error when locating position ' + err + '. Defaulting coordinates');
-                            cb(defaultLoc);
-                        } else {
-                            navigator.geolocation.getCurrentPosition(function(position) {
-                                cb(position);
 
-                            }, function error() {
-                                console.log('Error when using navigator geolocation');
-                                cb(defaultLoc);
-                            });
-                        }
-                    } else {
-                        console.log('Creating map, used geolocator (uncached) to retrieve location ' + location);
-                        if (options && options.useCache && typeof Storage !== "undefined" && location) {
-                            sessionStorage.setItem('location', JSON.stringify(location));
-                        }
-                        cb(location);
-                    }
-                });
             }
         })(createMap);
     } else {

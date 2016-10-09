@@ -67,6 +67,14 @@ window.seatfilla.globals.browserSupportsWebStorage = function() {
     return false;
 }
 
+window.seatfilla.globals.tryParseJsonResult = function(result) {
+    try {
+        return JSON.parse(result);
+    } catch (err) {
+        return result;
+    }
+}
+
 
 /*
     Object: window.seatfilla.globals.locale
@@ -96,26 +104,52 @@ window.seatfilla.globals.locale.setPrefferedCurrency = function(currencyCode, cb
 }
 
 window.seatfilla.globals.locale.getPrefferedCurrency = function(cb) {
-    if (!typeof cb === 'function') throw new Error('Invalid params');
+        if (!typeof cb === 'function') throw new Error('Invalid params');
 
-    const cacheVal = window.seatfilla.globals.cache.get({ key: 'sfCurPref', type: 'session' });
-    if (cacheVal) {
-        cb(200, cacheVal);
-    } else {
-        const getCurrencyCodeEndpointUrl = window.seatfilla.globals.site.endpoints.seatfillasettings.getCurrencyCodePreference.url;
-        const getCurrencCodeEndpointType = window.seatfilla.globals.site.endpoints.seatfillasettings.getCurrencyCodePreference.type;
-        $.ajax({
-            type: getCurrencCodeEndpointType,
-            url: getCurrencyCodeEndpointUrl,
-            success: function(response, textstatus, xhr) {
-                cb(xhr.status, response.currencyCodePreference || 'USD');
-            }
-        });
+        const cacheVal = window.seatfilla.globals.cache.get({ key: 'sfCurPref', type: 'session' });
+        if (cacheVal) {
+            cb(200, cacheVal);
+        } else {
+            const getCurrencyCodeEndpointUrl = window.seatfilla.globals.site.endpoints.seatfillasettings.getCurrencyCodePreference.url;
+            const getCurrencCodeEndpointType = window.seatfilla.globals.site.endpoints.seatfillasettings.getCurrencyCodePreference.type;
+            $.ajax({
+                type: getCurrencCodeEndpointType,
+                url: getCurrencyCodeEndpointUrl,
+                success: function(response, textstatus, xhr) {
+                    cb(xhr.status, response.currencyCodePreference || 'USD');
+                }
+            });
+        }
     }
+    /* End locale functions */
+
+
+/* Seatfilla cookies support, incase client side local storage isn't supported */
+window.seatfilla.globals.cookies = window.seatfilla.globals.cookies || {};
+
+window.seatfilla.globals.cookies.setCookie = function(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    var expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + JSON.stringify(cvalue) + "; " + expires;
 }
 
+window.seatfilla.globals.cookies.getCookie = function(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return window.seatfilla.globals.tryParseJsonResult(c.substring(name.length, c.length));
+            }
+        }
+        return null;
+    }
+    /* end cookies */
 
-/* End locale functions */
 
 
 
@@ -131,33 +165,89 @@ window.seatfilla.globals.cache.put = function(options) {
     if (!options || !options.key || !options.data)
         throw new Error('Invalid input into window.seatfilla.globals.cache.put');
 
+    const callback = (options.success && typeof options.success == 'function') || function() {}
+
     if (!window.seatfilla.globals.browserSupportsWebStorage()) {
-        console.log('No browser support for cache');
-        return false;
+        if (navigator.cookieEnabled) {
+            window.seatfilla.globals.cookies.setCookie(options.key, JSON.stringify(options.data), options.expiration || 1);
+            callback(200);
+        } else {
+            $.ajax({
+                type: "POST",
+                url: '/SeatfillaSettings/setStoredSetting',
+                data: {
+                    key: options.key,
+                    data: options.data
+                },
+                success: function(result, s, xhr) {
+                    const res = window.seatfilla.globals.tryParseJsonResult(result);
+                    callback(res.status, res);
+                },
+            });
+        }
     } else {
         (function useStore(obj) {
             obj.setItem(options.key, JSON.stringify(options.data));
-            return true;
+            callback(200);
         })(((options.type == 'session' ? sessionStorage : localStorage) || sessionStorage));
     }
 }
 
 window.seatfilla.globals.cache.get = function(options) {
-    if (!options || !options.key)
-        throw new Error('Invalid input into window.seatfilla.globals.cache.get');
+        if (!options || !options.key)
+            throw new Error('Invalid input into window.seatfilla.globals.cache.get');
 
-    if (!window.seatfilla.globals.browserSupportsWebStorage()) {
-        console.log('No browser support for cache');
-        return false;
-    } else {
-        return (function useStore(obj) {
-            const value = obj.getItem(options.key);
-            return JSON.parse(value);
-        })((options.type == 'session' ? sessionStorage : localStorage) || sessionStorage)
+        const callback = (options.success && typeof options.success == 'function') || function() {}
+
+        if (!window.seatfilla.globals.browserSupportsWebStorage()) {
+            if (navigator.cookieEnabled) {
+                return callback(200, window.seatfilla.globals.cookies.getCookie(options.key))
+            } else {
+                $.ajax({
+                    type: "POST",
+                    url: '/SeatfillaSettings/getStoredSetting',
+                    data: {
+                        key: options.key
+                    },
+                    success: function(result, s, xhr) {
+                        const res = window.seatfilla.globals.tryParseJsonResult(result);
+                        return callback(res.status, res);
+                    },
+                });
+            }
+        } else {
+            return (function useStore(obj) {
+                const value = obj.getItem(options.key);
+                return callback(200, window.seatfilla.globals.tryParseJsonResult(value));
+            })((options.type == 'session' ? sessionStorage : localStorage) || sessionStorage)
+        }
     }
+    /* End cache */
+
+
+
+/* Geo location */
+
+window.seatfilla.globals.geolocation = window.seatfilla.globals.geolocation || {};
+
+window.seatfilla.globals.geolocation.setUserLocation = function(location, callback) {
+    window.seatfilla.globals.cache.put({
+        key: 'location',
+        data: location,
+        type: 'session',
+        success: callback
+    });
 }
 
-/* End cache */
+window.seatfilla.globals.geolocation.getUserLocation = function(callback) {
+    window.seatfilla.globals.cache.get({
+        key: 'location',
+        type: 'session',
+        success: callback
+    });
+}
+
+/* end geoLocation */
 
 window.seatfilla.globals.getFirstBrowserLanguage = function() {
     var nav = window.navigator,

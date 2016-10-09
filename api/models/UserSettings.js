@@ -10,8 +10,13 @@ module.exports = {
             defaultsTo: 'USD'
         },
         localePreference: {
-            type:'string',
-            defaultsTo: 'en-gb'
+            type: 'string',
+            defaultsTo: 'en-US'
+        },
+        currentLocation: {
+            model: 'UserLocation',
+            defaultsTo: null,
+            required: false
         }
     }
 }

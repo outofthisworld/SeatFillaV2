@@ -84,44 +84,28 @@ window.seatfilla.globals.tryParseJsonResult = function(result) {
 window.seatfilla.globals.locale = window.seatfilla.globals.locale || {};
 
 window.seatfilla.globals.locale.setPrefferedCurrency = function(currencyCode, cb) {
-    const url = window.seatfilla.globals.site.endpoints.seatfillasettings.setCurrencyCodePreference.url;
-    const type = window.seatfilla.globals.site.endpoints.seatfillasettings.setCurrencyCodePreference.type;
+    if (!typeof cb === 'function') throw new Error('Invalid params to seatfilla-config.js/setPrefferedCurrency');
+
     window.seatfilla.globals.cache.put({
         key: 'sfCurPref',
         type: 'session',
-        data: currencyCode
-    });
-    $.ajax({
-        type,
-        url,
-        data: {
-            currencyCodePreference: currencyCode
-        },
-        success: function(response, textstatus, xhr) {
-            cb(xhr.status);
-        }
+        data: currencyCode,
+        useServerStore: true,
+        success: cb
     });
 }
 
 window.seatfilla.globals.locale.getPrefferedCurrency = function(cb) {
-        if (!typeof cb === 'function') throw new Error('Invalid params');
+    if (!typeof cb === 'function') throw new Error('Invalid params to seatfilla-config.js/getPrefferedCurrency');
 
-        const cacheVal = window.seatfilla.globals.cache.get({ key: 'sfCurPref', type: 'session' });
-        if (cacheVal) {
-            cb(200, cacheVal);
-        } else {
-            const getCurrencyCodeEndpointUrl = window.seatfilla.globals.site.endpoints.seatfillasettings.getCurrencyCodePreference.url;
-            const getCurrencCodeEndpointType = window.seatfilla.globals.site.endpoints.seatfillasettings.getCurrencyCodePreference.type;
-            $.ajax({
-                type: getCurrencCodeEndpointType,
-                url: getCurrencyCodeEndpointUrl,
-                success: function(response, textstatus, xhr) {
-                    cb(xhr.status, response.currencyCodePreference || 'USD');
-                }
-            });
-        }
-    }
-    /* End locale functions */
+    window.seatfilla.globals.cache.get({
+        key: 'sfCurPref',
+        type: 'session',
+        success: cb
+    });
+}
+
+/* End locale functions */
 
 
 /* Seatfilla cookies support, incase client side local storage isn't supported */
@@ -165,30 +149,30 @@ window.seatfilla.globals.cache.put = function(options) {
     if (!options || !options.key || !options.data)
         throw new Error('Invalid input into window.seatfilla.globals.cache.put');
 
-    const callback = (options.success && typeof options.success == 'function') || function() {}
+    const callback = options.success && typeof options.success == 'function' ? options.success : function() {};
+
+    if (options.useServerStore) {
+        $.ajax({
+            type: "POST",
+            url: '/SeatfillaSettings/setStoredSetting',
+            data: {
+                key: options.key,
+                data: options.data
+            },
+            success: function(result, s, xhr) {
+                const res = window.seatfilla.globals.tryParseJsonResult(result);
+                callback(res.status, res);
+            }
+        });
+    }
 
     if (!window.seatfilla.globals.browserSupportsWebStorage()) {
         if (navigator.cookieEnabled) {
             window.seatfilla.globals.cookies.setCookie(options.key, JSON.stringify(options.data), options.expiration || 1);
-            callback(200);
-        } else {
-            $.ajax({
-                type: "POST",
-                url: '/SeatfillaSettings/setStoredSetting',
-                data: {
-                    key: options.key,
-                    data: options.data
-                },
-                success: function(result, s, xhr) {
-                    const res = window.seatfilla.globals.tryParseJsonResult(result);
-                    callback(res.status, res);
-                },
-            });
         }
     } else {
         (function useStore(obj) {
             obj.setItem(options.key, JSON.stringify(options.data));
-            callback(200);
         })(((options.type == 'session' ? sessionStorage : localStorage) || sessionStorage));
     }
 }
@@ -197,7 +181,7 @@ window.seatfilla.globals.cache.get = function(options) {
         if (!options || !options.key)
             throw new Error('Invalid input into window.seatfilla.globals.cache.get');
 
-        const callback = (options.success && typeof options.success == 'function') || function() {}
+        const callback = options.success && typeof options.success == 'function' ? options.success : function() {};
 
         if (!window.seatfilla.globals.browserSupportsWebStorage()) {
             if (navigator.cookieEnabled) {
@@ -211,7 +195,7 @@ window.seatfilla.globals.cache.get = function(options) {
                     },
                     success: function(result, s, xhr) {
                         const res = window.seatfilla.globals.tryParseJsonResult(result);
-                        return callback(res.status, res);
+                        return callback(res.status, res[options.key]);
                     },
                 });
             }
@@ -235,6 +219,7 @@ window.seatfilla.globals.geolocation.setUserLocation = function(location, callba
         key: 'location',
         data: location,
         type: 'session',
+        useServerStore: true,
         success: callback
     });
 }

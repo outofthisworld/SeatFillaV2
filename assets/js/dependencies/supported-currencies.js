@@ -21,49 +21,55 @@ $(document).ready(function() {
             })
         }
 
-
-        /* Get the cached values if they exist */
-        var cacheVal = window.seatfilla.globals.cache.get({ key: 'sfCur', type: 'session' });
-        if (cacheVal) {
-            console.log('Loading currencies from cache');
-            window.seatfilla.globals.locale.getPrefferedCurrency(function(status, prefferedCurrencyCode) {
-                displayCurrencies(cacheVal, prefferedCurrencyCode);
-            });
-        } else {
-            const type = window.seatfilla.globals.site.endpoints.lookupservice.getCurrencyCodes.method;
-            const url = window.seatfilla.globals.site.endpoints.lookupservice.getCurrencyCodes.url;
-            alert('sending req');
-            $.ajax({
-                type,
-                url,
-                success: function(response, textstatus, xhr) {
-                    response = JSON.parse(response);
-                    if (xhr.status == 200) {
-                        window.seatfilla.globals.cache.put({
-                            key: 'sfCur',
-                            data: response,
-                            type: 'session'
-                        });
-                        window.seatfilla.globals.locale.getPrefferedCurrency(function(status, prefferedCurrencyCode) {
-                            displayCurrencies(response, prefferedCurrencyCode);
-                        });
+        window.seatfilla.globals.cache.get('sf-currencies', function(status, result) {
+            function dis(data) {
+                window.seatfilla.globals.locale.getPrefferedCurrency(function(status, result) {
+                    if (status != 200 || !result) {
+                        displayCurrencies(response, 'USD');
                     } else {
-                        alert('Could not load currencies');
-                        $('#seatfilla_currencies').remove();
+                        displayCurrencies(response, result);
                     }
-                }
-            });
-        }
-    })();
+                })
+            }
+            if (status != 200 || !result) {
+                const type = window.seatfilla.globals.site.endpoints.lookupservice.getCurrencyCodes.method;
+                const url = window.seatfilla.globals.site.endpoints.lookupservice.getCurrencyCodes.url;
+                $.ajax({
+                    type,
+                    url,
+                    success: function(response, textstatus, xhr) {
+                        response = JSON.parse(response);
+                        if (xhr.status == 200) {
+                            window.seatfilla.globals.cache.put({
+                                key: 'sf-currencies',
+                                data: response,
+                                success: function() {},
+                                useServerStore: false
+                            });
+                            dis(response);
+                        } else {
+                            alert('Could not load currencies');
+                            $('#seatfilla_currencies').remove();
+                        }
+                    }
+                });
 
-    $('#seatfilla_currencies').on('change', function() {
-        const currencyCodePreference = $(this).val();
-        window.seatfilla.globals.locale.setPrefferedCurrency(currencyCodePreference, function(status) {
-            if (status == 200) {
-                console.log('Succesfully updated user currency code preference');
             } else {
-                console.log('Error updating user currency code preference');
+                dis(result);
             }
         });
+
+
+        $('#seatfilla_currencies').on('change', function() {
+            const currencyCodePreference = $(this).val();
+            window.seatfilla.globals.locale.setPrefferedCurrency(currencyCodePreference, function(status) {
+                if (status == 200) {
+                    console.log('Succesfully updated user currency code preference');
+                } else {
+                    console.log('Error updating user currency code preference');
+                }
+            });
+        });
     });
+
 });

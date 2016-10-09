@@ -1,8 +1,19 @@
 const fs = require('fs');
 
 module.exports = {
+    readJsonFileAsync(path, callback) {
+        this.readFileUTF8Async(path, function(err, data) {
+            if (err) {
+                return cb(err, null);
+            } else {
+                return this.safeParseJsonAsync(data).then(function(jsonData) {
+                    return cb(null, jsonData);
+                }).catch(callback);
+            }
+        });
+    },
     readFileUTF8Async: function(path, callback) {
-        return this.readFileAsync(callback, 'utf8');
+        return this.readFileAsync(path, 'utf8', callback);
     },
     readFileAsync: function(path, fileEncoding, callback) {
         fs.readFile(path, fileEncoding, function(err, data) {
@@ -10,7 +21,7 @@ module.exports = {
                 sails.log.debug('Error reading ' + path + ' error: ' + err)
                 return callback(err, null);
             } else {
-                return callback(null, JSON.parse(data));
+                return callback(null, data);
             }
         });
     },

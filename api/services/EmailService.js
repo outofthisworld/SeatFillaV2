@@ -3,16 +3,18 @@
     Email service to send and schedule failed emails to be resent.
 */
 
-const nodemailer = require('nodemailer')
-const smtpPool = require('nodemailer-sendgrid-transport')
-const transporter = nodemailer.createTransport(smtpPool(sails.config.email.config))
-    // Create a scheduler for failed emails..
-const schedule = require('node-schedule')
-const rule = new schedule.RecurrenceRule()
-const email_service = '../../email-service.json'
+const nodemailer = require('nodemailer');
+const path = require('path');
+const smtpPool = require('nodemailer-sendgrid-transport');
+const transporter = nodemailer.createTransport(smtpPool(sails.config.email.config));
+// Create a scheduler for failed emails..
+const schedule = require('node-schedule');
+const rule = new schedule.RecurrenceRule();
+const email_service = sails.config.appPath + '/email-service.json';
+sails.log.debug('Email service path: ' + email_service);
 rule.minute = 59
 
-module.exports = {
+const exportObj = {
     // Sends an async email
     sendEmailAsync: function(message) {
         return new Promise((resolve, reject) => {
@@ -86,18 +88,18 @@ function init() {
     // Schedule a new email resending task, should an email fail to be sent.
     const j = schedule.scheduleJob(rule, function() {
         sails.log.debug('resending failed emails..')
-        FileService.readFileUTF8Async(email_service, function(err, data) {
+        FileService.readJsonFileAsync(email_service, function(err, data) {
             var obj
-            if (!err && module.exports) {
+            if (!err && exportObj) {
                 email_service.FailedMessages.forEach(e, i => {
-                    module.exports.sendEmailAsync(e).then(function(info) {
+                    exportObj.sendEmailAsync(e).then(function(info) {
                         obj = JSON.parse(data)
                         obj.FailedMessages.splice(i, 1)
                     }).catch(function(err) {
                         sails.log.debug('Scheduled email service failed to resend email with error ' + err)
                     })
                 })
-                FileService.writeFileUTF8Async(email_service, obj, function(err) {
+                FileService.writeFileUTF8Async(email_service, JSON.stringify(obj), function(err) {
                     if (err) {
                         sails.log.debug('Error writing ' + email_service + ' error: ' + err)
                     }
@@ -108,3 +110,4 @@ function init() {
 }
 
 init();
+module.exports = exportObj;

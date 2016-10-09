@@ -21,41 +21,47 @@ $(document).ready(function() {
             })
         }
 
-        window.seatfilla.globals.cache.get('sf-currencies', function(status, result) {
-            function dis(data) {
-                window.seatfilla.globals.locale.getPrefferedCurrency(function(status, result) {
-                    if (status != 200 || !result) {
-                        displayCurrencies(response, 'USD');
-                    } else {
-                        displayCurrencies(response, result);
-                    }
-                })
-            }
-            if (status != 200 || !result) {
-                const type = window.seatfilla.globals.site.endpoints.lookupservice.getCurrencyCodes.method;
-                const url = window.seatfilla.globals.site.endpoints.lookupservice.getCurrencyCodes.url;
-                $.ajax({
-                    type,
-                    url,
-                    success: function(response, textstatus, xhr) {
-                        response = JSON.parse(response);
-                        if (xhr.status == 200) {
-                            window.seatfilla.globals.cache.put({
-                                key: 'sf-currencies',
-                                data: response,
-                                success: function() {},
-                                useServerStore: false
-                            });
-                            dis(response);
-                        } else {
-                            alert('Could not load currencies');
-                            $('#seatfilla_currencies').remove();
-                        }
-                    }
-                });
+        window.seatfilla.globals.cache.get({
+            key: 'sf-currencies',
+            success: function(status, result) {
+                console.log(status);
+                console.log(result);
 
-            } else {
-                dis(result);
+                function dis(data) {
+                    window.seatfilla.globals.locale.getPrefferedCurrency(function(status, result) {
+                        if (status != 200 || !result) {
+                            displayCurrencies(data, 'USD');
+                        } else {
+                            displayCurrencies(data, result);
+                        }
+                    })
+                }
+                if (status != 200 || !result) {
+                    const type = window.seatfilla.globals.site.endpoints.lookupservice.getCurrencyCodes.method;
+                    const url = window.seatfilla.globals.site.endpoints.lookupservice.getCurrencyCodes.url;
+                    $.ajax({
+                        type,
+                        url,
+                        success: function(response, textstatus, xhr) {
+                            response = JSON.parse(response);
+                            if (xhr.status == 200) {
+                                window.seatfilla.globals.cache.put({
+                                    key: 'sf-currencies',
+                                    data: response,
+                                    success: function() {},
+                                    useServerStore: false
+                                });
+                                dis(response);
+                            } else {
+                                alert('Could not load currencies');
+                                $('#seatfilla_currencies').remove();
+                            }
+                        }
+                    });
+
+                } else {
+                    dis(result);
+                }
             }
         });
 
@@ -70,6 +76,6 @@ $(document).ready(function() {
                 }
             });
         });
-    });
+    })();
 
 });

@@ -11,72 +11,72 @@
 const passport = require('passport');
 module.exports.http = {
 
-        /****************************************************************************
-         *                                                                           *
-         * Express middleware to use for every Sails request. To add custom          *
-         * middleware to the mix, add a function to the middleware config object and *
-         * add its key to the "order" array. The $custom key is reserved for         *
-         * backwards-compatibility with Sails v0.9.x apps that use the               *
-         * `customMiddleware` config option.                                         *
-         *                                                                           *
-         ****************************************************************************/
+    /****************************************************************************
+     *                                                                           *
+     * Express middleware to use for every Sails request. To add custom          *
+     * middleware to the mix, add a function to the middleware config object and *
+     * add its key to the "order" array. The $custom key is reserved for         *
+     * backwards-compatibility with Sails v0.9.x apps that use the               *
+     * `customMiddleware` config option.                                         *
+     *                                                                           *
+     ****************************************************************************/
 
-        middleware: {
-            passportInit: passport.initialize(),
-            passportSession: passport.session(),
-            passportSessionInit: function() {
-                /* 
-                    Handles the serialization and 
-                    deserialization proccess for session storage (keeps server memory low)
-                  */
-                passport.serializeUser(function(user, done) {
-                    sails.log.debug('Serializing user: ' + user);
-                    done(null, user.id)
-                })
+    middleware: {
+        passportInit: passport.initialize(),
+        passportSession: passport.session(),
+        passportSessionInit: function() {
+            /* 
+                Handles the serialization and 
+                deserialization proccess for session storage (keeps server memory low)
+              */
+            passport.serializeUser(function(user, done) {
+                sails.log.debug('Serializing user: ' + user);
+                done(null, user.id)
+            })
 
-                passport.deserializeUser(function(id, done) {
-                        User.findOne({ id: id })
-                            .populate('roles')
-                            .populate('userSettings')
-                            .populate('userLocations')
-                            .populate('notifications')
-                            .populate('systemNotificationUsers')
-                            .populate('images')
-                            .populate('addresses')
-                            .populate('flightRequests')
-                            .populate('bids')
-                            .populate('apiKeys')
-                            .populate('supportTickets')
-                            .exec(function(err, user) {
-                                    if (err) {
-                                        sails.log.debug('Could not find and de-serialize user with id passed in via passport... session user will not be populated.');
-                                        sails.log.error(err);
-                                    } else {
-                                        UserSettings.findOrCreate({ user: user.id }, { user: user.id }, function(err, user) {
+            passport.deserializeUser(function(id, done) {
+                User.findOne({ id: id })
+                    .populate('roles')
+                    .populate('userSettings')
+                    .populate('userLocations')
+                    .populate('notifications')
+                    .populate('systemNotificationUsers')
+                    .populate('images')
+                    .populate('addresses')
+                    .populate('flightRequests')
+                    .populate('bids')
+                    .populate('apiKeys')
+                    .populate('supportTickets')
+                    .exec(function(err, user) {
+                        if (err) {
+                            sails.log.debug('Could not find and de-serialize user with id passed in via passport... session user will not be populated.');
+                            sails.log.error(err);
+                        } else {
+                            UserSettings.findOrCreate({ user: user.id }, { user: user.id }, function(err, user) {
+                                if (err) {
+                                    sails.log.debug('Could not find or create user settings');
+                                    sails.log.error(err);
+                                } else {
+                                    //Handle nested associations that waterline doesn't currently have support for.
+                                    if (user.userSettings.currentLocation) {
+                                        UserLocation.findOne({ id: user.userSettings.currentLocation }).exec(function(err, userLoc) {
                                             if (err) {
-                                                sails.log.debug('Could not find or create user settings');
+                                                sails.log.debug('Unable to execute query find user location even though current location is set..');
                                                 sails.log.error(err);
+                                                done(err, user);
                                             } else {
-                                                //Handle nested associations that waterline doesn't currently have support for.
-                                                if (user.userSettings.currentLocation) {
-                                                    UserLocation.findOne({ id: user.userSettings.currentLocation }).exec(function(err, userLoc) {
-                                                        if (err) {
-                                                            sails.log.debug('Unable to execute query find user location even though current location is set..');
-                                                            sails.log.error(err);
-                                                            done(err, user);
-                                                        } else {
-                                                            user.userSettings.currentLocation = userLoc;
-                                                            done(err, user);
-                                                        }
-                                                    })
-                                                } else {
-                                                    done(err, user)
-                                                }
+                                                user.userSettings.currentLocation = userLoc;
+                                                done(err, user);
                                             }
-                                        });
-                                    });
+                                        })
+                                    } else {
+                                        done(err, user)
+                                    }
+                                }
                             });
-                });
+                        }
+                    });
+            });
         }(),
 
         /***************************************************************************

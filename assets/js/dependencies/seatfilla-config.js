@@ -135,8 +135,6 @@ window.seatfilla.globals.cookies.getCookie = function(cname) {
     /* end cookies */
 
 
-
-
 /* 
     Object: window.seatfilla.globals.cache 
     Comprises of the global cache, uses session or local storage to reduce the number
@@ -154,7 +152,7 @@ window.seatfilla.globals.cache.put = function(options) {
     if (options.useServerStore) {
         $.ajax({
             type: "POST",
-            url: '/SeatfillaSettings/setStoredSetting',
+            url: '/SeatfillaSettings/setStoredSettings',
             data: {
                 key: options.key,
                 data: options.data
@@ -189,7 +187,7 @@ window.seatfilla.globals.cache.get = function(options) {
             } else {
                 $.ajax({
                     type: "POST",
-                    url: '/SeatfillaSettings/getStoredSetting',
+                    url: '/SeatfillaSettings/getStoredSettings',
                     data: {
                         key: options.key
                     },

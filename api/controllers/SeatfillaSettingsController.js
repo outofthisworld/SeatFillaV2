@@ -24,7 +24,7 @@ module.exports = {
         }
 
         if (errors.length > 0) {
-            return res.json(ResponseStatus.OK, { status: 1738, errors});
+            return res.json(ResponseStatus.OK, { status: 1738, errors });
         } else {
             return res.json(ResponseStatus.OK, { status: 200 });
         }
@@ -33,6 +33,6 @@ module.exports = {
        Gets the specified settings
     */
     getStoredSettings(req, res) {
-        UserSettingsService.getUserSettings(req, Object.keys(req.allParams()));
+        return res.json(ResponseStatus.OK, UserSettingsService.getUserSettings(req, Object.keys(req.allParams())));
     }
 }

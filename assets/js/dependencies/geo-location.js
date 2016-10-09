@@ -12,7 +12,15 @@ $(document).ready(function() {
             if (status != 200 || !result) {
                 geolocator.config({ language: 'en', google: { version: '3', key: 'AIzaSyDDBWrH7DuCZ8wNlOXgINCtI_gT9NkDRq4' } });
                 defaultLoc = { coords: { longitude: 0, latitude: 0 } };
-                geolocator.locate(options, function(err, location) {
+                geolocator.locate({
+                    enableHighAccuracy: true,
+                    timeout: 6000,
+                    maximumAge: 0,
+                    desiredAccuracy: 30,
+                    fallbackToIP: true,
+                    addressLookup: true,
+                    timezone: true
+                }, function(err, location) {
                     console.log('Located user : ' + location);
                     if (err) {
                         if (!navigator.geolocation) {

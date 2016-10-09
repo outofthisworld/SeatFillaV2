@@ -21,7 +21,7 @@ module.exports = {
 
         This method should make it easy to add other user settings methods to this file in the future.
     */
-    setUserSettings(req, keyValueMap, onlyUseSession = false) {
+    setUserSettings(req, keyValueMap, onlyUseSession) {
         if (!req || !keyValueMap)
             throw new Error('Invalid params passed to UserSettingsService.js/setUserSetting');
 
@@ -79,23 +79,23 @@ module.exports = {
         return obj;
     },
     setUserCurrencyCodePreference(req, currencyCode) {
-        return this.setUserSetting(req, { 'currencyCodePreference': currencyCode || 'USD' });
+        return this.setUserSetting(req, { 'currencyCodePreference': currencyCode || 'USD' }, false);
     },
     setUserLocalePreference(req, localePreference) {
-        return this.setUserSetting(req, 'localePreference', localePreference || 'en-US');
+        return this.setUserSetting(req, { 'localePreference': localePreference || 'en-US' }, false);
     },
     setUserCurrentLocation(req, location) {
         const _self = this;
         if (req.user) {
             UserLocationService.createNewUserLocation(req.user, location).then(function(userLocation) {
                 const id = userLocation.id;
-                _self.setUserSetting(req, 'currentLocation', id, false);
+                _self.setUserSetting(req, { 'currentLocation': id }, false);
             }).catch(function(err) {
                 sails.log.error(err);
-                return _self.setUserSetting(req, 'currentLocation', location, true);
+                return _self.setUserSetting(req, { 'currentLocation': location }, true);
             })
         } else {
-            return this.setUserSetting(req, 'currentLocation', location, true);
+            return this.setUserSetting(req, { 'currentLocation': location }, true);
         }
     }
 }

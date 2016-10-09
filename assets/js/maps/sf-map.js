@@ -281,7 +281,7 @@ var _seat_filla_map = function(options) {
     if (!options || !options.coords) {
         (function init(cb) {
             geolocator.config({ language: 'en', google: { version: '3', key: 'AIzaSyDDBWrH7DuCZ8wNlOXgINCtI_gT9NkDRq4' } });
-
+            defaultLoc = { coords: { longitude: 0, latitude: 0 } };
             window.seatfilla.globals.geolocation.getUserLocation(function(status, result) {
                 if (status != 200 || !result) {
                     geolocator.locate(options, function(err, location) {
@@ -301,10 +301,9 @@ var _seat_filla_map = function(options) {
                         } else {
                             console.log('Creating map, used geolocator (uncached) to retrieve location ' + location);
                             window.seatfilla.globals.geolocation.setUserLocation(location, function(status) {
-                                if (status == 200) {
-                                    return cb(location);
-                                } else {
-                                    return cb(defaultLoc);
+                                cb(location);
+                                if (status != 200) {
+                                    console.log('Error setting user location..');
                                 }
                             });
                         }
@@ -313,14 +312,6 @@ var _seat_filla_map = function(options) {
                     cb(result);
                 }
             });
-            defaultLoc = { coords: { longitude: 0, latitude: 0 } };
-            if (options && options.useCache && typeof Storage !== "undefined" && sessionStorage.getItem('location')) {
-                var location = JSON.parse(sessionStorage.getItem('location'));
-                cb(location);
-            } else {
-                console.log('Could not find location in session storage');
-
-            }
         })(createMap);
     } else {
         createMap(options.coords);

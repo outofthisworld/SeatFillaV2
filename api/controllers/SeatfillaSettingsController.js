@@ -6,41 +6,33 @@
 
 module.exports = {
     /* 
-        Sets the preffered currency when using the website .
-        If the user is logged in, this preference is saved to their settings.
-        Otherwise, its saved in session storage. Another way to handle this would be client side
-        javascript, however it may become a bit tedious sending the currency in each request.
+        Sets the specified settings
     */
-    setStoredSetting(req, res) {
+    setStoredSettings(req, res) {
         const obj = req.allParams();
+        const errors = [];
         for (key in obj) {
-            if (Object.hasOwnProperty(key)) {
+            if (obj.hasOwnProperty(key)) {
                 try {
-                    UserSettingsService.setUserSetting(req, key, req.param(key)).then(function() {
-                        return res.json(ResponseStatus.OK, { status: 200 });
-                    }).catch(function(err) {
-                        return res.json(ResponseStatus.OK, { status: 1738 });
+                    UserSettingsService['setUser' + key](req, obj[key]).catch(function(err) {
+                        errors.push('Error setting ' + key + ' err message = ' + err.message);
                     });
                 } catch (err) {
-                    return res.json(ResponseStatus.OK, { status: 1738 });
+                    errors.push('Error setting ' + key + ' err message = ' + err.message);
                 }
             }
         }
-    },
-    getStoredSetting(req, res) {
 
+        if (errors.length > 0) {
+            return res.json(ResponseStatus.OK, { status: 1738, errors});
+        } else {
+            return res.json(ResponseStatus.OK, { status: 200 });
+        }
     },
-    setCurrencyCodePreference(req, res) {
-        UserSettingsService.setUserCurrencyCodePreference(req, req.param('currencyCodePreference')).then(function() {
-            return res.json(ResponseStatus.OK, {});
-        }).catch(function(err) {
-            return res.json(ResponseStatus.SERVER_ERROR, { error: err });
-        });
-    },
-    getCurrencyCodePreference(req, res) {
-        return res.json(ResponseStatus.OK, { currencyCodePreference: UserSettingsService.getUserCurrencyCodePreference(req) });
-    },
-    setPrefferedTimezone(req, res) {
-
+    /*
+       Gets the specified settings
+    */
+    getStoredSettings(req, res) {
+        UserSettingsService.getUserSettings(req, Object.keys(req.allParams()));
     }
 }

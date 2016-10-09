@@ -87,7 +87,7 @@ window.seatfilla.globals.locale.setPrefferedCurrency = function(currencyCode, cb
     if (!typeof cb === 'function') throw new Error('Invalid params to seatfilla-config.js/setPrefferedCurrency');
 
     window.seatfilla.globals.cache.put({
-        key: 'sfCurPref',
+        key: 'CurrencyCodePreference',
         type: 'session',
         data: currencyCode,
         useServerStore: true,
@@ -99,7 +99,7 @@ window.seatfilla.globals.locale.getPrefferedCurrency = function(cb) {
     if (!typeof cb === 'function') throw new Error('Invalid params to seatfilla-config.js/getPrefferedCurrency');
 
     window.seatfilla.globals.cache.get({
-        key: 'sfCurPref',
+        key: 'CurrencyCodePreference',
         type: 'session',
         success: cb
     });
@@ -216,7 +216,7 @@ window.seatfilla.globals.geolocation = window.seatfilla.globals.geolocation || {
 
 window.seatfilla.globals.geolocation.setUserLocation = function(location, callback) {
     window.seatfilla.globals.cache.put({
-        key: 'location',
+        key: 'CurrentLocation',
         data: location,
         type: 'session',
         useServerStore: true,
@@ -226,7 +226,7 @@ window.seatfilla.globals.geolocation.setUserLocation = function(location, callba
 
 window.seatfilla.globals.geolocation.getUserLocation = function(callback) {
     window.seatfilla.globals.cache.get({
-        key: 'location',
+        key: 'CurrentLocation',
         type: 'session',
         success: callback
     });

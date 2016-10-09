@@ -21,22 +21,24 @@ module.exports = {
 
         This method should make it easy to add other user settings methods to this file in the future.
     */
-    setUserSetting(req, settingKey, settingValue, onlyUseSession = false) {
+    setUserSettings(req, keyValueMap, onlyUseSession = false) {
+        if (!req || !keyValueMap)
+            throw new Error('Invalid params passed to UserSettingsService.js/setUserSetting');
 
-        function storeInSession() {
-            req.session[settingKey] = settingValue;
-            return Promise.resolve({ key: settingKey, value: settingValue, type: 'session' });
+        function store(storageObject) {
+            for (var key in keyValueMap) {
+                if (Object.hasOwnProperty(key)) {
+                    storageObject[key] = keyValueMap[key];
+                }
+            }
         }
 
-        if (onlyUseSession) {
-            return storeInSession();
-        }
-
-        if (req.user) {
+        if (req.user && !onlyUseSession) {
             return UserSettings.findOrCreate({
                 user: req.user.id
             }, { user: req.user.id }).then(function(userSettings) {
-                userSettings[settingKey] = settingValue;
+
+                store(userSettings);
 
                 userSettings.save(function(error) {
                     if (error) {
@@ -44,36 +46,43 @@ module.exports = {
                         sails.log.error(error);
 
                         //We'll default to storing in session
-                        return storeInSession();
+                        store(req.session);
+                        return Promise.resolve({ type: 'session' });
                     } else {
                         sails.log.debug('Successfully saved user setting for user ' + req.user.name +
                             '(ID: ' + req.user.id + ')' + 'key = ' + settingKey + ' value = ' + settingValue);
-                        return Promise.resolve({ key: settingKey, value: settingValue, type: 'database' });
+                        return Promise.resolve({ type: 'database' });
                     }
                 });
-            });
+            }).catch(function(err) {
+                sails.log.error(err);
+                store(req.session);
+                return Promise.resolve({ type: 'session' });
+            })
         } else {
-            return storeInSession();
+            store(req.session);
+            return Promise.resolve({ type: 'session' });
         }
     },
-    getUserSetting(req, settingKey) {
-        if (req.user) {
-            return req.user.userSettings[settingKey] || req.session[settingKey];
-        } else {
-            return req.session[settingKey];
+    getUserSettings(req, keyArr) {
+        if (!req || !keyMap || !Array.isArray(keyArr))
+            throw new Error('Invalid params passed to UserSettingsService.js/getUserSetting');
+
+        const obj = {};
+        for (key in keyMap) {
+            if (req.user) {
+                obj[key] = req.user.userSettings[key] || req.session[key];
+            } else {
+                obj[key] = req.session[key];
+            }
         }
+        return obj;
     },
     setUserCurrencyCodePreference(req, currencyCode) {
-        return this.setUserSetting(req, 'currencyCodePreference', currencyCode || 'USD');
-    },
-    getUserCurrencyCodePreference(req) {
-        return this.getUserSetting(req, 'currencyCodePreference') || 'USD';
+        return this.setUserSetting(req, { 'currencyCodePreference': currencyCode || 'USD' });
     },
     setUserLocalePreference(req, localePreference) {
         return this.setUserSetting(req, 'localePreference', localePreference || 'en-US');
-    },
-    getUserLocalePreference(req) {
-        return this.getUserSetting(req, 'localePreference') || 'USD';
     },
     setUserCurrentLocation(req, location) {
         const _self = this;
@@ -88,8 +97,5 @@ module.exports = {
         } else {
             return this.setUserSetting(req, 'currentLocation', location, true);
         }
-    },
-    getUserCurrentLocation(req) {
-        return this.getUserSetting(req, 'currentLocation');
     }
 }

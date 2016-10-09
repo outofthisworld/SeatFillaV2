@@ -21,7 +21,7 @@ $(document).ready(function() {
                     addressLookup: true,
                     timezone: true
                 }, function(err, location) {
-                    console.log('Located user : ' + location);
+                    console.log('Located user : ' + JSON.stringify(location));
                     if (err) {
                         if (!navigator.geolocation) {
                             console.log('Cannot locate position using HTML5 navigator');

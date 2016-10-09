@@ -2,11 +2,12 @@ const fs = require('fs');
 
 module.exports = {
     readJsonFileAsync(path, callback) {
+        const self = this;
         this.readFileUTF8Async(path, function(err, data) {
             if (err) {
                 return cb(err, null);
             } else {
-                return this.safeParseJsonAsync(data).then(function(jsonData) {
+                return self.safeParseJsonAsync(data).then(function(jsonData) {
                     return cb(null, jsonData);
                 }).catch(callback);
             }

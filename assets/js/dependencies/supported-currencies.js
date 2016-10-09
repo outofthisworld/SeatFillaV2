@@ -11,7 +11,7 @@ $(document).ready(function() {
         const displayCurrencies = function(object, selectedOption) {
             object.Currencies.forEach(function(result) {
                 const option = $('<option></option>').attr('value', result.Code)
-                    .attr('data-symbol', result.Symbol).text(result.Code);
+                    .attr('data-symbol', result.Symbol).text('(' + result.Symbol + ') ' + result.Code);
 
                 if (result.Code === (selectedOption || 'USD')) {
                     option.attr('selected', 'selected');
@@ -29,6 +29,7 @@ $(document).ready(function() {
 
                 function dis(data) {
                     window.seatfilla.globals.locale.getPrefferedCurrency(function(status, result) {
+                        console.log('Status was: ' + status + ' Retrieve preffered currency ' + JSON.stringify(result));
                         if (status != 200 || !result) {
                             displayCurrencies(data, 'USD');
                         } else {
@@ -44,6 +45,7 @@ $(document).ready(function() {
                         url,
                         success: function(response, textstatus, xhr) {
                             response = JSON.parse(response);
+                            console.log(response);
                             if (xhr.status == 200) {
                                 window.seatfilla.globals.cache.put({
                                     key: 'sf-currencies',
@@ -53,7 +55,7 @@ $(document).ready(function() {
                                 });
                                 dis(response);
                             } else {
-                                alert('Could not load currencies');
+                                console.log('Could not load currencies');
                                 $('#seatfilla_currencies').remove();
                             }
                         }

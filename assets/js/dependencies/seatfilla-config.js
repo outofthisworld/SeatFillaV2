@@ -1,5 +1,7 @@
 /*
-    Contains all the configuration and global variables for the Seatfilla website.
+    Contains all the configuration and global variables/functions for the Seatfilla website.
+    Useful global functions will be found in this file and have been kept in one file to reduce
+    server load time when retrieving several files.
 
     Created by Dale.
 */
@@ -101,7 +103,16 @@ window.seatfilla.globals.locale.getPrefferedCurrency = function(cb) {
     window.seatfilla.globals.cache.get({
         key: 'CurrencyCodePreference',
         type: 'session',
-        success: cb
+        success: function(status, result) {
+            if (status == 200 && result) {
+                //If they have set a preference.. use that.
+                return cb(status, result);
+            } else {
+                //Here we will check to see if we have their location which
+                //we can derive currency information from
+                window.seatfilla.globals.geolocation.getUserCountryInformation(cb);
+            }
+        }
     });
 }
 
@@ -184,7 +195,7 @@ window.seatfilla.globals.cache.get = function(options) {
         if (!window.seatfilla.globals.browserSupportsWebStorage()) {
             if (navigator.cookieEnabled) {
                 return callback(200, window.seatfilla.globals.cookies.getCookie(options.key))
-            } else {
+            } else if (options.useServerStore) {
                 $.ajax({
                     type: "POST",
                     url: '/SeatfillaSettings/getStoredSettings',
@@ -223,10 +234,68 @@ window.seatfilla.globals.geolocation.setUserLocation = function(location, callba
 }
 
 window.seatfilla.globals.geolocation.getUserLocation = function(callback) {
+        window.seatfilla.globals.cache.get({
+            key: 'CurrentLocation',
+            type: 'session',
+            useServerStore: true,
+            success: callback
+        });
+    }
+    /*
+        A function to retrieve additional information about a users country.
+    */
+window.seatfilla.globals.geolocation.getUserCountryInformation = function(cb) {
     window.seatfilla.globals.cache.get({
-        key: 'CurrentLocation',
+        key: 'CountryInformation',
         type: 'session',
-        success: callback
+        useServerStore: false,
+        success: function(status, result) {
+            if (status == 200 && result) {
+                if (result.currencies.length > 0) {
+                    return cb(status, result.currencies[0]);
+                } else {
+                    return cb(status, result || 'USD');
+                }
+            } else {
+                window.seatfilla.globals.geolocation.getUserLocation(function(s, r) {
+                    //If we can find the users location...
+                    if (s == 200 && r) {
+                        //Make a call to an external service to determine currency for country
+                        $.ajax({
+                            type: "POST",
+                            url: '/LookupService/getCountryInformation',
+                            data: {
+                                countryName: r.address.country,
+                                countryCode: r.address.countryCode,
+                                region: r.address.region
+                            },
+                            success: function(res, s, xhr) {
+                                res = window.seatfilla.globals.tryParseJsonResult(res);
+                                console.log('Recieved info from /LookupService/getCountryInformation/:');
+                                console.log(res);
+                                if (res.status == 200 && xhr.status == 200 && res.currencies.length > 0) {
+
+                                    window.seatfilla.globals.cache.put({
+                                        key: 'CountryInformation',
+                                        type: 'session',
+                                        data: res,
+                                        useServerStore: false,
+                                        success: cb
+                                    });
+
+                                    return cb(res.status, res.currencies[0]);
+                                } else {
+                                    return cb(status, result);
+                                }
+
+                            }
+                        });
+                    } else {
+                        return cb(status, result);
+                    }
+                });
+            }
+        }
     });
 }
 

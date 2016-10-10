@@ -110,7 +110,13 @@ window.seatfilla.globals.locale.getPrefferedCurrency = function(cb) {
             } else {
                 //Here we will check to see if we have their location which
                 //we can derive currency information from
-                window.seatfilla.globals.geolocation.getUserCountryInformation(cb);
+                window.seatfilla.globals.geolocation.getUserCountryInformation(function(s, r) {
+                    if (s == 200 && r) {
+                        return cb(status, r.currencies[0]);
+                    } else {
+                        return cb(s, 'USD');
+                    }
+                });
             }
         }
     });
@@ -251,11 +257,7 @@ window.seatfilla.globals.geolocation.getUserCountryInformation = function(cb) {
         useServerStore: false,
         success: function(status, result) {
             if (status == 200 && result) {
-                if (result.currencies.length > 0) {
-                    return cb(status, result.currencies[0]);
-                } else {
-                    return cb(status, result || 'USD');
-                }
+                return cb(status, result);
             } else {
                 window.seatfilla.globals.geolocation.getUserLocation(function(s, r) {
                     //If we can find the users location...

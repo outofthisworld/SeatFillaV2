@@ -9,6 +9,7 @@ const timeUtils = require('../api/utils/TimeUtils');
 */
 
 const flightOfferScheduledTask = {
+    key: 'flightOfferScheduledTask',
     on: {
         executionBegan(date) {
             //called when execution begins
@@ -30,7 +31,7 @@ const flightOfferScheduledTask = {
 }
 
 const flightRequestScheduledTask = {
-
+    key: 'flightRequestScheduledTask',
     on: {
         executionBegan(date) {
             //called when execution begins

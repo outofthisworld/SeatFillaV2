@@ -125,7 +125,7 @@
               <div class="row">
                     <div class="col-xs-6">
                         <label for="departureDateStart">Departure Date</label>   
-                        <input type="date" name="departureDateStart" id="departure_date" class="form-control" required/>
+                        <input type="date" name="departureDateStart" id="departure_date" class="form-control" required disabled/>
                     </div>
                     <div class="col-xs-6">
                         <label for="departureDateEnd">Latest Departure Date</label>   
@@ -135,7 +135,7 @@
               <div class="row">
                     <div class="col-xs-6">
                         <label  for="returnDateStart">Return Date</label> 
-                        <input type="date" name="returnDateStart" id="return_date" class="form-control" required/>
+                        <input type="date" name="returnDateStart" id="return_date" class="form-control" required disabled/>
                     </div>
                     <div class="col-xs-6">
                         <label  for="returnDateEnd">Latest Return Date</label> 
@@ -180,10 +180,14 @@
                 </div>
               </div>
               <br/>
+              <hr/>
+              <br/>
             <div class="row">
                 <div class="col-xs-8">
                    <label  for="maxPrice">Find flights cheaper than (Not required): </label> 
-                   <input id="maxPrice" name="maxPrice" class="form-control" type="number" value="0"/> 
+                   <div class="form-inline">
+                   <span id="currencySymbol"></span> <input id="maxPrice" name="maxPrice" class="form-control" type="number" value="0"/> 
+                   </div>
                 </div>
         
                 <div class="col-xs-4">
@@ -220,20 +224,36 @@
                  lastSelected = null;
             });
 
-             window.seatfilla.globals.inputs.data.retrieveCityData().forEach(function(item) {
-                $('.cities').append($('<option></option>', { 
-                      value: item.iataCode,
-                     'data-val-city': item.name,
-                     'data-val-continentId':item.continentId,
-                     'data-val-continentName':item.continentName,
-                     'data-val-countryName':item.countryName,
-                     'data-val-countryId':item.countryId,
-                     'data-val-currency':item.currency,
-                     'data-val-location':item.location,
-                     'data-val-cityId':item.id
-                     })
-                .text(item.name + ', ' + item.countryName));
-             });
+            window.seatfilla.globals.geolocation.getUserLocation(function(status,userLoc){
+                console.log(userLoc);
+                var count = 0;
+                window.seatfilla.globals.inputs.data.retrieveCityData().forEach(function(item) {
+                    if(count == 0){
+                        console.log(item);
+                        count++;
+                    }
+                    const $opt = $('<option></option>', { 
+                         value: item.iataCode,
+                        'data-val-city': item.name,
+                        'data-val-continentId':item.continentId,
+                        'data-val-continentName':item.continentName,
+                        'data-val-countryName':item.countryName,
+                        'data-val-countryId':item.countryId,
+                        'data-val-currency':item.currency,
+                        'data-val-location':item.location,
+                        'data-val-cityId':item.id
+                        }).text(item.name + ', ' + item.countryName);
+            
+                    if(status == 200 && userLoc && (userLoc.address.countryCode == item.countryId
+                      && (item.name.toLowerCase() == userLoc.address.city.toLowerCase() 
+                      || item.name.toLowerCase() == userLoc.address.region.toLowerCase()))){
+                        $opt.attr('selected','selected');
+                    }
+
+                    $('.cities').append($opt);
+                });
+
+            })
 
 			var date = new Date();
 			var d = date.getDate();
@@ -272,7 +292,6 @@
                     }
  
 					if (lastSelected){		
-
                             const startDate = new Date(lastSelected.start);
                             const sd_day = startDate.getDay();
                             const sd_year = startDate.getFullYear();
@@ -299,24 +318,56 @@
                             $('#squarespaceModal').modal('show');
 
                             $('#currency').html("");
-                            $('#currency').append($('<option></option>',{
-                                text: $('#seatfilla_currencies').val(),
-                                value:$('#seatfilla_currencies').val()
-                            }));
+                            $('#currency').html($('#seatfilla_currencies').html());
 
-                            $('#departure_city').on('change',function(){
-                                const cur =  $('#departure_city:selected').attr('data-val-currency');
-                                $('#currency').append($('<option></option>',{
-                                    text: cur,
-                                    value: cur
-                                }));
+                            $('#currencySymbol').html($('#seatfilla_currencies').find(':selected').attr('data-symbol'));
+
+                            $('#currency').on('change',function(){
+                                 $('#currencySymbol').html($(this).find(':selected').attr('data-symbol'));
                             });
+
+                            if(startDate.getTime() ==  endDate.getTime()){
+                                $('#departureDateEnd').val(departure_date);
+                                $('#departureDateEnd').attr('disabled','disabled');
+                                $('#returnDateEnd').attr('disabled','disabled');
+                                 $('#returnDateEnd').val(return_date);
+                            }
                                     
                             $('#sub').on('click',function(){
+                                    function validateDates(){
+                                            var departureDateEnd;
+                                            var returnDateEnd;
+                                            var departure_date = startDate;
+                                            var return_date = endDate;
+
+                                            //These are optional so parse them carefully
+                                            try{
+                                                departureDateEnd = new Date($('#departureDateEnd').val());
+                                            }catch(err){departureDateEnd = null}
+
+                                            try{
+                                            returnDateEnd = new Date($('#returnDateEnd').val());
+                                            }catch(err){returnDateEnd = null}
+
+                                            if(!(departure_date >= return_date)){
+                                                alert('Departure date must be after the return date.');
+                                                return false;
+                                            }
+                                            
+                                            if(departureDateEnd && departureDateEnd < departure_date){
+                                                alert('Departure date end must after or equal to the departure date');
+                                                return false;
+                                            }
+
+                                            if(returnDateEnd && returnDateEnd < return_date){
+                                                alert('Return date end must after or equal to the return date');
+                                                return false;
+                                            }
+                                    }
                                     var $flightRequestForm = $('#flightRequestForm')
                                     if (!$flightRequestForm[0].checkValidity()) {
                                         $flightRequestForm.find(':submit').click()
-                                    }else{
+                                    }else if(validateDates()){
                                         const data = Object.assign({},$flightRequestForm.serialize());
                                         const depCity = $('#departure_city');
                                         const arrivalCity = $('#departure_city');

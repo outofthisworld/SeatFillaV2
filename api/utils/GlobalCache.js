@@ -40,6 +40,14 @@ GlobalCache.prototype.setKey = function(key) {
 
 GlobalCache.prototype.getData = function(key) {
     if (this.checkKeyExists(key)) {
+        //Run the expiration policy on the data to make sure that the data being retrievied is 'clean'
+        if (this.expirationPolicy && (typeof this.expiratioPolicy == 'function')) {
+            cacheObj[this.key]['Data'][key] = this.expirationPolicy(cacheObj[this.key]['Data'][key]);
+            if ((cacheObj[this.key]['Data'][key]) == null) {
+                delete cacheObj[this.key]['Data'][key];
+                return null;
+            }
+        }
         return cacheObj[this.key]['Data'][key].value;
     } else {
         return null;
@@ -115,7 +123,7 @@ GlobalCache.prototype.runExpirationPolicy = function() {
         if (cacheObj[this.key] && 'Data' in cacheObj[this.key]) {
             for (var key in cacheObj[this.key]['Data']) {
                 cacheObj[this.key]['Data'][key] = this.expirationPolicy(cacheObj[this.key]['Data'][key]);
-                if (!(cacheObj[this.key]['Data'][key])) {
+                if ((cacheObj[this.key]['Data'][key]) == null) {
                     delete cacheObj[this.key]['Data'][key];
                 }
             }
@@ -185,9 +193,9 @@ module.exports = function(object) {
                         },
                         maxExecutions: 0
                     }, object.ExpirationSettings.ScheduledExpirationPolicyInterval ?
-                    object.ExpirationSettings.ScheduledExpirationPolicyInterval.toMilliseconds() : 360000,
+                    object.ExpirationSettings.ScheduledExpirationPolicyInterval.toMilliseconds() : 0,
                     object.ExpirationSettings.ScheduledExpirationIntialDelay ?
-                    object.ExpirationSettings.ScheduledExpirationPolicyDelay.toMilliseconds() : 360000);
+                    object.ExpirationSettings.ScheduledExpirationPolicyDelay.toMilliseconds() : 0);
 
                 cacheObj[object.GlobalCache].ScheduledTask = scheduledTask;
             }

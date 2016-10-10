@@ -193,6 +193,9 @@ module.exports = {
                                 console.log(obj);
                                 return reject(new Error('Error with request to ' + fixerIoEndpoint + ' could not parse body'));
                             } else {
+                                GlobalCache({
+                                    GlobalCache: 'fixer_io_exchange_rates'
+                                }).insertData(base,obj);
                                 return resolve(obj);
                             }
                         } catch (err) {

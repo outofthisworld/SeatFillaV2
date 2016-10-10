@@ -112,9 +112,12 @@ GlobalCache.prototype.runExpirationPolicy = function() {
     if (!this.expirationPolicy && !(typeof this.expirationPolicy == 'function')) return;
 
     new Promise(function(resove, reject) {
-        if (cacheObj[this.key] && cacheObj[this.key]['Data']) {
+        if (cacheObj[this.key] && 'Data' in cacheObj[this.key]) {
             for (var key in cacheObj[this.key]['Data']) {
-                this.expirationPolicy(cacheObj[this.key]['Data'][key]);
+                cacheObj[this.key]['Data'][key] = this.expirationPolicy(cacheObj[this.key]['Data'][key]);
+                if (!(cacheObj[this.key]['Data'][key])) {
+                    delete cacheObj[this.key]['Data'][key];
+                }
             }
             resolve(true);
         } else {
@@ -181,8 +184,10 @@ module.exports = function(object) {
                             cache.runExpirationPolicy();
                         },
                         maxExecutions: 0
-                    }, object.ExpirationSettings.ScheduledExpirationPolicyInterval || 360000,
-                    object.ExpirationSettings.ScheduledExpirationIntialDelay || 360000);
+                    }, object.ExpirationSettings.ScheduledExpirationPolicyInterval ?
+                    object.ExpirationSettings.ScheduledExpirationPolicyInterval.toMilliseconds() : 360000,
+                    object.ExpirationSettings.ScheduledExpirationIntialDelay ?
+                    object.ExpirationSettings.ScheduledExpirationPolicyDelay.toMilliseconds() : 360000);
 
                 cacheObj[object.GlobalCache].ScheduledTask = scheduledTask;
             }

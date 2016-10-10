@@ -9,9 +9,11 @@ const request = require('request');
 //Used to encode form data
 const querystring = require('querystring');
 
+const GlobalCache = require('../utils/GlobalCache');
+const timeUtils = require('../utils/TimeUtils');
+
 
 module.exports = {
-
     /*
         The below function retrieves information about a country via the countries ISO country code.
 
@@ -150,34 +152,56 @@ module.exports = {
         const fixerIoEndpoint = 'http://api.fixer.io/latest?base=' + base;
 
         return new Promise(function(resolve, reject) {
-            request({
-                headers: {
-                    'Accept-Language': 'en-US',
-                },
-                uri: fixerIoEndpoint,
-                method: 'GET'
-            }, function(err, res, body) {
-                if (err || !body || res.statusCode != 200) {
-                    sails.log.debug('Error retrieving country info from endpoint ' + fixerIoEndpoint);
-                    sails.log.debug('Reponse code was' + res.statusCode);
-                    sails.log.debug('Body content: ' + body);
-                    sails.log.error(err);
-                    return reject(err);
-                } else {
-                    try {
-                        const obj = JSON.parse(body);
-
-                        if (!obj) {
-                            console.log(obj);
-                            return reject(new Error('Error with request to ' + fixerIoEndpoint + ' could not parse body'));
-                        } else {
-                            return resolve(obj);
-                        }
-                    } catch (err) {
-                        return reject(new Error('Error parsing JSON response when retrieving country info from rest countries endpoint ' + countryInfoEndpoint))
+            const cachedData = GlobalCache({
+                GlobalCache: 'fixer_io_exchange_rates',
+                ExpirationPolicy: function(dataItem) {
+                    if (timeUtils.millisecondsToHours(new Date().getTime() - dataItem.insertationTime.getTime()) >= 1) {
+                        return null;
+                    } else {
+                        return dataItem;
                     }
+                },
+                ExpirationSettings: {
+                    runExpirationPolicyOnInserts: function() { return true; },
+                    runExpirationPolicyOnDelations: function() { return true; },
+                    ScheduledExpirationPolicyInterval: timeUtils.createTimeUnit(1).Hours,
+                    ScheduledExpirationPolicyDelay: timeUtils.createTimeUnit(1).Hours
                 }
-            });
+            }).getData(base);
+
+            if (cachedData) {
+                resolve(cachedData)
+            } else {
+                request({
+                    headers: {
+                        'Accept-Language': 'en-US',
+                    },
+                    uri: fixerIoEndpoint,
+                    method: 'GET'
+                }, function(err, res, body) {
+                    if (err || !body || res.statusCode != 200) {
+                        sails.log.debug('Error retrieving country info from endpoint ' + fixerIoEndpoint);
+                        sails.log.debug('Reponse code was' + res.statusCode);
+                        sails.log.debug('Body content: ' + body);
+                        sails.log.error(err);
+                        return reject(err);
+                    } else {
+                        try {
+                            const obj = JSON.parse(body);
+
+                            if (!obj) {
+                                console.log(obj);
+                                return reject(new Error('Error with request to ' + fixerIoEndpoint + ' could not parse body'));
+                            } else {
+                                return resolve(obj);
+                            }
+                        } catch (err) {
+                            return reject(new Error('Error parsing JSON response when retrieving country info from rest countries endpoint ' + countryInfoEndpoint))
+                        }
+                    }
+                });
+            }
         });
+
     }
 }

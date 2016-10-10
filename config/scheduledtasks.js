@@ -23,6 +23,9 @@ const flightOfferScheduledTask = {
             //called should an error occur
             sails.log.error('Error occured executing ScheduledExecution service to notify flight request users of flight offers ' + date);
             sails.log.error(error)
+        },
+        stop(date) {
+            sails.log.debug('Stopped execution of scheduled task ' + this.key + ' on ' + date);
         }
     },
     work() {
@@ -45,6 +48,9 @@ const flightRequestScheduledTask = {
             //called should an error occur
             sails.log.error('Error occured executing ScheduledExecution service to notify flight request users of flight requests ' + date);
             sails.log.error(error)
+        },
+        stop(date) {
+            sails.log.debug('Stopped execution of scheduled task ' + this.key + ' on ' + date);
         }
     },
     work() {

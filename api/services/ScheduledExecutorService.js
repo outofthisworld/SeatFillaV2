@@ -113,6 +113,7 @@ module.exports = {
                 submittedTasks[task.key] = { clearIntervalKey, totalExecutions: 0 }
             }, initialDelay);
         });
+        return submittedTasks[task.key];
     },
     stopScheduledTask(options) {
         if (typeof options == 'string') {

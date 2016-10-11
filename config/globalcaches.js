@@ -21,7 +21,7 @@ function init() {
     /*
         A cache containing data from the fixer io exchange rates service.
     */
-    const fixer_io_exchange_rates_cache = GlobalCache({
+    GlobalCache({
         GlobalCache: 'fixer_io_exchange_rates',
         ExpirationPolicy: function(dataItem) {
             //If the insertation time for the data item was more than an hour ago, expire it.
@@ -43,7 +43,7 @@ function init() {
     /*
         A cache containing data from the rest countries endpoint.
     */
-    const rest_countries_cache = GlobalCache({
+    GlobalCache({
         GlobalCache: 'rest_countries_cache',
         ExpirationPolicy: function(dataItem) {
             //If the data item was last accessed more than 8 hours ago, expire it.

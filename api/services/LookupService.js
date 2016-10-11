@@ -9,7 +9,7 @@
 
 const request = require('request');
 const querystring = require('querystring');
-
+const GlobalCache = require('../utils/GlobalCache');
 
 module.exports = {
     /*
@@ -77,7 +77,9 @@ module.exports = {
 
         return new Promise(function(resolve, reject) {
 
-            const countryData = rest_countries_cache.getData(countryCode);
+            const countryData = GlobalCache({
+                GlobalCache: 'rest_countries_cache'
+            }).getData(countryCode);
 
             if (countryData) {
                 resolve(countryData);
@@ -103,7 +105,9 @@ module.exports = {
                                 console.log(obj);
                                 return reject(new Error('Error with request to ' + countryInfoEndpoint + ' could not parse body'));
                             } else {
-                                rest_countries_cache.insertData(countryCode, obj);
+                                GlobalCache({
+                                    GlobalCache: 'rest_countries_cache'
+                                }).insertData(countryCode, obj);
                                 return resolve(obj);
                             }
                         } catch (err) {
@@ -159,7 +163,9 @@ module.exports = {
 
         return new Promise(function(resolve, reject) {
 
-            const cachedData = fixer_io_exchange_rates_cache.getData(base);
+            const cachedData = GlobalCache({
+                GlobalCache: 'fixer_io_exchange_rates'
+            }).getData(base);
 
             if (cachedData) {
                 return resolve(cachedData)
@@ -185,7 +191,9 @@ module.exports = {
                                 console.log(obj);
                                 return reject(new Error('Error with request to ' + fixerIoEndpoint + ' could not parse body'));
                             } else {
-                                fixer_io_exchange_rates_cache.insertData(base, obj);
+                                GlobalCache({
+                                    GlobalCache: 'fixer_io_exchange_rates'
+                                }).insertData(base, obj);
                                 return resolve(obj);
                             }
                         } catch (err) {

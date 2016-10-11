@@ -63,6 +63,26 @@ function init() {
         }
     });
 
+    GlobalCache({
+      GlobalCache: 'getty_images_cache',
+      ExpirationPolicy: function(dataItem) {
+            //If the data item was last accessed more than 8 hours ago, expire it.
+            if (timeUtils.millisecondsToHours(new Date().getTime() - dataItem.insertationTime) >= 12) {
+                return null;
+            } else {
+                return dataItem;
+            }
+        },
+        ExpirationSettings: {
+            runExpirationPolicyOnInserts: function() { return true; },
+            runExpirationPolicyOnDelations: function() { return true; },
+            //Run the expiration polcy every 4 hours.
+            ScheduledExpirationPolicyInterval: timeUtils.createTimeUnit(4).Hours,
+            //Run the expiration policy with an initial delay of 4 hours.
+            ScheduledExpirationIntialDelay: timeUtils.createTimeUnit(4).Hours
+        }
+    })
+
     hasInitialized = true;
 }
 

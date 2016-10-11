@@ -1,8 +1,27 @@
 /*
     A basic cache implementation for storing global data accross services.
 
+    At this present stage data decays due to certain expiration policies,
+    given time in the future support may be added for alternating between different
+    storage mechanisms.
+    
+    Ideas:
+    1) Switching in and out of process memory and database
+    2) File based storage for json objects, serialize least accessed data items to file,
+     whilst leaving the more frequently accessed items in memory
+    3) Add support for memory based expiration policies
+    4) Generic store method so that implementation does not matter and items can be serialized in any way.
+
+    
+    for the caches so that memory is not wasted.
+
     Created by Dale.
 */
+
+const temp = require('temp'),
+  fs = require('fs'),
+  util = require('util'),
+  exec = require('child_process').exec
 
 /*
     Stores global cache implementations.
@@ -17,6 +36,7 @@ function GlobalCache (options) {
   _self.key = options.GlobalCache
   _self.ExpirationSettings = options.ExpirationSettings || {}
   _self.Data = options.Data || {}
+  _self.UseSecondaryStorage = options.UseSecondaryStorage || true
 }
 
 GlobalCache.prototype.getKey = function () {
@@ -150,6 +170,11 @@ GlobalCache.prototype.removeData = function (key) {
   const _self = this
 
   if (_self.checkKeyExists(key)) {
+    if (_self.ExpirationSettings.runExpirationPolicyOnDeletions &&
+      typeof _self.ExpirationSettings.runExpirationPolicyOnDeletions == 'function' &&
+      _self.ExpirationSettings.runExpirationPolicyOnDeletions())
+      _self.runExpirationPolicy()
+
     delete _self.Data[key]
     return true
   } else {
@@ -161,6 +186,7 @@ GlobalCache.prototype.insertData = function (key, data) {
   const _self = this
 
   if (_self.ExpirationSettings.runExpirationPolicyOnInserts &&
+    typeof _self.ExpirationSettings.runExpirationPolicyOnInserts == 'function' &&
     _self.ExpirationSettings.runExpirationPolicyOnInserts())
     _self.runExpirationPolicy()
 
@@ -258,18 +284,35 @@ GlobalCache.prototype.stopScheduledExpirationPolicy = function () {
 GlobalCache.prototype.runExpirationPolicy = function () {
   const _self = this
 
-  if (!_self.expirationPolicies) return
+  if (!_self.expirationPolicies && !_self.secondaryStoragePolicies) return
 
   new Promise(function (resolve, reject) {
     if ('Data' in _self) {
       for (var key in _self['Data']) {
         if (_self['Data'].hasOwnProperty(key)) {
+          const wasDeleted = false
+
           if (_self.deleteIfExpired(key)) {
             sails.log.debug('GlobalCache: (' + _self.key + '):' + ' key: ' +
               key + 'has now expired and will be removed from the cache.')
+            wasDeleted = true
 
             if (_self.refreshPolicy) {
               _self.refreshPolicy(key)
+              wasDeleted = false
+            }
+          }
+
+          // pass to storagePolicies size of cache, total free memory, sizeOfDataItemm
+          if (!wasDeleted && cacheObj[_self.key].useSecondaryStorage &&
+            _self.shouldMoveToSecondaryStorage(_self.Data[key])) {
+            try {
+              if (_self.store(_self.serialize(_self.Data[key]))) {
+                // Handle stored item, delete it from memory or whatever
+              }
+            } catch (err) {
+              sails.log.error(err)
+              sails.log.debug('Error when trying to store/serialize object in GlobalCache ( ' + _self.key + '), key was ' + key + ' data was ' + _self.Data[key])
             }
           }
         }
@@ -283,6 +326,38 @@ GlobalCache.prototype.runExpirationPolicy = function () {
   })
 }
 
+GlobalCache.prototype.serialize = function (dataItem) {
+  try {
+    return JSON.stringify(dataItem)
+  } catch (err) {
+    throw err
+  }
+}
+
+GlobalCache.prototype.deserialize = function (dataItem) {
+  try {
+    return JSON.parse(dataItem)
+  } catch (err) {
+    throw err
+  }
+}
+
+GlobalCache.prototype.store = function (dataItem) {
+  try {
+    return JSON.parse(dataItem)
+  } catch (err) {
+    throw err
+  }
+}
+
+GlobalCache.prototype.retrieve = function (dataItem, cache) {
+  try {
+    return JSON.parse(dataItem)
+  } catch (err) {
+    throw err
+  }
+}
+
 module.exports = {
   cache(object) {
     if (!object || !object.GlobalCache) {
@@ -291,10 +366,12 @@ module.exports = {
       sails.log.debug('Retrieving global cache: ' + object.GlobalCache)
       return cacheObj[object.GlobalCache].cache
     } else {
-      var cache = new GlobalCache(object)
-      cacheObj[object.GlobalCache] = { cache}
-
       sails.log.debug('Creating new global cache: ' + object.GlobalCache)
+
+      var cache = new GlobalCache(object)
+
+      cacheObj[object.GlobalCache] = {
+      cache}
 
       if (object.ExpirationPolicies) {
         cache.setExpirationPolicies(object.ExpirationPolicies)

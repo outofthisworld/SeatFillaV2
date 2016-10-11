@@ -23,9 +23,16 @@ function init () {
     This is here until I have enough time to add memory usage expiration policies to the global cache
     and create a digital storage utils class for conversions.
   */
-  function tempMemoryUsageExpirationPolicy (dataItem) {
-    return GlobalCache.ExpirationPolicies.lastAccessedGreaterThan(timeUtils.createTimeUnit(3).Hours)(dataItem) &&
+  function tempMemoryUsageExpirationPolicy (dataItem, cache) {
+    const shouldRemove =  GlobalCache.ExpirationPolicies.lastAccessedGreaterThan(timeUtils.createTimeUnit(30).Minutes)(dataItem) &&
       (process.memoryUsage().heapTotal - process.memoryUsage().heapUsed) < 1024 * 1024 * 200 // 200MB
+    
+    if(shouldRemove){
+        sails.log.debug('Removing cached item ' + dataItem + ' from global cache: ' + key + ' due to memory constraints ');
+        return true;
+    }else{
+        return false;
+    }
   }
 
   /*
@@ -39,9 +46,15 @@ function init () {
     ],
     ExpirationSettings: {
       runExpirationPolicyOnInserts: function () { return true; },
-      runExpirationPolicyOnDelations: function () { return true; },
+      runExpirationPolicyOnDeletions: function () { return true; },
       ScheduledExpirationPolicyInterval: timeUtils.createTimeUnit(1).Hours,
       ScheduledExpirationIntialDelay: timeUtils.createTimeUnit(1).Hours
+    },
+    SecondaryStoragePolicies: [
+
+    ],
+    SecondaryStorageSettings:{
+
     }
   })
 
@@ -56,7 +69,7 @@ function init () {
     ],
     ExpirationSettings: {
       runExpirationPolicyOnInserts: function () { return true; },
-      runExpirationPolicyOnDelations: function () { return true; },
+      runExpirationPolicyOnDeletions: function () { return true; },
       ScheduledExpirationPolicyInterval: timeUtils.createTimeUnit(6).Hours,
       // Run the expiration policy with an initial delay of 4 hours.
       ScheduledExpirationIntialDelay: timeUtils.createTimeUnit(6).Hours
@@ -71,7 +84,7 @@ function init () {
     ],
     ExpirationSettings: {
       runExpirationPolicyOnInserts: function () { return true; },
-      runExpirationPolicyOnDelations: function () { return true; },
+      runExpirationPolicyOnDeletions: function () { return true; },
       // Run the expiration polcy every 4 hours.
       ScheduledExpirationPolicyInterval: timeUtils.createTimeUnit(4).Hours,
       // Run the expiration policy with an initial delay of 4 hours.

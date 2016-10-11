@@ -9,10 +9,6 @@
 */
 const cacheObj = cacheObj || {}
 
-/*
-    Some default cache data expiration policies.
-*/
-
 function GlobalCache (options) {
   if (!options) throw new Error('Invalid object passed to GlobalCache.js GlobalCache constructor')
 
@@ -165,7 +161,7 @@ GlobalCache.prototype.checkExpired = function (key) {
   if (!this.expirationPolicies || this.checkKeyExists(key)) return false
 
   this.expirationPolicies.forEach((expirationPolicy) => {
-    if (typeof expirationPolicy == 'function' && expirationPolicy(dataItem)) {
+    if (typeof expirationPolicy == 'function' && expirationPolicy(cacheObj[this.key].cache.Data[key])) {
       return true
     }
   })
@@ -243,7 +239,7 @@ GlobalCache.prototype.runExpirationPolicy = function () {
 }
 
 module.exports = {
-  Cache(object) {
+  cache(object) {
     if (!object || !object.GlobalCache) {
       throw new Error('Invalid params to exported function in GlobalCache.js. Object and Object.globalCache must exist')
     } else if (object.GlobalCache in cacheObj) {
@@ -251,7 +247,7 @@ module.exports = {
       return cacheObj[object.GlobalCache].cache
     } else {
       var cache = new GlobalCache(object)
-      cacheObj[object.GlobalCache] = { cache}
+      cacheObj[object.GlobalCache] = {cache}
 
       sails.log.debug('Creating new global cache: ' + object.GlobalCache)
 
@@ -300,7 +296,7 @@ module.exports = {
         }
       }
     }
-    return cacheObj[object.GlobalCache]
+    return cacheObj[object.GlobalCache].cache
   },
   ExpirationPolicies: {
     greaterThan(timeUnit, dataItemAttribute) {
@@ -319,13 +315,13 @@ module.exports = {
       }
     },
     lessThan(timeUnit, dataItemAttribute) {
-      if (!(dataItemAttribute in dataItem))
-        throw new Error('Invalid attribute ' + dataItemAttribute + ' for expiration policy')
-
-      if (!(dataItem[dataItemAttribute] instanceof Date))
-        throw new Error('Invalid type of attribute for GlobalCache data item expiration policy, must be a date, attribute was ' + dataItemAttribute)
-
       return function (dataItem, dataItemAttribute) {
+        if (!(dataItemAttribute in dataItem))
+          throw new Error('Invalid attribute ' + dataItemAttribute + ' for expiration policy')
+
+        if (!(dataItem[dataItemAttribute] instanceof Date))
+          throw new Error('Invalid type of attribute for GlobalCache data item expiration policy, must be a date, attribute was ' + dataItemAttribute)
+
         if (new Date().getTime() - dataItem[dataItemAttribute].getTime() < timeUnit.toMilliseconds()) {
           return true
         }
@@ -333,13 +329,13 @@ module.exports = {
       }
     },
     greaterThanOrEqualTo(timeUnit, dataItemAttribute) {
-      if (!(dataItemAttribute in dataItem))
-        throw new Error('Invalid attribute ' + dataItemAttribute + ' for expiration policy')
-
-      if (!(dataItem[dataItemAttribute] instanceof Date))
-        throw new Error('Invalid type of attribute for GlobalCache data item expiration policy, must be a date, attribute was ' + dataItemAttribute)
-
       return function (dataItem) {
+        if (!(dataItemAttribute in dataItem))
+          throw new Error('Invalid attribute ' + dataItemAttribute + ' for expiration policy')
+
+        if (!(dataItem[dataItemAttribute] instanceof Date))
+          throw new Error('Invalid type of attribute for GlobalCache data item expiration policy, must be a date, attribute was ' + dataItemAttribute)
+
         if (new Date().getTime() - dataItem[dataItemAttribute].getTime() >= timeUnit.toMilliseconds()) {
           return true
         }
@@ -347,13 +343,13 @@ module.exports = {
       }
     },
     lessThanOrEqualTo(timeUnit, dataItemAttribute) {
-      if (!(dataItemAttribute in dataItem))
-        throw new Error('Invalid attribute ' + dataItemAttribute + ' for expiration policy')
-
-      if (!(dataItem[dataItemAttribute] instanceof Date))
-        throw new Error('Invalid type of attribute for GlobalCache data item expiration policy, must be a date, attribute was ' + dataItemAttribute)
-
       return function (dataItem) {
+        if (!(dataItemAttribute in dataItem))
+          throw new Error('Invalid attribute ' + dataItemAttribute + ' for expiration policy')
+
+        if (!(dataItem[dataItemAttribute] instanceof Date))
+          throw new Error('Invalid type of attribute for GlobalCache data item expiration policy, must be a date, attribute was ' + dataItemAttribute)
+
         if (new Date().getTime() - dataItem[dataItemAttribute].getTime() <= timeUnit.toMilliseconds()) {
           return true
         }
@@ -361,13 +357,13 @@ module.exports = {
       }
     },
     equalTo(timeUnit, dataItemAttribute) {
-      if (!(dataItemAttribute in dataItem))
-        throw new Error('Invalid attribute ' + dataItemAttribute + ' for expiration policy')
-
-      if (!(dataItem[dataItemAttribute] instanceof Date))
-        throw new Error('Invalid type of attribute for GlobalCache data item expiration policy, must be a date, attribute was ' + dataItemAttribute)
-
       return function (dataItem, dataItemAttribute) {
+        if (!(dataItemAttribute in dataItem))
+          throw new Error('Invalid attribute ' + dataItemAttribute + ' for expiration policy')
+
+        if (!(dataItem[dataItemAttribute] instanceof Date))
+          throw new Error('Invalid type of attribute for GlobalCache data item expiration policy, must be a date, attribute was ' + dataItemAttribute)
+
         if (new Date().getTime() - dataItem[dataItemAttribute].getTime() == timeUnit.toMilliseconds()) {
           return true
         }
@@ -377,61 +373,61 @@ module.exports = {
     /*
         An expiration policy that removes a cached item should it be accessed in less than the specified time.
     */
-    LastAccessedLessThan(timeUnit) {
+    lastAccessedLessThan(timeUnit) {
       return this.lessThan(timeUnit, 'lastAccessed')
     },
     /*
         An expiration policy that removes a cached item should it have been accessed in less or equal to the specified time.
     */
-    LastAccessedLessThanOrEqualTo(timeUnit) {
+    lastAccessedLessThanOrEqualTo(timeUnit) {
       return this.lessThanOrEqualTo(timeUnit, 'lastAccessed')
     },
     /*
         An expiration policy that removes a cached item should it have been accessed in a time amounting to more than the specified time.
     */
-    LastAccessedGreaterThan(timeUnit) {
+    lastAccessedGreaterThan(timeUnit) {
       return this.greaterThan(timeUnit, 'lastAccessed')
     },
     /*
         An expiration policy that removes a cached item should it have been accessed in a time amounting to more than the specified time.
     */
-    LastAccessedGreaterThanOrEqualTo(timeUnit) {
+    lastAccessedGreaterThanOrEqualTo(timeUnit) {
       return this.greaterThanOrEqualTo(timeUnit, 'lastAccessed')
     },
     /*
         An expiration policy that removes a cached item should it have been accessed equal to the given time.
     */
-    LastAccessedEqualTo(timeUnit) {
+    lastAccessedEqualTo(timeUnit) {
       return this.equalTo(timeUnit, 'lastAccessed')
     },
     /*
         An expiration policy that removes a cached item should its insertation time execeed the specified time unit.
     */
-    InsertedLessThan(timeUnit) {
+    insertedLessThan(timeUnit) {
       return this.lessThan(timeUnit, 'insertationTime')
     },
     /*
         An expiration policy that removes a cached item should its insertation time be less than or equal to the specified time unit.
     */
-    InsertedLessThanOrEqualTo(timeUnit) {
+    insertedLessThanOrEqualTo(timeUnit) {
       return this.lessThanOrEqualTo(timeUnit, 'insertationTime')
     },
     /*
         An expiration policy that removes a cached item should its insertation time be greater than the specified time unit.
     */
-    InsertedGreaterThan(timeUnit) {
+    insertedGreaterThan(timeUnit) {
       return this.greaterThan(timeUnit, 'insertationTime')
     },
     /*
         An expiration policy that removes a cached item should its insertation time be greater than or equal to the specified time unit.
     */
-    InsertedGreaterThanOrEqualTo(timeUnit) {
+    insertedGreaterThanOrEqualTo(timeUnit) {
       return this.greaterThanOrEqualTo(timeUnit, 'insertationTime')
     },
     /*
         An expiration policy that removes a cached item should its insertation time equal to the specified time unit.
     */
-    InsertedEqualTo(timeUnit) {
+    insertedEqualTo(timeUnit) {
       return this.equalTo(timeUnit, 'insertationTime')
     }
   }

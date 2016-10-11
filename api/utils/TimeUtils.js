@@ -1,129 +1,129 @@
-const timeUtils = require('../utils/TimeUtils')
-
 /*
-    A scheduled executor service for scheduling tasks to execute periodically and after a certain initial delay.
+    A small utility class for working with different time units.
 
-    This module is intended to be used to schedule execution for flight notifications on a daily basis of the cheapest flights.
-    Among any other scheduled tasks in which it may be useful for.
+    Currently supports Hours,Minutes,Seconds and Milliseconds.
 
-    Created by Dale. 
+    Created by Dale.
 */
 
-const submittedTasks = {}
-
 module.exports = {
+  millisecondsToSeconds(milliseconds) {
+    return milliseconds / 1000
+  },
 
-    /*
+  millisecondsToMinutes(milliseconds) {
+    return milliseconds / 1000 / 60
+  },
 
-        Basic format of a task object for working with this function
-        task:{
-            on:{
-                executionBegan:function(date){
+  millisecondsToHours(milliseconds) {
+    return milliseconds / 1000 / 60 / 60
+  },
 
-                },
-                executionFinished:function(date,output){
+  hoursToMilliseconds(hours) {
+    return hours * 60 * 60 * 1000
+  },
 
-                },
-                error:function(date,error){
+  hoursToMinutes(hours) {
+    return hours * 60
+  },
 
-                }
+  hoursToSeconds(hours) {
+    return hours * 60 * 60
+  },
 
-            }
+  secondsToMilliseconds(seconds) {
+    return seconds * 1000
+  },
 
-            work:function(){
+  secondsToHours(seconds) {
+    return seconds / 60 / 60
+  },
 
-            }
+  secondsToMinutes(seconds) {
+    return seconds / 60
+  },
 
-        }
+  minutesToSeconds(minutes) {
+    return minutes * 60
+  },
 
-        Call this function in the following way:
-        const timeUtils = require('../utils/TimeUtils')
-        const hourTimeUnit = timeUtils.createTimeUnit(24).Hours
-        ScheduleExecutorService.execute({
-            key:''
-            on:{
-                executionBegan(date){
-                    //called when execution begins
-                },
-                executionFinished(date,output){
-                    //called when execution finishes
-                },
-                error(date,error){
-                    //called should an error occur
-                },
-                stop(date){
+  minutesToHours(minutes) {
+    return minutes / 60
+  },
 
-                }
-            }
-            work(){
-                //Stuff to be done
-            },
-            maxExecutions:0
-        },hourTimeUnit,hourTimeUnit)
+  minutesToMilliseconds(minutes) {
+    return minutes * 60 * 1000
+  },
+  createTimeUnit(value) {
+    const _self = this
 
-        task: the task to execute,
-        timeUnitInitialDelay: a time unit object from the TimeUtils utility class, specifies the intial delay period before scheduling execution for this task,
-        timeUnitRepeatedDelay: a time unit object from the TimeUtils utility class which specifies the amount on time to wait before repeating this tasks execution.
-    */
-    execute(task, timeUnitInitialDelay, timeUnitRepeatedDelay) {
-        const _self = this
+    if (!value) value = 0
 
-        if (!task || !task.work || !('key' in task))
-            throw new Error('Invalid params passed to ScheduleExecutorService.js/execute')
-
-        var repeatedDelay = 0
-        var initialDelay = 0
-
-        if (timeUnitRepeatedDelay && typeof timeUnitRepeatedDelay.getValue === 'function')
-            repeatedDelay = timeUnitRepeatedDelay.toMilliseconds().getValue()
-
-        if (timeUnitInitialDelay && typeof timeUnitInitialDelay.getValue === 'function')
-            initialDelay = timeUnitInitialDelay.convert(timeUtils.createTimeUnit().Milliseconds).getValue()
-
-        new Promise(function(resolve, reject) {
-            setTimeout(function() {
-                const clearIntervalKey = setInterval(function() {
-                    try {
-                        if (task.on && task.on.executionBegan && typeof task.on.executionBegan == 'function')
-                            task.on.executionBegan(new Date())
-
-                        const output = task.work()
-                        submittedTasks[task.key].totalExecutions += 1
-
-                        if (task.on && task.on.executionFinished && typeof task.on.executionFinished == 'function') {
-                            task.on.executionFinished(new Date(), output)
-                        }
-
-                        if (task.maxExecutions && task.maxExecutions > 0 && submittedTasks.totalExecutions == task.maxExecutions) {
-                            _self.stopScheduledTask(task.key)
-                            if (task.on && task.on.stop && typeof task.on.stop == 'function') {
-                                task.on.stop(new Date())
-                            }
-                        }
-                    } catch (err) {
-                        if (task.on && task.on.error && task.on.error && typeof task.on.error == 'function') {
-                            task.on.error(new Date(), err)
-                        }
-                        _self.stopScheduledTask(task.key)
-                    }
-                }, repeatedDelay)
-                submittedTasks[task.key] = { clearIntervalKey, totalExecutions: 0 }
-            }, initialDelay)
-        })
-        return submittedTasks[task.key]
-    },
-    stopScheduledTask(options) {
-        if (typeof options == 'string') {
-            clearInterval(submittedTasks[options].clearIntervalKey)
-            delete submittedTasks[options]
-        } else if (options && options.key) {
-            clearInterval(submittedTasks[options.key].clearIntervalKey)
-            delete submittedTasks[options.key]
-        } else {
-            throw new Error('Invalid params passed to stop scheduled task in ScheduledExecutorService.js/stopScheduledTask')
-        }
+    function to (type) {
+      return this['to' + type]()
     }
-}        value,
+
+    function convert (toTimeUnit) {
+      return this.to(toTimeUnit.type)
+    }
+
+    function getValue () {
+      return this.value
+    }
+
+    function setValue (amount) {
+      this.value = amount
+      return this
+    }
+
+    return {
+      Hours: {
+        value,
+        type: 'Hours',
+        convert,
+        to,
+        getValue,
+        setValue,
+        toString() { return value + 'Hour(s)'; },
+        toMilliseconds() {
+          return _self.createTimeUnit(_self.hoursToMilliseconds(value)).Milliseconds
+        },
+        toMinutes() {
+          return _self.createTimeUnit(_self.hoursToMinutes(value)).Minutes
+        },
+        toHours() {
+          return this
+        },
+        toSeconds() {
+          return _self.createTimeUnit(_self.hoursToSeconds(value)).Seconds
+        }
+      },
+
+      Milliseconds: {
+        value,
+        convert,
+        to,
+        getValue,
+        setValue,
+        type: 'Milliseconds',
+        toString() { return value + 'Millisecond(s)'; },
+        toMilliseconds() {
+          return this
+        },
+        toMinutes() {
+          return _self.createTimeUnit(_self.millisecondsToMinutes(value)).Minutes
+        },
+        toHours() {
+          return _self.createTimeUnit(_self.millisecondsToHours(value)).Hours
+        },
+        toSeconds() {
+          console.log('in milli')
+          console.log(_self.millisecondsToSeconds(value))
+          return _self.createTimeUnit(_self.millisecondsToSeconds(value)).Seconds
+        }
+      },
+      Minutes: {
+        value,
         type: 'Minutes',
         convert,
         to,

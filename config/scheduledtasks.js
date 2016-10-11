@@ -211,13 +211,27 @@ const flightRequestScheduledTask = {
     }
 };
 
-const hourTimeUnit = timeUtils.createTimeUnit(24).Hours;
-module.exports.scheduledtasks = [{
-    task: flightRequestScheduledTask,
-    initialDelay: hourTimeUnit,
-    repeatingDelay: hourTimeUnit
-}, {
-    task: flightOfferScheduledTask,
-    initialDelay: hourTimeUnit,
-    repeatingDelay: hourTimeUnit
-}]
+const hasInitialized = false;
+module.exports.scheduledtasks = function() {
+    if(hasInitialized) return;
+
+    const hourTimeUnit = timeUtils.createTimeUnit(24).Hours;
+    [{
+        task: flightRequestScheduledTask,
+        initialDelay: hourTimeUnit,
+        repeatingDelay: hourTimeUnit
+    }, {
+        task: flightOfferScheduledTask,
+        initialDelay: hourTimeUnit,
+        repeatingDelay: hourTimeUnit
+    }].forEach(function(task) {
+        try {
+            ScheduledExecutorService.execute(task.task, task.initialDelay, task.repeatingDelay);
+        } catch (err) {
+            sails.log.err('Error bootstrapping scheduled task in bootstrap.js');
+            sails.log.err(err);
+        }
+    });
+
+    hasInitialized = true;
+}

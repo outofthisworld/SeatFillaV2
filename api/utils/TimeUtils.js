@@ -15,7 +15,7 @@ module.exports = {
         return milliseconds / 1000 / 60;
     },
 
-    millisecondsToHours(millseconds) {
+    millisecondsToHours(milliseconds) {
         return milliseconds / 1000 / 60 / 60;
     },
 

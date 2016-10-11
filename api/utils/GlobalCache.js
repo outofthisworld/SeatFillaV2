@@ -6,6 +6,9 @@
 
 const cacheObj = cacheObj || {};
 
+/*
+
+*/
 const expirationPolicies = {}
 
 function GlobalCache(options) {
@@ -42,14 +45,18 @@ GlobalCache.prototype.getData = function(key) {
     if (this.checkKeyExists(key)) {
         //Run the expiration policy on the data to make sure that the data being retrievied is 'clean'
         if (this.expirationPolicy && (typeof this.expiratioPolicy == 'function')) {
-            cacheObj[this.key]['Data'][key] = this.expirationPolicy(cacheObj[this.key]['Data'][key]);
+            cacheObj[this.key]['Data'][key] = this.expirationPolicy(key, cacheObj[this.key]['Data'][key]);
             if ((cacheObj[this.key]['Data'][key]) == null) {
+                sails.log.debug('GlobalCache: (' + this.key + '):' + ' key ' +
+                    key + 'has now expired and will be removed from the cache. (getData())');
                 delete cacheObj[this.key]['Data'][key];
                 return null;
             }
         }
+        sails.log.debug('GlobalCache: (' + this.key + '): returning existing result for key: ' + key);
         return cacheObj[this.key]['Data'][key].value;
     } else {
+        sails.log.debug('GlobalCache: (' + this.key + '): looked up not existent key ' + key);
         return null;
     }
 }
@@ -119,17 +126,19 @@ GlobalCache.prototype.stopScheduledExpirationPolicy = function() {
 GlobalCache.prototype.runExpirationPolicy = function() {
     if (!this.expirationPolicy && !(typeof this.expirationPolicy == 'function')) return;
 
-    new Promise(function(resove, reject) {
-        if (cacheObj[this.key] && 'Data' in cacheObj[this.key]) {
-            for (var key in cacheObj[this.key]['Data']) {
-                cacheObj[this.key]['Data'][key] = this.expirationPolicy(cacheObj[this.key]['Data'][key]);
-                if ((cacheObj[this.key]['Data'][key]) == null) {
-                    delete cacheObj[this.key]['Data'][key];
+    const _self = this;
+    new Promise(function(resolve, reject) {
+        if (cacheObj[_self.key] && 'Data' in cacheObj[_self.key]) {
+            for (var key in cacheObj[_self.key]['Data']) {
+                cacheObj[_self.key]['Data'][key] = _self.expirationPolicy(key, cacheObj[_self.key]['Data'][key]);
+                if ((cacheObj[_self.key]['Data'][key]) == null) {
+                    sails.log.debug('GlobalCache: (' + _self.key + '):' + ' key ' + key + 'has now expired and will be removed from the cache.');
+                    delete cacheObj[_self.key]['Data'][key];
                 }
             }
             resolve(true);
         } else {
-            reject(new Error('Invalid state for cache ' + this.key + ' in GlobalCache.js/runExpirationPolicy'));
+            reject(new Error('Invalid state for cache ' + _self.key + ' in GlobalCache.js/runExpirationPolicy'));
         }
     }).catch(function(err) {
         sails.log.error(err);
@@ -156,10 +165,12 @@ module.exports = function(object) {
     if (!object || !object.GlobalCache) {
         throw new Error('Invalid params to exported function in GlobalCache.js. Object and Object.globalCache must exist');
     } else if (object.GlobalCache in cacheObj) {
-        return cacheObj[object.GlobalCache]
+        sails.log.debug('Retrieving global cache: ' + object.GlobalCache);
     } else {
         var cache = new GlobalCache(object);
         cacheObj[object.GlobalCache] = cache;
+
+        sails.log.debug('Creating new global cache: ' + object.GlobalCache);
 
         if (object.ExpirationPolicy) {
             cache.setExpirationPolicy(object.ExpirationPolicy);
@@ -168,37 +179,43 @@ module.exports = function(object) {
                 (object.ExpirationSettings.ScheduledExpirationPolicyInterval ||
                     object.ExpirationSettings.ScheduledExpirationPolicyDelay)) {
 
-                const scheduledTask = ScheduledExecutorService.execute({
-                        key: object.GlobalCache + '-GlobalCache',
-                        on: {
-                            executionBegan(date) {
-                                sails.log.debug('Running expiration policy for cache ' +
-                                    object.GlobalCache + ' on ' + date);
-                            },
-                            executionFinished(date, output) {
-                                sails.log.debug('Finished running expiration policy for cache ' +
-                                    object.GlobalCache + ' on ' + date);
-                            },
-                            error(date, error) {
-                                sails.log.debug('Error running expiration policy for cache ' +
-                                    object.GlobalCache + ' on ' + date);
-                            },
-                            stop(date) {
-                                sails.log.debug('Stopped scheduled task of global cache ' +
-                                    object.GlobalCache);
-                            }
-                        },
-                        work() {
-                            cache.runExpirationPolicy();
-                        },
-                        maxExecutions: 0
-                    }, object.ExpirationSettings.ScheduledExpirationPolicyInterval ?
-                    object.ExpirationSettings.ScheduledExpirationPolicyInterval.toMilliseconds() : 0,
-                    object.ExpirationSettings.ScheduledExpirationIntialDelay ?
-                    object.ExpirationSettings.ScheduledExpirationPolicyDelay.toMilliseconds() : 0);
+                const interval = object.ExpirationSettings.ScheduledExpirationPolicyInterval ?
+                    object.ExpirationSettings.ScheduledExpirationPolicyInterval.toMilliseconds() : 0
 
+                const delay = object.ExpirationSettings.ScheduledExpirationIntialDelay ?
+                    object.ExpirationSettings.ScheduledExpirationIntialDelay.toMilliseconds() : 0;
+
+                const scheduledTask = ScheduledExecutorService.execute({
+                    key: object.GlobalCache + '-GlobalCache',
+                    on: {
+                        executionBegan(date) {
+                            sails.log.debug('Running expiration policy for cache ' +
+                                object.GlobalCache + ' on ' + date);
+                        },
+                        executionFinished(date, output) {
+                            sails.log.debug('Finished running expiration policy for cache ' +
+                                object.GlobalCache + ' on ' + date);
+                        },
+                        error(date, error) {
+                            sails.log.debug('Error running expiration policy for cache ' +
+                                object.GlobalCache + ' on ' + date);
+                        },
+                        stop(date) {
+                            sails.log.debug('Stopped scheduled task of global cache ' +
+                                object.GlobalCache);
+                        }
+                    },
+                    work() {
+                        cache.runExpirationPolicy();
+                    },
+                    maxExecutions: 0
+                }, interval, delay);
+
+                sails.log.debug('Succesfully scheduled ' + object.GlobalCache + ' expiration policy to run every ' +
+                    interval.getValue() + ' ms with an initial delay of ' + delay.getValue() + ' ms ');
                 cacheObj[object.GlobalCache].ScheduledTask = scheduledTask;
             }
         }
     }
+    return cacheObj[object.GlobalCache];
 }

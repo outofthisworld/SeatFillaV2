@@ -8,6 +8,7 @@ module.exports = {
             return res.json(ResponseStatus.OK, currencyCodes);
         }).catch(function(err) {
             sails.log.error(err);
+
             return res.json(ResponseStatus.SERVER_ERROR, {
                 status: 1738,
                 error: new Error('Unable to retrieve sky scanner currency codes'),
@@ -38,6 +39,8 @@ module.exports = {
             result.status = 200;
             return res.json(ResponseStatus.OK, result);
         }).catch(function(err) {
+            sails.log.error(err);
+
             return res.json(ResponseStatus.SERVER_ERROR, {
                 status: 1738,
                 error: new Error('Unable to retrieve currency exchange rates'),

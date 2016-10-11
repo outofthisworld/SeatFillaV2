@@ -13,6 +13,11 @@
 
 module.exports.bootstrap = function(callback) {
 
+    sails.log.debug('===================================')
+    sails.log.debug('Welcome to the Seatfilla backend');
+    sails.log.debug('Created by: Dale and Richard');
+    sails.log.debug('===================================')
+
     /*Initialize any scheduled tasks*/
     sails.config.scheduledtasks();
 

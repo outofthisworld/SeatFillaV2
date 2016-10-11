@@ -76,7 +76,7 @@ module.exports = {
     const countryInfoEndpoint = 'https://restcountries.eu/rest/v1/alpha/' + countryCode
 
     return new Promise(function (resolve, reject) {
-      const countryData = GlobalCache({
+      const countryData = GlobalCache.cache({
         GlobalCache: 'rest_countries_cache'
       }).getData(countryCode)
 
@@ -104,7 +104,7 @@ module.exports = {
                 console.log(obj)
                 return reject(new Error('Error with request to ' + countryInfoEndpoint + ' could not parse body'))
               } else {
-                GlobalCache({
+                GlobalCache.cache({
                   GlobalCache: 'rest_countries_cache'
                 }).insertData(countryCode, obj)
                 return resolve(obj)
@@ -161,7 +161,7 @@ module.exports = {
     const fixerIoEndpoint = 'http://api.fixer.io/latest?base=' + base
 
     return new Promise(function (resolve, reject) {
-      const cachedData = GlobalCache({
+      const cachedData = GlobalCache.cache({
         GlobalCache: 'fixer_io_exchange_rates'
       }).getData(base)
 
@@ -189,12 +189,13 @@ module.exports = {
                 console.log(obj)
                 return reject(new Error('Error with request to ' + fixerIoEndpoint + ' could not parse body'))
               } else {
-                GlobalCache({
+                GlobalCache.cache({
                   GlobalCache: 'fixer_io_exchange_rates'
                 }).insertData(base, obj)
                 return resolve(obj)
               }
             } catch (err) {
+              sails.log.error(err);
               return reject(new Error('Error parsing JSON response when retrieving country info from rest countries endpoint ' + countryInfoEndpoint))
             }
           }

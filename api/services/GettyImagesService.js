@@ -84,7 +84,7 @@ module.exports = {
 
     const cacheKey = options.phrase + '-' + options.page || '1'
 
-    const getty_images_cached_data = GlobalCache({
+    const getty_images_cached_data = GlobalCache.cache({
       GlobalCache: 'getty_images_cache'
     }).getData(cacheKey)
 

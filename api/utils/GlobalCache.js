@@ -12,20 +12,26 @@ const cacheObj = cacheObj || {}
 function GlobalCache (options) {
   if (!options) throw new Error('Invalid object passed to GlobalCache.js GlobalCache constructor')
 
-  this.key = options.GlobalCache
-  this.ExpirationSettings = options.ExpirationSettings || {}
-  this.Data = options.Data || {}
+  const _self = this
+
+  _self.key = options.GlobalCache
+  _self.ExpirationSettings = options.ExpirationSettings || {}
+  _self.Data = options.Data || {}
 }
 
 GlobalCache.prototype.getKey = function () {
-  return this.key
+  const _self = this
+
+  return _self.key
 }
 
 GlobalCache.prototype.checkKeyExists = function (key) {
-  if (!cacheObj || !cacheObj[this.key] || !cacheObj[this.key] || !cacheObj[this.key].cache || !cacheObj[this.key].cache.Data)
+  const _self = this
+
+  if (!cacheObj || !cacheObj[_self.key] || !cacheObj[_self.key] || !cacheObj[_self.key].cache || !cacheObj[_self.key].cache.Data)
     throw new Error('Invalid state for GlobalCache in GlobalCache.js/checkKeyExists')
 
-  if (cacheObj[this.key].cache.Data[key]) {
+  if (_self.Data[key]) {
     return true
   }
 
@@ -33,27 +39,33 @@ GlobalCache.prototype.checkKeyExists = function (key) {
 }
 
 GlobalCache.prototype.setKey = function (key) {
-  if (!(this.key in cacheObj)) {
-    cacheObj[this.key] = this
+  const _self = this
+
+  if (!(_self.key in cacheObj)) {
+    cacheObj[_self.key] = this
   }
 
-  const obj = cacheObj[this.key]
-  delete cacheObj[this.key]
+  const obj = cacheObj[_self.key]
+  delete cacheObj[_self.key]
 
   cacheObj[key] = obj
 }
 
 GlobalCache.prototype.getDataObject = function (key) {
-  if (this.checkKeyExists(key)) {
-    return cacheObj[this.key]['Data'][key]
+  const _self = this
+
+  if (_self.checkKeyExists(key)) {
+    return _self.Data[key]
   } else {
     return null
   }
 }
 
 GlobalCache.prototype.setLastAccessed = function (key, date) {
-  if (this.checkKeyExists(key)) {
-    cacheObj[this.key].cache.Data[key].lastAccessed = date
+  const _self = this
+
+  if (_self.checkKeyExists(key)) {
+    _self.Data[key].lastAccessed = date
     return true
   } else {
     return false
@@ -61,24 +73,30 @@ GlobalCache.prototype.setLastAccessed = function (key, date) {
 }
 
 GlobalCache.prototype.getLastAccessed = function (key) {
-  if (this.checkKeyExists(key)) {
-    return cacheObj[this.key].cache.Data[key].lastAccessed
+  const _self = this
+
+  if (_self.checkKeyExists(key)) {
+    return _self.Data[key].lastAccessed
   } else {
     return null
   }
 }
 
 GlobalCache.prototype.getLastModified = function (key) {
-  if (this.checkKeyExists(key)) {
-    cacheObj[this.key].cache.Data[key].lastModified
+  const _self = this
+
+  if (_self.checkKeyExists(key)) {
+    _self.Data[key].lastModified
   } else {
     return null
   }
 }
 
 GlobalCache.prototype.setLastModified = function (key, date) {
-  if (this.checkKeyExists(key)) {
-    cacheObj[this.key].cache.Data[key].lastModified = date
+  const _self = this
+
+  if (_self.checkKeyExists(key)) {
+    _self.Data[key].lastModified = date
     return true
   } else {
     return false
@@ -86,16 +104,20 @@ GlobalCache.prototype.setLastModified = function (key, date) {
 }
 
 GlobalCache.prototype.getInsertationTime = function (key) {
-  if (this.checkKeyExists(key)) {
-    return cacheObj[this.key].cache.Data[key].insertationTime
+  const _self = this
+
+  if (_self.checkKeyExists(key)) {
+    return _self.Data[key].insertationTime
   } else {
     return null
   }
 }
 
 GlobalCache.prototype.setInsertationTime = function (key, date) {
-  if (this.checkKeyExists(key)) {
-    cacheObj[this.key].cache.Data[key].insertationTime = date
+  const _self = this
+
+  if (_self.checkKeyExists(key)) {
+    _self.Data[key].insertationTime = date
     return true
   } else {
     return false
@@ -103,27 +125,32 @@ GlobalCache.prototype.setInsertationTime = function (key, date) {
 }
 
 GlobalCache.prototype.getData = function (key) {
-  if (this.checkKeyExists(key)) {
-    // Run the expiration policy on the data to make sure that the data being retrievied is 'clean'
+  const _self = this
 
-    if (this.deleteIfExpired(key)) {
-      sails.log.debug('GlobalCache: (' + this.key + '):' + ' key ' +
+  if (_self.checkKeyExists(key)) {
+    // Run the expiration policy on the data to make sure that the data being retrievied is 'clean'
+    sails.log.debug('GlobalCache (' + _self.key + ') deleting ' + key + ' if it has expired. (getData())')
+
+    if (_self.deleteIfExpired(key)) {
+      sails.log.debug('GlobalCache: (' + _self.key + '):' + ' key ' +
         key + 'has now expired and will be removed from the cache. (getData())')
       return null
     } else {
-      sails.log.debug('GlobalCache: (' + this.key + '): returning existing result for key: ' + key)
-      cacheObj[this.key]['Data'][key].lastAccessed = new Date()
-      return cacheObj[this.key].cache.Data[key].value
+      sails.log.debug('GlobalCache: (' + _self.key + '): returning existing result for key: ' + key)
+      _self.Data[key].lastAccessed = new Date()
+      return _self.Data[key].value
     }
   } else {
-    sails.log.debug('GlobalCache: (' + this.key + '): looked up not existent key ' + key)
+    sails.log.debug('GlobalCache: (' + _self.key + '): looked up not existent key ' + key)
     return null
   }
 }
 
 GlobalCache.prototype.removeData = function (key) {
-  if (this.checkKeyExists(key)) {
-    delete cacheObj[this.key].cache.Data[key]
+  const _self = this
+
+  if (_self.checkKeyExists(key)) {
+    delete _self.Data[key]
     return true
   } else {
     return false
@@ -131,37 +158,44 @@ GlobalCache.prototype.removeData = function (key) {
 }
 
 GlobalCache.prototype.insertData = function (key, data) {
-  if (this.ExpirationSettings.runExpirationPolicyOnInserts &&
-    this.ExpirationSettings.runExpirationPolicyOnInserts())
-    this.runExpirationPolicy()
+  const _self = this
 
-  if ('Data' in cacheObj[this.key].cache) {
+  if (_self.ExpirationSettings.runExpirationPolicyOnInserts &&
+    _self.ExpirationSettings.runExpirationPolicyOnInserts())
+    _self.runExpirationPolicy()
+
+  if ('Data' in cacheObj[_self.key].cache) {
     const dataObject = {
       value: data,
       insertationTime: new Date(),
       lastAccessedTime: null,
       lastModifiedTime: null
     }
-    cacheObj[this.key].cache.Data[key] = dataObject
+    _self.Data[key] = dataObject
   } else {
     throw new Error('Invalid object state for GlobalCache in GlobalCache.js/insertData, Data object must be defined.')
   }
 }
 
 GlobalCache.prototype.setData = function (key, data) {
-  if (this.checkKeyExists(key)) {
-    cacheObj[this.key].cache.Data[key].lastModifiedTime = new Date()
-    cacheObj[this.key].cache.Data[key].value = data
+  const _self = this
+
+  if (_self.checkKeyExists(key)) {
+    _self.Data[key].lastModifiedTime = new Date()
+    _self.Data[key].value = data
   } else {
-    return this.insertData(key, data)
+    return _self.insertData(key, data)
   }
 }
 
 GlobalCache.prototype.checkExpired = function (key) {
-  if (!this.expirationPolicies || this.checkKeyExists(key)) return false
+  const _self = this
 
-  this.expirationPolicies.forEach((expirationPolicy) => {
-    if (typeof expirationPolicy == 'function' && expirationPolicy(cacheObj[this.key].cache.Data[key])) {
+  if (!_self.expirationPolicies || !_self.checkKeyExists(key)) return false
+
+  sails.log.debug('GlobalCache (' + _self.key + '): checking if ' + key + ' has expired')
+  _self.expirationPolicies.forEach((expirationPolicy) => {
+    if (typeof expirationPolicy == 'function' && expirationPolicy(_self.Data[key])) {
       return true
     }
   })
@@ -171,21 +205,27 @@ GlobalCache.prototype.checkExpired = function (key) {
 GlobalCache.prototype.deleteIfExpired = function (key) {
   const _self = this
 
-  if (this.checkExpired(cacheObj[_self.key].cache['Data'][key])) {
-    delete cacheObj[_self.key]['cache']['Data'][key]
+  if (_self.checkExpired(cacheObj[_self.key].cache['Data'][key])) {
+    delete _self.Data[key]
     return true
+  } else {
+    sails.log.debug('GlobalCache (' + _self.key + '): ' + key + ' has not expired')
   }
 
   return false
 }
 
 GlobalCache.prototype.deleteCache = function () {
-  this.stopScheduledExpirationPolicy()
-  this.runExpirationPolicy()
-  delete cacheObj[this.key]
+  const _self = this
+
+  _self.stopScheduledExpirationPolicy()
+  _self.runExpirationPolicy()
+  delete cacheObj[_self.key]
 }
 
 GlobalCache.prototype.setExpirationPolicies = function (obj) {
+  const _self = this
+
   if (!Array.isArray(obj)) throw new Error('Invalid object passed to GlobalCache.js/setExpirationPolicies, must be an array')
 
   obj.forEach(function (expiriationPolicy) {
@@ -194,31 +234,36 @@ GlobalCache.prototype.setExpirationPolicies = function (obj) {
     }
   })
 
-  this.expirationPolicies = obj
+  _self.expirationPolicies = obj
 }
 
 GlobalCache.prototype.setRefreshPolicy = function (refreshPolicy) {
+  const _self = this
+
   if (!refreshPolicy || typeof refreshPolicy != 'function') {
     throw new Error('Invalid object passed to GlobalCache.js/setRefreshPolicy, must be a function')
   }
 
-  this.refreshPolicy = refreshPolicy
+  _self.refreshPolicy = refreshPolicy
 }
 
 GlobalCache.prototype.stopScheduledExpirationPolicy = function () {
-  if (!cacheObj[this.key].ScheduledTask) return
+  const _self = this
 
-  ScheduledExecutorService.stopScheduledTask(cacheObj[this.key].ScheduledTask.clearIntervalKey)
+  if (!_self.ScheduledTask) return
+
+  ScheduledExecutorService.stopScheduledTask(cacheObj[_self.key].ScheduledTask.clearIntervalKey)
 }
 
 GlobalCache.prototype.runExpirationPolicy = function () {
-  if (!this.expirationPolicies) return
-
   const _self = this
+
+  if (!_self.expirationPolicies) return
+
   new Promise(function (resolve, reject) {
-    if ('Data' in _self['Data']) {
+    if ('Data' in _self) {
       for (var key in _self['Data']) {
-        if (_self.hasOwnProperty(key)) {
+        if (_self['Data'].hasOwnProperty(key)) {
           if (_self.deleteIfExpired(key)) {
             sails.log.debug('GlobalCache: (' + _self.key + '):' + ' key: ' +
               key + 'has now expired and will be removed from the cache.')
@@ -247,7 +292,7 @@ module.exports = {
       return cacheObj[object.GlobalCache].cache
     } else {
       var cache = new GlobalCache(object)
-      cacheObj[object.GlobalCache] = {cache}
+      cacheObj[object.GlobalCache] = { cache}
 
       sails.log.debug('Creating new global cache: ' + object.GlobalCache)
 

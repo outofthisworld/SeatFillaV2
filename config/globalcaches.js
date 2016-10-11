@@ -20,12 +20,22 @@ function init () {
   if (hasInitialized) return
 
   /*
+    This is here until I have enough time to add memory usage expiration policies to the global cache
+    and create a digital storage utils class for conversions.
+  */
+  function tempMemoryUsageExpirationPolicy (dataItem) {
+    return GlobalCache.ExpirationPolicies.lastAccessedGreaterThan(timeUtils.createTimeUnit(3).Hours)(dataItem) &&
+      (process.memoryUsage().heapTotal - process.memoryUsage().heapUsed) < 1024 * 1024 * 200 // 200MB
+  }
+
+  /*
       A cache containing data from the fixer io exchange rates service.
   */
   GlobalCache.cache({
     GlobalCache: 'fixer_io_exchange_rates',
     ExpirationPolicies: [
-      GlobalCache.ExpirationPolicies.insertedGreaterThanOrEqualTo(timeUtils.createTimeUnit(1).Hours)
+      GlobalCache.ExpirationPolicies.insertedGreaterThanOrEqualTo(timeUtils.createTimeUnit(1).Hours),
+      tempMemoryUsageExpirationPolicy
     ],
     ExpirationSettings: {
       runExpirationPolicyOnInserts: function () { return true; },
@@ -41,12 +51,12 @@ function init () {
   GlobalCache.cache({
     GlobalCache: 'rest_countries_cache',
     ExpirationPolicies: [
-      GlobalCache.ExpirationPolicies.lastAccessedGreaterThanOrEqualTo(timeUtils.createTimeUnit(12).Hours)
+      GlobalCache.ExpirationPolicies.lastAccessedGreaterThanOrEqualTo(timeUtils.createTimeUnit(12).Hours),
+      tempMemoryUsageExpirationPolicy
     ],
     ExpirationSettings: {
       runExpirationPolicyOnInserts: function () { return true; },
       runExpirationPolicyOnDelations: function () { return true; },
-      // Run the expiration polcy every 4 hours.
       ScheduledExpirationPolicyInterval: timeUtils.createTimeUnit(6).Hours,
       // Run the expiration policy with an initial delay of 4 hours.
       ScheduledExpirationIntialDelay: timeUtils.createTimeUnit(6).Hours
@@ -56,7 +66,8 @@ function init () {
   GlobalCache.cache({
     GlobalCache: 'getty_images_cache',
     ExpirationPolicies: [
-      GlobalCache.ExpirationPolicies.insertedGreaterThanOrEqualTo(timeUtils.createTimeUnit(12).Hours)
+      GlobalCache.ExpirationPolicies.insertedGreaterThanOrEqualTo(timeUtils.createTimeUnit(12).Hours),
+      tempMemoryUsageExpirationPolicy
     ],
     ExpirationSettings: {
       runExpirationPolicyOnInserts: function () { return true; },

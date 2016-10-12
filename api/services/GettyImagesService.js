@@ -84,63 +84,63 @@ module.exports = {
 
     const cacheKey = options.phrase + '-' + options.page || '1'
 
-    const getty_images_cached_data = GlobalCache.cache({
+    GlobalCache.cache({
       GlobalCache: 'getty_images_cache'
-    }).getData(cacheKey)
+    }).getData(cacheKey).then(function (getty_images_cached_data) {
+      if (getty_images_cached_data) {
+        return Promise.resolve(getty_images_cached_data)
+      } else {
+        return this.getToken().then(function (result) {
+          const tokenType = result['token_type']
+          const authToken = result['access_token']
 
-    if (getty_images_cached_data) {
-      return Promise.resolve(getty_images_cached_data)
-    } else {
-      return this.getToken().then(function (result) {
-        const tokenType = result['token_type']
-        const authToken = result['access_token']
+          const reqObject = {
+            phrase: options.phrase,
+            page: options.page || 1,
+            page_size: options.pageSize || 100,
+            exclude_nudity: true,
+            embed_content_only: options['embed_content_only'] || true
+          }
 
-        const reqObject = {
-          phrase: options.phrase,
-          page: options.page || 1,
-          page_size: options.pageSize || 100,
-          exclude_nudity: true,
-          embed_content_only: options['embed_content_only'] || true
-        }
+          const sendData = querystring.stringify(reqObject)
 
-        const sendData = querystring.stringify(reqObject)
+          return new Promise((resolve, reject) => {
+            request({
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Api-Key': embededApiKey,
+                'Accept-Language': 'en-US',
+                'Authorization': 'Bearer' + ' ' + authToken
+              },
+              uri: 'https://api.gettyimages.com/v3/search/images?' + sendData,
+              method: 'GET'
+            }, function (err, res, body) {
+              if (err || !body) {
+                return reject(err || new Error('Body response was empty'))
+              } else {
+                try {
+                  const obj = JSON.parse(body)
 
-        return new Promise((resolve, reject) => {
-          request({
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-              'Api-Key': embededApiKey,
-              'Accept-Language': 'en-US',
-              'Authorization': 'Bearer' + ' ' + authToken
-            },
-            uri: 'https://api.gettyimages.com/v3/search/images?' + sendData,
-            method: 'GET'
-          }, function (err, res, body) {
-            if (err || !body) {
-              return reject(err || new Error('Body response was empty'))
-            } else {
-              try {
-                const obj = JSON.parse(body)
-
-                if (!obj) {
-                  console.log(obj)
-                  return reject(new Error('Error with request to ' + gettyAuthEndpoint + ' could not parse body'))
-                } else if (obj.ErrorCode) {
-                  return reject(new Error('Error with request to ' + gettyAuthEndpoint + JSON.stringify(obj)))
-                } else {
-                  GlobalCache({
-                    GlobalCache: 'getty_images_cache'
-                  }).insertData(cacheKey, obj)
-                  return resolve(obj)
+                  if (!obj) {
+                    console.log(obj)
+                    return reject(new Error('Error with request to ' + gettyAuthEndpoint + ' could not parse body'))
+                  } else if (obj.ErrorCode) {
+                    return reject(new Error('Error with request to ' + gettyAuthEndpoint + JSON.stringify(obj)))
+                  } else {
+                    GlobalCache({
+                      GlobalCache: 'getty_images_cache'
+                    }).insertData(cacheKey, obj)
+                    return resolve(obj)
+                  }
+                } catch (err) {
+                  return reject(err)
                 }
-              } catch (err) {
-                return reject(err)
               }
-            }
+            })
           })
         })
-      })
-    }
+      }
+    })
   },
   searchImages(phrase, pageNumber, numberOfImages) {
     return this.makeImagesRequest({

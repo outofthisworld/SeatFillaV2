@@ -1,4 +1,4 @@
-const uuid = require('node-uuid');
+const uuid = require('node-uuid')
 
 module.exports = {
   createUser: function (req) {

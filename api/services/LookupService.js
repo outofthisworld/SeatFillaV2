@@ -76,45 +76,45 @@ module.exports = {
     const countryInfoEndpoint = 'https://restcountries.eu/rest/v1/alpha/' + countryCode
 
     return new Promise(function (resolve, reject) {
-      const countryData = GlobalCache.cache({
+      GlobalCache.cache({
         GlobalCache: 'rest_countries_cache'
-      }).getData(countryCode)
+      }).getData(countryCode).then(function (countryData) {
+        if (countryData) {
+          resolve(countryData)
+        } else {
+          request({
+            headers: {
+              'Accept-Language': 'en-US'
+            },
+            uri: countryInfoEndpoint,
+            method: 'GET'
+          }, function (err, res, body) {
+            if (err || !body || res.statusCode != 200) {
+              sails.log.debug('Error retrieving country info from endpoint ' + countryInfoEndpoint)
+              sails.log.debug('Reponse code was' + res.statusCode)
+              sails.log.debug('Body content: ' + body)
+              sails.log.error(err)
+              return reject(err)
+            } else {
+              try {
+                const obj = JSON.parse(body)
 
-      if (countryData) {
-        resolve(countryData)
-      } else {
-        request({
-          headers: {
-            'Accept-Language': 'en-US'
-          },
-          uri: countryInfoEndpoint,
-          method: 'GET'
-        }, function (err, res, body) {
-          if (err || !body || res.statusCode != 200) {
-            sails.log.debug('Error retrieving country info from endpoint ' + countryInfoEndpoint)
-            sails.log.debug('Reponse code was' + res.statusCode)
-            sails.log.debug('Body content: ' + body)
-            sails.log.error(err)
-            return reject(err)
-          } else {
-            try {
-              const obj = JSON.parse(body)
-
-              if (!obj) {
-                console.log(obj)
-                return reject(new Error('Error with request to ' + countryInfoEndpoint + ' could not parse body'))
-              } else {
-                GlobalCache.cache({
-                  GlobalCache: 'rest_countries_cache'
-                }).insertData(countryCode, obj)
-                return resolve(obj)
+                if (!obj) {
+                  console.log(obj)
+                  return reject(new Error('Error with request to ' + countryInfoEndpoint + ' could not parse body'))
+                } else {
+                  GlobalCache.cache({
+                    GlobalCache: 'rest_countries_cache'
+                  }).insertData(countryCode, obj)
+                  return resolve(obj)
+                }
+              } catch (err) {
+                return reject(new Error('Error parsing JSON response when retrieving country info from rest countries endpoint ' + countryInfoEndpoint))
               }
-            } catch (err) {
-              return reject(new Error('Error parsing JSON response when retrieving country info from rest countries endpoint ' + countryInfoEndpoint))
             }
-          }
-        })
-      }
+          })
+        }
+      })
     })
   },
   /*
@@ -161,46 +161,46 @@ module.exports = {
     const fixerIoEndpoint = 'http://api.fixer.io/latest?base=' + base
 
     return new Promise(function (resolve, reject) {
-      const cachedData = GlobalCache.cache({
+      GlobalCache.cache({
         GlobalCache: 'fixer_io_exchange_rates'
-      }).getData(base)
+      }).getData(base).then(function (cachedData) {
+        if (cachedData) {
+          return resolve(cachedData)
+        } else {
+          request({
+            headers: {
+              'Accept-Language': 'en-US'
+            },
+            uri: fixerIoEndpoint,
+            method: 'GET'
+          }, function (err, res, body) {
+            if (err || !body || res.statusCode != 200) {
+              sails.log.debug('Error retrieving country info from endpoint ' + fixerIoEndpoint)
+              sails.log.debug('Reponse code was' + res.statusCode)
+              sails.log.debug('Body content: ' + body)
+              sails.log.error(err)
+              return reject(err)
+            } else {
+              try {
+                const obj = JSON.parse(body)
 
-      if (cachedData) {
-        return resolve(cachedData)
-      } else {
-        request({
-          headers: {
-            'Accept-Language': 'en-US'
-          },
-          uri: fixerIoEndpoint,
-          method: 'GET'
-        }, function (err, res, body) {
-          if (err || !body || res.statusCode != 200) {
-            sails.log.debug('Error retrieving country info from endpoint ' + fixerIoEndpoint)
-            sails.log.debug('Reponse code was' + res.statusCode)
-            sails.log.debug('Body content: ' + body)
-            sails.log.error(err)
-            return reject(err)
-          } else {
-            try {
-              const obj = JSON.parse(body)
-
-              if (!obj) {
-                console.log(obj)
-                return reject(new Error('Error with request to ' + fixerIoEndpoint + ' could not parse body'))
-              } else {
-                GlobalCache.cache({
-                  GlobalCache: 'fixer_io_exchange_rates'
-                }).insertData(base, obj)
-                return resolve(obj)
+                if (!obj) {
+                  console.log(obj)
+                  return reject(new Error('Error with request to ' + fixerIoEndpoint + ' could not parse body'))
+                } else {
+                  GlobalCache.cache({
+                    GlobalCache: 'fixer_io_exchange_rates'
+                  }).insertData(base, obj)
+                  return resolve(obj)
+                }
+              } catch (err) {
+                sails.log.error(err)
+                return reject(new Error('Error parsing JSON response when retrieving country info from rest countries endpoint ' + countryInfoEndpoint))
               }
-            } catch (err) {
-              sails.log.error(err);
-              return reject(new Error('Error parsing JSON response when retrieving country info from rest countries endpoint ' + countryInfoEndpoint))
             }
-          }
-        })
-      }
+          })
+        }
+      })
     })
   }
 }

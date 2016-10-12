@@ -14,6 +14,9 @@ module.exports = {
                 })
             });
         },
+        writeJsonFileAsync(path, data) {
+            return this.writeFileUTF8Async(path, JSON.stringify(data));
+        }
         createTempDir(dirName) {
             return new Promise(function(resolve, reject) {
                 temp.mkdir(dirName, function(err, dirPath) {
@@ -44,7 +47,7 @@ module.exports = {
     },
     createTempDirAndWriteJson(dirName, fileName, data) {
         const _self = this;
-        return _self.createTempDirAndWrite(dirName,fileName,JSON.stringify(data));
+        return _self.createTempDirAndWrite(dirName, fileName, JSON.stringify(data));
     },
     readFromTempDir(dirName, fileName) {
         const _self = this;
@@ -73,7 +76,7 @@ readFileUTF8Async: function(path) {
             })
         });
     },
-    writeFileUTF8Async: function(path, data, callback) {
+    writeFileUTF8Async: function(path, data) {
         return this.writeFileAsync(path, data, 'utf8')
     },
     writeFileAsync: function(path, data, encoding) {

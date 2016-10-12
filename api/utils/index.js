@@ -13,16 +13,17 @@
 */
 
 const ErrorUtils = require('./ErrorUtils'),
-  ArrayUtils = require('./ArrayUtils'),
-  TimeUtils = require('./TimeUtils'),
-  GlobalCahce = require('./GlobalCache'),
-  RequestUtils = require('./RequestUtils'),
-  FileUtils = require('./FileUtils')
+    ArrayUtils = require('./ArrayUtils'),
+    TimeUtils = require('./TimeUtils'),
+    GlobalCahce = require('./GlobalCache'),
+    RequestUtils = require('./RequestUtils'),
+    FileUtils = require('./FileUtils')
 
 module.exports = {
-  ErrorUtils,
-  ArrayUtils,
-  GlobalCache,
-  RequestUtils,
-  FileUtils,
-TimeUtils}
+    ErrorUtils,
+    ArrayUtils,
+    GlobalCache,
+    RequestUtils,
+    FileUtils,
+    TimeUtils
+}

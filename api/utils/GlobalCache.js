@@ -18,10 +18,7 @@
     Created by Dale.
 */
 
-const temp = require('temp'),
-  fs = require('fs'),
-  util = require('util'),
-  exec = require('child_process').exec
+const FileUtils = require('../utils/FileUtils')
 
 /*
     Stores global cache implementations.
@@ -298,8 +295,10 @@ GlobalCache.prototype.runExpirationPolicy = function () {
             wasDeleted = true
 
             if (_self.refreshPolicy) {
-              _self.refreshPolicy(key)
-              wasDeleted = false
+              _self['Data'][key] = _self.refreshPolicy(key)
+              if (_self['Data'][key] != null) {
+                wasDeleted = false
+              }
             }
           }
 
@@ -307,9 +306,22 @@ GlobalCache.prototype.runExpirationPolicy = function () {
           if (!wasDeleted && cacheObj[_self.key].useSecondaryStorage &&
             _self.shouldMoveToSecondaryStorage(_self.Data[key])) {
             try {
-              if (_self.store(_self.serialize(_self.Data[key]))) {
-                // Handle stored item, delete it from memory or whatever
-              }
+              _self.serialize(key, _self.Data[key], function serializeCalled (err, data) {
+                if (err || !data) {
+                  sails.log.debug('GlobalCache: (' + _self.key + '): error when serializing data with key ' + key + ' data was ' + _self['Data'][key])
+                  sails.log.error(err)
+                } else {
+                  _self.store(key, data,
+                    function storeCalled (err) {
+                      if (err) {
+                        sails.log.debug('Error when storing item with key ' + key + ' in global cache ' + _self.key)
+                        sails.log.error(err)
+                      } else {
+                        // Handle stored item, delete it from memory or whatever
+                      }
+                    })
+                }
+              })
             } catch (err) {
               sails.log.error(err)
               sails.log.debug('Error when trying to store/serialize object in GlobalCache ( ' + _self.key + '), key was ' + key + ' data was ' + _self.Data[key])
@@ -326,36 +338,55 @@ GlobalCache.prototype.runExpirationPolicy = function () {
   })
 }
 
-GlobalCache.prototype.serialize = function (dataItem) {
+/*
+    Turn the cached data into a format ready for storage in a DB/Filesystem
+*/
+GlobalCache.prototype.serialize = function (key, dataItem, callback) {
   try {
-    return JSON.stringify(dataItem)
+    return callback(null, JSON.stringify(dataItem))
   } catch (err) {
-    throw err
+    callback(err, null)
   }
 }
 
-GlobalCache.prototype.deserialize = function (dataItem) {
-  try {
-    return JSON.parse(dataItem)
-  } catch (err) {
-    throw err
-  }
+/*
+    Turn serialized data back into a format for memory.
+*/
+GlobalCache.prototype.deserialize = function (key, callback) {
+  FileUtils.safeParseJsonAsync(dataItem).then(function (obj) {
+    return callback(null, obj)
+  }).catch(function (err) {
+    return callbac(err, null)
+  })
 }
 
-GlobalCache.prototype.store = function (dataItem) {
-  try {
-    return JSON.parse(dataItem)
-  } catch (err) {
-    throw err
-  }
+/*
+    Store the item in some way, away from process memory
+*/
+GlobalCache.prototype.store = function (key, dataItem, callback) {
+  const _self = this
+
+  FileUtils.createTempDirAndWrite(_self.key, 'GlobalCacheItem-' + key, dataItem)
+    .then(function (dirInfo) {
+      callback(null)
+    }).catch(function (err) {
+    callbac(err)
+  })
+
+  return true
 }
 
-GlobalCache.prototype.retrieve = function (dataItem, cache) {
-  try {
-    return JSON.parse(dataItem)
-  } catch (err) {
-    throw err
-  }
+/*
+    Retrieve data from its storage location.
+*/
+GlobalCache.prototype.retrieve = function (key, callback) {
+  const _self = this
+
+  FileUtils.readFromTempDir(_self.key, 'GlobalCacheItem-' + key).then(function (data) {
+    callback(null, data)
+  }).catch(function (err) {
+    callback(err, null)
+  })
 }
 
 module.exports = {

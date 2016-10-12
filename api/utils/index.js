@@ -12,11 +12,17 @@
     For example: require(./../utils/ErrorUtils) to require just error utilities.
 */
 
-
-const ErrorUtils = require('./ErrorUtils');
-const ArrayUtils = require('./ArrayUtils');
+const ErrorUtils = require('./ErrorUtils'),
+  ArrayUtils = require('./ArrayUtils'),
+  TimeUtils = require('./TimeUtils'),
+  GlobalCahce = require('./GlobalCache'),
+  RequestUtils = require('./RequestUtils'),
+  FileUtils = require('./FileUtils')
 
 module.exports = {
-    ErrorUtils,
-    ArrayUtils,
-}
+  ErrorUtils,
+  ArrayUtils,
+  GlobalCache,
+  RequestUtils,
+  FileUtils,
+TimeUtils}

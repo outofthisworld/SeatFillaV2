@@ -41,31 +41,63 @@ GlobalCache.prototype.getCacheKey = function () {
 
 GlobalCache.prototype.getDataObject = function (key) {
   const _self = this
+
   if (!_self.Data) throw new Error('Invalid state in GlobalCache.js/getDataObject')
-  else return _self.Data[key]
+
+  return new Promise(function (resolve, reject) {
+    // Run the expiration policy on the data to make sure that the data being retrievied is 'clean'
+    sails.log.debug('GlobalCache (' + _self.key + ') deleting ' + key + ' if it has expired. (getData())')
+
+    if (_self.deleteIfExpired(key)) {
+      sails.log.debug('GlobalCache: (' + _self.key + '):' + ' key ' +
+        key + 'has now expired and will be removed from the cache. (getData())')
+
+      return resolve(null)
+    } else {
+      _self.isSerialized(key, function (err, bool) {
+        if (err) {
+          sails.log.error(err)
+          return reject(err);
+        } else if (bool) {
+          sails.log.debug('GlobalCache: (' + _self.key + '): retrieving serialized data item : ' +
+            key + ' from store')
+          _self.retrieveAndDeserialize(key, function (err, deserialized) {
+            if (err) {
+              sails.log.error(err)
+              return reject(err)
+            } else {
+              return resolve(deserialized)
+            }
+          })
+        }
+      })
+
+      sails.log.debug('GlobalCache: (' + _self.key + '): returning existing result for key: ' + key)
+      return resolve(_self.Data[key])
+    }
+  })
 }
 
 GlobalCache.prototype.setDataAttribute = function (key, attr, value) {
-  const exists = _self.getDataObject(key)
-
-  if (exists) {
-    exists[attr] = value
-  } else {
-    return false
-  }
+  return _self.getDataObject(key).then(function (exists) {
+    if (exists) {
+      exists[attr] = value
+      return Promise.resolve(true)
+    } else {
+      return Promise.resolve(false)
+    }
+  })
 }
 
 GlobalCache.prototype.getDataAttribute = function (key, attr) {
-  const exists = _self.getDataObject(key)
-
-  if (exists && attr in exists) return exists[attr]
-  else return null
+  return _self.getDataObject(key).then(function (exists) {
+    return Promise.resolve(exists[attr])
+  })
 }
 
 GlobalCache.prototype.setLastAccessed = function (key, date) {
   const _self = this
-
-  _self.setDataAttribute(key, 'lastAccessed', date)
+  return _self.setDataAttribute(key, 'lastAccessed', date)
 }
 
 GlobalCache.prototype.getLastAccessed = function (key) {
@@ -95,51 +127,24 @@ GlobalCache.prototype.setInsertationTime = function (key, date) {
 
 GlobalCache.prototype.getData = function (key) {
   const _self = this
-
-  new Promise(function (resolve, reject) {
-    // Run the expiration policy on the data to make sure that the data being retrievied is 'clean'
-    sails.log.debug('GlobalCache (' + _self.key + ') deleting ' + key + ' if it has expired. (getData())')
-
-    if (_self.deleteIfExpired(key)) {
-      sails.log.debug('GlobalCache: (' + _self.key + '):' + ' key ' +
-        key + 'has now expired and will be removed from the cache. (getData())')
-      return resolve(null)
-    } else {
-      sails.log.debug('GlobalCache: (' + _self.key + '): returning existing result for key: ' + key)
-
-      const exists = _self.getDataObject(key)
-
-      if (!exists) return resolve(null)
-
-      if ('isSerialized' in exists) {
-        sails.log.debug('GlobalCache: (' + _self.key + '): deserializing ' + key + ' from secondary storage')
-
-        _self.retrieve(key, function (err, data) {
-          if (err) {
-            sails.log.error(err)
-            reject(err)
-          } else {
-            _self.deserialize(data, function (err, deserialized) {
-              delete exists.isSerialized
-              exists.value = deserialized
-              _self.setLastAccessed(key, new Date())
-              return resolve(exists)
-            })
-          }
-        })
-      }
-    }
+  _self.getDataObject(key).then(function (data) {
+    if (data != null && 'value' in data)
+      return Promise.resolve(data.value)
+    else
+      return Promise.resolve(data)
   })
 }
 
 GlobalCache.prototype.removeData = function (key) {
   const _self = this
 
-  if (_self.checkDataKeyExists(key)) {
+  if (key in _self.Data) {
     if (_self.ExpirationSettings.runExpirationPolicyOnDeletions &&
       typeof _self.ExpirationSettings.runExpirationPolicyOnDeletions == 'function' &&
       _self.ExpirationSettings.runExpirationPolicyOnDeletions())
       _self.runExpirationPolicy()
+
+    // Add support for removing serialized items
 
     delete _self.Data[key]
     return true
@@ -156,7 +161,7 @@ GlobalCache.prototype.insertData = function (key, data) {
     _self.ExpirationSettings.runExpirationPolicyOnInserts())
     _self.runExpirationPolicy()
 
-  if ('Data' in cacheObj[_self.key].cache) {
+  if ('Data' in _self) {
     const dataObject = {
       value: data,
       insertationTime: new Date(),
@@ -172,8 +177,10 @@ GlobalCache.prototype.insertData = function (key, data) {
 GlobalCache.prototype.setData = function (key, data) {
   const _self = this
 
-  if (_self.checkDataKeyExists(key)) {
+  if (key in _self.Data) {
     _self.Data[key].lastModifiedTime = new Date()
+    // Make sure we dont override the changed data later..
+    delete _self.Data[key].isSerialized
     _self.Data[key].value = data
   } else {
     return _self.insertData(key, data)
@@ -186,18 +193,15 @@ module.exports = {
       throw new Error('Invalid params to exported function in GlobalCache.js.')
     } else if (!object.GlobalCache) {
       throw new Error('Invalid params to exported function in GlobalCache.js. Object.globalCache || Object.CacheSettings must exist')
-    } else if (object.GlobalCache in cacheObj) {
-      throw new Error('Global cache already exists with this key')
     }
 
-    sails.log.debug('Creating new global cache: ' + object.GlobalCache);
+    sails.log.debug('Creating new global cache: ' + object.GlobalCache)
 
-    const cache = Object.create(this._proto)
-
-    cache.cache = (cacheObj[object.GlobalCache] && cacheObj[object.GlobalCache].cache) || new GlobalCache(object)
-    cache.GlobalCache = object.GlobalCache
+    const cache = (cacheObj[object.GlobalCache] || new GlobalCache(object))
+    cache.__proto__ = this._proto
+    cache.GlobalCache = cache.GlobalCache || object.GlobalCache
     cache.expirationPolicies = (Array.isArray(object.ExpirationPolicies) &&
-    object.ExpirationPolicies) || cache.cache.expirationPolicies || []
+    object.ExpirationPolicies) || cache.expirationPolicies || []
     cache.secondaryStoragePolicies = (Array.isArray(object.SecondaryStoragePolicies) &&
     object.SecondaryStoragePolicies) || cache.secondaryStoragePolicies || []
     cache.scheduledTimes = {}
@@ -274,54 +278,84 @@ module.exports = {
         callback(err, null)
       })
     },
+    retrieveAndDeserialize(key, callback) {
+      _self.retrieve(key, function (err, data) {
+        if (err) {
+          sails.log.error(err)
+          return callback(err, null)
+        } else {
+          _self.deserialize(data, function (err, deserialized) {
+            delete _self.Data[key].isSerialized
+            _self.Data[key].value = deserialized
+            _self.setLastAccessed(key, new Date())
+            return callback(null, _self.Data[key])
+          })
+        }
+      })
+    },
+    isSerialized(key, callback) {
+      _self.getDataObject(key).then(function (data) {
+        if (data && 'isSerialized' in data) {
+          callback(null, true)
+        } else {
+          callback(null, false)
+        }
+      }).catch(function (err) {
+        sails.log.error(err)
+        callback(err, null)
+      })
+    },
     runExpirationPolicy() {
       const _self = this
 
       if (!_self.expirationPolicies && !_self.secondaryStoragePolicies) return
 
-      new Promise(function (resolve, reject) {
-        if ('Data' in _self.cache) {
-          for (var key in _self.cache['Data']) {
-            if (_self.cache['Data'].hasOwnProperty(key)) {
+      return new Promise(function (resolve, reject) {
+        if ('Data' in _self) {
+          for (var key in _self['Data']) {
+            if (_self['Data'].hasOwnProperty(key)) {
               const wasDeleted = false
 
-              if (_self.cache.deleteIfExpired(key)) {
-                sails.log.debug('GlobalCache: (' + _self.cache.key + '):' + ' key: ' +
+              if (_self.deleteIfExpired(key)) {
+                sails.log.debug('GlobalCache: (' + _self.key + '):' + ' key: ' +
                   key + 'has now expired and will be removed from the cache.')
                 wasDeleted = true
 
                 if (_self.refreshPolicy && typeof _self.refreshPolicy === 'function') {
-                  _self.cache.setData(key, _self.refreshPolicy(key))
-                  if (_self.cache['Data'][key] != null) {
+                  _self.setData(key, _self.refreshPolicy(key))
+                  if (_self['Data'][key] != null) {
                     wasDeleted = false
                   }
                 }
               }
 
               // pass to storagePolicies size of cache, total free memory, sizeOfDataItemm
-              if (!wasDeleted && _self.shouldMoveToSecondaryStorage(key) && 'value' in _self.cache.Data[key]) {
+              if (!wasDeleted && _self.shouldMoveToSecondaryStorage(key) && 'value' in _self.Data[key]) {
                 try {
-                  _self.serialize(key, _self.cache.Data[key].value, function serializeCalled (err, data) {
+                  _self.serialize(key, _self.Data[key].value, function serializeCalled (err, data) {
                     if (err || !data) {
-                      sails.log.debug('GlobalCache: (' + _self.cache.key + '): error when serializing data with key ' + key + ' data was ' + _self.cache['Data'][key])
+                      sails.log.debug('GlobalCache: (' + _self.key + '): error when serializing data with key ' + key + ' data was ' + _self['Data'][key])
                       sails.log.error(err)
+                      return reject(err)
                     } else {
                       _self.store(key, data,
                         function storeCalled (err) {
                           if (err) {
                             sails.log.debug('Error when storing item with key ' + key + ' in global cache ' + _self.key)
                             sails.log.error(err)
+                            return reject(err)
                           } else {
                             // Handle stored item, delete it from memory or whatever
-                            _self.cache.Data[key].value = null
-                            _self.cache.Data[key].isSerialized = true
+                            _self.Data[key].value = null
+                            _self.Data[key].isSerialized = true
                           }
                         })
                     }
                   })
                 } catch (err) {
                   sails.log.error(err)
-                  sails.log.debug('Error when trying to store/serialize object in GlobalCache ( ' + _self.cache.key + '), key was ' + key + ' data was ' + _self.cache.Data[key])
+                  sails.log.debug('Error when trying to store/serialize object in GlobalCache ( ' + _self.key + '), key was ' + key + ' data was ' + _self.Data[key])
+                  return reject(err)
                 }
               }
             }
@@ -352,7 +386,8 @@ module.exports = {
     checkPolicies(attr, key) {
       const _self = this
 
-      if (!_self[attr] || !Array.isArray(_self[attr]) || !_self.cache.checkDataKeyExists(key) || !_self.secondaryStorageSettings.useSecondaryStorage) return false
+      if (!_self[attr] || !Array.isArray(_self[attr]) || !(key in _self.Data) ||
+        !_self.secondaryStorageSettings.useSecondaryStorage) return false
 
       for (var i = 0; i < _self[attr].length; i++) {
         if (_self.checkPolicy(self[attr][i], _self.Data[key])) {
@@ -377,13 +412,13 @@ module.exports = {
 
       _self.stopScheduledExpirationPolicy()
       _self.runExpirationPolicy()
-      delete cacheObj[_self.cache.key]
+      delete cacheObj[_self.key]
     },
 
     setPolicies(attr, obj) {
       const _self = this
 
-      sails.log.debug('GlobalCache (' + _self.cache.key + ') setting ' + attr + ' to ' + obj + ' ' + Array.isArray(obj))
+      sails.log.debug('GlobalCache (' + _self.key + ') setting ' + attr + ' to ' + obj + ' ' + Array.isArray(obj))
 
       if (!Array.isArray(obj))
         throw new Error('Invalid object passed to GlobalCache.js/setPolicies, must be an array')
@@ -475,7 +510,11 @@ module.exports = {
             }
           },
           work() {
-            self.runExpirationPolicy()
+            self.runExpirationPolicy().catch(function (err) {
+              sails.log.debug('Error when running global cache ' +
+                self.GlobalCache + ' expiration policy ')
+              sails.log.error(err)
+            })
           },
           maxExecutions: 0
         }, interval, delay)

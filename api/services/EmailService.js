@@ -5,7 +5,7 @@
 
 const nodemailer = require('nodemailer'),
   path = require('path'),
-  mtpPool = require('nodemailer-sendgrid-transport'),
+  smtpPool = require('nodemailer-sendgrid-transport'),
   transporter = nodemailer.createTransport(smtpPool(sails.config.email.config)),
   schedule = require('node-schedule'),
   FileUtils = require('../utils/FileUtils')
@@ -52,7 +52,9 @@ const exportObj = {
   closeEmailService: function () {
     transporter.close()
   }
-}(function init () {
+}
+
+function init () {
 
   // Listen to the stream
   transporter.use('stream', function (mail, callback) {
@@ -91,10 +93,10 @@ const exportObj = {
       FileUtils.writeJsonFileAsync(email_service, data).catch(function (err) {
         sails.log.error(err)
       })
+    }).catch(function (err) {
+      sails.log.error(err)
     })
-  }).catch(function (err) {
-    sails.log.error(err)
   })
-})()
-
+}
+init()
 module.exports = exportObj

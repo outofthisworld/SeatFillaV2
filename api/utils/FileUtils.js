@@ -5,7 +5,7 @@ module.exports = {
   readJsonFileAsync(path) {
     const self = this
     return new Promise(function (resolve, reject) {
-      this.readFileUTF8Async(path, function (err, data) {
+      self.readFileUTF8Async(path, function (err, data) {
         if (err) {
           return reject(err)
         } else {

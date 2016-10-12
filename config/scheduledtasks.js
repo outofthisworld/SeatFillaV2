@@ -64,7 +64,7 @@ const flightRequestScheduledTask = {
 
                 User.findOne({ id: request.user.id }).populate('address').populate('userSettings').then(function(err, user) {
 
-                    const user = user;
+
 
                     //Need iso code >.<
                     const country = user.address.country;
@@ -93,7 +93,7 @@ const flightRequestScheduledTask = {
 
                     function makeSkyScannerRequest() {
 
-                        SkyScannerFlightService.makeLivePricingApiRequest(obj, itinObj).then(function(result) {
+                        SkyScannerFlightService.makeLivePricingApiRequest(obj, itinObj).then(function(response) {
                             const result = response.result;
 
                             if (result.Itineraries.length > 0) {
@@ -213,7 +213,7 @@ const flightRequestScheduledTask = {
 
 const hasInitialized = false;
 module.exports.scheduledtasks = function() {
-    if(hasInitialized) return;
+    if (hasInitialized) return;
 
     const hourTimeUnit = timeUtils.createTimeUnit(24).Hours;
     [{

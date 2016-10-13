@@ -161,9 +161,14 @@ module.exports = {
     const fixerIoEndpoint = 'http://api.fixer.io/latest?base=' + base
 
     return new Promise(function (resolve, reject) {
-      GlobalCache.cache({
+      const ca = GlobalCache.cache({
         GlobalCache: 'fixer_io_exchange_rates'
-      }).getData(base).then(function (cachedData) {
+      });
+      
+      sails.log.debug('ca ' + ca);
+      sails.log.debug('ca ' + JSON.stringify(ca));
+      
+      ca.getData(base).then(function (cachedData) {
         if (cachedData) {
           return resolve(cachedData)
         } else {
@@ -195,7 +200,7 @@ module.exports = {
                 }
               } catch (err) {
                 sails.log.error(err)
-                return reject(new Error('Error parsing JSON response when retrieving country info from rest countries endpoint ' + countryInfoEndpoint))
+                return reject(new Error('Error parsing JSON response'))
               }
             }
           })

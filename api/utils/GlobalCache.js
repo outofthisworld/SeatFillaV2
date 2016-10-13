@@ -53,26 +53,23 @@ GlobalCache.prototype.getDataObject = function (key) {
         key + 'has now expired and will be removed from the cache. (getData())')
 
       return resolve(null)
-    } else {
-      _self.isSerialized(key, function (err, bool) {
+    } else if (_self.isSerialized(key)) {
+      sails.log.debug('GlobalCache: (' + _self.key + '): retrieving serialized data item : ' +
+        key + ' from store')
+
+      _self.retrieveAndDeserialize(key, function (err, deserialized) {
         if (err) {
           sails.log.error(err)
-          return reject(err);
-        } else if (bool) {
-          sails.log.debug('GlobalCache: (' + _self.key + '): retrieving serialized data item : ' +
-            key + ' from store')
-          _self.retrieveAndDeserialize(key, function (err, deserialized) {
-            if (err) {
-              sails.log.error(err)
-              return reject(err)
-            } else {
-              return resolve(deserialized)
-            }
-          })
+          return reject(err)
+        } else {
+          deserialized.numberOfTimesDeserialized++
+          deserialized.lastAccessed = new Date()
+          return resolve(deserialized)
         }
       })
-
+    } else {
       sails.log.debug('GlobalCache: (' + _self.key + '): returning existing result for key: ' + key)
+      _self.Data[key].lastAccessed = new Date()
       return resolve(_self.Data[key])
     }
   })
@@ -127,11 +124,17 @@ GlobalCache.prototype.setInsertationTime = function (key, date) {
 
 GlobalCache.prototype.getData = function (key) {
   const _self = this
-  _self.getDataObject(key).then(function (data) {
-    if (data != null && 'value' in data)
+  return _self.getDataObject(key).then(function (data) {
+    if (data != null && 'value' in data) {
+      sails.log.debug('Found data ... ')
       return Promise.resolve(data.value)
-    else
+    } else {
+      sails.log.debug('Found data ... but was null ')
       return Promise.resolve(data)
+    }
+  }).catch(function (err) {
+    sails.log.error(err)
+    return Promise.reject(err)
   })
 }
 
@@ -156,17 +159,19 @@ GlobalCache.prototype.removeData = function (key) {
 GlobalCache.prototype.insertData = function (key, data) {
   const _self = this
 
-  if (_self.ExpirationSettings.runExpirationPolicyOnInserts &&
-    typeof _self.ExpirationSettings.runExpirationPolicyOnInserts == 'function' &&
-    _self.ExpirationSettings.runExpirationPolicyOnInserts())
+  if (_self.expirationSettings.runExpirationPolicyOnInserts &&
+    typeof _self.expirationSettings.runExpirationPolicyOnInserts == 'function' &&
+    _self.expirationSettings.runExpirationPolicyOnInserts())
     _self.runExpirationPolicy()
 
   if ('Data' in _self) {
     const dataObject = {
       value: data,
       insertationTime: new Date(),
-      lastAccessedTime: null,
-      lastModifiedTime: null
+      lastAccessed: null,
+      lastModified: null,
+      numberOfTimesSerialized: 0,
+      numberOfTimesDeserialized: 0
     }
     _self.Data[key] = dataObject
   } else {
@@ -178,12 +183,309 @@ GlobalCache.prototype.setData = function (key, data) {
   const _self = this
 
   if (key in _self.Data) {
-    _self.Data[key].lastModifiedTime = new Date()
+    _self.Data[key].lastModified = new Date()
     // Make sure we dont override the changed data later..
     delete _self.Data[key].isSerialized
     _self.Data[key].value = data
   } else {
     return _self.insertData(key, data)
+  }
+}
+
+/*
+  Turn the cached data into a format ready for storage in a DB/Filesystem
+  */
+GlobalCache.prototype.serialize = function (key, dataItem, callback) {
+  try {
+    return callback(null, JSON.stringify(dataItem))
+  } catch (err) {
+    callback(err, null)
+  }
+},
+
+/*
+    Turn serialized data back into a format for memory.
+*/
+GlobalCache.prototype.deserialize = function (data, callback) {
+  FileUtils.safeParseJsonAsync(data).then(function (obj) {
+    return callback(null, obj)
+  }).catch(function (err) {
+    return callback(err, null)
+  })
+}
+
+/*
+    Store the item in some way, away from process memory
+*/
+GlobalCache.prototype.store = function (key, dataItem, callback) {
+  const _self = this
+
+  FileUtils.createTempDirAndWrite(_self.key, 'GlobalCacheItem-' + key, dataItem)
+    .then(function (dirInfo) {
+      callback(null)
+    }).catch(function (err) {
+    callbac(err)
+  })
+
+  return true
+}
+
+/*
+    Retrieve data from its storage location.
+*/
+GlobalCache.prototype.retrieve = function (key, callback) {
+  const _self = this
+
+  FileUtils.readFromTempDir(_self.key, 'GlobalCacheItem-' + key).then(function (data) {
+    callback(null, data)
+  }).catch(function (err) {
+    callback(err, null)
+  })
+}
+GlobalCache.prototype.retrieveAndDeserialize = function (key, callback) {
+  _self.retrieve(key, function (err, data) {
+    if (err) {
+      sails.log.error(err)
+      return callback(err, null)
+    } else {
+      _self.deserialize(data, function (err, deserialized) {
+        delete _self.Data[key].isSerialized
+        _self.Data[key].value = deserialized
+        _self.Data[key].lastAccessed = new Date()
+        return callback(null, _self.Data[key])
+      })
+    }
+  })
+}
+GlobalCache.prototype.isSerialized = function (key) {
+  const _self = this
+
+  if (_self.Data && 'isSerialized' in _self.Data) {
+    return true
+  } else {
+    return false
+  }
+}
+GlobalCache.prototype.runExpirationPolicy = function () {
+  const _self = this
+
+  if (!_self.expirationPolicies && !_self.secondaryStoragePolicies) return
+
+  return new Promise(function (resolve, reject) {
+    if ('Data' in _self) {
+      for (var key in _self['Data']) {
+        if (_self['Data'].hasOwnProperty(key)) {
+          const wasDeleted = false
+
+          if (_self.deleteIfExpired(key)) {
+            sails.log.debug('GlobalCache: (' + _self.key + '):' + ' key: ' +
+              key + 'has now expired and will be removed from the cache.')
+            wasDeleted = true
+
+            if (_self.refreshPolicy && typeof _self.refreshPolicy === 'function') {
+              _self.setData(key, _self.refreshPolicy(key))
+              if (_self['Data'][key] != null) {
+                wasDeleted = false
+              }
+            }
+          }
+
+          // pass to storagePolicies size of cache, total free memory, sizeOfDataItemm
+          if (!wasDeleted && _self.shouldMoveToSecondaryStorage(key) && 'value' in _self.Data[key]) {
+            try {
+              _self.serialize(key, _self.Data[key].value, function serializeCalled (err, data) {
+                if (err || !data) {
+                  sails.log.debug('GlobalCache: (' + _self.key + '): error when serializing data with key ' + key + ' data was ' + _self['Data'][key])
+                  sails.log.error(err)
+                  return reject(err)
+                } else {
+                  _self.store(key, data,
+                    function storeCalled (err) {
+                      if (err) {
+                        sails.log.debug('Error when storing item with key ' + key + ' in global cache ' + _self.key)
+                        sails.log.error(err)
+                        return reject(err)
+                      } else {
+                        // Handle stored item, delete it from memory or whatever
+                        _self.Data[key].value = null
+                        _self.Data[key].numberOfTimesSerialized++
+                        _self.Data[key].isSerialized = true
+                      }
+                    })
+                }
+              })
+            } catch (err) {
+              sails.log.error(err)
+              sails.log.debug('Error when trying to store/serialize object in GlobalCache ( ' + _self.key + '), key was ' + key + ' data was ' + _self.Data[key])
+              return reject(err)
+            }
+          }
+        }
+      }
+      resolve(true)
+    } else {
+      reject(new Error('Invalid state for cache ' + _self.key + ' in GlobalCache.js/runExpirationPolicy'))
+    }
+  })
+}
+GlobalCache.prototype.checkExpired = function (key) {
+  const _self = this
+  return _self.checkPolicies('expirationPolicies', key)
+}
+GlobalCache.prototype.deleteIfExpired = function (key) {
+  const _self = this
+
+  if (_self.checkExpired(key)) {
+    delete _self.Data[key]
+    return true
+  } else {
+    sails.log.debug('GlobalCache (' + _self.key + '): ' + key + ' has not expired')
+    return false
+  }
+}
+GlobalCache.prototype.checkPolicies = function (attr, key) {
+  const _self = this
+
+  if (!_self[attr] || !Array.isArray(_self[attr]) || !(key in _self.Data) ||
+    !_self.secondaryStorageSettings.useSecondaryStorage) return false
+
+  for (var i = 0; i < _self[attr].length; i++) {
+    if (_self.checkPolicy(_self[attr][i], _self.Data[key])) {
+      return true
+    }
+  }
+  return false
+}
+GlobalCache.prototype.checkPolicy = function (policy, dataItem) {
+  if (typeof policy == 'function' && policy(dataItem)) {
+    return true
+  } else {
+    return false
+  }
+}
+GlobalCache.prototype.shouldMoveToSecondaryStorage = function (key) {
+  const _self = this
+  return _self.checkPolicies('secondaryStoragePolicies', key)
+}
+GlobalCache.prototype.deleteCache = function () {
+  const _self = this
+
+  _self.stopScheduledExpirationPolicy()
+  _self.runExpirationPolicy()
+  delete cacheObj[_self.key]
+}
+
+GlobalCache.prototype.setPolicies = function (attr, obj) {
+  const _self = this
+
+  sails.log.debug('GlobalCache (' + _self.key + ') setting ' + attr + ' to ' + obj + ' ' + Array.isArray(obj))
+
+  if (!Array.isArray(obj))
+    throw new Error('Invalid object passed to GlobalCache.js/setPolicies, must be an array')
+
+  if (attr in _self && !Array.isArray(_self[attr]))
+    throw new Error('Invalid attribute specified for setPolicies in GlobalCache.js/setPolicies')
+
+  if (!this[attr])
+    this[attr] = []
+
+  obj.forEach(function (expiriationPolicy) {
+    _self.setPolicy(attr, expiriationPolicy)
+  })
+}
+
+GlobalCache.prototype.setPolicy = function (attr, policy) {
+  if (!(typeof policy == 'function')) {
+    sails.log.debug('Found policy with ' + typeof policy)
+    throw new Error('Invalid state in GlobalCache.js/setPolicy')
+  }
+
+  if (Array.isArray(this[attr])) {
+    this[attr].push(policy)
+  } else {
+    this[attr] = policy
+  }
+}
+
+GlobalCache.prototype.setExpirationPolicies = function (obj) {
+  this.setPolicies('expirationPolicies', obj)
+}
+
+GlobalCache.prototype.getSecondaryStoragePolicies = function () {
+  return this.secondaryStoragePolicies
+}
+GlobalCache.prototype.getExpirationPolicies = function () {
+  return this.expirationPolicies
+}
+
+GlobalCache.prototype.setSecondaryStoragePolicies = function (obj) {
+  this.setPolicies('secondaryStoragePolicies', obj)
+}
+
+GlobalCache.prototype.setRefreshPolicy = function (refreshPolicy) {
+  const _self = this
+  _self.setPolicy('refreshPolicy', refreshPolicy)
+}
+
+GlobalCache.prototype.getRefreshPolicy = function () {
+  return this.refreshPolicy
+}
+
+GlobalCache.prototype.stopScheduledExpirationPolicy = function () {
+  const _self = this
+
+  if (!_self.ScheduledTask) return
+
+  ScheduledExecutorService.stopScheduledTask(cacheObj[_self.key].ScheduledTask.clearIntervalKey)
+  delete _self.ScheduledTask
+}
+GlobalCache.prototype.trySchedule = function () {
+  const self = this
+
+  if (!self.ScheduledTask && (self.scheduledTimes.scheduledPolicyInterval || self.scheduledTimes.scheduledPolicyInitialDelay)) {
+    const interval = self.scheduledTimes.scheduledPolicyInterval ?
+      self.scheduledTimes.scheduledPolicyInterval.toMilliseconds() : 0
+
+    const delay = self.scheduledTimes.scheduledPolicyInitialDelay ?
+      self.scheduledTimes.scheduledPolicyInitialDelay.toMilliseconds() : 0
+
+    const scheduledTask = ScheduledExecutorService.execute({
+      key: self.GlobalCache + '-GlobalCache',
+      on: {
+        executionBegan(date) {
+          sails.log.debug('Running expiration policy for cache ' +
+            self.GlobalCache + ' on ' + date)
+        },
+        executionFinished(date, output) {
+          sails.log.debug('Finished running expiration policy for cache ' +
+            self.GlobalCache + ' on ' + date)
+        },
+        error(date, error) {
+          sails.log.debug('Error running expiration policy for cache ' +
+            self.GlobalCache + ' on ' + date)
+        },
+        stop(date) {
+          sails.log.debug('Stopped scheduled task of global cache ' +
+            self.GlobalCache)
+        }
+      },
+      work() {
+        self.runExpirationPolicy().catch(function (err) {
+          sails.log.debug('Error when running global cache ' +
+            self.GlobalCache + ' expiration policy ')
+          sails.log.error(err)
+        })
+      },
+      maxExecutions: 0
+    }, interval, delay)
+
+    sails.log.debug('Succesfully scheduled ' + self.GlobalCache + ' expiration policy to run every ' +
+      ((interval.getValue && interval.getValue()) || 0) + ' ms with an initial delay of ' + ((delay.getValue())) + ' ms ')
+
+    self.ScheduledTask = scheduledTask
+  } else {
+    if (!self.ScheduledTask)
+      sails.log.debug('Did not schedule global cache: ' + self.GlobalCache + ' was this intended? ')
   }
 }
 
@@ -195,347 +497,51 @@ module.exports = {
       throw new Error('Invalid params to exported function in GlobalCache.js. Object.globalCache || Object.CacheSettings must exist')
     }
 
-    sails.log.debug('Creating new global cache: ' + object.GlobalCache)
+    if (!cacheObj[object.GlobalCache]) {
+      sails.log.debug('Creating new global cache: ' + object.GlobalCache)
+    } else {
+      sails.log.debug('Retreving global cache ' + object.GlobalCache)
+    }
 
-    const cache = (cacheObj[object.GlobalCache] || new GlobalCache(object))
-    cache.__proto__ = this._proto
+    const cache = cacheObj[object.GlobalCache] || new GlobalCache(object)
+    cacheObj[object.GlobalCache] = cache
+
     cache.GlobalCache = cache.GlobalCache || object.GlobalCache
-    cache.expirationPolicies = (Array.isArray(object.ExpirationPolicies) &&
-    object.ExpirationPolicies) || cache.expirationPolicies || []
-    cache.secondaryStoragePolicies = (Array.isArray(object.SecondaryStoragePolicies) &&
-    object.SecondaryStoragePolicies) || cache.secondaryStoragePolicies || []
-    cache.scheduledTimes = {}
-    cache.scheduledTimes.scheduledPolicyInterval = object.ScheduledPolicyInterval || null
-    cache.scheduledTimes.scheduledPolicyInitialDelay = object.ScheduledPolicyIntialDelay || null
-    cache.secondaryStorageSettings = { useSecondaryStorage: object.UseSecondaryStorage || true }
+    cache.expirationSettings = cache.expirationSettings || {}
+    cache.expirationSettings.runExpirationPolicyOnInserts = object.ExpirationSettings && object.ExpirationSettings.runExpirationPolicyOnInserts ||
+    cache.expirationSettings.runExpirationPolicyOnInserts
+    cache.expirationSettings.runExpirationPolicyOnDeletions = object.ExpirationSettings && object.ExpirationSettings.runExpirationPolicyOnDeletions ||
+    cache.expirationSettings.runExpirationPolicyOnDeletions
+    cache.expirationPolicies = cache.expirationPolicies || (Array.isArray(object.ExpirationPolicies) &&
+    object.ExpirationPolicies) || []
+    cache.secondaryStoragePolicies = cache.secondaryStoragePolicies || (Array.isArray(object.SecondaryStoragePolicies) && object.SecondaryStoragePolicies) || []
+    cache.scheduledTimes = cache.scheduledTimes || {}
+    cache.scheduledTimes.scheduledPolicyInterval = object.ScheduledPolicyInterval || cache.scheduledTimes.scheduledPolicyInterval || null
+    cache.scheduledTimes.scheduledPolicyInitialDelay = object.ScheduledPolicyIntialDelay || cache.scheduledTimes.scheduledPolicyInitialDelay || null
+    cache.secondaryStorageSettings = cache.secondaryStorageSettings || { useSecondaryStorage: object.UseSecondaryStorage || cache.UseSecondaryStorage || true }
+    cache.ScheduledTask = cache.ScheduledTask || null
 
     if (object.SecondaryStorageSettings) {
-      cache.serialize = object.SecondaryStorageSettings.serialize ||
-      cache.serialize
+      if (object.SecondaryStorageSettings.serialize && typeof object.SecondaryStorageSettings.serialize == 'function')
+        cache.serialize = object.SecondaryStorageSettings.serialize
 
-      cache.deserialize = object.SecondaryStorageSettings.deserialize ||
-      cache.deserialize
+      if (object.SecondaryStorageSettings.deserialize && object.SecondaryStorageSettings.deserialize == 'function')
+        cache.deserialize = object.SecondaryStorageSettings.deserialize
 
-      cache.retrieve = object.SecondaryStorageSettings.retrieve ||
-      cache.retrieve
+      if (object.SecondaryStorageSettings.retrieve && object.SecondaryStorageSettings.retrieve == 'function')
+        cache.retrieve = object.SecondaryStorageSettings.retrieve
 
-      cache.store = object.SecondaryStorageSettings.store ||
-      cache.store
+      if (object.SecondaryStorageSettings.store && object.SecondaryStorageSettings.store == 'function')
+        cache.store = object.SecondaryStorageSettings.store
     }
 
     cache.trySchedule()
-    cacheObj[object.GlobalCache] = cache
-    return cache
-  },
-  _proto: {
-    /*
-    Turn the cached data into a format ready for storage in a DB/Filesystem
-    */
-    serialize(key, dataItem, callback) {
-      try {
-        return callback(null, JSON.stringify(dataItem))
-      } catch (err) {
-        callback(err, null)
-      }
-    },
-
-    /*
-        Turn serialized data back into a format for memory.
-    */
-    deserialize(data, callback) {
-      FileUtils.safeParseJsonAsync(data).then(function (obj) {
-        return callback(null, obj)
-      }).catch(function (err) {
-        return callbac(err, null)
-      })
-    },
-
-    /*
-        Store the item in some way, away from process memory
-    */
-    store(key, dataItem, callback) {
-      const _self = this
-
-      FileUtils.createTempDirAndWrite(_self.key, 'GlobalCacheItem-' + key, dataItem)
-        .then(function (dirInfo) {
-          callback(null)
-        }).catch(function (err) {
-        callbac(err)
-      })
-
-      return true
-    },
-
-    /*
-        Retrieve data from its storage location.
-    */
-    retrieve(key, callback) {
-      const _self = this
-
-      FileUtils.readFromTempDir(_self.key, 'GlobalCacheItem-' + key).then(function (data) {
-        callback(null, data)
-      }).catch(function (err) {
-        callback(err, null)
-      })
-    },
-    retrieveAndDeserialize(key, callback) {
-      _self.retrieve(key, function (err, data) {
-        if (err) {
-          sails.log.error(err)
-          return callback(err, null)
-        } else {
-          _self.deserialize(data, function (err, deserialized) {
-            delete _self.Data[key].isSerialized
-            _self.Data[key].value = deserialized
-            _self.setLastAccessed(key, new Date())
-            return callback(null, _self.Data[key])
-          })
-        }
-      })
-    },
-    isSerialized(key, callback) {
-      _self.getDataObject(key).then(function (data) {
-        if (data && 'isSerialized' in data) {
-          callback(null, true)
-        } else {
-          callback(null, false)
-        }
-      }).catch(function (err) {
-        sails.log.error(err)
-        callback(err, null)
-      })
-    },
-    runExpirationPolicy() {
-      const _self = this
-
-      if (!_self.expirationPolicies && !_self.secondaryStoragePolicies) return
-
-      return new Promise(function (resolve, reject) {
-        if ('Data' in _self) {
-          for (var key in _self['Data']) {
-            if (_self['Data'].hasOwnProperty(key)) {
-              const wasDeleted = false
-
-              if (_self.deleteIfExpired(key)) {
-                sails.log.debug('GlobalCache: (' + _self.key + '):' + ' key: ' +
-                  key + 'has now expired and will be removed from the cache.')
-                wasDeleted = true
-
-                if (_self.refreshPolicy && typeof _self.refreshPolicy === 'function') {
-                  _self.setData(key, _self.refreshPolicy(key))
-                  if (_self['Data'][key] != null) {
-                    wasDeleted = false
-                  }
-                }
-              }
-
-              // pass to storagePolicies size of cache, total free memory, sizeOfDataItemm
-              if (!wasDeleted && _self.shouldMoveToSecondaryStorage(key) && 'value' in _self.Data[key]) {
-                try {
-                  _self.serialize(key, _self.Data[key].value, function serializeCalled (err, data) {
-                    if (err || !data) {
-                      sails.log.debug('GlobalCache: (' + _self.key + '): error when serializing data with key ' + key + ' data was ' + _self['Data'][key])
-                      sails.log.error(err)
-                      return reject(err)
-                    } else {
-                      _self.store(key, data,
-                        function storeCalled (err) {
-                          if (err) {
-                            sails.log.debug('Error when storing item with key ' + key + ' in global cache ' + _self.key)
-                            sails.log.error(err)
-                            return reject(err)
-                          } else {
-                            // Handle stored item, delete it from memory or whatever
-                            _self.Data[key].value = null
-                            _self.Data[key].isSerialized = true
-                          }
-                        })
-                    }
-                  })
-                } catch (err) {
-                  sails.log.error(err)
-                  sails.log.debug('Error when trying to store/serialize object in GlobalCache ( ' + _self.key + '), key was ' + key + ' data was ' + _self.Data[key])
-                  return reject(err)
-                }
-              }
-            }
-          }
-          resolve(true)
-        } else {
-          reject(new Error('Invalid state for cache ' + _self.key + ' in GlobalCache.js/runExpirationPolicy'))
-        }
-      }).catch(function (err) {
-        sails.log.error(err)
-      })
-    },
-    checkExpired(key) {
-      const _self = this
-      return _self.checkPolicies('expirationPolicies', key)
-    },
-    deleteIfExpired(key) {
-      const _self = this
-
-      if (_self.checkExpired(key)) {
-        delete _self.Data[key]
-        return true
-      } else {
-        sails.log.debug('GlobalCache (' + _self.key + '): ' + key + ' has not expired')
-        return false
-      }
-    },
-    checkPolicies(attr, key) {
-      const _self = this
-
-      if (!_self[attr] || !Array.isArray(_self[attr]) || !(key in _self.Data) ||
-        !_self.secondaryStorageSettings.useSecondaryStorage) return false
-
-      for (var i = 0; i < _self[attr].length; i++) {
-        if (_self.checkPolicy(self[attr][i], _self.Data[key])) {
-          return true
-        }
-      }
-      return false
-    },
-    checkPolicy(policy, dataItem) {
-      if (typeof policy == 'function' && policy(dataItem)) {
-        return true
-      } else {
-        return false
-      }
-    },
-    shouldMoveToSecondaryStorage(key) {
-      const _self = this
-      return _self.checkPolicies('secondaryStoragePolicies', key)
-    },
-    deleteCache() {
-      const _self = this
-
-      _self.stopScheduledExpirationPolicy()
-      _self.runExpirationPolicy()
-      delete cacheObj[_self.key]
-    },
-
-    setPolicies(attr, obj) {
-      const _self = this
-
-      sails.log.debug('GlobalCache (' + _self.key + ') setting ' + attr + ' to ' + obj + ' ' + Array.isArray(obj))
-
-      if (!Array.isArray(obj))
-        throw new Error('Invalid object passed to GlobalCache.js/setPolicies, must be an array')
-
-      if (attr in _self && !Array.isArray(_self[attr]))
-        throw new Error('Invalid attribute specified for setPolicies in GlobalCache.js/setPolicies')
-
-      if (!this[attr])
-        this[attr] = []
-
-      obj.forEach(function (expiriationPolicy) {
-        _self.setPolicy(attr, expiriationPolicy)
-      })
-    },
-
-    setPolicy(attr, policy) {
-      if (!(typeof policy == 'function')) {
-        sails.log.debug('Found policy with ' + typeof policy)
-        throw new Error('Invalid state in GlobalCache.js/setPolicy')
-      }
-
-      if (Array.isArray(this[attr])) {
-        this[attr].push(policy)
-      } else {
-        this[attr] = policy
-      }
-    },
-
-    setExpirationPolicies(obj) {
-      this.setPolicies('expirationPolicies', obj)
-    },
-
-    getSecondaryStoragePolicies() {
-      return this.secondaryStoragePolicies
-    },
-    getExpirationPolicies() {
-      return this.expirationPolicies
-    },
-
-    setSecondaryStoragePolicies(obj) {
-      this.setPolicies('secondaryStoragePolicies', obj)
-    },
-
-    setRefreshPolicy(refreshPolicy) {
-      const _self = this
-      _self.setPolicy('refreshPolicy', refreshPolicy)
-    },
-
-    getRefreshPolicy() {
-      return this.refreshPolicy
-    },
-
-    stopScheduledExpirationPolicy() {
-      const _self = this
-
-      if (!_self.ScheduledTask) return
-
-      ScheduledExecutorService.stopScheduledTask(cacheObj[_self.key].ScheduledTask.clearIntervalKey)
-      delete _self.ScheduledTask
-    },
-    trySchedule() {
-      const self = this
-
-      if (!self.ScheduledTask && (self.scheduledTimes.scheduledPolicyInterval || self.scheduledTimes.scheduledPolicyInitialDelay)) {
-        const interval = self.scheduledTimes.scheduledPolicyInterval ?
-          self.scheduledTimes.scheduledPolicyInterval.toMilliseconds() : 0
-
-        const delay = self.scheduledTimes.scheduledPolicyInitialDelay ?
-          self.scheduledTimes.scheduledPolicyInitialDelay.toMilliseconds() : 0
-
-        const scheduledTask = ScheduledExecutorService.execute({
-          key: self.GlobalCache + '-GlobalCache',
-          on: {
-            executionBegan(date) {
-              sails.log.debug('Running expiration policy for cache ' +
-                self.GlobalCache + ' on ' + date)
-            },
-            executionFinished(date, output) {
-              sails.log.debug('Finished running expiration policy for cache ' +
-                self.GlobalCache + ' on ' + date)
-            },
-            error(date, error) {
-              sails.log.debug('Error running expiration policy for cache ' +
-                self.GlobalCache + ' on ' + date)
-            },
-            stop(date) {
-              sails.log.debug('Stopped scheduled task of global cache ' +
-                self.GlobalCache)
-            }
-          },
-          work() {
-            self.runExpirationPolicy().catch(function (err) {
-              sails.log.debug('Error when running global cache ' +
-                self.GlobalCache + ' expiration policy ')
-              sails.log.error(err)
-            })
-          },
-          maxExecutions: 0
-        }, interval, delay)
-
-        sails.log.debug('Succesfully scheduled ' + self.GlobalCache + ' expiration policy to run every ' +
-          ((interval.getValue && interval.getValue()) || 0) + ' ms with an initial delay of ' + ((delay.getValue())) + ' ms ')
-
-        self.ScheduledTask = scheduledTask
-      } else {
-        sails.log.debug('Did not schedule global cache: ' + self.GlobalCache + ' was this intended? ')
-      }
-    }
+    return cacheObj[object.GlobalCache]
   },
   ExpirationPolicies: {
     greaterThan(timeUnit, dataItemAttribute) {
       return function (dataItem) {
-        if (!(dataItemAttribute in dataItem))
-          throw new Error('Invalid attribute ' + dataItemAttribute + ' for expiration policy')
-
-        if (!(dataItem[dataItemAttribute] instanceof Date))
-          throw new Error('Invalid type of attribute for GlobalCache data item expiration policy, must be a date, attribute was ' + dataItemAttribute)
+        if (!(dataItemAttribute in dataItem) || !dataItem[dataItemAttribute] instanceof Date) return
 
         if (new Date().getTime() - dataItem[dataItemAttribute].getTime() > timeUnit.toMilliseconds()) {
           return true
@@ -546,11 +552,7 @@ module.exports = {
     },
     lessThan(timeUnit, dataItemAttribute) {
       return function (dataItem, dataItemAttribute) {
-        if (!(dataItemAttribute in dataItem))
-          throw new Error('Invalid attribute ' + dataItemAttribute + ' for expiration policy')
-
-        if (!(dataItem[dataItemAttribute] instanceof Date))
-          throw new Error('Invalid type of attribute for GlobalCache data item expiration policy, must be a date, attribute was ' + dataItemAttribute)
+        if (!(dataItemAttribute in dataItem) || !dataItem[dataItemAttribute] instanceof Date) return
 
         if (new Date().getTime() - dataItem[dataItemAttribute].getTime() < timeUnit.toMilliseconds()) {
           return true
@@ -560,11 +562,7 @@ module.exports = {
     },
     greaterThanOrEqualTo(timeUnit, dataItemAttribute) {
       return function (dataItem) {
-        if (!(dataItemAttribute in dataItem))
-          throw new Error('Invalid attribute ' + dataItemAttribute + ' for expiration policy')
-
-        if (!(dataItem[dataItemAttribute] instanceof Date))
-          throw new Error('Invalid type of attribute for GlobalCache data item expiration policy, must be a date, attribute was ' + dataItemAttribute)
+        if (!(dataItemAttribute in dataItem) || !dataItem[dataItemAttribute] instanceof Date) return
 
         if (new Date().getTime() - dataItem[dataItemAttribute].getTime() >= timeUnit.toMilliseconds()) {
           return true
@@ -574,11 +572,7 @@ module.exports = {
     },
     lessThanOrEqualTo(timeUnit, dataItemAttribute) {
       return function (dataItem) {
-        if (!(dataItemAttribute in dataItem))
-          throw new Error('Invalid attribute ' + dataItemAttribute + ' for expiration policy')
-
-        if (!(dataItem[dataItemAttribute] instanceof Date))
-          throw new Error('Invalid type of attribute for GlobalCache data item expiration policy, must be a date, attribute was ' + dataItemAttribute)
+        if (!(dataItemAttribute in dataItem) || !dataItem[dataItemAttribute] instanceof Date) return
 
         if (new Date().getTime() - dataItem[dataItemAttribute].getTime() <= timeUnit.toMilliseconds()) {
           return true
@@ -588,11 +582,7 @@ module.exports = {
     },
     equalTo(timeUnit, dataItemAttribute) {
       return function (dataItem, dataItemAttribute) {
-        if (!(dataItemAttribute in dataItem))
-          throw new Error('Invalid attribute ' + dataItemAttribute + ' for expiration policy')
-
-        if (!(dataItem[dataItemAttribute] instanceof Date))
-          throw new Error('Invalid type of attribute for GlobalCache data item expiration policy, must be a date, attribute was ' + dataItemAttribute)
+        if (!(dataItemAttribute in dataItem) || !dataItem[dataItemAttribute] instanceof Date) return
 
         if (new Date().getTime() - dataItem[dataItemAttribute].getTime() == timeUnit.toMilliseconds()) {
           return true
@@ -659,6 +649,36 @@ module.exports = {
     */
     insertedEqualTo(timeUnit) {
       return this.equalTo(timeUnit, 'insertationTime')
+    },
+    /*
+            An expiration policy that removes a cached item should it be accessed in less than the specified time.
+        */
+    lastModifiedLessThan(timeUnit) {
+      return this.lessThan(timeUnit, 'lastModified')
+    },
+    /*
+        An expiration policy that removes a cached item should it have been accessed in less or equal to the specified time.
+    */
+    lastModifiedLessThanOrEqualTo(timeUnit) {
+      return this.lessThanOrEqualTo(timeUnit, 'lastModified')
+    },
+    /*
+        An expiration policy that removes a cached item should it have been accessed in a time amounting to more than the specified time.
+    */
+    lastModifiedGreaterThan(timeUnit) {
+      return this.greaterThan(timeUnit, 'lastModified')
+    },
+    /*
+        An expiration policy that removes a cached item should it have been accessed in a time amounting to more than the specified time.
+    */
+    lastModifiedGreaterThanOrEqualTo(timeUnit) {
+      return this.greaterThanOrEqualTo(timeUnit, 'lastModified')
+    },
+    /*
+        An expiration policy that removes a cached item should it have been accessed equal to the given time.
+    */
+    lastModifiedEqualTo(timeUnit) {
+      return this.equalTo(timeUnit, 'lastModified')
     }
   }
 

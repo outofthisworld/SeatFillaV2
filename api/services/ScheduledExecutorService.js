@@ -80,47 +80,56 @@ module.exports = {
     if (timeUnitInitialDelay && typeof timeUnitInitialDelay.getValue === 'function')
       initialDelay = timeUnitInitialDelay.convert(timeUtils.createTimeUnit().Milliseconds).getValue()
 
+    submittedTasks[task.key] = { state: 'pending' }
+
+    function triggerEvent (eventType) {
+      if (task && task.on && task.on[eventType] && typeof task.on[eventType] == 'function')
+        task.on[eventType].apply(null, Array.prototype.slice.call(arguments).slice(1, arguments.length))
+    }
+
     new Promise(function (resolve, reject) {
       setTimeout(function () {
         const clearIntervalKey = setInterval(function () {
           try {
-            if (task.on && task.on.executionBegan && typeof task.on.executionBegan == 'function')
-              task.on.executionBegan(new Date())
-
+            triggerEvent('executionBegan', new Date())
             const output = task.work()
             submittedTasks[task.key].totalExecutions += 1
-
-            if (task.on && task.on.executionFinished && typeof task.on.executionFinished == 'function') {
-              task.on.executionFinished(new Date(), output)
-            }
+            triggerEvent('executionFinished', new Date(), output)
 
             if (task.maxExecutions && task.maxExecutions > 0 && submittedTasks.totalExecutions == task.maxExecutions) {
               _self.stopScheduledTask(task.key)
-              if (task.on && task.on.stop && typeof task.on.stop == 'function') {
-                task.on.stop(new Date())
-              }
+              triggerEvent('stop', new Date())
             }
           } catch (err) {
-            if (task.on && task.on.error && task.on.error && typeof task.on.error == 'function') {
-              task.on.error(new Date(), err)
-            }
+            triggerEvent('error', new Date(), err)
             _self.stopScheduledTask(task.key)
           }
         }, repeatedDelay)
-        submittedTasks[task.key] = { clearIntervalKey, totalExecutions: 0 }
+
+        submittedTasks[task.key].clearIntervalKey = clearIntervalKey
+        submittedTasks[task.key].totalExecutions = 0
+        submittedTasks[task.key].state = 'executing'
+        triggerEvent('scheduled', new Date())
       }, initialDelay)
     })
-    return submittedTasks[task.key]
+  },
+
+  setOn(key, attr, func) {
+    if (!typeof func == 'function') throw new Error('Invalid params passed to setOn in ScheduledExecutorService.js')
+    if (!(key in submittedTasks)) throw new Error('Invalid key in setOn in ScheduledExecutorService.js')
+    if (!('on' in submittedTasks[key])) throw new Error('Invalid state in ScheduledExecutorService.js setOn')
+
+    submittedTasks[key].on[attr] = func
   },
   stopScheduledTask(options) {
-    if (typeof options == 'string') {
-      clearInterval(submittedTasks[options].clearIntervalKey)
-      delete submittedTasks[options]
-    } else if (options && options.key) {
-      clearInterval(submittedTasks[options.key].clearIntervalKey)
-      delete submittedTasks[options.key]
-    } else {
-      throw new Error('Invalid params passed to stop scheduled task in ScheduledExecutorService.js/stopScheduledTask')
+    if (typeof options == 'string' && options in submittedTasks) {
+      if (submittedTasks[options].state == 'executing') {
+        clearInterval(submittedTasks[options].clearIntervalKey)
+        delete submittedTasks[options]
+        return true
+      } else {
+        return false
+      }
     }
   }
 }

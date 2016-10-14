@@ -1,5 +1,6 @@
 const fs = require('fs'),
-  temp = require('temp')
+  temp = require('temp'),
+  path = require('path')
 
 module.exports = {
   readJsonFileAsync(path) {
@@ -7,6 +8,7 @@ module.exports = {
     return new Promise(function (resolve, reject) {
       self.readFileUTF8Async(path, function (err, data) {
         if (err) {
+          sails.log.error(err)
           return reject(err)
         } else {
           return resolve(self.safeParseJsonAsync(data))
@@ -20,8 +22,12 @@ module.exports = {
   createTempDir(dirName) {
     return new Promise(function (resolve, reject) {
       temp.mkdir(dirName, function (err, dirPath) {
-        if (err) reject(err)
-        else resolve(dirPath)
+        if (err) {
+          sails.log.error(err)
+          reject(err)
+        } else {
+          resolve(dirPath)
+        }
       })
     })
   },
@@ -29,8 +35,12 @@ module.exports = {
     return new Promise(function (resolve, reject) {
       var inputPath = path.join(dirPath, fileName)
       fs.writeFile(inputPath, data, function (err) {
-        if (err) reject(err)
-        else resolve({ dirPath, fileName, fullpath: inputPath })
+        if (err) {
+          sails.log.error(err)
+          reject(err)
+        } else {
+          resolve({ dirPath, fileName, fullpath: inputPath })
+        }
       })
     })
   },
@@ -41,6 +51,7 @@ module.exports = {
       return _self.writeToDir(dirPath, fileName, data).then(function (obj) {
         return Promise.resolve(obj)
       }).catch(function (err) {
+        sails.log.error(err)
         return Promise.reject(err)
       })
     })
@@ -49,17 +60,10 @@ module.exports = {
     const _self = this
     return _self.createTempDirAndWrite(dirName, fileName, JSON.stringify(data))
   },
-  readFromTempDir(dirName, fileName) {
+  readFromTempDir(dirPath, fileName) {
     const _self = this
-
-    return _self.createTempDir(dirName).then(function (path) {
-      var inputPath = path.join(dirPath, fileName)
-      _self.readFileUTF8Async(dirPath).then(function (data) {
-        return Promise.resolve(data)
-      }).catch(function (err) {
-        return Promise.reject(data)
-      })
-    })
+    var inputPath = path.join(dirPath, fileName)
+    return _self.readFileUTF8Async(inputPath);
   },
   readFileUTF8Async: function (path) {
     return this.readFileAsync(path, 'utf8')
@@ -69,6 +73,7 @@ module.exports = {
       fs.readFile(path, fileEncoding, function (err, data) {
         if (err) {
           sails.log.debug('Error reading ' + path + ' error: ' + err)
+          sails.log.error(err)
           return reject(err)
         } else {
           return resolve(data)
@@ -84,6 +89,7 @@ module.exports = {
       fs.writeFile(path, data, encoding, function (err) {
         if (err) {
           sails.log.debug('Error writing ' + path + ' error: ' + err)
+          sails.log.error(err)
           return reject(err)
         }
         return resolve(true)
@@ -95,6 +101,7 @@ module.exports = {
       try {
         resolve(JSON.parse(json))
       } catch (err) {
+        sails.log.error(err)
         reject(err)
       }
     })

@@ -163,12 +163,7 @@ module.exports = {
     return new Promise(function (resolve, reject) {
       const ca = GlobalCache.cache({
         GlobalCache: 'fixer_io_exchange_rates'
-      });
-      
-      sails.log.debug('ca ' + ca);
-      sails.log.debug('ca ' + JSON.stringify(ca));
-      
-      ca.getData(base).then(function (cachedData) {
+      }).getData(base).then(function (cachedData) {
         if (cachedData) {
           return resolve(cachedData)
         } else {
@@ -205,6 +200,9 @@ module.exports = {
             }
           })
         }
+      }).catch(function(err){
+          sails.log.error(err);
+          return reject(err);
       })
     })
   }

@@ -42,18 +42,21 @@ function init () {
     GlobalCache: 'fixer_io_exchange_rates',
     ExpirationPolicies: [
       GlobalCache.ExpirationPolicies.insertedGreaterThanOrEqualTo(timeUtils.createTimeUnit(1).Hours),
-      tempMemoryUsageExpirationPolicy
     ],
     ExpirationSettings: {
       runExpirationPolicyOnInserts: function () { return true; },
       runExpirationPolicyOnDeletions: function () { return true; }
     },
-    SecondaryStoragePolicies: [],
+    SecondaryStoragePolicies: [
+        function(dataItem){
+            return true;
+        }
+    ],
     SecondaryStorageSettings: {
-
+        UseSecondaryStorage:true
     },
-    ScheduledPolicyInterval: timeUtils.createTimeUnit(1).Hours,
-    ScheduledPolicyIntialDelay: timeUtils.createTimeUnit(1).Hours
+    ScheduledPolicyInterval: timeUtils.createTimeUnit(1).Minutes,
+    ScheduledPolicyIntialDelay: timeUtils.createTimeUnit(1).Minutes
   })
 
   /*

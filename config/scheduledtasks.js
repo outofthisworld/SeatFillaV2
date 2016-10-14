@@ -8,6 +8,24 @@ const timeUtils = require('../api/utils/TimeUtils');
     Created by Dale.
 */
 
+var os = require('os');
+
+const memoryUsageScheduledTask = {
+    key: 'memoryUsageScheduledTask',
+    on: {},
+    work() {
+        sails.log.debug('=== PROCESS MEMORY UPDATES ====')
+        sails.log.debug('Current heap total: ' +
+            process.memoryUsage().heapTotal / 1024 / 1024 + ' MB');
+        sails.log.debug('Current heap used: ' +
+            process.memoryUsage().heapUsed / 1024 / 1024 + ' MB');
+        sails.log.debug('Total memory left: ' +
+            ((process.memoryUsage().heapTotal - process.memoryUsage().heapUsed) / 1024 / 1024) + ' MB');
+        sails.log.debug('OS total memory: ' + os.totalmem() / 1024/ 1024 + ' MB ');
+        sails.log.debug('OS available memory: ' + os.freemem()/ 1024/ 1024 + ' MB ')
+    }
+}
+
 const flightOfferScheduledTask = {
     key: 'flightOfferScheduledTask',
     on: {
@@ -217,14 +235,20 @@ module.exports.scheduledtasks = function() {
 
     const hourTimeUnit = timeUtils.createTimeUnit(24).Hours;
     [{
-        task: flightRequestScheduledTask,
-        initialDelay: hourTimeUnit,
-        repeatingDelay: hourTimeUnit
-    }, {
-        task: flightOfferScheduledTask,
-        initialDelay: hourTimeUnit,
-        repeatingDelay: hourTimeUnit
-    }].forEach(function(task) {
+            task: flightRequestScheduledTask,
+            initialDelay: hourTimeUnit,
+            repeatingDelay: hourTimeUnit
+        }, {
+            task: flightOfferScheduledTask,
+            initialDelay: hourTimeUnit,
+            repeatingDelay: hourTimeUnit
+        },
+        {
+            task: memoryUsageScheduledTask,
+            initialDelay: timeUtils.createTimeUnit(30).Seconds,
+            repeatingDelay: timeUtils.createTimeUnit(30).Seconds
+        }
+    ].forEach(function(task) {
         try {
             ScheduledExecutorService.execute(task.task, task.initialDelay, task.repeatingDelay);
         } catch (err) {

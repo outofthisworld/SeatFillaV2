@@ -564,6 +564,7 @@ module.exports = {
     }
 
     const cache = new GlobalCache(object)
+    cache.creationTime = new Date()
     cacheObj[object.GlobalCache] = cache
 
     cache.GlobalCache = object.GlobalCache
@@ -607,226 +608,196 @@ module.exports = {
     }
     return cacheObj[object.GlobalCache]
   },
-  StoragePolicies: {
-    greaterThan(memoryUnit, dataItemAttribute) {
-      return function (dataItem) {
-        if (!(dataItemAttribute in dataItem) || !dataItem[dataItemAttribute]) return
-
-        if (sizeof(dataItem[dataItemAttribute]) > memoryUnit.toBytes()) {
-          return true
-        }
-
-        return false
+  SerializationPolicies: {
+    cacheMemoryPolicy(cacheKey, memoryUnit, cmpFunc) {
+      if (!cacheKey || !cacheKey in cacheObj) throw new Error('Invalid cache key in GlobalCache.js/cacheMemExceeds')
+      return function(){
+          cacheObj[cacheKey].getSizeBytes() > memoryUnit.toBytes();
       }
-    },
-    lessThan(memoryUnit, dataItemAttribute) {
-      return function (dataItem) {
-        if (!(dataItemAttribute in dataItem) || !dataItem[dataItemAttribute]) return
-
-        if (sizeof(dataItem[dataItemAttribute]) < memoryUnit.toBytes()) {
-          return true
-        }
-
-        return false
-      }
-    },
-    greaterThanOrEqualTo(memoryUnit, dataItemAttribute) {
-      return function (dataItem) {
-        if (!(dataItemAttribute in dataItem) || !dataItem[dataItemAttribute]) return
-
-        if (sizeof(dataItem[dataItemAttribute]) >= memoryUnit.toBytes()) {
-          return true
-        }
-
-        return false
-      }
-    },
-    lessThanOrEqualTo(memoryUnit, dataItemAttribute) {
-      return function (dataItem) {
-        if (!(dataItemAttribute in dataItem) || !dataItem[dataItemAttribute]) return
-
-        if (sizeof(dataItem[dataItemAttribute]) <= memoryUnit.toBytes()) {
-          return true
-        }
-
-        return false
-      }
-    },
-    equalTo(memoryUnit, dataItemAttribute) {
-      return function (dataItem) {
-        if (!(dataItemAttribute in dataItem) || !dataItem[dataItemAttribute]) return
-
-        if (sizeof(dataItem[dataItemAttribute]) == memoryUnit.toBytes()) {
-          return true
-        }
-
-        return false
-      }
-    },
-    valueEqualTo(memoryUnit) {
-      return this.equalTo(memoryUnit, 'value')
-    },
-    valueLessThan(memoryUnit) {
-      return this.lessThan(memoryUnit, 'value')
-    },
-    valueLessThanOrEqualTo(memoryUnit) {
-      return this.lessThanOrEqualTo(memoryUnit, 'value')
-    },
-    valueGreaterThanOrEqualTo(memoryUnit) {
-      return this.greaterThanOrEqualTo(memoryUnit, 'value')
-    },
-    valueGreaterThan(memoryUnit) {
-      return this.greaterThan(memoryUnit, 'value')
     }
   },
-  ExpirationPolicies: {
-    greaterThan(timeUnit, dataItemAttribute) {
+  DataItemPolicies: {
+    /*
+        Creates a new storage policy.
+    */
+    buildStoragePolicy(memoryUnit, dataItemAttribute, cmpFunc){
       return function (dataItem) {
-        if (!(dataItemAttribute in dataItem) || !dataItem[dataItemAttribute] ||
-          !dataItem[dataItemAttribute] instanceof Date) return
+        if (!(dataItemAttribute in dataItem) || !dataItem[dataItemAttribute] || !typeof cmpFunc == 'function') return
 
-        sails.log.debug('Checking data item attr ' + dataItemAttribute)
-        if (new Date().getTime() - dataItem[dataItemAttribute].getTime() > timeUnit.toMilliseconds()) {
+        if (cmpFunc(sizeof(dataItem[dataItemAttribute]), memoryUnit.toBytes())) {
           return true
         }
 
         return false
       }
     },
-    lessThan(timeUnit, dataItemAttribute) {
-      return function (dataItem, dataItemAttribute) {
-        if (!(dataItemAttribute in dataItem) || !dataItem[dataItemAttribute] ||
-          !dataItem[dataItemAttribute] instanceof Date) return
-
-        if (new Date().getTime() - dataItem[dataItemAttribute].getTime() < timeUnit.toMilliseconds()) {
-          return true
-        }
-        return false
-      }
-    },
-    greaterThanOrEqualTo(timeUnit, dataItemAttribute) {
+    /*
+        Builds a new expiration policy from the specified timeUnit & dataItemAttribute
+    */
+    buildExpirationPolicy(timeUnit,dataItemAttribute,cmpFunc){
       return function (dataItem) {
-        if (!(dataItemAttribute in dataItem) || !dataItem[dataItemAttribute] ||
-          !dataItem[dataItemAttribute] instanceof Date) return
+            if (!(dataItemAttribute in dataItem) || !dataItem[dataItemAttribute] ||
+            !dataItem[dataItemAttribute] instanceof Date) return;
 
-        if (new Date().getTime() - dataItem[dataItemAttribute].getTime() >= timeUnit.toMilliseconds()) {
-          return true
-        }
-        return false
+            if (cmpFunc(new Date().getTime() - dataItem[dataItemAttribute].getTime(),timeUnit.toMilliseconds())) {
+                 return true
+            }
+            return false
       }
     },
-    lessThanOrEqualTo(timeUnit, dataItemAttribute) {
-      return function (dataItem) {
-        if (!(dataItemAttribute in dataItem) || !dataItem[dataItemAttribute] ||
-          !dataItem[dataItemAttribute] instanceof Date) return
 
-        if (new Date().getTime() - dataItem[dataItemAttribute].getTime() <= timeUnit.toMilliseconds()) {
-          return true
-        }
-        return false
-      }
+    /*
+        The following functions specify default implementations of different types of in-built secondary storage policies.
+
+        Secondary storage policies are checked to match predicates as to when a cached item should be serialized
+        to a secondary data storage mechanism, rather than process memory.
+    */
+
+    /*
+        A storage policy that expires a cached item should it be lt (<), 
+        lte (<=), gt (>), gte (>=), or et (==) to the specified memory unit.
+    */
+    sizeOfCachedItemPolicy(memoryUnit, cmpFunc) { 
+      return this.buildStoragePolicy(memoryUnit, 'value', cmpFunc)
     },
-    equalTo(timeUnit, dataItemAttribute) {
-      return function (dataItem, dataItemAttribute) {
-        if (!(dataItemAttribute in dataItem) || !dataItem[dataItemAttribute] ||
-          !dataItem[dataItemAttribute] instanceof Date) return
+    
+    /*
+        The following functions specify different types of inbuilt expiration policies.
+        
+        Expiration policies specify when a cached item should be removed completely from the cache, or refreshed
+        so that the cached data is up to date.
 
-        if (new Date().getTime() - dataItem[dataItemAttribute].getTime() == timeUnit.toMilliseconds()) {
-          return true
-        }
-        return false
-      }
+        Users of the cache can trivially create their own using the exported buildExpirationPolicy function.
+    */
+    lastAccessedPolicy(timeUnit,cmpFunc){
+        return this.buildExpirationPolicy(timeUnit, 'lastAccessed',cmpFunc)
+    },
+    insertationTimePolicy(timeUnit,cmpFunc){
+         return this.buildExpirationPolicy(timeUnit, 'insertationTime',cmpFunc);
+    },
+    lastModifiedPolicy(timeUnit,cmpFunc){
+        return this.buildExpirationPolicy(timeUnit, 'lastModified',cmpFunc);
+    },
+
+    /*
+        A secondary storage policy that removes a cached item should its size amount to less than the specified memory unit.
+    */
+    sizeOfCachedItemLessThan(memoryUnit){
+        return this.sizeOfCachedItemPolicy(memoryUnit,FunctionalUtils.lessThan);
+    },
+      /*
+        A secondary storage policy that removes a cached item should its size be greater than or equal to the specified memory unit.
+    */
+    sizeOfCachedItemGreaterThan(memoryUnit){
+        return this.sizeOfCachedItemPolicy(memoryUnit,FunctionalUtils.greaterThan);
+    },
+      /*
+        A secondary storage policy that removes a cached item should its size be greater than or rqual to the specified memory unit.
+    */
+    sizeOfCachedItemGreaterThanOrEqualTo(memoryUnit){
+        return this.sizeOfCachedItemPolicy(memoryUnit,FunctionalUtils.greaterThanOrEqualTo);
+    },
+      /*
+        A secondary storage policy that removes a cached item should its size be less than or equal to the specified memory unit.
+    */
+    sizeOfCachedItemLessThanOrEqualTo(memoryUnit){
+        return this.sizeOfCachedItemPolicy(memoryUnit,FunctionalUtils.lessThanOrEqualTo);
+    },
+    /*
+        A secondary storage policy that removes a cached item should its size be equal to the specified memory unit.
+    */
+    sizeOfCachedItemEqualTo(memoryUnit){
+        return this.sizeOfCachedItemPolicy(memoryUnit,FunctionalUtils.equalTo);
     },
     /*
         An expiration policy that removes a cached item should it be accessed in less than the specified time.
     */
     lastAccessedLessThan(timeUnit) {
-      return this.lessThan(timeUnit, 'lastAccessed')
+      return this.lastAccessedPolicy(timeUnit, FunctionalUtils.lessThan);
     },
     /*
         An expiration policy that removes a cached item should it have been accessed in less or equal to the specified time.
     */
     lastAccessedLessThanOrEqualTo(timeUnit) {
-      return this.lessThanOrEqualTo(timeUnit, 'lastAccessed')
+           return this.lastAccessedPolicy(timeUnit, FunctionalUtils.lessThanOrEqualTo);
     },
     /*
         An expiration policy that removes a cached item should it have been accessed in a time amounting to more than the specified time.
     */
     lastAccessedGreaterThan(timeUnit) {
-      return this.greaterThan(timeUnit, 'lastAccessed')
+         return this.lastAccessedPolicy(timeUnit, FunctionalUtils.greaterThan);
     },
     /*
         An expiration policy that removes a cached item should it have been accessed in a time amounting to more than the specified time.
     */
     lastAccessedGreaterThanOrEqualTo(timeUnit) {
-      return this.greaterThanOrEqualTo(timeUnit, 'lastAccessed')
+            return this.lastAccessedPolicy(timeUnit, FunctionalUtils.greaterThanOrEqualTo);
     },
     /*
         An expiration policy that removes a cached item should it have been accessed equal to the given time.
     */
     lastAccessedEqualTo(timeUnit) {
-      return this.equalTo(timeUnit, 'lastAccessed')
+            return this.lastAccessedPolicy(timeUnit, FunctionalUtils.equalTo);
     },
     /*
         An expiration policy that removes a cached item should its insertation time execeed the specified time unit.
     */
     insertedLessThan(timeUnit) {
-      return this.lessThan(timeUnit, 'insertationTime')
+      return this.insertationTimePolicy(timeUnit, FunctionalUtils.lessThan);
     },
     /*
         An expiration policy that removes a cached item should its insertation time be less than or equal to the specified time unit.
     */
     insertedLessThanOrEqualTo(timeUnit) {
-      return this.lessThanOrEqualTo(timeUnit, 'insertationTime')
+      return this.insertationTimePolicy(timeUnit, FunctionalUtils.lessThanOrEqualTo);
     },
     /*
         An expiration policy that removes a cached item should its insertation time be greater than the specified time unit.
     */
     insertedGreaterThan(timeUnit) {
-      return this.greaterThan(timeUnit, 'insertationTime')
+      return this.insertationTimePolicy(timeUnit, FunctionalUtils.greaterThan);
     },
     /*
         An expiration policy that removes a cached item should its insertation time be greater than or equal to the specified time unit.
     */
     insertedGreaterThanOrEqualTo(timeUnit) {
-      return this.greaterThanOrEqualTo(timeUnit, 'insertationTime')
+      return this.insertationTimePolicy(timeUnit, FunctionalUtils.greaterThanOrEqualTo);
     },
     /*
         An expiration policy that removes a cached item should its insertation time equal to the specified time unit.
     */
     insertedEqualTo(timeUnit) {
-      return this.equalTo(timeUnit, 'insertationTime')
+      return this.insertationTimePolicy(timeUnit, FunctionalUtils.equalTo)
     },
     /*
             An expiration policy that removes a cached item should it be accessed in less than the specified time.
         */
     lastModifiedLessThan(timeUnit) {
-      return this.lessThan(timeUnit, 'lastModified')
+      return this.lastModifiedPolicy(timeUnit, FunctionalUtils.lessThan)
     },
     /*
         An expiration policy that removes a cached item should it have been accessed in less or equal to the specified time.
     */
     lastModifiedLessThanOrEqualTo(timeUnit) {
-      return this.lessThanOrEqualTo(timeUnit, 'lastModified')
+      return this.lastModifiedPolicy(timeUnit, FunctionalUtils.lessThanOrEqualTo)
     },
     /*
         An expiration policy that removes a cached item should it have been accessed in a time amounting to more than the specified time.
     */
     lastModifiedGreaterThan(timeUnit) {
-      return this.greaterThan(timeUnit, 'lastModified')
+      return this.lastModifiedPolicy(timeUnit, FunctionalUtils.greaterThan)
     },
     /*
         An expiration policy that removes a cached item should it have been accessed in a time amounting to more than the specified time.
     */
     lastModifiedGreaterThanOrEqualTo(timeUnit) {
-      return this.greaterThanOrEqualTo(timeUnit, 'lastModified')
+      return this.lastModifiedPolicy(timeUnit, FunctionalUtils.greaterThanOrEqualTo)
     },
     /*
         An expiration policy that removes a cached item should it have been accessed equal to the given time.
     */
     lastModifiedEqualTo(timeUnit) {
-      return this.equalTo(timeUnit, 'lastModified')
+      return this.lastModifiedPolicy(timeUnit,FunctionalUtils.equalTo)
     }
   }
-
 }

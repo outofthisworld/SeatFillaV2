@@ -1,24 +1,21 @@
 /*
     A basic cache implementation for storing global data accross services.
 
-    At this present stage data decays due to certain expiration policies,
-    given time in the future support may be added for alternating between different
-    storage mechanisms.
+    At this present stage data decays due to certain expiration policies.
     
-    Ideas:
-    1) Switching in and out of process memory and database
+    This cache has the following features:
+    1) Switching in and out of process memory and secondary storage (file/database)
     2) File based storage for json objects, serialize least accessed data items to file,
      whilst leaving the more frequently accessed items in memory
     3) Add support for memory based expiration policies
     4) Generic store method so that implementation does not matter and items can be serialized in any way.
 
-    
-    for the caches so that memory is not wasted.
-
     Created by Dale.
 */
 
-const FileUtils = require('../utils/FileUtils')
+const FileUtils = require('../utils/FileUtils'),
+  MemoryConversionUtils = require('../utils/MemoryConversionUtils')
+sizeof = require('object-sizeof')
 
 /*
     Stores global cache implementations.
@@ -158,6 +155,10 @@ GlobalCache.prototype.removeData = function (key) {
   }
 }
 
+GlobalCache.prototype.getSizeBytes = function () {
+  return sizeof(this)
+}
+
 GlobalCache.prototype.insertData = function (key, data) {
   const _self = this
 
@@ -283,16 +284,27 @@ GlobalCache.prototype.runExpirationPolicy = function () {
 
   return new Promise(function (resolve, reject) {
     if ('Data' in _self) {
+
+      // Check to see if the whole cache should be serialized, 
+      // normally upon the cache memory constraints becoming to heavy
+      const shouldSerialize = _self.shouldSerializeCache()
+
+      // Iterate each of the cache data items..
       for (var key in _self['Data']) {
         if (_self['Data'].hasOwnProperty(key)) {
+
+          // Holds state specifying whether or not a cached item was deleted if it was expired
           const wasDeleted = false
 
+          // Delete the cached item if it has expired.
           if (_self.deleteIfExpired(key)) {
             sails.log.debug('GlobalCache: (' + _self.key + '):' + ' key: ' +
               key + 'has now expired and will be removed from the cache.')
 
+            // We have deleted the item
             wasDeleted = true
 
+            // If there is a refresh policy, the item is refreshed and no longer deleted.
             if (_self.refreshPolicy && typeof _self.refreshPolicy === 'function') {
               _self.setData(key, _self.refreshPolicy(key))
               if (_self['Data'][key] != null) {
@@ -301,10 +313,14 @@ GlobalCache.prototype.runExpirationPolicy = function () {
             }
           }
 
-          // pass to storagePolicies size of cache, total free memory, sizeOfDataItemm
-          if (!wasDeleted && _self.shouldMoveToSecondaryStorage(key) && 'value' in _self.Data[key]) {
+          // If should serialize is set, or this item should be moved to secondary storage, then serialize and store the item.
+          if ((shouldSerialize && !wasDeleted && 'value' in _self.Data[key])
+            || (!wasDeleted && _self.shouldMoveToSecondaryStorage(key)
+            && 'value' in _self.Data[key])) {
             sails.log.debug('GlobalCache: (' + _self.key + '): serializing data object with ' + key)
+
             try {
+              // Serialize our data before moving it out of mem..
               _self.serialize(key, _self.Data[key].value, function serializeCalled (err, data) {
                 if (err || !data) {
                   sails.log.debug('GlobalCache: (' + _self.key + '): error when serializing data with key ' + key + ' data was ' + _self['Data'][key])
@@ -312,6 +328,8 @@ GlobalCache.prototype.runExpirationPolicy = function () {
                   return reject(err)
                 } else {
                   sails.log.debug('GlobalCache: (' + _self.key + '): storing data with key: ' + key)
+
+                  // Store our item
                   _self.store(key, data,
                     function storeCalled (err, path) {
                       if (err) {
@@ -364,12 +382,12 @@ GlobalCache.prototype.deleteIfExpired = function (key) {
 GlobalCache.prototype.checkPolicies = function (attr, key) {
   const _self = this
 
-  if (!_self[attr] || !Array.isArray(_self[attr]) || !(key in _self.Data)) {
+  if (attr in _self || !_self[attr] || !Array.isArray(_self[attr])) {
     return false
   }
 
   for (var i = 0; i < _self[attr].length; i++) {
-    if (_self.checkPolicy(_self[attr][i], _self.Data[key])) {
+    if (_self.checkPolicy(_self[attr][i], _self.Data[key] || undefined)) {
       return true
     }
   }
@@ -391,6 +409,11 @@ GlobalCache.prototype.shouldMoveToSecondaryStorage = function (key) {
   }
   return _self.checkPolicies('secondaryStoragePolicies', key)
 }
+
+GlobalCache.prototype.shouldSerializeCache = function () {
+  return _self.checkPolicies('serializationPolicies', null)
+}
+
 GlobalCache.prototype.deleteCache = function () {
   const _self = this
 
@@ -442,6 +465,10 @@ GlobalCache.prototype.getExpirationPolicies = function () {
 
 GlobalCache.prototype.setSecondaryStoragePolicies = function (obj) {
   this.setPolicies('secondaryStoragePolicies', obj)
+}
+
+GlobalCache.prototype.setSerializationPolicies = function (obj) {
+  this.setPolicies('serializationPolicies', obj)
 }
 
 GlobalCache.prototype.setRefreshPolicy = function (refreshPolicy) {
@@ -548,8 +575,8 @@ module.exports = {
     cache.expirationSettings.runExpirationPolicyOnDeletions = (object.ExpirationSettings && object.ExpirationSettings.runExpirationPolicyOnDeletions) || null
 
     cache.setExpirationPolicies(object.ExpirationPolicies || [])
-
     cache.setSecondaryStoragePolicies(object.SecondaryStoragePolicies || [])
+    cache.setSerializationPolicies(object.SerializationPolicies || [])
 
     cache.scheduledTimes = {}
 
@@ -557,6 +584,8 @@ module.exports = {
     cache.scheduledTimes.scheduledPolicyInitialDelay = object.ScheduledPolicyIntialDelay || null
     cache.secondaryStorageSettings = {}
     cache.secondaryStorageSettings.UseSecondaryStorage = object.UseSecondaryStorage || true
+
+    cache.refereshPolicy = 'RefreshPolicy' in object && typeof object.RefreshPolicy === 'function' && object.RefreshPolicy
 
     if (object.SecondaryStorageSettings) {
       if (object.SecondaryStorageSettings.serialize && typeof object.SecondaryStorageSettings.serialize == 'function')
@@ -577,6 +606,78 @@ module.exports = {
       cache.trySchedule()
     }
     return cacheObj[object.GlobalCache]
+  },
+  StoragePolicies: {
+    greaterThan(memoryUnit, dataItemAttribute) {
+      return function (dataItem) {
+        if (!(dataItemAttribute in dataItem) || !dataItem[dataItemAttribute]) return
+
+        if (sizeof(dataItem[dataItemAttribute]) > memoryUnit.toBytes()) {
+          return true
+        }
+
+        return false
+      }
+    },
+    lessThan(memoryUnit, dataItemAttribute) {
+      return function (dataItem) {
+        if (!(dataItemAttribute in dataItem) || !dataItem[dataItemAttribute]) return
+
+        if (sizeof(dataItem[dataItemAttribute]) < memoryUnit.toBytes()) {
+          return true
+        }
+
+        return false
+      }
+    },
+    greaterThanOrEqualTo(memoryUnit, dataItemAttribute) {
+      return function (dataItem) {
+        if (!(dataItemAttribute in dataItem) || !dataItem[dataItemAttribute]) return
+
+        if (sizeof(dataItem[dataItemAttribute]) >= memoryUnit.toBytes()) {
+          return true
+        }
+
+        return false
+      }
+    },
+    lessThanOrEqualTo(memoryUnit, dataItemAttribute) {
+      return function (dataItem) {
+        if (!(dataItemAttribute in dataItem) || !dataItem[dataItemAttribute]) return
+
+        if (sizeof(dataItem[dataItemAttribute]) <= memoryUnit.toBytes()) {
+          return true
+        }
+
+        return false
+      }
+    },
+    equalTo(memoryUnit, dataItemAttribute) {
+      return function (dataItem) {
+        if (!(dataItemAttribute in dataItem) || !dataItem[dataItemAttribute]) return
+
+        if (sizeof(dataItem[dataItemAttribute]) == memoryUnit.toBytes()) {
+          return true
+        }
+
+        return false
+      }
+    },
+    valueEqualTo(memoryUnit) {
+      return this.equalTo(memoryUnit, 'value')
+    },
+    valueLessThan(memoryUnit) {
+      return this.lessThan(memoryUnit, 'value')
+    },
+    valueLessThanOrEqualTo(memoryUnit) {
+      return this.lessThanOrEqualTo(memoryUnit, 'value')
+    },
+    valueGreaterThanOrEqualTo(memoryUnit) {
+      return this.greaterThanOrEqualTo(memoryUnit, 'value')
+    },
+    valueGreaterThan(memoryUnit) {
+      return this.greaterThan(memoryUnit, 'value')
+    }
   },
   ExpirationPolicies: {
     greaterThan(timeUnit, dataItemAttribute) {

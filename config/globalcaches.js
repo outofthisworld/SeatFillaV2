@@ -23,7 +23,6 @@ function init () {
   /*
       A cache containing data from the fixer io exchange rates service.
   */
-
   GlobalCache.cache({
     GlobalCache: 'fixer_io_exchange_rates',
     ExpirationPolicies: [

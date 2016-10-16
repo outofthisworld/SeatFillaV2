@@ -14,26 +14,11 @@
 const GlobalCache = require('../api/utils/GlobalCache')
 
 const timeUtils = require('../api/utils/TimeUtils')
+const memoryUtils = require('../api/utils/MemoryConversionUtils')
 const hasInitialized = false
 
 function init () {
   if (hasInitialized) return
-
-  /*
-    This is here until I have enough time to add memory usage expiration policies to the global cache
-    and create a digital storage utils class for conversions.
-  */
-  function tempMemoryUsageExpirationPolicy (dataItem, cache) {
-    const shouldRemove = GlobalCache.ExpirationPolicies.lastAccessedGreaterThan(timeUtils.createTimeUnit(30).Minutes)(dataItem) &&
-      (process.memoryUsage().heapTotal - process.memoryUsage().heapUsed) < 1024 * 1024 * 200 // 200MB
-
-    if (shouldRemove) {
-      sails.log.debug('Removing cached item ' + dataItem + ' from global cache: ' + key + ' due to memory constraints ')
-      return true
-    } else {
-      return false
-    }
-  }
 
   /*
       A cache containing data from the fixer io exchange rates service.
@@ -41,20 +26,32 @@ function init () {
   GlobalCache.cache({
     GlobalCache: 'fixer_io_exchange_rates',
     ExpirationPolicies: [
-      GlobalCache.ExpirationPolicies.insertedGreaterThanOrEqualTo(timeUtils.createTimeUnit(1).Hours),
+      // Remove from the cache if the item ages more than one hour.
+      GlobalCache.DataItemPolicies.insertedGreaterThanOrEqualTo(
+        timeUtils.createTimeUnit(1).Hours)
     ],
     ExpirationSettings: {
-      runExpirationPolicyOnInserts: function () { return true; },
-      runExpirationPolicyOnDeletions: function () { return true; }
+      runExpirationPolicyOnInserts: function () {
+        return true
+      },
+      runExpirationPolicyOnDeletions: function () {
+        return true
+      }
     },
     SecondaryStoragePolicies: [
-        function(dataItem){
-            return true;
-        }
+      // Move to secondary storage if the item exceeds 2MB.
+      GlobalCache.DataItemPolicies.sizeOfCachedItemGreaterThanOrEqualTo(
+        memoryUtils.createMemoryUnit(2).Megabytes)
+    ],
+    SerializationPolicies: [
+      // Cache will be completely serialized if it execeeds 15 megabytes
+      GlobalCache.SerializationPolicies.sizeOfCacheGreaterThan(
+        memoryUtils.createMemoryUnit(15).Megabytes, 'fixer_io_exchange_rates')
     ],
     SecondaryStorageSettings: {
-        UseSecondaryStorage:true
+      UseSecondaryStorage: true
     },
+    // Run job once an hour.
     ScheduledPolicyInterval: timeUtils.createTimeUnit(1).Minutes,
     ScheduledPolicyIntialDelay: timeUtils.createTimeUnit(1).Minutes
   })
@@ -65,12 +62,22 @@ function init () {
   GlobalCache.cache({
     GlobalCache: 'rest_countries_cache',
     ExpirationPolicies: [
-      GlobalCache.ExpirationPolicies.lastAccessedGreaterThanOrEqualTo(timeUtils.createTimeUnit(12).Hours),
-      tempMemoryUsageExpirationPolicy
+      GlobalCache.DataItemPolicies.lastAccessedGreaterThanOrEqualTo(timeUtils.createTimeUnit(12).Hours)
     ],
     ExpirationSettings: {
       runExpirationPolicyOnInserts: function () { return true; },
       runExpirationPolicyOnDeletions: function () { return true; }
+    },
+    SecondaryStoragePolicies: [
+      GlobalCache.DataItemPolicies.sizeOfCachedItemGreaterThanOrEqualTo(
+        memoryUtils.createMemoryUnit(500).Killobytes)
+    ],
+    SerializationPolicies: [
+      GlobalCache.SerializationPolicies.sizeOfCacheGreaterThan(
+        memoryUtils.createMemoryUnit(10).Megabytes, 'rest_countries_cache')
+    ],
+    SecondaryStorageSettings: {
+      UseSecondaryStorage: true
     },
     ScheduledPolicyInterval: timeUtils.createTimeUnit(6).Hours,
     // Run the expiration policy with an initial delay of 6 hours.
@@ -80,12 +87,22 @@ function init () {
   GlobalCache.cache({
     GlobalCache: 'getty_images_cache',
     ExpirationPolicies: [
-      GlobalCache.ExpirationPolicies.insertedGreaterThanOrEqualTo(timeUtils.createTimeUnit(12).Hours),
-      tempMemoryUsageExpirationPolicy
+      GlobalCache.ExpirationPolicies.insertedGreaterThanOrEqualTo(timeUtils.createTimeUnit(12).Hours)
     ],
     ExpirationSettings: {
       runExpirationPolicyOnInserts: function () { return true; },
       runExpirationPolicyOnDeletions: function () { return true; }
+    },
+    SecondaryStoragePolicies: [
+      GlobalCache.DataItemPolicies.sizeOfCachedItemGreaterThanOrEqualTo(
+        memoryUtils.createMemoryUnit(500).Killobytes)
+    ],
+    SerializationPolicies: [
+      GlobalCache.SerializationPolicies.sizeOfCacheGreaterThan(
+        memoryUtils.createMemoryUnit(20).Megabytes, 'getty_images_cache')
+    ],
+    SecondaryStorageSettings: {
+      UseSecondaryStorage: true
     },
     // Run the expiration polcy every 4 hours.
     ScheduledPolicyInterval: timeUtils.createTimeUnit(4).Hours,

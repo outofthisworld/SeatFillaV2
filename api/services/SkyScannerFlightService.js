@@ -174,38 +174,52 @@ const exportObj = {
       const queryString = querystring.stringify(obj)
 
       const _this = this
-      var failCount = 0
-      request({
-        headers: {
-          'Accept': 'application/json'
-        },
-        uri: urlEndpoint + '?' + (queryString || ''),
-        method: 'GET'
-      }, function (err, res, body) {
-        if (err) return reject(err)
 
-        try {
-          const bd = JSON.parse(res.body)
+      GlobalCache.cache({
+        GlobalCache: 'skyscanner_flight_search'
+      }).getData(queryString)
+        .then(function (result) {
+          if (result) {
+            return resolve(result)
+          } else {
+            var failCount = 0
+            request({
+              headers: {
+                'Accept': 'application/json'
+              },
+              uri: urlEndpoint + '?' + (queryString || ''),
+              method: 'GET'
+            }, function (err, res, body) {
+              if (err) return reject(err)
+              try {
+                const bd = JSON.parse(res.body)
 
-          if (bd.ValidationErrors) {
-            const error = new Error('Validation errors when retriving itinerary from SkyScannerService')
-            sails.log.error(error)
-            return reject(error)
-          } else if (!bd.SessionKey || res.statusCode != 200) {
-            throw new Error('Invalid response when retrieving itinerary in SkyScannerFlightSever.js')
-          } else if (bd.Status == 'UpdatesPending') {
-            return resolve(_this.retrieveItin(urlEndpoint, obj))
-          } else {
-            return resolve(bd)
+                if (bd.ValidationErrors) {
+                  const error = new Error('Validation errors when retriving itinerary from SkyScannerService')
+                  sails.log.error(error)
+                  return reject(error)
+                } else if (!bd.SessionKey || res.statusCode != 200) {
+                  throw new Error('Invalid response when retrieving itinerary in SkyScannerFlightSever.js')
+                } else if (bd.Status == 'UpdatesPending') {
+                  return resolve(_this.retrieveItin(urlEndpoint, obj))
+                } else {
+                  GlobalCache.cache({
+                    GlobalCache: 'skyscanner_flight_search'
+                  }).insertData(queryString, bd)
+                  return resolve(bd)
+                }
+              } catch (err) {
+                if (failCount < 3) {
+                  failCount++
+                  return resolve(_this.retrieveItin(urlEndpoint, obj))
+                } else {
+                  return reject(err)
+                }
+              }
+            })
           }
-        } catch (err) {
-          if (failCount < 3) {
-            failCount++
-            return resolve(_this.retrieveItin(urlEndpoint, obj))
-          } else {
-            return reject(err)
-          }
-        }
+        }).catch(function (err) {
+        sails.log.error(err)
       })
     })
   },

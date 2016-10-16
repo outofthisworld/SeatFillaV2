@@ -17,7 +17,8 @@ const ErrorUtils = require('./ErrorUtils'),
     TimeUtils = require('./TimeUtils'),
     GlobalCache = require('./GlobalCache'),
     RequestUtils = require('./RequestUtils'),
-    FileUtils = require('./FileUtils')
+    FileUtils = require('./FileUtils'),
+    MemoryConversionUtils = require('./MemoryConversionUtils')
 
 module.exports = {
     ErrorUtils,
@@ -25,5 +26,6 @@ module.exports = {
     GlobalCache,
     RequestUtils,
     FileUtils,
-    TimeUtils
+    TimeUtils,
+    MemoryConversionUtils
 }

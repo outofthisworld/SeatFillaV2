@@ -32,7 +32,7 @@ module.exports = {
     },
     divide(value1, value2) {
         return value1 / value2;
-    }
+    },
     predicate(value, equals) {
         return value === equals;
     },
@@ -50,7 +50,7 @@ module.exports = {
         }
     },
     /*
-        [].reduce(FunctionalUtils.reduceTo('attr' || null, FunctionalUtils.add));
+        [].reduce(FunctionalUtils.reduceTo('attr' || null, FunctionalUtils.add | FunctionalUtils.any));
     */
     reduceTo(attribute, mathFunc) {
         return function(total, value) {
@@ -58,7 +58,7 @@ module.exports = {
         }
     },
     /*
-        [].sort(FunctionalUtils.)
+        [].sort(FunctionalUtils.sort('someAttr' || null, 'ASC' || 'DESC/Any'))
     */
     sort(attribute, sortMethod) {
         return function(value1, value2) {

@@ -23,6 +23,7 @@ function init () {
   /*
       A cache containing data from the fixer io exchange rates service.
   */
+
   GlobalCache.cache({
     GlobalCache: 'fixer_io_exchange_rates',
     ExpirationPolicies: [
@@ -87,7 +88,7 @@ function init () {
   GlobalCache.cache({
     GlobalCache: 'getty_images_cache',
     ExpirationPolicies: [
-      GlobalCache.ExpirationPolicies.insertedGreaterThanOrEqualTo(timeUtils.createTimeUnit(12).Hours)
+      GlobalCache.DataItemPolicies.insertedGreaterThanOrEqualTo(timeUtils.createTimeUnit(12).Hours)
     ],
     ExpirationSettings: {
       runExpirationPolicyOnInserts: function () { return true; },

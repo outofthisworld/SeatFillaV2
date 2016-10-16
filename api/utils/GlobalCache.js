@@ -16,7 +16,7 @@
 const FileUtils = require('../utils/FileUtils'),
   MemoryConversionUtils = require('../utils/MemoryConversionUtils'),
   FunctionalUtils = require('../utils/FunctionalUtils')
-  sizeof = require('object-sizeof')
+sizeof = require('object-sizeof')
 
 /*
     Stores global cache implementations.
@@ -443,7 +443,7 @@ GlobalCache.prototype.setPolicies = function (attr, obj) {
 
 GlobalCache.prototype.setPolicy = function (attr, policy) {
   if (!(typeof policy == 'function')) {
-    throw new Error('Invalid state in GlobalCache.js/setPolicy')
+    throw new Error('Invalid state in GlobalCache.js/setPolicy ' + policy + ' is not a function ' + JSON.stringify(policy))
   }
 
   if (Array.isArray(this[attr])) {
@@ -610,11 +610,24 @@ module.exports = {
     return cacheObj[object.GlobalCache]
   },
   SerializationPolicies: {
-    cacheMemoryPolicy(cacheKey, memoryUnit, cmpFunc) {
-      if (!cacheKey || !cacheKey in cacheObj) throw new Error('Invalid cache key in GlobalCache.js/cacheMemExceeds')
-      return function () {
-        cacheObj[cacheKey].getSizeBytes() > memoryUnit.toBytes()
-      }
+    sizeOfCachePolicy(cacheKey, memoryUnit, cmpFunc) {
+      if (!cacheKey || !cacheKey in cacheObj) throw new Error('Invalid cache key in GlobalCache.js/sizeOfCachePolicy')
+      return function () {return cmpFunc(cacheObj[cacheKey].getSizeBytes(), memoryUnit.toBytes());}
+    },
+    sizeOfCacheLessThan(memoryUnit, key) {
+      return this.sizeOfCachePolicy(key, memoryUnit, FunctionalUtils.lessThan)
+    },
+    sizeOfCacheLessThanOrEqualTo(memoryUnit, key) {
+      return this.sizeOfCachePolicy(key, memoryUnit, FunctionalUtils.lessThanOrEqualTo)
+    },
+    sizeOfCacheGreaterThan(memoryUnit, key) {
+      return this.sizeOfCachePolicy(key, memoryUnit, FunctionalUtils.greaterThan)
+    },
+    sizeOfCacheGreaterThanOrEqualTo(memoryUnit, key) {
+      return this.sizeOfCachePolicy(key, memoryUnit, FunctionalUtils.greaterThanOrEqualTo)
+    },
+    sizeOfCacheEquals(memoryUnit, key) {
+      return this.sizeOfCachePolicy(key, memoryUnit, FunctionalUtils.equalTo)
     }
   },
   DataItemPolicies: {
@@ -625,11 +638,7 @@ module.exports = {
       return function (dataItem) {
         if (!(dataItemAttribute in dataItem) || !dataItem[dataItemAttribute] || !typeof cmpFunc == 'function') return
 
-        if (cmpFunc(sizeof(dataItem[dataItemAttribute]), memoryUnit.toBytes())) {
-          return true
-        }
-
-        return false
+        return cmpFunc(sizeof(dataItem[dataItemAttribute]), memoryUnit.toBytes())
       }
     },
     /*
@@ -640,10 +649,7 @@ module.exports = {
         if (!(dataItemAttribute in dataItem) || !dataItem[dataItemAttribute] ||
           !dataItem[dataItemAttribute] instanceof Date) return
 
-        if (cmpFunc(new Date().getTime() - dataItem[dataItemAttribute].getTime(), timeUnit.toMilliseconds())) {
-          return true
-        }
-        return false
+        return cmpFunc(new Date().getTime() - dataItem[dataItemAttribute].getTime(), timeUnit.toMilliseconds())
       }
     },
 

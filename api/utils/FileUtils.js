@@ -60,7 +60,7 @@ module.exports = {
     const _self = this
     return _self.createTempDirAndWrite(dirName, fileName, JSON.stringify(data))
   },
-  readFromTempDir(dirPath, fileName) {
+  readFromDir(dirPath, fileName) {
     const _self = this
     var inputPath = path.join(dirPath, fileName)
     return _self.readFileUTF8Async(inputPath);

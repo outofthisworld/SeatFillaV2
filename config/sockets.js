@@ -50,10 +50,10 @@ module.exports.sockets = {
   // db: 0,
   // pass: '<redis auth password>',
   
-  adapter: 'connect-redis',
+  adapter: 'socket.io-redis',
   host: process.env.REDIS_HOST,
   port: process.env.REDIS_PORT,
-  db: process.env.REDIS_DB,
+  db: process.env.REDIS_DB || 0,
   pass: process.env.REDIS_PASSWORD,
 
 

@@ -27,13 +27,13 @@ module.exports.session = {
      ***************************************************************************/
 
     // adapter: 'redis',
-     adapter: 'connect-redis',
-     host: process.env.REDIS_HOST,
-     port: process.env.REDIS_PORT,
-     //ttl: <redis session TTL in seconds>,
-     db: process.env.REDIS_DB,
-     pass: process.env.REDIS_PASSWORD,
-     // prefix: 'sess:',
+    adapter: 'redis',
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
+    //ttl: <redis session TTL in seconds>,
+    db: process.env.REDIS_DB || 0,
+    pass: process.env.REDIS_PASSWORD,
+    // prefix: 'sess:',
 
 
     /*

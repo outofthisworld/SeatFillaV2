@@ -157,11 +157,11 @@
               <div class="row">
               <div class="col-xs-8">
               <label for="cabin_class">Cabin class</label>   
-                <select id="cabin_class" name="cabin_class" class="form-control" required/>
+                <select id="cabin_class" name="cabinClass" class="form-control" required/>
                 <option value="Economy" selected>Economy</option>
                 <option value="PremiumEconomy">Premium Economy</option>
-                <option value="Business">Business</option>
-                <option value="First">First class</option>
+                <option value="Business">Business Class</option>
+                <option value="First">First Class</option>
                 </select>
                 </div>
               </div>
@@ -207,7 +207,7 @@
 				</div>
 
 			</div>
-                     <input type="button" id="sub" class="btn btn-info btn-block" value="Create request"/>
+            <input type="button" id="sub" class="btn btn-info btn-block" value="Create request"/>
 		</div>
 	</div>
   </div>
@@ -225,13 +225,17 @@
             });
 
             window.seatfilla.globals.geolocation.getUserLocation(function(status,userLoc){
-                console.log(userLoc);
                 var count = 0;
+                console.log('User loc:')
+                console.log(userLoc);
                 window.seatfilla.globals.inputs.data.retrieveCityData().forEach(function(item) {
                     if(count == 0){
                         console.log(item);
                         count++;
                     }
+                    console.log('city item:')
+                    console.log(item);
+
                     const $opt = $('<option></option>', { 
                          value: item.iataCode,
                         'data-val-city': item.name,
@@ -337,8 +341,8 @@
                                     function validateDates(){
                                             var departureDateEnd;
                                             var returnDateEnd;
-                                            var departure_date = startDate;
-                                            var return_date = endDate;
+                                            var departure_date =  new Date($('#departure_date').val());
+                                            var return_date = new Date($('#return_date').val());
 
                                             //These are optional so parse them carefully
                                             try{
@@ -363,15 +367,23 @@
                                                 alert('Return date end must after or equal to the return date');
                                                 return false;
                                             }
+
+                                            return true;
                                     }
                                     var $flightRequestForm = $('#flightRequestForm')
                                     if (!$flightRequestForm[0].checkValidity()) {
                                         $flightRequestForm.find(':submit').click()
                                     }else if(validateDates()){
-                                        const data = Object.assign({},$flightRequestForm.serialize());
-                                        const depCity = $('#departure_city');
-                                        const arrivalCity = $('#departure_city');
-
+                                        console.log('validated date');
+                                        const data = {};            
+                                   
+                                        const depCity = $('#departure_city :selected');
+                                        const arrivalCity = $('#departure_city :selected');
+                                        data.departureDateStart = startDate.toISOString();
+                                        data.departureDateEnd = new Date($('#departureDateEnd').val()).toISOString();
+                                        data.returnDateStart = endDate.toISOString();
+                                        data.returnDateEnd = new Date($('#returnDateEnd').val()).toISOString();
+                                        data.timeZoneOffset = sd_timezone_offset;
                                         data.departureCity = depCity.attr('data-val-city');
                                         data.departureCityId = depCity.attr('data-val-cityId');
                                         data.departureContinent = depCity.attr('data-val-continentName');
@@ -390,6 +402,10 @@
                                         data.arrivalCountryCurrency = arrivalCity.attr('data-val-currency');
                                         data.arrivalCityLocation = arrivalCity.attr('data-val-location');
 
+                                        console.log('Serialized data:')
+                                        console.log(data);
+
+                                        data.requestLocale = 'en-US';
 
                                         $.ajax({
                                             type: "POST",

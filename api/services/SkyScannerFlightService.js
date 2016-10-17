@@ -275,7 +275,7 @@ const exportObj = {
         uri: finalRequestURI,
         method: 'PUT'
       }, function (err, res, body) {
-        if (err) return reject(ErrorUtils.createNewError('Invalid parameters when calling retrieve itin', arguments, err))
+        if (err) return reject(err)
         else return resolve({ url: res.headers.location })
       })
     })

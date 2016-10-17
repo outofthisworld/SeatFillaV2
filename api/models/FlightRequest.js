@@ -42,7 +42,7 @@ module.exports = {
             notNull: true
         },
         departureCountryId: {
-            type: 'stirng',
+            type: 'string',
             required: true,
             notNull: true
         },
@@ -106,53 +106,61 @@ module.exports = {
             defaultsTo: true
         },
         departureDateStart: {
-            type: 'string',
+            type: 'date',
             required: true,
             notNull: true
         },
         departureDateEnd: {
-            type: 'string',
+            type: 'date',
             required: true,
             notNull: true
         },
         returnDateStart: {
-            type: 'string',
+            type: 'date',
             defaultsTo: null
         },
         returnDateEnd: {
-            type: 'string',
+            type: 'date',
             defaultsTo: null
         },
         adults: {
-            type: 'number',
+            type: 'integer',
             required: true,
-            defaultTo: 1
+            defaultsTo: 1
         },
         children: {
-            type: 'number',
+            type: 'integer',
             defaultsTo: 0
         },
         infants: {
-            type: 'number',
+            type: 'integer',
             defaultsTo: 0
         },
         currency: {
-            type: 'string'
+            type: 'string',
+            notNull:true,
+            required:true
         },
         cabinClass: {
             type: 'string',
-            enum: ['economy', 'premiumeconomy', 'firstClass', 'business']
+            enum: ['Economy', 'PremiumEconomy', 'First', 'Business'],
+            notNull:true,
+            required:true
         },
         maximumPayment: {
-            type: 'number',
+            type: 'float',
             decimal: true,
             min: 0,
             max: 20001
         },
+        timeZoneOffset:{
+            type:'integer',
+            notNull:true,
+            required:true
+        },
         notifySeatfillaFlights: {
             type: 'boolean',
-            required: true,
-            notNull: true
+            defaultsTo:true
         },
         //One to many (User can have many requests,
         //request can have one user.)
@@ -167,7 +175,7 @@ module.exports = {
             const departureDateStart = new Date(record.departureDateStart);
             const departureDateEnd = new Date(record.departureDateEnd);
 
-            if (!(departureDateStart < departureDateEnd)) {
+            if (!(departureDateStart <= departureDateEnd)) {
                 return cb(new Error('Departure start date must be less than departure end date'));
             }
 

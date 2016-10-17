@@ -10,6 +10,10 @@
     3) Add support for memory based expiration policies
     4) Generic store method so that implementation does not matter and items can be serialized in any way.
 
+    In production, implementations of this cache on the Seatfilla website
+    can take advantage of the Redis session storage so that cached items
+    can be stored and retrieved over multiple app instances in a shared way.
+
     Created by Dale.
 */
 
@@ -412,7 +416,7 @@ GlobalCache.prototype.shouldMoveToSecondaryStorage = function (key) {
 }
 
 GlobalCache.prototype.shouldSerializeCache = function () {
-  return _self.checkPolicies('serializationPolicies', null)
+  return this.checkPolicies('serializationPolicies', null)
 }
 
 GlobalCache.prototype.deleteCache = function () {

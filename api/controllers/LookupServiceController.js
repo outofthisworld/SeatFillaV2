@@ -17,7 +17,7 @@ module.exports = {
         });
     },
     getCountryInformation(req, res) {
-        if (!req.param(countryCode)) return res.badRequest('countryCode must be suppplied.');
+        if (!req.param('countryCode')) return res.badRequest('countryCode must be suppplied.');
 
         LookupService.rest_countries_get_country_info(req.param('countryCode')).then(function(result) {
             result.status = 200;

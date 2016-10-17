@@ -41,7 +41,7 @@ function init () {
     SecondaryStoragePolicies: [
       // Move to secondary storage if the item exceeds 2MB.
       GlobalCache.DataItemPolicies.sizeOfCachedItemGreaterThanOrEqualTo(
-        memoryUtils.createMemoryUnit(2).Megabytes)
+        memoryUtils.createMemoryUnit(300).Killobytes)
     ],
     SerializationPolicies: [
       // Cache will be completely serialized if it execeeds 15 megabytes
@@ -54,6 +54,37 @@ function init () {
     // Run job once an hour.
     ScheduledPolicyInterval: timeUtils.createTimeUnit(1).Minutes,
     ScheduledPolicyIntialDelay: timeUtils.createTimeUnit(1).Minutes
+  })
+
+  GlobalCache.cache({
+    GlobalCache: 'skyscanner_flight_search',
+    ExpirationPolicies: [
+      // Remove from the cache if the item ages more than one hour.
+      GlobalCache.DataItemPolicies.insertedGreaterThanOrEqualTo(
+        timeUtils.createTimeUnit(3).Hours)
+    ],
+    ExpirationSettings: {
+      runExpirationPolicyOnInserts: function () {
+        return true
+      },
+      runExpirationPolicyOnDeletions: function () {
+        return true
+      }
+    },
+    SecondaryStoragePolicies: [
+      GlobalCache.DataItemPolicies.sizeOfCachedItemGreaterThanOrEqualTo(
+        memoryUtils.createMemoryUnit(1).Megabytes)
+    ],
+    SerializationPolicies: [
+      GlobalCache.SerializationPolicies.sizeOfCacheGreaterThan(
+        memoryUtils.createMemoryUnit(25).Megabytes, 'skyscanner_flight_search')
+    ],
+    SecondaryStorageSettings: {
+      UseSecondaryStorage: true
+    },
+    // Run job once an hour.
+    ScheduledPolicyInterval: timeUtils.createTimeUnit(3).Hours,
+    ScheduledPolicyIntialDelay: timeUtils.createTimeUnit(1).Hours
   })
 
   /*

@@ -96,6 +96,7 @@ module.exports.http = {
             'reqModifer',
             'resModifer',
             'bodyParser',
+            'paramParser',
             'handleBodyParserError',
             'compress',
             'methodOverride',
@@ -105,9 +106,8 @@ module.exports.http = {
             'www',
             'favicon',
             '404',
-            '500'
+            '500',
         ],
-
         reqModifer: function(req, res, next) {
             req.isPOST = function() {
                 return req.method === "POST";
@@ -123,7 +123,28 @@ module.exports.http = {
             }
             next();
         },
-
+        paramParser:function(req,res,next){
+            const path = req.path.toLowerCase();
+            sails.log.debug('Recieved request to path ' + path);
+            if(path.indexOf('create') !== -1 || 
+                path.indexOf('find') !== -1){
+                   sails.log.debug(req.params);
+                   const reqParams = req.params;
+                   sails.log.debug('Recieved params in request to path : ' + path + ': ' + JSON.stringify(reqParams))
+                   for(k in reqParams){
+                         try{
+                            const m = parseInt(reqParams[k]); 
+                            if(!isNaN(m)){
+                                sails.log.debug('Changing key ' + k + ' into integer ');
+                                reqParams[k] = m;
+                            }else{
+                                sails.log.debug('Key ' + k + ' was not parsed as a number');
+                            }
+                        }catch(err){}
+                   }
+                }
+           next();
+        },
         resModifer: function(req, res, next) {
             next();
         },

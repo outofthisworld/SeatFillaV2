@@ -166,16 +166,18 @@ window.seatfilla.globals.cache.put = function(options) {
 
     const callback = options.success && typeof options.success == 'function' ? options.success : function() {};
 
+
     if (options.useServerStore) {
         $.ajax({
             type: "POST",
             url: '/SeatfillaSettings/setStoredSettings',
             data: {
-                key: options.key,
-                data: options.data
+                'data':[options]
             },
             success: function(result, s, xhr) {
                 const res = window.seatfilla.globals.tryParseJsonResult(result);
+                console.log('Recieved result from posting key: ' + options.key + ' with data ' + JSON.stringify(options.data) + ' to SeatfillaSettings/setStoredSettings');
+                console.log('Response was ' + JSON.stringify(res));
                 callback(res.status, res);
             }
         });

@@ -59,16 +59,17 @@ module.exports = {
         return Promise.resolve({ type: 'session' })
       })
     } else {
+      sails.log.debug('Storing in session and returning promise');
       store(req.session)
       return Promise.resolve({ type: 'session' })
     }
   },
   getUserSettings(req, keyArr) {
-    if (!req || !keyMap || !Array.isArray(keyArr))
+    if (!req || !keyArr || !Array.isArray(keyArr))
       throw new Error('Invalid params passed to UserSettingsService.js/getUserSetting')
 
     const obj = {}
-    for (key in keyMap) {
+    for (key in keyArr) {
       if (req.user) {
         obj[key] = req.user.userSettings[key] || req.session[key]
       } else {
@@ -77,24 +78,33 @@ module.exports = {
     }
     return obj
   },
+  getCurrentUserLocation(req){
+    return this.getUserSettings(req, ['currentLocation']);
+  },
+  getUserCurrencyCodePreference(req){
+    return this.getUserSettings(req,['currencyCodePreference']);
+  },
+  getUserLocalePreference(req){
+    return this.getUserSettings(req,['localePreference']);
+  },
   setUserCurrencyCodePreference(req, currencyCode) {
-    return this.setUserSetting(req, { 'currencyCodePreference': currencyCode || 'USD' }, false)
+    return this.setUserSettings(req, { 'currencyCodePreference': currencyCode || 'USD' }, false)
   },
   setUserLocalePreference(req, localePreference) {
-    return this.setUserSetting(req, { 'localePreference': localePreference || 'en-US' }, false)
+    return this.setUserSettings(req, { 'localePreference': localePreference || 'en-US' }, false)
   },
   setUserCurrentLocation(req, location) {
     const _self = this
     if (req.user) {
       UserLocationService.createNewUserLocation(req.user, location).then(function (userLocation) {
         const id = userLocation.id
-        _self.setUserSetting(req, { 'currentLocation': id }, false)
+        _self.setUserSettings(req, { 'currentLocation': id }, false)
       }).catch(function (err) {
         sails.log.error(err)
-        return _self.setUserSetting(req, { 'currentLocation': location }, true)
+        return _self.setUserSettings(req, { 'currentLocation': location }, true)
       })
     } else {
-      return this.setUserSetting(req, { 'currentLocation': location }, true)
+      return _self.setUserSettings(req, { 'currentLocation': location }, true)
     }
   }
 }

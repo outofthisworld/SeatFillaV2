@@ -181,7 +181,6 @@ module.exports = {
             });
         },
         toJSON: function() {
-
             var obj = this.toObject();
             return obj;
         }

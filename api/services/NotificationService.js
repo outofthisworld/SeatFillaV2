@@ -2,6 +2,8 @@
   Created by dale
 */
 
+const functionalUtils = require('../utils/FunctionalUtils')
+
 module.exports = {
   // Lets handle sending async notifications to a (one) client.
   sendDedicatedNotificationAsync: function (req, done) {
@@ -71,7 +73,7 @@ module.exports = {
       })
     })
   },
-  // Returns a new promise withe the users lastest notifications
+  // Returns a new promise with the users latest notifications
   findLatestNotifications: function (req) {
     return new Promise(function (resolve, reject) {
       const criteria = { sort: 'createdAt ASC', limit: 5 }
@@ -97,5 +99,22 @@ module.exports = {
       })
       return result.splice(0, 5)
     })
+  },
+  //Notifies all links to a user.
+  notifyUserLinksAsync(user){
+    return UserLink.find({
+      user: user.id || (user.user && user.user.id) || user
+    }).then(function(userLinks){
+       UserSocketService.find(userLinks.map(functionalUtils.mapTo('userLink')))
+       .then(function(userSockets){
+         userSockets.forEach(function(userSocket){
+           sails.sockets.broadcast(userSocket.socketId, 'NotificationService', message);
+         });
+         return Promise.resolve({ status:200 });
+       }).catch(function(err){
+         sails.log.error(err);
+         return Promise.reject(err);
+       })
+    });
   }
 }

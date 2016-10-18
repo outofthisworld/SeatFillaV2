@@ -51,26 +51,28 @@ module.exports.http = {
                         if (err) {
                             sails.log.debug('Could not find and de-serialize user with id passed in via passport... session user will not be populated.');
                             sails.log.error(err);
+                            return done(err, user);
                         } else {
-                            UserSettings.findOrCreate({ user: user.id }, { user: user.id }, function(err, user) {
+                            UserSettings.findOrCreate({ user: user.id }, { user: user.id }, function(err, userSettings) {
                                 if (err) {
                                     sails.log.debug('Could not find or create user settings');
                                     sails.log.error(err);
                                 } else {
                                     //Handle nested associations that waterline doesn't currently have support for.
-                                    if (user.userSettings.currentLocation) {
-                                        UserLocation.findOne({ id: user.userSettings.currentLocation }).exec(function(err, userLoc) {
+                                    if (userSettings.currentLocation) {
+                                        UserLocation.findOne({ id: userSettings.currentLocation }).exec(function(err, userLoc) {
                                             if (err) {
                                                 sails.log.debug('Unable to execute query find user location even though current location is set..');
                                                 sails.log.error(err);
-                                                done(err, user);
+                                                return done(err, user);
                                             } else {
+                                                user.userSettings = userSettings;
                                                 user.userSettings.currentLocation = userLoc;
-                                                done(err, user);
+                                                return done(err, user);
                                             }
                                         })
                                     } else {
-                                        done(err, user)
+                                        return done(err, user)
                                     }
                                 }
                             });
@@ -96,7 +98,6 @@ module.exports.http = {
             'reqModifer',
             'resModifer',
             'bodyParser',
-            'paramParser',
             'handleBodyParserError',
             'compress',
             'methodOverride',
@@ -123,28 +124,6 @@ module.exports.http = {
             }
             next();
         },
-        paramParser:function(req,res,next){
-            const path = req.path.toLowerCase();
-            sails.log.debug('Recieved request to path ' + path);
-            if(path.indexOf('create') !== -1 || 
-                path.indexOf('find') !== -1){
-                   sails.log.debug(req.params);
-                   const reqParams = req.params;
-                   sails.log.debug('Recieved params in request to path : ' + path + ': ' + JSON.stringify(reqParams))
-                   for(k in reqParams){
-                         try{
-                            const m = parseInt(reqParams[k]); 
-                            if(!isNaN(m)){
-                                sails.log.debug('Changing key ' + k + ' into integer ');
-                                reqParams[k] = m;
-                            }else{
-                                sails.log.debug('Key ' + k + ' was not parsed as a number');
-                            }
-                        }catch(err){}
-                   }
-                }
-           next();
-        },
         resModifer: function(req, res, next) {
             next();
         },
@@ -157,6 +136,7 @@ module.exports.http = {
 
         requestLogger: function(req, res, next) {
             console.log("Requested :: ", req.method, req.url);
+           
             return next();
         }
 

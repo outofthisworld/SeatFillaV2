@@ -48,7 +48,7 @@ module.exports.policies = {
         'create': ['postPolicy', 'createAccountPolicy', 'notLoggedInPolicy', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
         'myaccount': ['getPolicy', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
         /*'passportAuth'*/
-        'login': ['getPolicy', 'whiteListedDomainPolicy', 'ipBlacklistPolicy']
+        'login': ['notLoggedInPolicy','getPolicy', 'whiteListedDomainPolicy', 'ipBlacklistPolicy']
     },
     AuthController: {
         '*': false,
@@ -85,6 +85,10 @@ module.exports.policies = {
     },
     ApiUsers: {
         '*': true
+    },
+    SubscriptionController:{
+        '*':false,
+        'subscribeToUserSocketService':['passportAuth']
     }
 
 };

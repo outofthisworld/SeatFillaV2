@@ -33,7 +33,6 @@ module.exports = {
         sails.log.error(err)
         return Promise.reject()
       })
-
     }).then(function (user_partial) {
 
       // Create user settings (preferences)
@@ -45,11 +44,10 @@ module.exports = {
           sails.log.error(err)
           return Promise.reject(err)
         } else {
-          user_partial.userSettings = userSettings;
-          return Promise.resolve(user_partial);
+          user_partial.userSettings = userSettings
+          return Promise.resolve(user_partial)
         }
       })
-
     }).then(function (user) {
       sails.log.debug('Creating sign up record for user: ' + JSON.stringify(user))
 
@@ -95,76 +93,27 @@ module.exports = {
   },
   createUserAddress(userId, addressInfo) {
     // Attempt to look up country info
-    return LookupService.rest_countries_get_country_info_by_c_name(adressInfo.country).then(function (countryInfo) {
+    return UserLocationService.findOrCreateCountry(adressInfo.country).then(function (country) {
+      addressInfo.countryInfo = country.alpha3code
+      addressInfo.user = userId
 
-      // If the country info doesnt exist...(problem with the country name??)
-      if (!countryInfo)
-        return Promise.reject({ error: err, message: 'Could not retrieve country info from rest countries in UserService.js/createUser'})
-
-      if (!Array.isArray(countryInfo)) {
-        return Promise.reject({ error: new Error(''),
-        message: 'Could not retrieve country info from rest countries in UserService.js/createUser'})
-      }
-
-      //this is ugly >.< whyyy is data never in a pretty format 
-      const mappedCountryInfo = (function mapCountryInfo(object){
-          mappedCountryInfo = {}
-          Object.keys(object).forEach((key)=>{
-            const ele = object[key];
-
-            if(!ele || !ele.key || !ele.data || !(typeof ele.key == 'string') || !(Array.isArray(ele.data))) 
-             throw new Error('Invalid object formation in UserService.js/mapCountryInfo');
-            
-            const eleKey = ele.key;
-            const eleData = ele.data;
-
-            eleData.map((m)=>{
-                const newObj = {}
-                newObj[eleKey] = m;
-                newObj['countryCode'] = countryInfo.alpha3Code;
-
-                return newObj;
-            })
-
-            mappedCountryInfo[key] = eleData;
-          })
-
-          return mappedCountryInfo;
-      })({
-        altSpellings:{key:'alternateSpelling', data:countryInfo.altSpellings},
-        translations:{key:'translation',data:countryInfo.translations},
-        timezones:{key:'timeZone',data:countryInfo.timezones},
-        callingCodes:{key:'callingCode',data:countryInfo.callingCodes},
-        borders:{key:'border',data:countryInfo.borders},
-        currencies:{key:'currencyCode',data:countryInfo.currencies},
-        languages:{key:'language',data:countryInfo.languages}
+      // Create an address and use the alpha 3 country code 
+      // to link to the country table. Note that
+      // country name is being duplicated as its required the most.
+      Address.findOrCreate(addressInfo).exec(function (err, address) {
+        // We couldn't create the address record.. log the error
+        if (err || !addressInfo) {
+          sails.log.debug('Error creating address: ' + addressInfo + ' ' + err)
+          sails.log.error(err)
+          return Promise.reject({ error: err, message: 'Error creating address record' })
+        } else {
+          // Return a promise with the collected user info so far.
+          return Promise.resolve({ address, countryInfo})
+        }
       })
-
-      sails.log.debug('Mapped country info:');
-      sails.log.debug(JSON.stringify(mappedCountryInfo))
-
-      return Country.findOrCreate(
-        Object.assign(countryInfo, mappedCountryInfo)
-      ).then(function (country) {
-        addressInfo.countryInfo = country.alpha3code
-        addressInfo.user = userId
-
-        // Create an address and use the alpha 3 country code 
-        // to link to the country table. Note that
-        // country name is being duplicated as its required the most.
-        Address.findOrCreate(addressInfo).exec(function (err, address) {
-          // We couldn't create the address record.. log the error
-          if (err || !addressInfo) {
-            sails.log.debug('Error creating address: ' + addressInfo + ' ' + err)
-            sails.log.error(err)
-            return Promise.reject({ error: err, message: 'Error creating address record' })
-          } else {
-            // Return a promise with the collected user info so far.
-            return Promise.resolve({ address, countryInfo})
-          }
-        })
-      })
-
+    }).catch(function (err) {
+      sails.log.error(err)
+      return Promise.reject(err)
     })
   },
   // Creates an external passport user.

@@ -78,7 +78,7 @@ module.exports = {
     }
     return obj
   },
-  getCurrentUserLocation(req){
+  getUserCurrentLocation(req){
     return this.getUserSettings(req, ['currentLocation']);
   },
   getUserCurrencyCodePreference(req){

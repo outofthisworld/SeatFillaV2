@@ -70,7 +70,7 @@ module.exports = {
           ]
       }
   */
-  rest_countries_get_country_info(countryCode) {
+  rest_countries_get_country_info_by_c_code(countryCode) {
     if (!countryCode) throw new Error('Invalid params to LookupService.js/rest_countries_get_country_info')
 
     const countryInfoEndpoint = 'https://restcountries.eu/rest/v1/alpha/' + countryCode
@@ -102,7 +102,58 @@ module.exports = {
                 if (!obj) {
                   console.log(obj)
                   return reject(new Error('Error with request to ' + countryInfoEndpoint + ' could not parse body'))
+                } else if(obj.status != 200){
+                  return resolve(null);
                 } else {
+                  GlobalCache.cache({
+                    GlobalCache: 'rest_countries_cache'
+                  }).insertData(countryCode, obj)
+                  return resolve(obj)
+                }
+              } catch (err) {
+                return reject(new Error('Error parsing JSON response when retrieving country info from rest countries endpoint ' + countryInfoEndpoint))
+              }
+            }
+          })
+        }
+      })
+    })
+  },
+  rest_countries_get_country_info_by_c_name(countryName) {
+    if (!countryCode) throw new Error('Invalid params to LookupService.js/rest_countries_get_country_info')
+
+    const countryInfoEndpoint = 'https://restcountries.eu/rest/v1/name/' + countryName;
+
+    return new Promise(function (resolve, reject) {
+      GlobalCache.cache({
+        GlobalCache: 'rest_countries_cache'
+      }).getData(countryCode).then(function (countryData) {
+        if (countryData) {
+          resolve(countryData)
+        } else {
+          request({
+            headers: {
+              'Accept-Language': 'en-US'
+            },
+            uri: countryInfoEndpoint,
+            method: 'GET'
+          }, function (err, res, body) {
+            if (err || !body || res.statusCode != 200) {
+              sails.log.debug('Error retrieving country info from endpoint ' + countryInfoEndpoint)
+              sails.log.debug('Reponse code was' + res.statusCode)
+              sails.log.debug('Body content: ' + body)
+              sails.log.error(err)
+              return reject(err)
+            } else {
+              try {
+                const obj = JSON.parse(body)
+
+                if (!obj) {
+                  console.log(obj)
+                  return reject(new Error('Error with request to ' + countryInfoEndpoint + ' could not parse body'))
+                } else if(obj.status != 200){
+                  return resolve(null);
+                }else {
                   GlobalCache.cache({
                     GlobalCache: 'rest_countries_cache'
                   }).insertData(countryCode, obj)

@@ -1,7 +1,8 @@
 
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
+
 <header>
-</div>
+
 
 <!--top_bar-->
          <div class="top_bar">
@@ -18,17 +19,18 @@
             <%if(!req.user){%>
             <li><i class="fa fa-user"></i> <a href="/user/register" style="color:white;" >Register</a></li> 
             <%}%>
-            <li>Currency:</li>
-            <li><i class="fa fa-currency"></i><select class="input input-sm form-control" style="position:relative;bottom:15px;" id="seatfilla_currencies"></select></li>     
+            <li>
+            <div class="styled-select white semi-square" id="currency_select_s" style="margin-top:5px;max-width:120px;">
+            <select class= "form-control centertext" id="seatfilla_currencies"></select>
+            </div>
+            </li>     
             </ul>
             </div>
             </div>
         </div>
 
 <nav class="navbar navbar-default navbar-fixed-top site-nav" role="navigation">
-
     	<div class="container">
-      
 			<!-- Brand and toggle get grouped for better mobile display -->
 			<div class="navbar-header">
 				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
@@ -37,8 +39,8 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-                <br>
-				<a class="" href="#" style="position:relative;bottom:18px;left:30px;"><img src="/images/Logo.png" width="52" height="52"/></a>
+        <br>
+				<a class="logo" href="#" style="position:relative;bottom:18px;left:30px;"><img src="/images/Logo.png" width="52" height="52"/></a>
 			</div>
 
 			<!-- Collect the nav links, forms, and other content for toggling -->
@@ -117,16 +119,8 @@
    
         </li>
 			</ul>
-
-      
-      
-	
 			</div><!-- /.navbar-collapse -->
-
-            
 		</div><!-- /.container-fluid -->
-
 	</nav>
-    
 </header>
 

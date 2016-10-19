@@ -78,8 +78,12 @@ const flightRequestScheduledTask = {
             var numRequests = 0;
             var requestStartTime = null;
 
-            flightRequests.forEach(function(request, index) {
+            
 
+            flightRequests.forEach(function(request, index) {
+                const startDate = request.startDate;
+                
+                if(!request.isAccepted)
                 User.findOne({ id: request.user.id }).populate('address').populate('userSettings').then(function(err, user) {
 
 

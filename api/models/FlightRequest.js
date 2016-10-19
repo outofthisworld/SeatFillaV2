@@ -162,6 +162,10 @@ module.exports = {
             type: 'boolean',
             defaultsTo:true
         },
+        isAccepted:{
+            type:'boolean',
+            defaultsTo:false
+        },
         //One to many (User can have many requests,
         //request can have one user.)
         user: {

@@ -19,7 +19,7 @@ module.exports = {
     getCountryInformation(req, res) {
         if (!req.param('countryCode')) return res.badRequest('countryCode must be suppplied.');
 
-        LookupService.rest_countries_get_country_info(req.param('countryCode')).then(function(result) {
+        LookupService.rest_countries_get_country_info_by_c_code(req.param('countryCode')).then(function(result) {
             result.status = 200;
             return res.json(ResponseStatus.OK, result);
         }).catch(function(err) {

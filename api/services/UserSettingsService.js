@@ -96,7 +96,7 @@ module.exports = {
   setUserCurrentLocation(req, location) {
     const _self = this
     if (req.user) {
-      UserLocationService.createNewUserLocation(req.user, location).then(function (userLocation) {
+      UserLocationService.findOrCreateUserLocation(req.user, location).then(function (userLocation) {
         const id = userLocation.id
         _self.setUserSettings(req, { 'currentLocation': id }, false)
       }).catch(function (err) {

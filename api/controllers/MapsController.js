@@ -5,7 +5,7 @@ module.exports = {
     retrieveFlightInfo(req, res) {
         new Promise(function(resolve, reject) {
             if (req.user) {
-                UserLocationService.createNewUserLocation(req.user, req.body.userLocation).then(function(addr) {
+                UserLocationService.findOrCreateUserLocation(req.user, req.body.userLocation).then(function(addr) {
                     sails.log.debug('Succesfully created user location: ' + JSON.stringify(addr));
                 }).catch(function(err) {
                     sails.log.error(err);

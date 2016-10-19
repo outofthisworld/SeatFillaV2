@@ -2,9 +2,11 @@ const uuid = require('node-uuid')
 
 module.exports = {
   createUser: function (req) {
+    const _self = this
+
     return new Promise(function createUser (resolve, reject) {
-      
-      //Create a new user tuple
+
+      // Create a new user tuple
       User.create(req.allParams()).exec(function create (err, user) {
         sails.log.debug('Creating user')
 
@@ -22,73 +24,30 @@ module.exports = {
 
         return resolve(user)
       })
-
     }).then(function (user) {
-
       sails.log.debug('Creating address for user: ' + JSON.stringify(user))
+      _self.createUserAddress(user)
+    }).then(function (user_partial) {
 
-      //Attempt to look up country info
-      return LookupService.rest_countries_get_country_info_by_c_name(user.country) .then(function (countryInfo) {
-
-        //If the country info doesnt exist...(problem with the country name??)
-        if (!countryInfo)
-            return Promise.reject({ error: err, message: 'Could not retrieve country info from rest countries in UserService.js/createUser'})
-
-        //Find or create a new country database record using the specified info
-        Country.findOrCreate(countryInfo).then(function (country) {
-
-            //Create an address and use the alpha 3 country code 
-            //to link to the country table. Note that
-            //country name is being duplicated as its required the most.
-            Address.create(
-            {
-              addressLine: user.addressLine,
-              addressLineTwo: user.addressLineTwo,
-              addressLineThree: user.addressLineThree,
-              country: user.country,
-              countryCode: country.alpha3code,
-              city: user.city,
-              state: user.state,
-              postcode: user.postcode,
-              user: user.id
-            }
-            ).exec(function (err, address) {
-              //We couldn't create the address record.. log the error
-              if (err || !user) {
-                sails.log.debug('Error creating address: ' + user + ' ' + err)
-                sails.log.error(err);
-                return Promise.reject({ error: err, message: 'Error creating address record' })
-              } else {
-                //Return a promise with the collected user info so far.
-                return Promise.resolve({ user, address, countryInfo })
-              }
-            })
-
-          }).catch(function(err){
-             return Promise.reject({ error: err, message: 'Error finding or creating country record'});
-          })
-
-        }).catch(function(err){
-          return Promise.reject({ error: err, message: 'Error looking up country info' });
-        })
-
-    }).then(function (user) {
-
-      //Create user settings (preferences)
+      // Create user settings (preferences)
       UserSettings.create({
-        id: user.user.id,
+        id: user_partial.user.id,
         localePreference: req.headers['Accept-Language'] || 'en-US'
       }).exec(function (err, userSettings) {
         if (err) {
           sails.log.error(err)
           return Promise.reject(err)
         } else {
-          return Promise.resolve({ user: user.user, address: user.address, userSettings})
+          return Promise.resolve(
+            {
+              user: user_partial.user,
+              address: user_partial.address,
+              countryInfo: user_partial.countryInfo,
+            userSettings}
+          )
         }
       })
-
     }).then(function (user) {
-
       sails.log.debug('Creating sign up record for user: ' + JSON.stringify(user))
 
       // Register the sign up..
@@ -128,6 +87,49 @@ module.exports = {
 
             return resolve(user)
           })
+      })
+    })
+  },
+  createUserAddress(user) {
+    // Attempt to look up country info
+    return LookupService.rest_countries_get_country_info_by_c_name().then(function (countryInfo) {
+
+      // If the country info doesnt exist...(problem with the country name??)
+      if (!countryInfo)
+        return Promise.reject({ error: err, message: 'Could not retrieve country info from rest countries in UserService.js/createUser'})
+
+      if (!Array.isArray(countryInfo)) {
+        return Promise.reject({ error: new Error(''),
+        message: 'Could not retrieve country info from rest countries in UserService.js/createUser'})
+      }
+
+      return Country.findOrCreate(countryInfo).then(function (country) {
+
+        // Create an address and use the alpha 3 country code 
+        // to link to the country table. Note that
+        // country name is being duplicated as its required the most.
+        Address.create(
+          {
+            addressLine: user.addressLine,
+            addressLineTwo: user.addressLineTwo,
+            addressLineThree: user.addressLineThree,
+            country: user.country,
+            countryInfo: country.alpha3code,
+            city: user.city,
+            state: user.state,
+            postcode: user.postcode,
+            user: user.id
+          }).exec(function (err, address) {
+          // We couldn't create the address record.. log the error
+          if (err || !user) {
+            sails.log.debug('Error creating address: ' + user + ' ' + err)
+            sails.log.error(err)
+            return Promise.reject({ error: err, message: 'Error creating address record' })
+          } else {
+            // Return a promise with the collected user info so far.
+            return Promise.resolve({ user, address, countryInfo})
+          }
+        })
       })
     })
   },

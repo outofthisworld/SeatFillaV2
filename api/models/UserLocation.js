@@ -24,7 +24,7 @@ module.exports = {
             notNull: true
         },
         streetNumber: {
-            type: 'number'
+            type: 'integer'
         },
         street: {
             type: 'string'
@@ -66,10 +66,10 @@ module.exports = {
             type: 'string'
         },
         timeZoneDstOffset: {
-            type: 'number'
+            type: 'integer'
         },
         timeZoneRawOffset: {
-            type: 'number'
+            type: 'integer'
         }
     }
 }

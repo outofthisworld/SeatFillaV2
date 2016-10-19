@@ -48,8 +48,8 @@ module.exports = {
             store(req.session)
             return Promise.resolve({ type: 'session' })
           } else {
-            sails.log.debug('Successfully saved user setting for user ' + req.user.name +
-              '(ID: ' + req.user.id + ')' + 'key = ' + settingKey + ' value = ' + settingValue)
+            sails.log.debug('Successfully saved user setting for user ' + req.user.username +
+              '(ID: ' + req.user.id + ')' + ' to ' + JSON.stringify(keyValueMap))
             return Promise.resolve({ type: 'database' })
           }
         })

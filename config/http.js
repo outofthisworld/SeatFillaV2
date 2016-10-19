@@ -68,11 +68,11 @@ module.exports.http = {
                                             } else {
                                                 user.userSettings = userSettings;
                                                 user.userSettings.currentLocation = userLoc;
-                                                return done(err, user);
+                                                return done(null, user);
                                             }
                                         })
                                     } else {
-                                        return done(err, user)
+                                        return done(null, user)
                                     }
                                 }
                             });

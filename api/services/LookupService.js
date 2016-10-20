@@ -100,7 +100,7 @@ module.exports = {
                 const obj = JSON.parse(body)
 
                 if (!obj) {
-                  console.log(obj)
+                  sails.log.debug(obj);
                   return reject(new Error('Error with request to ' + countryInfoEndpoint + ' could not parse body'))
                 } else {
                   GlobalCache.cache({
@@ -109,6 +109,9 @@ module.exports = {
                   return resolve(obj)
                 }
               } catch (err) {
+                sails.log.error(err);
+                sails.log.debug('body was:');
+                sails.log.debug(body);
                 return reject(new Error('Error parsing JSON response when retrieving country info from rest countries endpoint ' + countryInfoEndpoint))
               }
             }

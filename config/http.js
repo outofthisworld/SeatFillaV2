@@ -11,16 +11,6 @@
 const passport = require('passport')
 module.exports.http = {
 
-  /****************************************************************************
-   *                                                                           *
-   * Express middleware to use for every Sails request. To add custom          *
-   * middleware to the mix, add a function to the middleware config object and *
-   * add its key to the "order" array. The $custom key is reserved for         *
-   * backwards-compatibility with Sails v0.9.x apps that use the               *
-   * `customMiddleware` config option.                                         *
-   *                                                                           *
-   ****************************************************************************/
-
   middleware: {
     passportInit: passport.initialize(),
     passportSession: passport.session(),

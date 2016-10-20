@@ -246,11 +246,16 @@ window.seatfilla.globals.cache.put = function (options) {
         eventObj.objectResultStatus = res.status;
         eventObj.xhrResponseStatus = xhr.status;
         window.seatfilla.globals.cache.notifyCacheEvent('store',[options.key, options, eventObj])
-        callback(res.status, res)
+        console.log('Returning return code ' + res.status + ' for cache put (server store) for key ' + options.key);
+        return callback(res.status, res)
       }
     })
   }else{
+    const returnCode = eventObj.storedInCookie || eventObj.storedInLocalOrSessionStorage? 200:500;
+    console.log('Returning return code ' + returnCode + ' for cache put for key ' + options.key);
+    console.log('Not using server store');
     window.seatfilla.globals.cache.notifyCacheEvent('store',[options.key, options, eventObj])
+    return callback(returnCode, eventObj);
   }
 }
 

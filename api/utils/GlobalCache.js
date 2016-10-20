@@ -130,12 +130,16 @@ GlobalCache.prototype.getData = function (key) {
   const _self = this
   return _self.getDataObject(key).then(function (data) {
     if (data != null && 'value' in data) {
-      sails.log.debug('Found data ... ')
+      sails.log.debug('Found data in GlobalCache for key ' + key);
+      sails.log.debug(JSON.stringify(data.value));
+      if(!data.value){
+          sails.log.debug('GlobalCache: (' + _self.key + '):' + 
+          ' Value for global cache object with key ' + key + ' is null ');
+      }
       return Promise.resolve(data.value)
-    } else {
-      sails.log.debug('Found data ... but was null ')
-      return Promise.resolve(data)
     }
+    
+    return Promise.resolve(data)
   }).catch(function (err) {
     sails.log.error(err)
     return Promise.reject(err)
@@ -165,14 +169,21 @@ GlobalCache.prototype.getSizeBytes = function () {
 }
 
 GlobalCache.prototype.insertData = function (key, data) {
-  const _self = this
+  const _self = this;
+
+  if (!('Data' in _self)) 
+     throw new Error('Invalid object state for GlobalCache in GlobalCache.js/insertData, Data object must be defined.');
+
+  if(key in _self.Data){
+    return false;
+  }
 
   if (_self.expirationSettings.runExpirationPolicyOnInserts &&
     typeof _self.expirationSettings.runExpirationPolicyOnInserts == 'function' &&
     _self.expirationSettings.runExpirationPolicyOnInserts())
     _self.runExpirationPolicy()
 
-  if ('Data' in _self) {
+   
     const dataObject = {
       value: data,
       insertationTime: new Date(),
@@ -181,10 +192,9 @@ GlobalCache.prototype.insertData = function (key, data) {
       numberOfTimesSerialized: 0,
       numberOfTimesDeserialized: 0
     }
-    _self.Data[key] = dataObject
-  } else {
-    throw new Error('Invalid object state for GlobalCache in GlobalCache.js/insertData, Data object must be defined.')
-  }
+
+  _self.Data[key] = dataObject
+  return true;
 }
 
 GlobalCache.prototype.setData = function (key, data) {

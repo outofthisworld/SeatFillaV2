@@ -43,13 +43,14 @@ module.exports = {
           if (error) {
             sails.log.debug('Error when saving user settings ' + JSON.stringify(error))
             sails.log.error(error)
-
+          
             // We'll default to storing in session
             store(req.session)
             return Promise.resolve({ type: 'session' })
           } else {
             sails.log.debug('Successfully saved user setting for user ' + req.user.username +
-              '(ID: ' + req.user.id + ')' + ' to ' + JSON.stringify(keyValueMap))
+              '(ID: ' + req.user.id + ')' + ' to ' + JSON.stringify(keyValueMap) + 
+              ' new settings are ' + JSON.stringify(userSettings))
             return Promise.resolve({ type: 'database' })
           }
         })
@@ -98,7 +99,7 @@ module.exports = {
     if (req.user) {
       return UserLocationService.findOrCreateUserLocation(req.user, location).then(function (userLocation) {
         const id = userLocation.id
-        _self.setUserSettings(req, { 'currentLocation': id }, false)
+        return _self.setUserSettings(req, { 'currentLocation': id }, false)
       }).catch(function (err) {
         sails.log.error(err)
         return _self.setUserSettings(req, { 'currentLocation': location }, true)

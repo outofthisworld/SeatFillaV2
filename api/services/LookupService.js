@@ -102,8 +102,6 @@ module.exports = {
                 if (!obj) {
                   console.log(obj)
                   return reject(new Error('Error with request to ' + countryInfoEndpoint + ' could not parse body'))
-                } else if(obj.status != 200){
-                  return resolve(null);
                 } else {
                   GlobalCache.cache({
                     GlobalCache: 'rest_countries_cache'
@@ -120,16 +118,16 @@ module.exports = {
     })
   },
   rest_countries_get_country_info_by_c_name(countryName) {
-    if (!countryCode) throw new Error('Invalid params to LookupService.js/rest_countries_get_country_info')
+    if (!countryName) throw new Error('Invalid params to LookupService.js/rest_countries_get_country_info')
 
     const countryInfoEndpoint = 'https://restcountries.eu/rest/v1/name/' + countryName;
 
     return new Promise(function (resolve, reject) {
       GlobalCache.cache({
         GlobalCache: 'rest_countries_cache'
-      }).getData(countryCode).then(function (countryData) {
+      }).getData(countryName).then(function (countryData) {
         if (countryData) {
-          resolve(countryData)
+          resolve(countryName)
         } else {
           request({
             headers: {
@@ -151,12 +149,11 @@ module.exports = {
                 if (!obj) {
                   console.log(obj)
                   return reject(new Error('Error with request to ' + countryInfoEndpoint + ' could not parse body'))
-                } else if(obj.status != 200){
-                  return resolve(null);
-                }else {
+                } else {
                   GlobalCache.cache({
                     GlobalCache: 'rest_countries_cache'
-                  }).insertData(countryCode, obj)
+                  }).insertData(countryName, obj)
+                  sails.log.debug('Returning ' + JSON.stringify(obj) + ' from rest_countries_get_country_info_by_c_name');  
                   return resolve(obj)
                 }
               } catch (err) {
@@ -236,7 +233,7 @@ module.exports = {
                 const obj = JSON.parse(body)
 
                 if (!obj) {
-                  console.log(obj)
+                  sails.log.debug('Did not recieve response from fixerIoEndpoint, was ' + obj);
                   return reject(new Error('Error with request to ' + fixerIoEndpoint + ' could not parse body'))
                 } else {
                   GlobalCache.cache({

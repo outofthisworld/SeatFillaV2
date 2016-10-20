@@ -37,7 +37,8 @@ module.exports = {
         },
         countryInfo:{
             type:'string',
-            model:'Country'
+            model:'Country',
+            notNull:true
         },
         state: {
             type: 'string',

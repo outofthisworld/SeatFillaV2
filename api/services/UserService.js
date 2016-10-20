@@ -27,8 +27,8 @@ module.exports = {
     }).then(function (user) {
       sails.log.debug('Creating address for user: ' + JSON.stringify(user))
 
-      _self.createUserAddress(user.id, user).then(function (val) {
-        return Promise.resolve({user,address: val.address,countryInfo: val.countryInfo})
+      _self.findOrCreateUserAddress(user.id, user).then(function (val) {
+        return Promise.resolve({user,address: val.address, countryInfo: val.countryInfo})
       }).catch(function (err) {
         sails.log.error(err)
         return Promise.reject()
@@ -91,16 +91,27 @@ module.exports = {
       })
     })
   },
-  createUserAddress(userId, addressInfo) {
+  findOrCreateUserAddress(userId, addressInfo) {
+
+    sails.log.debug('AddressInfo in UserService.js/findOrCreateAddress is:');
+    sails.log.debug(JSON.stringify(addressInfo));
+    sails.log.debug('Calling UserLocationService.js/findOrCreateCountry with data ' + addressInfo.country);
     // Attempt to look up country info
-    return UserLocationService.findOrCreateCountry(adressInfo.country).then(function (country) {
-      addressInfo.countryInfo = country.alpha3code
-      addressInfo.user = userId
+    return UserLocationService.findOrCreateCountry(addressInfo.country).then(function (country) {
+      
+      sails.log.debug('Country info after calling UserLocationService.js/findOrCreateCountry ')
+      sails.log.debug(JSON.stringify(country));
+
+      addressInfo.countryInfo = country.alpha3Code
+      addressInfo.user = userId.id || userId
+
+      sails.log.debug('Final address info: ')
+      sails.log.debug(JSON.stringify(addressInfo));
 
       // Create an address and use the alpha 3 country code 
       // to link to the country table. Note that
       // country name is being duplicated as its required the most.
-      Address.findOrCreate(addressInfo).exec(function (err, address) {
+      Address.findOrCreate(addressInfo, addressInfo).exec(function (err, address) {
         // We couldn't create the address record.. log the error
         if (err || !addressInfo) {
           sails.log.debug('Error creating address: ' + addressInfo + ' ' + err)
@@ -108,9 +119,10 @@ module.exports = {
           return Promise.reject({ error: err, message: 'Error creating address record' })
         } else {
           // Return a promise with the collected user info so far.
-          return Promise.resolve({ address, countryInfo})
+          return Promise.resolve({ address, countryInfo:country})
         }
       })
+
     }).catch(function (err) {
       sails.log.error(err)
       return Promise.reject(err)

@@ -1,12 +1,14 @@
 module.exports = {
-     countryCode:{
-        type:'string',
-        model:'country',
-        via:'alpha3code'
+  attributes: {
+    countryCode: {
+      type: 'string',
+      model: 'country',
+      via: 'alpha3code'
     },
-    alternateSpelling:{
-        type:'string',
-        notNull:true,
-        required:true
+    alternateSpelling: {
+      type: 'string',
+      notNull: true,
+      required: true
     }
+  }
 }

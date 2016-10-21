@@ -1,8 +1,8 @@
 module.exports = function(req, res, next) {
-    if(!(req.user)){
-        sails.log.debug('Passed not log in policy...');
-        return next();  
-    }
-
-   return res.forbidden('You are not permitted to perform this action.');
+     if(req.user){
+        sails.log.debug('User logged in.. logging out');
+        req.flash('info', 'Please re-validate your credentials')
+        req.user.logout();
+     }
+     return next();  
 }

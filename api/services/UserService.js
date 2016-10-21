@@ -276,6 +276,12 @@ module.exports = {
       }
     })
   },
+  logout(req){
+    if(!req.user) return;
+    
+    req.logout()
+    req.session.destroy()
+  },
   saveUserImage(user, fileName, imageData, onFinish) {
     const path = '../images/users/' + user.email + '/profile-images/' + uuid.uuid() + fileName
     FileService.writeBinaryFile(path, imageData, onFinish)

@@ -19,41 +19,38 @@ module.exports = {
         if (req.user) res.redirect('/')
 
         sails.log.debug('local auth request: ');
-
         sails.log.debug(req.allParams());
 
-        passport.authenticate('local', function(err, user, message) {
-            new Promise(function(resolve, reject) {
-                if (err || !user) {
-                    sails.log.debug('Error authentication via passport');
-                    sails.log.debug(err);
-                    sails.log.debug(user);
-                    sails.log.debug(message);
-                    return resolve({ status: ResponseStatus.CLIENT_BAD_REQUEST, error: err, errorMessage: message });
-                } else {
-                    req.login(user, function(err) {
-                        sails.log.debug('logging user in');
-                        if (err) {
-                            sails.log.debug('Failed to log on user to req in controllers/authcontroller.js')
-                            return resolve({ status: ResponseStatus.CLIENT_BAD_REQUEST, error: err, errorMessage: err.message, messagelocal: 'failed to log on user to req in controllers/authcontroller.js' });
-                        } else {
-                            sails.log.debug('Succesfully logged on user via passport in controllers/authcontroller.js')
-                            sails.log.debug('User logging in: ' + user);
-                            return resolve({ status: ResponseStatus.OK, user: req.user });
-                        }
-                    });
+        AuthenticationService.authenticateLocal(req, res).then(function(result) {
+                sails.log.debug('Result logging in was: ' + JSON.stringify(result));
+
+                if(result.status == sails.config.passport.errorCodes().Success){
+                    req.flash('toaster-success', 'You are now logged in!');
+
+                    if(!req.user.isEmailVerified){
+                        req.flash('toaster-notification',
+                        'Your email is not currently verified');
+                    }else{
+                         req.flash('toaster-notification', 'Welcome back to Seatfilla!');
+                    }
+
+                }else{
+                    req.flash('toaster-warning', 'Error logging in : ' + result.errorMessage);
+                    if(!res.xhr)
+                        return res.redirect(req.param('redirectFailiure') || '/');
                 }
-            }).then(function(result) {
-                sails.log.debug(result);
-                if (res.xhr && result.status == ResponseStatus.CLIENT_BAD_REQUEST) {
-                    return res.json(ResponseStatus.CLIENT_BAD_REQUEST, result);
-                } else if (res.xhr && result.status == ResponseStatus.OK) {
+
+                if (res.xhr){
                     return res.json(ResponseStatus.OK, result);
                 } else {
-                    return res.redirect('/');
+                    return res.redirect(req.param('redirectSuccess') || '/');
                 }
-            });
-        })(req, res);
+
+        }).catch(function(err){
+            sails.log.error(err);
+            req.flash('toaster-warning', 'Error logging in : ' + err.message);
+            res.redirect('/')
+        })
     },
     /**
      * Generates an API token (a JSON web token that is signed using HMAC to ensure integrity, 
@@ -191,12 +188,15 @@ module.exports = {
 
         sails.log.debug('Made request to login via facebook')
 
-        passport.authenticate('facebook', { scope: 'public_profile, email' })(req, res, function(err) {
-            if (err) {
-                sails.log.debug('Recieved error when authenticating via facebook ' + err);
-            } else {
-
-            }
+        AuthenticationService.authenticateFacebook(req,res).then(function(result){
+              sails.log.debug('Authenticate via facebook : result is ' + result);
+              //req.flash('toaster-success', 'Successfully authenticated via facebook');
+              //res.redirect('/');
+        }).catch(function(err){
+                sails.log.debug('Recieved error when authenticating via facebook ' + err.message);
+                sails.log.error(err);
+                req.flash('toaster-warning', 'Error authenticating via facebook ' + err.message);
+                res.redirect('/')
         })
     },
     /**
@@ -208,14 +208,17 @@ module.exports = {
      */
     facebookCallback: function(req, res) {
         passport.authenticate('facebook', {
-            successRedirect: '/auth/success',
-            failureRedirect: '/user/login'
+            successRedirect: req.session.successRedirect || '/auth/success',
+            failureRedirect: req.session.failiureRedirect || '/auth/failure'
         })(req, res, function(err, user) {
             if (err) {
                 sails.log.debug('Error in facebook callback ' + err)
-                return res.badRequest({ error: err, user: user })
+                sails.log.error(err);
+                req.flash('toaster-warning', 'Error in facebook callback ' + err.message);
+                return res.redirect(req.session.failiureRedirect || '/auth/failiure')
             } else {
-                res.redirect('/auth/success');
+                req.flash('toaster-success', 'Succesfully logged in via facebook' + err.message);
+                res.redirect(req.session.successRedirect || '/auth/success');
             }
         })
     },
@@ -252,7 +255,7 @@ module.exports = {
                 sails.log.debug('Error in twitter callback ' + err)
                 return res.badRequest({ error: err, user: user })
             } else {
-                res.redirect('/user/completeRegistration');
+                res.redirect(req.session.redirectPath || '/user/completeRegistration');
             }
         })
     },
@@ -263,7 +266,7 @@ module.exports = {
      * @param {returnType} arg2 - what it is.
      */
     google: function(req, res) {
-        if (req.user) return res.redrect('/')
+        if (req.user) return res.redrect(req.session.redirectPath || '/')
 
         sails.log.debug('Made request to login via twitter')
 
@@ -284,7 +287,7 @@ module.exports = {
     googleCallback: function(req, res) {
         passport.authenticate('google', { failureRedirect: '/user/login' },
             function(req, res) {
-                res.redirect('/auth/success');
+                res.redirect(req.session.redirectPath || '/auth/success');
             })
     },
     /**
@@ -303,9 +306,7 @@ module.exports = {
      * @param {returnType} arg2 - what it is.
      */
     logout: function(req, res) {
-        if (!req.user) res.redirect('/');
-        req.logout()
-        req.session.destroy()
-        res.redirect('/')
+        UserService.logout(req);
+        res.redirect(req.session.redirectPath || '/')
     }
 }

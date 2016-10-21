@@ -171,6 +171,10 @@ module.exports = {
             }
             return false;
         },
+        logout(req){
+            req.logout()
+            req.session.destroy()
+        },
         verifyPassword: function(password) {
             return bcrypt.compareSync(password, this.password);
         },

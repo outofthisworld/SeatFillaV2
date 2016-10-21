@@ -13,6 +13,7 @@ const passport = require('passport'),
 
 
 
+
 /*
     Confirguration belows, details external provider API keys and callback URL's ect.)
 */
@@ -52,6 +53,16 @@ const googleStrategyFields = {
     passReqToCallback: true
 }
 
+const exportObject = {
+    errorCodes(){
+        return {
+            InvalidUsername:2,
+            InvalidPassword:4,
+            ErrorUnknown:8,
+            Success:200
+        }
+    }
+}
 
 // Local stratergy for logging in
 const localStrategy = function(req, email, password, done) {
@@ -61,14 +72,21 @@ const localStrategy = function(req, email, password, done) {
         .populate('roles').exec(function(err, user) {
             sails.log.debug('Error finding user? :' + err);
             sails.log.debug('Found user?:  ' + JSON.stringify(user));
+            const error = new Error();
             if (err) {
-                done(err)
+                error.message = err.message
+                error.status = exportObject.errorCodes().ErrorUnknown
+                done(err,null)
             } else if (!user) {
-                done(new Error('Invalid username'))
+                error.message = 'Invalid username';
+                error.status = exportObject.errorCodes().InvalidUsername
+                done(error,null)
             } else if (!user.verifyPassword(password)) {
-                done(new Error('Invalid password'))
+                error.message = 'Invalid password';
+                error.status = exportObject.errorCodes().InvalidPassword
+                done(error,null)
             } else {
-                return done(null, user, { message: 'Succesfully logged in' })
+                return done(null, user)
             }
         })
 }
@@ -93,3 +111,6 @@ passport.use(new FacebookStrategy(facebookStrategyFields, genericStratergy))
 passport.use(new TwitterStrategy(twitterStrategyFields, genericStratergy))
     // Google auth
 passport.use(new GoogleStrategy(googleStrategyFields, genericStratergy))
+
+
+module.exports.passport = exportObject;

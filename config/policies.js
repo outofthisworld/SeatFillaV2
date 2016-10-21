@@ -65,6 +65,11 @@ module.exports.policies = {
         'twitter': true,
         'twitterCallback': true,
     },
+    ProviderController:{
+        '*':['providerAuthenticationPolicy'],
+        'login':['notLoggedInPolicy','providerNotLoggedInPolicy'],
+        'authenticate':['notLoggedInPolicy','providerNotLoggedInPolicy']
+    },
     VerifyController: {
         '*': false,
         'email': ['getPolicy']

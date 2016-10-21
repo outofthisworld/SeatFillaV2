@@ -1,7 +1,13 @@
 
 body {
-  background-color: #f8f8f8;
+  background-color: #FEFEFE;
 }
+
+body.provider-login{
+  background-color:lightskyblue;
+  height:100vh;
+}
+
 #wrapper {
   width: 100%;
 }

@@ -9,8 +9,9 @@
  * http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.http.html
  */
 const passport = require('passport')
-module.exports.http = {
+var flash = require('connect-flash')
 
+module.exports.http = {
   middleware: {
     passportInit: passport.initialize(),
     passportSession: passport.session(),
@@ -42,7 +43,7 @@ module.exports.http = {
               if (err) {
                 sails.log.debug('Could not find or create user settings')
                 sails.log.error(err)
-                Promise.reject(err);
+                Promise.reject(err)
               } else {
                 sails.log.debug('Found user settings ' + JSON.stringify(userSettings))
                 // Handle nested associations that waterline doesn't currently have support for.
@@ -67,24 +68,39 @@ module.exports.http = {
               }
             })
           }
-          return Promise.resolve(user);
-        }).then(function (user) { 
-            return new Promise(function(resolve,reject){
-                user.addresses.forEach(function(address, indx){
-                    Country.findOne({alpha3Code: address.countryInfo }).then(function(country){
-                        user.addresses[indx].countryInfo = country;
-                    }).catch(function(err){
-                        sails.log.error(err);
-                        return reject(err);
-                    })
-                })
-                return resolve(user);
+          return Promise.resolve(user)
+        }).then(function (user) {
+          return new Promise(function (resolve, reject) {
+            user.addresses.forEach(function (address, indx) {
+              Country.findOne({alpha3Code: address.countryInfo }).then(function (country) {
+                user.addresses[indx].countryInfo = country
+              }).catch(function (err) {
+                sails.log.error(err)
+                return reject(err)
+              })
             })
-        }).then(function(user){
-            return done(null,user);
+            return resolve(user)
+          })
+        }).then(function (user) {
+          return new Promise(function (resolve, reject) {
+            user.apiKeys.forEach(function (apiuser, indx) {
+              ApiRequests.find({apiUser: apiuser.apiToken})
+                .exec(function (err, result) {
+                  if (err) {
+                    sails.log.error(err);
+                    return reject(err);
+                  }else{
+                    user.apiKeys[indx].apiRequests = result
+                  }
+                })
+            })
+             return resolve(user);
+          })
+        }).then(function (user) {
+          return done(null, user)
         }).catch(function (err) {
-            sails.log.error(err);
-            return done(err,null);
+          sails.log.error(err)
+          return done(err, null)
         })
       })
     }(),
@@ -102,6 +118,7 @@ module.exports.http = {
       'session',
       'passportInit',
       'passportSession',
+      'connectFlash',
       'requestLogger',
       'reqModifer',
       'resModifer',
@@ -117,6 +134,7 @@ module.exports.http = {
       '404',
       '500'
     ],
+    connectFlash: flash(),
     reqModifer: function (req, res, next) {
       req.isPOST = function () {
         return req.method === 'POST'

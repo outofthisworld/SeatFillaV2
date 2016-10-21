@@ -188,15 +188,11 @@ module.exports = {
 
         sails.log.debug('Made request to login via facebook')
 
-        AuthenticationService.authenticateFacebook(req,res).then(function(result){
-              sails.log.debug('Authenticate via facebook : result is ' + result);
-              //req.flash('toaster-success', 'Successfully authenticated via facebook');
-              //res.redirect('/');
-        }).catch(function(err){
-                sails.log.debug('Recieved error when authenticating via facebook ' + err.message);
-                sails.log.error(err);
-                req.flash('toaster-warning', 'Error authenticating via facebook ' + err.message);
-                res.redirect('/')
+        AuthenticationService.authenticateFacebook(req,res).catch(function(err){
+            sails.log.debug('Recieved error when authenticating via facebook' + err.message);
+            sails.log.error(err);
+            req.flash('toaster-warning', 'Error authenticating via facebook ' + err.message);
+            res.redirect('/')
         })
     },
     /**
@@ -209,7 +205,7 @@ module.exports = {
     facebookCallback: function(req, res) {
         passport.authenticate('facebook', {
             successRedirect: req.session.successRedirect || '/auth/success',
-            failureRedirect: req.session.failiureRedirect || '/auth/failure'
+            failureRedirect: req.session.failiureRedirect || '/auth/login'
         })(req, res, function(err, user) {
             if (err) {
                 sails.log.debug('Error in facebook callback ' + err)
@@ -233,10 +229,11 @@ module.exports = {
 
         sails.log.debug('Made request to login via twitter')
 
-        passport.authenticate('twitter')(req, res, function(err) {
-            if (err) {
-                sails.log.debug('Recieved error when authenticating via twitter ' + err)
-            }
+         AuthenticationService.authenticateTwitter(req,res).catch(function(err){
+            sails.log.debug('Recieved error when authenticating via twitter' + err.message);
+            sails.log.error(err);
+            req.flash('toaster-warning', 'Error authenticating via twitter ' + err.message);
+            res.redirect('/')
         })
     },
     /**
@@ -249,13 +246,14 @@ module.exports = {
     twitterCallback: function(req, res) {
         passport.authenticate('twitter', {
             successRedirect: '/user/completeRegistration',
-            failureRedirect: '/user/login'
+            failureRedirect: '/auth/login'
         })(req, res, function(err, user) {
             if (err) {
                 sails.log.debug('Error in twitter callback ' + err)
+                sails.log.error(err);
                 return res.badRequest({ error: err, user: user })
             } else {
-                res.redirect(req.session.redirectPath || '/user/completeRegistration');
+                res.redirect(req.session.redirectPath || '/auth/login');
             }
         })
     },
@@ -270,11 +268,12 @@ module.exports = {
 
         sails.log.debug('Made request to login via twitter')
 
-        passport.authenticate('google')(req, res, function(err) {
-            if (err) {
-                sails.log.debug('Recieved error when authenticating via google ' + err)
-            }
-        });
+        AuthenticationService.authenticateGoogle(req,res).catch(function(err){
+            sails.log.debug('Recieved error when authenticating via google' + err.message);
+            sails.log.error(err);
+            req.flash('toaster-warning', 'Error authenticating via google ' + err.message);
+            res.redirect('/')
+        })
     },
     /* 
      * The google callback used during authentication to return control of the request back to our application. 
@@ -284,11 +283,13 @@ module.exports = {
      * @param {returnType} arg1 - what is is.
      * @param {returnType} arg2 - what it is.
      */
+    
     googleCallback: function(req, res) {
-        passport.authenticate('google', { failureRedirect: '/user/login' },
-            function(req, res) {
-                res.redirect(req.session.redirectPath || '/auth/success');
-            })
+        passport.authenticate('google', { 
+            failureRedirect: '/auth/login' 
+        },function(req, res) {
+            res.redirect(req.session.redirectPath || '/auth/success');
+        })
     },
     /**
      * Via some providers, users will be redirected to this page to show system status. 

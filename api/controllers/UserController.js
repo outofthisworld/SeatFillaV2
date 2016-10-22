@@ -21,29 +21,7 @@ module.exports = {
             });
         });
     },
-    //GET [complete registraion page]
     complete_registration: function(req, res) {
         return res.ok({ user: req.user });
     },
-    //Get the login page
-    login(req, res) {
-        if (req.user) req.redirect('/');
-        res.ok();
-    },
-    register(req, res) {
-        if (req.user) req.redirect('/');
-        return res.ok({}, {
-            view: 'user/register',
-            title: req.__('MyAccount')
-        });
-    },
-    resend_verification_email(req, res) {
-        return res.ok({ user: req.user }, { view: 'user/resend-verfication-email', layout: 'layout' });
-    },
-    reset_password(req, res) {
-        return res.ok({ user: req.user }, { view: 'user/reset-password.ejs', layout: 'layout' });
-    },
-    invalid_details(req, res) {
-        return res.ok();
-    }
 };

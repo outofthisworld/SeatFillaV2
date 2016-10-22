@@ -74,18 +74,23 @@ const localStrategy = function(req, email, password, done) {
             sails.log.debug('Found user?:  ' + JSON.stringify(user));
             const error = new Error();
             if (err) {
-                error.message = err.message
+                sails.log.error(err);
+                sails.log.debug('Local stratergy: Error unknown');
+                error.message = err.message 
                 error.status = exportObject.errorCodes().ErrorUnknown
-                done(err,null)
+                done(error,null)
             } else if (!user) {
+                sails.log.debug('Local stratergy: Error invalid username');
                 error.message = 'Invalid username';
                 error.status = exportObject.errorCodes().InvalidUsername
                 done(error,null)
             } else if (!user.verifyPassword(password)) {
+                sails.log.debug('Local stratergy: Error invalid password');
                 error.message = 'Invalid password';
                 error.status = exportObject.errorCodes().InvalidPassword
                 done(error,null)
             } else {
+                sails.log.debug('Local stratergy: Success');
                 return done(null, user)
             }
         })

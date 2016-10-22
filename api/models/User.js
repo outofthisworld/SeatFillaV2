@@ -172,8 +172,7 @@ module.exports = {
             return false;
         },
         logout(req){
-            req.logout()
-            req.session.destroy()
+            req.logout();
         },
         verifyPassword: function(password) {
             return bcrypt.compareSync(password, this.password);

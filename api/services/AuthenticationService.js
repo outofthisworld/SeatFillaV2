@@ -5,11 +5,11 @@ module.exports = {
     return new Promise(function (resolve, reject) {
       (passport.authenticate('local', function (err, user) {
         if (err || !user) {
-          sails.log.debug('Status in local auth was ' + err.status);
           sails.log.debug('Error authentication via passport')
           sails.log.debug(err)
           sails.log.debug(user)
-          return resolve({ status:err.status, error: err, errorMessage: err.message })
+          return resolve({ status:err && err.status || sails.config.passport.errorCodes().ErrorUnknown , error: 
+            err || new Error('Error unknown'), errorMessage: err && err.message || 'Unknown error' })
         } else {
           req.login(user, function (err) {
             sails.log.debug('logging user in')
@@ -28,7 +28,7 @@ module.exports = {
       }))(req, res)
     }).catch(function (err) {
       sails.log.error(err)
-      return resolve({ status:sails.config.passport.errorCodes().ErrorUnknown, error: err, errorMessage: err.message })
+      return Promise.reject({ status:sails.config.passport.errorCodes().ErrorUnknown, error: err, errorMessage: err.message })
     })
   },
   authenticateFacebook(req, res, redirectObj) {

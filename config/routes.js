@@ -33,6 +33,7 @@ module.exports.routes = {
      ***************************************************************************/
 
     'get /': 'HomeController.index',
+    'get /login': 'HomeController.login',
     'get /FlightRequest': {
         view: 'flightrequest/create',
         locals: {

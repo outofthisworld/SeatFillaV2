@@ -30,6 +30,11 @@ module.exports = {
     apiRequests:{
       collection:'ApiRequest',
       via:'apiUser'
+    },
+    secret:{
+      type:'string',
+      notNull:true,
+      required:true
     }
   }
 };

@@ -40,7 +40,7 @@ module.exports = {
                         return res.redirect(req.param('redirectFailiure') || '/');
                 }
 
-                if (res.xhr){
+                if (req.wantJSON){
                     return res.json(ResponseStatus.OK, result);
                 } else {
                     return res.redirect(req.param('redirectSuccess') || '/');
@@ -79,24 +79,21 @@ module.exports = {
         const requestPermissionKeys = Object.keys(permissions);
 
         (function verifyRequest(req) {
-            var badRequest = false;
             const errors = [];
+
             if (!req.param('requestURL')) {
-                badRequest = true;
                 errors.push('No request URL was supplied, this is required.');
             }
 
             if (requestPermissionKeys.length <= 0) {
-                badRequest = true;
                 errors.push('At-least one permission must be used to create an API key.');
             }
 
             if (!req.param('sfKey') && !req.headers['x-seatfilla-key']) {
-                badRequest = true;
                 errors.push('No secret key was provided! Cannot generated token.');
             }
 
-            if (badRequest) {
+            if (errors.length != 0) {
                 return res.json(ResponseStatus.CLIENT_BAD_REQUEST, {
                     status: ResponseStatus.CLIENT_BAD_REQUEST,
                     errorMessage: 'Errors occurred verifying the request, was all information supplied?',
@@ -114,7 +111,7 @@ module.exports = {
             iat: Math.floor(new Date().getTime() / 1000) - 30,
             aud: 'SeatFilla',
             sub: 'SeatfillaApiToken'
-        }, function(err, token) {
+        }, function(err, token, secret) {
 
             if (err) {
                 sails.log.debug('Error generating API token, controllers/authcontroller.js')
@@ -122,7 +119,7 @@ module.exports = {
                 return res.json({ status: ResponseStatus.CLIENT_BAD_REQUEST, error: err, errorMessage: err.message })
 
             } else {
-                ApiService.createApiUser(req.user, token, permissions).then(function(apiUser) {
+                ApiService.createApiUser(req.user, token, secret, permissions).then(function(apiUser) {
 
                     NotificationService.sendDedicatedNotificationAsync(req)({
                         title: 'Api token has been succesfully generated! ',

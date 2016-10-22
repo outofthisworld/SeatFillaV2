@@ -4,7 +4,7 @@ const _create = require('../out/create');
 module.exports = {
     create(req,res){
         //Create a new flight request using the create module
-        _create(req,res).then(function(result){
+        _create(req).then(function(result){
             UserService.notifyUserLinksAsync(req.user).then(()=>{}).catch(function(err){
                 sails.log.error(err);
             });

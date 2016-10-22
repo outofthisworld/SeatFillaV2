@@ -52,7 +52,7 @@ module.exports.policies = {
     },
     AuthController: {
         '*': false,
-        'generateApiToken': ['passportAuth', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
+        'generateApiToken': ['passportAuth'],
         'removeApiToken': ['passportAuth', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
         'removeAllApiTokens': ['passportAuth', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
         'local': true,
@@ -64,6 +64,10 @@ module.exports.policies = {
         'instagramCallback': true,
         'twitter': true,
         'twitterCallback': true,
+    },
+    HomeController:{
+         '*':true,
+        'login':['notLoggedInPolicy','providerNotLoggedInPolicy'],
     },
     ProviderController:{
         '*':['providerAuthenticationPolicy'],
@@ -95,5 +99,4 @@ module.exports.policies = {
         '*':false,
         'subscribeToUserSocketService':['passportAuth']
     }
-
 };

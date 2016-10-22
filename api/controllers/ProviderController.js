@@ -1,43 +1,60 @@
 module.exports = {
-    index(req,res){
-        return res.ok({ user: req.user}, {
-            view: 'provider-dashboard/index',
-            layout: 'layouts/provider-layout'
-        });
-    },
-    login(req,res){
-        return res.ok({}, {
-            view: 'provider-dashboard/login',
-        });
-    },
-    authenticate(req,res){
-        if(!req.param('apiKey')) res.redirect(req.path);
+  index(req, res) {
+    return res.ok({ user: req.user }, {
+      view: 'provider-dashboard/index',
+      layout: 'layouts/provider-layout'
+    })
+  },
+  login(req, res) {
+    return res.ok({}, {
+      view: 'provider-dashboard/login'
+    })
+  },
+  authenticate(req, res) {
+    if (!req.param('apiKey') || !req.param('apiSecret')) res.redirect('/')
 
-        AuthenticationService.authenticateLocal(req, res)
-        .then(function(result) {
-            if(result.status == sails.config.passport.errorCodes().Success){
-                if(req.user.apiKeys
-                    .filter(function(apiKey){
-                        apiKey.token == req.param('apiKey')
-                    }
-                ).length == 1){
-                    req.session.providerlogin = { 
-                        isAuthenticated:false, 
-                        apiKey: req.param('apiKey')
-                    }
-                    return Promise.resolve(true);
-                }else{
-                     return Promise.reject(new Error('Invalid API key'));
-                }
-            }else{
-                return Promise.reject(result.error);
-            }
-        }).then(function(result){
-                req.flash('toaster-success', 'Succesfully logged into the provider panel');
-                res.redirect('/provider/index')
-        }).catch(function(err){
-                req.flash('toaster-warning', 'Error logging in : ' + err.message);
-                res.redirect('/provider/login')
-        })
-    }
+    AuthenticationService.authenticateLocal(req, res)
+      .then(function (result) {
+        if (result.status == sails.config.passport.errorCodes().Success) {
+          sails.log.debug('Attempting to login as provider')
+          return new Promise(function (resolve, reject) {
+            ProviderService.login(req, req.param('apiKey'),req.param('apiSecret')).then(function (result) {
+              sails.log.debug('Result logging in via provider was : ' + result)
+              return resolve(result)
+            }).catch(function (err) {
+              sails.log.debug('Error logging in via provider')
+              sails.log.error(err)
+              return reject(err)
+            })
+          })
+        }else {
+          return Promise.reject(result)
+        }
+      }).then(function (result) {
+    
+      req.flash('toaster-success', 'Succesfully logged into the provider panel')
+
+      sails.log.debug('Succesfully authenticated and logged in via provider, result was '
+        + JSON.stringify(result))
+
+      if (req.wantsJSON) {
+        return res.json(200, result)
+      }else {
+        return res.redirect(req.param('redirectSuccess') || '/provider/index')
+      }
+    }).catch(function (err) {
+      sails.log.debug('Error in ProviderController.js/authenticate')
+      sails.log.debug('Error was ' + err)
+      sails.log.error(err)
+
+      req.flash('toaster-warning', 'Error logging in : ' + err.message)
+      req.flash('info','Error logging in : ' + err.message)
+
+      if (req.wantsJSON) {
+        return res.json(200, err)
+      }else {
+        res.redirect(req.param('redirectFailiure') || '/provider/login')
+      }
+    })
+  }
 }

@@ -1,6 +1,6 @@
 var actionUtil = require('../blueprints/actionUtil');
 
-module.exports = function createRecord (req, res) {
+module.exports = function createRecord (req) {
 
     var Model = actionUtil.parseModel(req);
     sails.log.debug(Model);

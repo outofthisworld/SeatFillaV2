@@ -47,16 +47,13 @@ const jwt = require('jsonwebtoken')
 // Required the UUID module
 const uuid = require('node-uuid')
 
-// Our secret API key, (remember to move this to our config files later when can be bothered >:) )
-const apiKey = 'secret-half'
-
 const tokenParam = 'sfToken'
 const keyParam = 'sfKey'
 const tokenHeaderSecretKey = 'x-seatfilla-key'
 const tokenHeaderToken = 'x-access-token'
 
 const createApiSecret = function(apiKey, sharedSecret) {
-    return sails.config.session.secret + sharedSecret
+    return  apiKey + sharedSecret
 }
 
 const apiPermissions = {
@@ -91,10 +88,12 @@ module.exports = {
         // Grab the key..
         const key = this.findApiKeyFromRequest(obj)
 
+        const ourSecret = uuid.v4();
+
         // If we have the payload and the key...
         if (payload && key) {
             // Sign it and return.
-            return cb(null, jwt.sign(payload, createApiSecret(apiKey, key)))
+            return cb(null, jwt.sign(payload, createApiSecret(ourSecret, key)), ourSecret)
         } else {
             // Something went wrong.. lets debug.
             sails.log.debug('Error creating API token in services/jwtService.js')
@@ -114,6 +113,7 @@ module.exports = {
             })
         })
     },
+
     // finds the user half of the secret api key from a request object
     findApiKeyFromRequest: function(req) {
         return req.sfKey || req.param(keyParam) || req.headers[tokenHeaderSecretKey]
@@ -173,14 +173,22 @@ module.exports = {
             return cb(new Error('Missing token or key'))
         }
 
-        // Lets verify our token... and return to the callers cb.
-        jwt.verify(token, createApiSecret(apiKey, key), (err, decoded) => {
-            if (err) return cb(err)
-            else return cb(null, decoded, token)
+        this.locateApiUser({token}).then(function(apiUser){
+            if(!apiUser){
+                return cb(new Error('Could not locate token: ' + token + 'in ApiService.js/verifyApiToken'))
+            }else{
+                // Lets verify our token... and return to the callers cb.
+                jwt.verify(token, createApiSecret(apiUser.secret, key), (err, decoded) => {
+                    if (err) return cb(err)
+                    else return cb(null, decoded, token, apiUser)
+                })
+            }
+        }).catch(function(err){
+            return cb(err);
         })
     },
-    createApiUser: function(user, apiToken, permissions) {
-        if (!user || !apiToken || !permissions) throw new Error('Invalid params to create API user.')
+    createApiUser: function(user, apiToken, secret, permissions) {
+        if (!user || !apiToken || !secret || !permissions) throw new Error('Invalid params to create API user.')
 
         const requiresVerification = this.tokenRequiresVerification(permissions)
         sails.log.debug('Token requires verification? : ' + requiresVerification)
@@ -190,7 +198,8 @@ module.exports = {
                 apiToken: apiToken,
                 isVerified: !requiresVerification,
                 isBlocked: false,
-                user: user.id
+                user: user.id,
+                secret:secret
             }).exec(function(err, ApiUser) {
                 if (err) return reject(err)
                 else return resolve(ApiUser)
@@ -230,6 +239,6 @@ module.exports = {
         })
     },
     findApiTokensForUser(options) {
-        return ApiUsers.find({ user: options.id || options.req.id })
+        return ApiUsers.find({ user: options.id || options.req.user.id })
     }
 }

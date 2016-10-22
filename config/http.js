@@ -82,21 +82,6 @@ module.exports.http = {
             return resolve(user)
           })
         }).then(function (user) {
-          return new Promise(function (resolve, reject) {
-            user.apiKeys.forEach(function (apiuser, indx) {
-              ApiRequests.find({apiUser: apiuser.apiToken})
-                .exec(function (err, result) {
-                  if (err) {
-                    sails.log.error(err);
-                    return reject(err);
-                  }else{
-                    user.apiKeys[indx].apiRequests = result
-                  }
-                })
-            })
-             return resolve(user);
-          })
-        }).then(function (user) {
           return done(null, user)
         }).catch(function (err) {
           sails.log.error(err)

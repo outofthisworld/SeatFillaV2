@@ -13,7 +13,6 @@ module.exports = function(req, res, next) {
     for (key in sails.config.domainWhitelist) {
         if (sails.config.domainWhitelist[key]) {
             return next();
-            break;
         }
     }
 

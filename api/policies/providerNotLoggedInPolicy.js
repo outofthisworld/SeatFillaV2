@@ -1,7 +1,10 @@
 module.exports = function(req,res,done){
-    if(req.session.providerlogin){
+
+    if(ProviderService.isAuthenticated(req)){
         sails.log.debug('Logging out from provider');
-        delete req.session.providerlogin;
+        ProviderService.logout(req);
+    }else{
+        sails.log.debug('Not logged into provider, not logging out');
     }
     done();
 }

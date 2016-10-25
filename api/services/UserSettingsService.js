@@ -27,7 +27,10 @@ module.exports = {
 
     function store (storageObject) {
       for (var key in keyValueMap) {
-        if (Object.hasOwnProperty(key)) {
+        if (keyValueMap.hasOwnProperty(key)) {
+
+          sails.log.debug('Storing key ' + key + ' into session/database, value = ' + keyValueMap[key])
+
           storageObject[key] = keyValueMap[key]
         }
       }
@@ -37,7 +40,8 @@ module.exports = {
       return UserSettings.findOrCreate({
         user: req.user.id
       }, { user: req.user.id }).then(function (userSettings) {
-        store(userSettings)
+
+        store(userSettings,'database')
 
         userSettings.save(function (error) {
           if (error) {
@@ -45,7 +49,7 @@ module.exports = {
             sails.log.error(error)
           
             // We'll default to storing in session
-            store(req.session)
+            store(req.session,session)
             return Promise.resolve({ type: 'session' })
           } else {
             sails.log.debug('Successfully saved user setting for user ' + req.user.username +
@@ -56,37 +60,56 @@ module.exports = {
         })
       }).catch(function (err) {
         sails.log.error(err)
-        store(req.session)
+        store(req.session,'session')
         return Promise.resolve({ type: 'session' })
       })
     } else {
-      sails.log.debug('Storing in session and returning promise');
-      store(req.session)
+      sails.log.debug('Storing in session ' + JSON.stringify(keyValueMap));
+      store(req.session,'session')
       return Promise.resolve({ type: 'session' })
     }
   },
   getUserSettings(req, keyArr) {
     if (!req || !keyArr || !Array.isArray(keyArr))
       throw new Error('Invalid params passed to UserSettingsService.js/getUserSetting')
-
-    const obj = {}
-    for (key in keyArr) {
+  
       if (req.user) {
-        obj[key] = req.user.userSettings[key] || req.session[key]
+        return UserSettings
+        .find({user:req.user.id})
+        .then(function(userSettings){
+            if(Array.isArray(userSettings))
+                userSettings = userSettings[0]
+
+            const obj = {}
+            for (key in keyArr) {
+               obj[key] =  userSettings[key] || req.session[key]
+            }
+            return Promise.resolve(obj);
+        }).catch(function(err){
+           sails.log.error(err);
+           return Promise.reject(err);
+        })
       } else {
-        obj[key] = req.session[key]
+          const obj = {}
+          sails.log.debug('Current session is: ' + JSON.stringify(req.session));
+          for (key in keyArr) {
+            obj[key] = req.session[key]
+          }
+          return Promise.resolve(obj);
       }
-    }
-    return obj
   },
   getUserCurrentLocation(req){
-    return this.getUserSettings(req, ['currentLocation']);
+    return this.getUserSettings(req, ['currentLocation']).then(function(result){
+       return Promise.resolve(result.currentLocation)});
   },
   getUserCurrencyCodePreference(req){
-    return this.getUserSettings(req,['currencyCodePreference']);
+    return this.getUserSettings(req,['currencyCodePreference']).then(function(result){ 
+      return Promise.resolve(result.currencyCodePreference)});
   },
   getUserLocalePreference(req){
-    return this.getUserSettings(req,['localePreference']);
+    return this.getUserSettings(req,['localePreference']).then(function(result){
+      return Primise.resolve(result.localePreference)
+    });
   },
   setUserCurrencyCodePreference(req, currencyCode) {
     return this.setUserSettings(req, { 'currencyCodePreference': currencyCode || 'USD' }, false)
@@ -97,7 +120,8 @@ module.exports = {
   setUserCurrentLocation(req, location) {
     const _self = this
     if (req.user) {
-      return UserLocationService.findOrCreateUserLocation(req.user, location).then(function (userLocation) {
+      return UserLocationService.findOrCreateUserLocation(req.user, location).then(function (loc) {
+        const userLocation = loc.location;
         const id = userLocation.id
         return _self.setUserSettings(req, { 'currentLocation': id }, false)
       }).catch(function (err) {

@@ -1,124 +1,223 @@
 module.exports = {
-    airports(req, res) {
-        return res.ok();
-    },
-    retrieveFlightInfo(req, res) {
-        new Promise(function(resolve, reject) {
-            if (req.user) {
-                UserLocationService.findOrCreateUserLocation(req.user, req.body.userLocation).then(function(addr) {
-                    sails.log.debug('Succesfully created user location: ' + JSON.stringify(addr));
-                }).catch(function(err) {
-                    sails.log.error(err);
-                });
+  airports(req, res) {
+    return res.ok()
+  },
+  retrieveFlightInfo(req, res) {
+    async.auto({
+      createUserLocation: [function (callback, results) {
+        if (!req.user) return callback(null, null)
 
-                UserSearchService.newUserMapSearch(
-                    req.user,
-                    req.body.origin,
-                    req.body.destination).then(function(userSearch) {
-                    sails.log.debug('Succesfully created user search ' + JSON.stringify(userSearch));
-                }).catch(function(err) {
-                    sails.log.debug('Error creating user search ' + JSON.stringify(err));
-                });
-            }
+        UserLocationService.findOrCreateUserLocation(req.user, req.body.userLocation).then(function (object) {
+          sails.log.debug('Succesfully created user location: ' + JSON.stringify(object.location))
+          sails.log.debug('Succesfully created user address: ' + JSON.stringify(object.address))
+          return callback(null, object)
+        }).catch(function (err) {
+          sails.log.error(err)
+          return callback(err, null)
+        })
+      }],
+      createUserSearch: [function (callback, results) {
+        if (!req.user) return callback(null, null)
 
-            const obj = Object.create(SkyScannerFlightService.sessionObj);
+        UserSearchService.newUserMapSearch(
+          req.user,
+          req.body.origin,
+          req.body.destination)
+          .then(function (userSearch) {
+            sails.log.debug('Succesfully created user search ' + JSON.stringify(userSearch))
+            return callback(null, userSearch)
+          }).catch(function (err) {
+          sails.log.error(err)
+          sails.log.debug('Error creating user search ' + JSON.stringify(err))
+          return callback(err, null)
+        })
+      }],
+      getUserCurrencyCodePreference: [function (callback, results) {
+        UserSettingsService.getUserCurrencyCodePreference(req).then(function (pref) {
+          return callback(null, pref)
+        }).catch(function (err) {
+          return callback(err, null)
+        })
+      }],
+      createSessionObject: ['getUserCurrencyCodePreference', function (callback, result) {
+        const obj = Object.create(SkyScannerFlightService.sessionObj)
 
-            obj.country = req.body.userLocation.address.countryCode || req.body.origin.airportCountryId || req.body.userLocation.address.country || (req.user && req.user.address.country);
-            obj.currency = req.body.prefferedCurrency || UserSettingsService.getUserCurrencyCodePreference(req);
-            obj.locale = req.headers['Accept-Language'] || 'en-US';
-            obj.originplace = req.body.origin.iataCode;
-            obj.destinationplace = req.body.destination.iataCode;
-            obj.outbounddate = (req.body.dates && req.body.dates.departure) || (new Date().toISOString().slice(0, 10));
-            obj.inbounddate = (req.body.dates && req.body.dates.arrival) || null;
-            obj.locationschema = SkyScannerFlightService.locationschemas.Iata;
-            obj.cabinclass = SkyScannerFlightService.cabinclasses[req.body.prefferedCabinClass] || SkyScannerFlightService.cabinclasses.Economy;
-            obj.adults = (req.body.ticketInfo && req.body.ticketInfo.numAdultTickets) || 1;
-            obj.children = (req.body.ticketInfo && req.body.ticketInfo.numChildTickets) || 0;
-            obj.infants = (req.body.ticketInfo && req.body.ticketInfo.numInfantTickets) || 0;
-            obj.groupPricing = req.body.groupPricing || false;
+        obj.country = req.body.userLocation.address.countryCode || req.body.origin.airportCountryId || req.body.userLocation.address.country || (req.user && req.user.address.country)
+        obj.currency = req.body.currencyCodePreference || result.getUserCurrencyCodePreference || 'USD'
+        obj.locale = req.headers['Accept-Language'] || 'en-US'
+        obj.originplace = req.body.origin.iataCode
+        obj.destinationplace = req.body.destination.iataCode
+        obj.outbounddate = (req.body.dates && req.body.dates.departure) || (new Date().toISOString().slice(0, 10))
+        obj.inbounddate = (req.body.dates && req.body.dates.arrival) || null
+        obj.locationschema = SkyScannerFlightService.locationschemas.Iata
+        obj.cabinclass = SkyScannerFlightService.cabinclasses[req.body.prefferedCabinClass] || SkyScannerFlightService.cabinclasses.Economy
+        obj.adults = (req.body.ticketInfo && req.body.ticketInfo.numAdultTickets) || 1
+        obj.children = (req.body.ticketInfo && req.body.ticketInfo.numChildTickets) || 0
+        obj.infants = (req.body.ticketInfo && req.body.ticketInfo.numInfantTickets) || 0
+        obj.groupPricing = req.body.groupPricing || false
 
-            sails.log.debug('Created session object: ' + JSON.stringify(obj));
+        sails.log.debug('Created session object: ' + JSON.stringify(obj))
+        return callback(null, obj)
+      }],
+      createItineraryObject: [function (callback, results) {
+        const itinObj = SkyScannerFlightService.getDefaultItinObject()
+        sails.log.debug('Created itinerary object: ' + JSON.stringify(itinObj))
+        return callback(null, itinObj)
+      }],
+      makeLivePricingApiRequest: ['createSessionObject', 'createItineraryObject', function (callback, results) {
+        const sessionObj = results.createSessionObject
+        const itinObj = results.createItineraryObject
 
-            const itinObj = Object.create(SkyScannerFlightService.itinObj);
+        // Use SkyScannerFlightService to make the request
+        SkyScannerFlightService.makeLivePricingPollRequest(sessionObj, itinObj).then(function (result) {
+          return callback(null, {result,
+            skyscannerpageindex:itinObj.pageindex,
+            skyscannerpagesize:itinobj.pagesize
+          });
+        }).catch(function (error) {
+          sails.log.error(error)
+          error.errorType = 'livePricingApiRequest'
+          return callback(error, null)
+        })
+      }],
+      getGettyImages: ['makeLivePricingApiRequest', function (callback, results) {
+        GettyImagesService.searchAndRetrieveUrls({
+          phrase: req.body.destination.name + ' city skyline',
+          page: 1,
+          pageSize: 100
+        }).then(function (data) {
+          var arr = []
+          for (var i = 0; i < itinObj.pagesize && data.length; i++) {
+            arr.push({
+              name: 'image-' + i,
+              image: (data[i] && data[i].displaySizeImage) || ''
+            })
+          }
+          return callback(null, {data:arr, 
+            gettyimagespageindex: 1,
+            gettyimagespagesize:100
+          })
+        }).catch(function (err) {
+          sails.log.error(err)
+          err.errorType = 'gettyImageServiceRequest'
+          return callback(err, null)
+        })
+      }]
+    }, function (err, results) {
+      if (err) {
+        return res.json(ResponseStatus.OK, { status: ResponseStatus.CLIENT_BAD_REQUEST,
+        errors: err, errorType: err.errorType || 'Unknown' })
+      }else {
+        return res.json(ResponseStatus.OK, { status: 200,
+          result: results.makeLivePricingApiRequest.result,
+          skyscannerpageindex:results.makeLivePricingApiRequest.skyscannerpageindex, 
+          skyscannerpagesize:results.makeLivePricingApiRequest.skyscannerpagesize,
+          cityImages: results.getGettyImages.data,
+          gettyimagespageindex:results.getGettyImages.gettyimagespagesize,
+          gettyimagespagesize:results.getGettyImages.gettyimagespageindex
+        })
+      }
+    })
+  },
+  pollSkyScannerFlightLivePricingApi(req, res) {
+    if (!req.param('urlEndPoint'))
+      return res.json(ResponseStatus.CLIENT_BAD_REQUEST, {status: ResponseStatus.CLIENT_BAD_REQUEST,
+      errors: ['No url end point specified']})
 
-            sails.log.debug('Created itinerary object: ' + JSON.stringify(itinObj));
+    const sessionKey = req.param('urlEndPoint')
+    const newPageIndex = req.param('newskyscannerpageindex')
+    const newGettyPageIndex = req.param('newgettyimagespageindex');
+    const gettyImagesPageSize = req.param('gettyimagespagesize');
+    const skyscannerPageSize = req.param('skyscannerpagesize');
 
-            //Use SkyScannerFlightService to make the request
-            SkyScannerFlightService.makeLivePricingApiRequest(obj, itinObj).then(function(result) {
-                GettyImagesService.searchAndRetrieveUrls({
-                    phrase: req.body.destination.name + ' city skyline',
-                    page: 1,
-                    pageSize: result.Itineraries.length > 100 ? result.Itineraries.length : 100
-                }).then(function(data) {
-                    sails.log.debug('image data- ' + data);
+    const itinObj = SkyScannerFlightService.getDefaultItinObject()
+    itinObj.pageindex = newPageIndex;
 
-                    var arr = [];
+    GettyImagesService.searchAndRetrieveUrls({
+      phrase: req.body.destination.name + ' city skyline',
+      page: newGettyPageIndex || 1,
+    }).then(function (data) {
 
-                    for (var i = 0; i < result.Itineraries.length && data.length; i++) {
-                        arr.push({
-                            name: 'image-' + i,
-                            image: (data[i] && data[i].displaySizeImage) || ''
-                        });
-                    }
+      const start = (newPageIndex * skyscannerPageSize) % gettyImagesPageSize
+      const end = start + skyscannerPageSize
 
-                    sails.log.debug(result);
-                    return resolve(res.json(ResponseStatus.OK, { result, cityImages: arr }));
-                }).catch(function(err) {
-                    sails.log.error(err);
-                    return reject(ResponseStatus.OK, { result, error: err, errorType: 'gettyImageServiceRequest' });
-                });
-            }).catch(function(error) {
-                sails.log.error(error);
-                return reject(res.json(ResponseStatus.OK, { errors: error.error, errorType: 'livePricingApiRequest' }));
-            });
-        });
-    },
-    retrieveHotelInfo(req, res) {
-        const hotelRequestObject = SkyScannerHotelService.getDefaultHotelRequestObject();
-        const sessionObject = SkyScannerHotelService.getDefaultSessionObject();
+      var arr = []
+      for (var i = start; i < end && i < data.length; i++) {
+            arr.push({
+              name: 'image-' + i,
+              image: (data[i] && data[i].displaySizeImage) || ''
+            })
+      }
 
-        try {
-            req.body.userLocation = req.param('userLocation');
-            req.body.dates = req.param('dates');
-            req.body.ticketInfo = req.param('ticketInfo');
-            req.body.destination = req.param('destination');
-            req.body.origin = req.param('origin');
-        } catch (err) {
-            sails.log.debug('Error parsing JSON in ListingsController.js/hotels');
-            sails.log.error(err);
-        }
+      // Use SkyScannerFlightService to make the request
+      SkyScannerFlightService.makeLivePricingPollRequest(sessionObj,
+        itinObj, urlEndPoint).then(function (result) {
+          return res.json(ResponseStatus.OK, { status: 200,
+          result,
+          skyscannerpageindex:newPageIndex, 
+          skyscannerpagesize:skyscannerPageSize,
+          cityImages: arr,
+          gettyimagespageindex:newGettyPageIndex,
+          gettyimagespagesize:gettyImagesPageSize
+        })
+      }).catch(function (error) {
+        return res.json(ResponseStatus.OK, { status: ResponseStatus.CLIENT_BAD_REQUEST,errors: error,
+        errorType: error.errorType || 'Unknown' })
+      })
+    }).catch(function (err) {
+      sails.log.error(err)
+      err.errorType = 'gettyImageServiceRequest'
+      return callback(err, null)
+    })
+  },
+  retrieveHotelInfo(req, res) {
+    UserSettingsService.getUserCurrencyCodePreference(req).then(function (currencyCodepreference) {
+      const hotelRequestObject = SkyScannerHotelService.getDefaultHotelRequestObject()
+      const sessionObject = SkyScannerHotelService.getDefaultSessionObject()
 
-        if (req.param('chosenItinerary')) {
-            req.body.chosenItinerary = req.param('chosenItinerary');
+      try {
+        req.body.userLocation = req.param('userLocation')
+        req.body.dates = req.param('dates')
+        req.body.ticketInfo = req.param('ticketInfo')
+        req.body.destination = req.param('destination')
+        req.body.origin = req.param('origin')
+      } catch (err) {
+        sails.log.debug('Error parsing JSON in ListingsController.js/hotels')
+        sails.log.error(err)
+      }
 
-            if (!req.session.itineraries)
-                req.session.itineraries = [];
+      if (req.param('chosenItinerary')) {
+        req.body.chosenItinerary = req.param('chosenItinerary')
 
-            req.session.itineraries.push(req.body.chosenItinerary);
-        }
+        if (!req.session.itineraries)
+          req.session.itineraries = []
 
-        hotelRequestObject.city = req.body.destination.airportCityId;
-        sessionObject.market = req.body.destination.countryId; //req.body.userLocation.address.countryCode || req.body.origin.airportCountryId || req.body.userLocation.address.country || (req.user && req.user.address.country);
-        sessionObject.currency = req.body.prefferedCurrency || UserSettingsService.getUserCurrencyCodePreference(req);
-        sessionObject.locale = req.headers['accept-language'];
-        sessionObject.entityId = req.body.destination.airportPos.lat + ',' + req.body.destination.airportPos.lng + '-latlong';
-        sessionObject.checkindate = (req.body.dates && req.body.dates.departure) || (new Date().toISOString().slice(0, 10));
-        sessionObject.checkoutdate = (req.body.dates && req.body.dates.arrival) || null;
-        sessionObject.guests = parseInt(((req.body.ticketInfo && req.body.ticketInfo.numAdultTickets)) || 1) +
-            parseInt(((req.body.ticketInfo && req.body.ticketInfo.numChildTickets)) || 0) +
-            parseInt(((req.body.ticketInfo && req.body.ticketInfo.numInfantTickets) || 0));
-        sessionObject.rooms = req.body.numRooms || 1;
+        req.session.itineraries.push(req.body.chosenItinerary)
+      }
 
-        sails.log.debug('Created hotels session object : ' + JSON.stringify(sessionObject));
+      hotelRequestObject.city = req.body.destination.airportCityId
+      sessionObject.market = req.body.destination.countryId; // req.body.userLocation.address.countryCode || req.body.origin.airportCountryId || req.body.userLocation.address.country || (req.user && req.user.address.country)
+      sessionObject.currency = req.body.currencyCodePreference || currencyCodepreference || 'USD'
+      sessionObject.locale = req.headers['accept-language']
+      sessionObject.entityId = req.body.destination.airportPos.lat + ',' + req.body.destination.airportPos.lng + '-latlong'
+      sessionObject.checkindate = (req.body.dates && req.body.dates.departure) || (new Date().toISOString().slice(0, 10))
+      sessionObject.checkoutdate = (req.body.dates && req.body.dates.arrival) || null
+      sessionObject.guests = parseInt(((req.body.ticketInfo && req.body.ticketInfo.numAdultTickets)) || 1) +
+      parseInt(((req.body.ticketInfo && req.body.ticketInfo.numChildTickets)) || 0) +
+      parseInt(((req.body.ticketInfo && req.body.ticketInfo.numInfantTickets) || 0))
+      sessionObject.rooms = req.body.numRooms || 1
 
-        SkyScannerHotelService.createSession(sessionObject).then(function(result) {
-            return res.json({ result: result.body, nextPollUrl: result.url });
-        }).catch(function(err) {
-            sails.log.debug('Error in ListingsController.js/hotels');
-            sails.log.error(err);
-            sails.log.debug(err.error);
-            sails.log.debug(JSON.stringify(error));
-            return res.json(ResponseStatus.SERVER_ERROR, {});
-        });
-    }
+      sails.log.debug('Created hotels session object : ' + JSON.stringify(sessionObject))
+
+      SkyScannerHotelService.createSession(sessionObject).then(function (result) {
+        return res.json({ result: result.body, nextPollUrl: result.url })
+      }).catch(function (err) {
+        sails.log.debug('Error in ListingsController.js/hotels')
+        sails.log.error(err)
+        sails.log.debug(err.error)
+        sails.log.debug(JSON.stringify(error))
+        return res.json(ResponseStatus.SERVER_ERROR, {})
+      })
+    })
+  }
 }

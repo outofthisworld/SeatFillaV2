@@ -100,6 +100,7 @@ window.seatfilla.globals.locale.getPrefferedCurrency = function (cb) {
   window.seatfilla.globals.cache.get({
     key: 'CurrencyCodePreference',
     type: 'session',
+    useServerStore:true,
     success: function (status, result) {
       console.log('Getting currency code preference from cache ' + status + ' result was ' + result)
       if (status == 200 && result) {
@@ -114,6 +115,9 @@ window.seatfilla.globals.locale.getPrefferedCurrency = function (cb) {
           console.log(JSON.stringify(r))
           if (s == 200 && r) {
             if (r && r.currencies && Array.isArray(r.currencies)) {
+              window.seatfilla.globals.locale.setPrefferedCurrency(r.currencies[0],function(status,result){
+                console.log('Attempted to set preffered currency to ' + r.currencies[0])
+              })
               return cb(status, r.currencies[0])
             }else {
               return cb(status, 'USD')
@@ -231,6 +235,7 @@ window.seatfilla.globals.cache.put = function (options) {
   }
 
   if (options.useServerStore) {
+    console.log('Sending ' + JSON.stringify(options) + ' to server');
     $.ajax({
       type: 'POST',
       url: '/SeatfillaSettings/setStoredSettings',

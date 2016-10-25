@@ -80,6 +80,8 @@ module.exports = {
         GlobalCache: 'rest_countries_cache'
       }).getData(countryCode).then(function (countryData) {
         if (countryData) {
+          sails.log.debug('Retrieved country info from cache in look up service rest_countries_get_country_info_by_c_code: '
+           + JSON.stringify(countryData))
           resolve(countryData)
         } else {
           request({
@@ -103,9 +105,11 @@ module.exports = {
                   sails.log.debug(obj);
                   return reject(new Error('Error with request to ' + countryInfoEndpoint + ' could not parse body'))
                 } else {
+
                   GlobalCache.cache({
                     GlobalCache: 'rest_countries_cache'
                   }).insertData(countryCode, obj)
+
                   return resolve(obj)
                 }
               } catch (err) {
@@ -130,7 +134,7 @@ module.exports = {
         GlobalCache: 'rest_countries_cache'
       }).getData(countryName).then(function (countryData) {
         if (countryData) {
-          resolve(countryName)
+          resolve(countryData)
         } else {
           request({
             headers: {

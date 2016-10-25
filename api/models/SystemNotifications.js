@@ -8,6 +8,7 @@ module.exports = {
         notNull:true,
         required:true
       },
+      
       systemNotificationUsers:{
         collection: 'SystemNotificationUsers',
         via: 'systemNotification'

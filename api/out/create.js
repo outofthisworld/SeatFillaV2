@@ -1,6 +1,7 @@
 var actionUtil = require('../blueprints/actionUtil');
 
 module.exports = function createRecord (req) {
+   
 
     var Model = actionUtil.parseModel(req);
     sails.log.debug(Model);
@@ -12,7 +13,7 @@ module.exports = function createRecord (req) {
     sails.log.debug(data);
 
     // Create new instance of model using data from params
-    Model.create(data).then(function(newInstance){
+    return Model.create(data).then(function(newInstance){
         // If we have the pubsub hook, use the model class's publish method
         // to notify all subscribers about the created item
         if (req._sails.hooks.pubsub) {

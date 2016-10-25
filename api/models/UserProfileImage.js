@@ -11,8 +11,8 @@ module.exports = {
       notNull:true,
       required:true
     },
-    user:{
-      model:'user',
+    userProfile:{
+      model:'UserProfile',
       notNull:true,
       required:true
     }

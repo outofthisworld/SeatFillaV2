@@ -83,21 +83,21 @@ module.exports = {
     if (!options || !options.phrase) throw new Error('Invalid params passed to GettyImagesService.js/makeImagesRequest')
 
     const cacheKey = options.phrase + '-' + options.page || '1'
-
-    GlobalCache.cache({
+    const _self = this;
+    return GlobalCache.cache({
       GlobalCache: 'getty_images_cache'
     }).getData(cacheKey).then(function (getty_images_cached_data) {
       if (getty_images_cached_data) {
         return Promise.resolve(getty_images_cached_data)
       } else {
-        return this.getToken().then(function (result) {
+        return _self.getToken().then(function (result) {
           const tokenType = result['token_type']
           const authToken = result['access_token']
 
           const reqObject = {
             phrase: options.phrase,
             page: options.page || 1,
-            page_size: options.pageSize || 100,
+            page_size: 100,
             exclude_nudity: true,
             embed_content_only: options['embed_content_only'] || true
           }
@@ -127,7 +127,7 @@ module.exports = {
                   } else if (obj.ErrorCode) {
                     return reject(new Error('Error with request to ' + gettyAuthEndpoint + JSON.stringify(obj)))
                   } else {
-                    GlobalCache({
+                    GlobalCache.cache({
                       GlobalCache: 'getty_images_cache'
                     }).insertData(cacheKey, obj)
                     return resolve(obj)
@@ -146,12 +146,13 @@ module.exports = {
     return this.makeImagesRequest({
       phrase,
       page: pageNumber || 1,
-      pageSize: numberOfImages || 20
+      pageSize: numberOfImages || 100
     })
   },
   searchAndRetrieveUrls(options) {
+    const _self = this;
     return new Promise((resolve, reject) => {
-      this.makeImagesRequest(options).then(function (res) {
+      _self.makeImagesRequest(options).then(function (res) {
         if (res && res.images) {
           // console.log(JSON.stringify(res))
           resolve(res.images.map(function (image) {

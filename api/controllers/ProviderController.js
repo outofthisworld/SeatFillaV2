@@ -1,8 +1,37 @@
 module.exports = {
   index(req, res) {
+    return Promise.all([
+      ApiRequests.find(
+        {
+          apiUser: ProviderService.getApiKey(req)
+        }
+      ).populate('apiRoute')
+    ]).then(function (apiRequests) {
+      return res.ok({ user: req.user, apiRequests}, {
+        view: 'provider-dashboard/index',
+      })
+    }).catch(function (err) {
+      return res.badRequest(err)
+    })
+  },
+  view_flight_requests(req,res){
+      return res.ok({ user: req.user}, {
+        view: 'flightrequest/find',
+      })
+  },
+  create_flight_offers(req,res){
     return res.ok({ user: req.user }, {
-      view: 'provider-dashboard/index',
-      layout: 'layouts/provider-layout'
+        view: 'flightoffer/create',
+    })
+  },
+  view_flight_offers(req,res){
+    return res.ok({ user: req.user}, {
+        view: 'flightoffer/find',
+    })
+  },
+  create_advertisement(req,res){
+     return res.ok({ user: req.user}, {
+        view: 'advertisments/create',
     })
   },
   login(req, res) {
@@ -18,7 +47,7 @@ module.exports = {
         if (result.status == sails.config.passport.errorCodes().Success) {
           sails.log.debug('Attempting to login as provider')
           return new Promise(function (resolve, reject) {
-            ProviderService.login(req, req.param('apiKey'),req.param('apiSecret')).then(function (result) {
+            ProviderService.login(req, req.param('apiKey'), req.param('apiSecret')).then(function (result) {
               sails.log.debug('Result logging in via provider was : ' + result)
               return resolve(result)
             }).catch(function (err) {
@@ -31,7 +60,6 @@ module.exports = {
           return Promise.reject(result)
         }
       }).then(function (result) {
-    
       req.flash('toaster-success', 'Succesfully logged into the provider panel')
 
       sails.log.debug('Succesfully authenticated and logged in via provider, result was '
@@ -48,7 +76,7 @@ module.exports = {
       sails.log.error(err)
 
       req.flash('toaster-warning', 'Error logging in : ' + err.message)
-      req.flash('info','Error logging in : ' + err.message)
+      req.flash('info', 'Error logging in : ' + err.message)
 
       if (req.wantsJSON) {
         return res.json(200, err)

@@ -20,20 +20,26 @@ var actionUtil = require('./actionUtil');
  */
 module.exports = function destroyOneRecord (req, res) {
 
+  sails.log.debug('Attempting to destory record ');
+
   var Model = actionUtil.parseModel(req);
   var pk = actionUtil.requirePk(req);
-
+  
   var query = Model.findOne(pk);
   query = actionUtil.populateRequest(query, req);
   query.exec(function foundRecord (err, record) {
     if (err) return res.serverError(err);
     if(!record) return res.notFound('No record found with the specified `id`.');
 
+    //If the request is a get request just
+    //display the record without actually deleting it
+    if(req.isGET()) return res.ok(record);
+
     Model.destroy(pk).exec(function destroyedRecord (err) {
       if (err) return res.negotiate(err);
 
       if (req._sails.hooks.pubsub) {
-        Model._publishDestroy(pk, !req._sails.config.blueprints.mirror && req, {previous: record});
+        Model.publishDestroy(pk, !req._sails.config.blueprints.mirror && req, {previous: record});
         if (req.isSocket) {
           Model.unsubscribe(req, record);
           Model.retire(record);

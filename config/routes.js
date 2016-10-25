@@ -34,24 +34,132 @@ module.exports.routes = {
 
     'get /': 'HomeController.index',
     'get /login': 'HomeController.login',
-    'get /FlightRequest': {
-        view: 'flightrequest/create',
-        locals: {
+
+    'get /User/*':{
+        locals:{
             layout: 'layouts/my-account-layout.ejs'
         }
     },
-    'get /FlightRequest/create': {
-        view: 'flightrequest/create',
-        locals: {
-            layout: 'layouts/my-account-layout.ejs'
+    'get /Provider/*':{
+        locals:{
+            layout: 'layouts/provider-layout.ejs'
         }
-    }
+    },
+    
+    /***** USER PROFILE PATHS *****/
+     'get /User/:username':{
+        controller:'UserProfileController',
+        action:'index',
+        policy:'viewProfilePolicy'
+    },
+    'get /UserProfile/:username':{
+        controller:'UserProfileController',
+        action:'index',
+        policy:'viewProfilePolicy'
+    },
+    /**********/
+
+    /****** FLIGHT GROUP PATHS ******/
+
+    /*
+        Is own profile policy
+        -create,destroy,update
+
+        Is user link policy
+        -findByUser,
+        Is member policy
+        -findOne
+
+        view profile policy
+    */
+
+    'get /UserProfile/:username/FlightGroup/Create':{
+        controller:'FlightGroupController',
+        action:'create',
+        locals:{
+            layout:'layouts/my-account-layout'
+        }
+    },
+    'get /UserProfile/:username/FlightGroup/:id/Destroy':{
+        controller:'FlightGroupController',
+        action:'destroy',
+        locals:{
+            layout:'layouts/my-account-layout'
+        }
+    },
+    'get /UserProfile/:username/FlightGroup/:id/Update':{
+        controller:'FlightGroupController',
+        action:'update',
+        locals:{
+            layout:'layouts/my-account-layout'
+        }
+    },
+    'get /UserProfile/:username/FlightGroup/:id':{
+        controller:'FlightGroupController',
+        action:'findOne',
+        locals:{
+            layout:'layouts/my-account-layout'
+        }
+    },
+    'get /UserProfile/:username/FlightGroups/':{
+        controller:'FlightGroupController',
+        action:'findByUser',
+        locals:{
+            layout:'layouts/my-account-layout'
+        }
+    },
+    /* ********************* */
+
+    /* FLIGHT REQUEST PATHS */
+    'get /UserProfile/FlightRequest/Create/':{
+        controller:'FlightRequestController',
+        action:'create',
+        locals:{
+            layout:'layouts/my-account-layout'
+        }
+    },
+    'get /UserProfile/:username/FlightRequest/Create/':{
+        controller:'FlightRequestController',
+        action:'create',
+        locals:{
+            layout:'layouts/my-account-layout'
+        }
+    },
+    'get /UserProfile/FlightReqest/:id/Destroy':{
+        controller:'FlightRequestController',
+        action:'destroy',
+        locals:{
+            layout:'layouts/my-account-layout'
+        }
+    },
+    'get /UserProfile/FlightRequest/:id/Update':{
+        controller:'FlightRequestController',
+        action:'update',
+        locals:{
+            layout:'layouts/my-account-layout'
+        }
+    },
+    'get /UserProfile/:username/FlightRequest/:id':{
+        controller:'FlightRequestController',
+        action:'findOne',
+        locals:{
+            layout:'layouts/my-account-layout'
+        }
+    },
+    'get /UserProfile/:username/FlightRequest/':{
+        controller:'FlightRequestController',
+        action:'findByUser',
+        locals:{
+            layout:'layouts/my-account-layout'
+        }
+    },
+    /* ********************* */
 
 
-    /*'/': {
-      view: 'index'
-    }*/
+    /*** MISC ****/
 
+
+    
     /***************************************************************************
      *                                                                          *
      * Custom routes here...                                                    *

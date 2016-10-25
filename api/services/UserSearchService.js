@@ -1,7 +1,10 @@
 module.exports = {
   newUserMapSearch(user, origin, destination) {
+    sails.log.debug('Creating new user map search: ');
+
+
     return UserSearch.create({
-      user: req.user.id,
+      user: user.id,
       originAirportName: origin.airportName,
       originAirportCity: origin.name,
       originAirportCityId: origin.airportCityId,
@@ -28,6 +31,11 @@ module.exports = {
       destinationAirportLongitude: destination.airportPos.lng,
       destinationAirportContinent: destination.continentName,
       destinationAirportContinentId: destination.continentId
+    }).then(function(result){
+      return Promise.resolve(result);
+    }).catch(function(err){
+      sails.log.error(err);
+      return Promise.reject(err);
     })
   }
 }

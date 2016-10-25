@@ -3,7 +3,6 @@
  */
 
 module.exports = {
-    //Post [create a user]
     create: function(req, res) {
         sails.log.debug('in user/create');
         UserService.createUser(req).then(function(user) {
@@ -20,8 +19,5 @@ module.exports = {
                 error: err
             });
         });
-    },
-    complete_registration: function(req, res) {
-        return res.ok({ user: req.user });
     },
 };

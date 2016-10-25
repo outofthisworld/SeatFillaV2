@@ -15,7 +15,7 @@ module.exports.http = {
   middleware: {
     passportInit: passport.initialize(),
     passportSession: passport.session(),
-    passportSessionInit: function () {
+    passportSessionInit: (function () {
       /* 
           Handles the serialization and 
           deserialization proccess for session storage (keeps server memory low)
@@ -32,63 +32,84 @@ module.exports.http = {
           .populate('userLocations')
           .populate('notifications')
           .populate('systemNotificationUsers')
-          .populate('images')
           .populate('addresses')
           .populate('flightRequests')
           .populate('bids')
           .populate('apiKeys')
-          .populate('supportTickets').then(function (user) {
-          if (!user.userSettings || user.userSettings.length < 1) {
-            UserSettings.findOrCreate({ user: user.id }, { user: user.id }, function (err, userSettings) {
+          .populate('supportTickets').exec(function (err, user) {
+          if (err) {
+            sails.log.error(err)
+            return Promise.reject(err)
+          }
+
+          UserProfile.findOrCreate({user: user.id })
+            .then(function (userProfile) {
+              if (!userProfile) {
+                return Promise.reject(err)
+              }else {
+                sails.log.debug('Found user profile : ' + JSON.stringify(userProfile))
+
+                if (!userProfile.description || userProfile.description.length < 5) {
+                  sails.log.debug('Updating profile')
+                  return UserProfile.update({id: userProfile.id},{description:'Welcome to seatfilla'})
+                    .then(function (userProfile) {
+                      sails.log.debug('Updated user profile')
+                      user.userProfile = userProfile;
+                      return Promise.resolve()
+                    })
+            }else {
+                  user.userProfile = userProfile;
+                  return Promise.resolve()
+                }
+              }
+            }).then(function () {
+            return UserSettings.findOrCreate({ user: user.id }, { user: user.id }, function (err, userSettings) {
               if (err) {
                 sails.log.debug('Could not find or create user settings')
                 sails.log.error(err)
-                Promise.reject(err)
+                return Promise.reject(err)
               } else {
                 sails.log.debug('Found user settings ' + JSON.stringify(userSettings))
                 // Handle nested associations that waterline doesn't currently have support for.
                 if (userSettings && userSettings.currentLocation &&
                   Number.isInteger(userSettings.currentLocation)) {
-                  UserLocation.findOne({ id: userSettings.currentLocation }).exec(function (err, userLoc) {
-                    if (err) {
-                      sails.log.debug('Unable to execute query find user location even though current location is set..')
-                      sails.log.error(err)
-                      return Promise.reject(err)
-                    } else {
-                      user.userSettings = userSettings
-                      user.userSettings.currentLocation = userLoc
-                      return Promise.resolve(user)
-                    }
+                  return UserLocation.findOne({ id: userSettings.currentLocation }).then(function (userLoc) {
+                    user.userSettings = userSettings
+                    user.userSettings.currentLocation = userLoc
+                    return Promise.resolve()
+                  }).catch(function (err) {
+                    sails.log.error(err)
+                    return Promise.reject(err)
                   })
                 } else {
                   sails.log.debug('User settings were' + JSON.stringify(userSettings))
                   sails.log.debug('Current location was ' + userSettings.currentLocation)
-                  return Promise.resolve(user)
+                return Promise.resolve()
                 }
               }
             })
-          }
-          return Promise.resolve(user)
-        }).then(function (user) {
-          return new Promise(function (resolve, reject) {
-            user.addresses.forEach(function (address, indx) {
-              Country.findOne({alpha3Code: address.countryInfo }).then(function (country) {
-                user.addresses[indx].countryInfo = country
-              }).catch(function (err) {
-                sails.log.error(err)
-                return reject(err)
+          }).then(function () {
+            return new Promise(function (resolve, reject) {
+              user.addresses.forEach(function (address, indx) {
+                Country.findOne({alpha3Code: address.countryInfo }).then(function (country) {
+                  user.addresses[indx].countryInfo = country
+                }).catch(function (err) {
+                  sails.log.error(err)
+                  return reject(err)
+                })
               })
+              return resolve()
             })
-            return resolve(user)
+          }).then(function () {
+            sails.log.debug('Resolving user: ' + JSON.stringify(user))
+            return Promise.resolve(done(null, user))
+          }).catch(function (err) {
+            sails.log.error(err)
+            return Promise.reject(done(err, null))
           })
-        }).then(function (user) {
-          return done(null, user)
-        }).catch(function (err) {
-          sails.log.error(err)
-          return done(err, null)
         })
       })
-    }(),
+    })(),
 
     /***************************************************************************
      *                                                                          *
@@ -138,6 +159,9 @@ module.exports.http = {
     resModifer: function (req, res, next) {
       next()
     },
+    localePreference:function(req,res,next){
+      UserSettingsService.setUserLocalePreference(req, req.headers['Accept-Language'])
+    },
 
     /****************************************************************************
      *                                                                           *
@@ -147,6 +171,7 @@ module.exports.http = {
 
     requestLogger: function (req, res, next) {
       console.log('Requested :: ', req.method, req.url)
+      console.log('Headers: ' +  JSON.stringify(req.headers))
 
       return next()
     }

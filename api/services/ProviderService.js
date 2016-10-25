@@ -2,9 +2,9 @@ const timeUtils = require('../utils/TimeUtils')
 
 module.exports = {
   login(req, apiKey, apiSecret) {
-    if (!req.user) 
-        Promise.reject(new Error('User must be logged in'))
-        
+    if (!req.user)
+      Promise.reject(new Error('User must be logged in'))
+
     if (!apiKey || !apiSecret || !req)
       return Promise.reject(new Error('Invalid params to ProviderService.js/login'))
 

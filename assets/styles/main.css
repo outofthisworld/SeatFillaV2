@@ -483,11 +483,11 @@ select#soflow-color {
    
    .side-menu {
        position: relative;
-       width: 100%;
-       min-height: 145%;
+       width: 110%;
+       
        height: 100%;
-       margin-left: 15px;
-       background-color: #fafafa;
+       padding-right:20px;
+       background-color:none;
        border-right: 1px solid #e7e7e7;
    }
    
@@ -649,7 +649,7 @@ select#soflow-color {
            border-right: 0;
        }
        .side-menu .navbar {
-           z-index: 999;
+          
            position: relative;
            height: 0;
            min-height: 0;

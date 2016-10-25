@@ -588,7 +588,7 @@ $(document).ready(function() {
                             );
                             const $td_name = $('<td></td>').text(name);
                             const $td_type = $('<td></td>').text(type);
-                            const $td_price = $('<td></td>').text(price);
+                            const $td_price = $('<td></td>').text(parseFloat(price).toFixed(2) + ' ' +  $('#seatfilla_currencies').val());
                             const $td_quoteAge = $('<td></td>').text(quoteAgeInMinutes);
                             const $td_deepLinkUrl = $('<td></td>').append($('<a></a>', {
                                 href: deepLinkUrl,
@@ -662,6 +662,7 @@ $(document).ready(function() {
                                         userLocale: window.seatfilla.globals.getFirstBrowserLanguage(),
                                         ticketInfo,
                                         dates,
+                                        currencyCodePreference:$('#seatfilla_currencies').val(),
                                         chosenItinerary: itin
                                     },
                                     success: populateHotelData
@@ -781,6 +782,7 @@ $(document).ready(function() {
                     ticketInfo,
                     dates,
                     prefferedCabinClass,
+                    currencyCodePreference:$('#seatfilla_currencies').val(),
                     groupPricing
                 },
                 success: populateFlightData.bind({

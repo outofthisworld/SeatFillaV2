@@ -5,6 +5,7 @@
     Methods are heavily documented with information obtained about skyscanners API,
     to enable quick modifications/ability to recognize API changes.
 */
+const GlobalCache = require('../utils/GlobalCache')
 
 // Request module for sending and recieving API requests
 const request = require('request')
@@ -223,6 +224,94 @@ const exportObj = {
       })
     })
   },
+  pollItin(urlEndpoint, obj) {
+    return new Promise((resolve, reject) => {
+      if (!obj || !urlEndpoint) {
+        return reject(new Error('Invalid parameters when calling retrieve itin '))
+      }
+
+      obj.apiKey = apiKey
+
+      // Encode the obj as a query string..
+      const queryString = querystring.stringify(obj)
+
+      const _this = this
+
+      GlobalCache.cache({
+        GlobalCache: 'skyscanner_flight_search'
+      }).getData(queryString).then(function (result) {
+        if (result) {
+          return resolve(result)
+        } else {
+          var failCount = 0
+          request({
+            headers: {
+              'Accept': 'application/json'
+            },
+            uri: urlEndpoint + '?' + (queryString || ''),
+            method: 'GET'
+          }, function (err, res, body) {
+            if (err) return reject(err)
+            try {
+              const bd = JSON.parse(res.body)
+
+              if (bd.ValidationErrors) {
+                const error = new Error('Validation errors when retriving itinerary from SkyScannerService')
+                sails.log.error(error)
+                return reject(error)
+              } else if (!bd.SessionKey || res.statusCode != 200) {
+                return reject(new Error('Invalid response when retrieving itinerary in SkyScannerFlightSever.js'))
+              }
+
+              if (bd.Status == 'UpdatesComplete') {
+                GlobalCache.cache({
+                  GlobalCache: 'skyscanner_flight_search'
+                }).insertData(queryString, bd)
+              }
+
+              return resolve(bd)
+            } catch (err) {
+              if (failCount < 3) {
+                failCount++
+                return resolve(_this.pollItin(urlEndpoint, obj))
+              } else {
+                return reject(err)
+              }
+            }
+          })
+        }
+      }).catch(function (err) {
+        sails.log.error(err)
+        return reject(err)
+      })
+    })
+  },
+  makeLivePricingPollRequest(sessionKeyObj, itinObj, urlEndPoint) {
+    const _this = this
+
+    return (function resolveUrlEndpoint () {
+      if (!urlEndPoint) {
+        return _this.obtainSessionKey(sessionKeyObj)
+      } else {
+        return Promise.resolve({ url: urlEndPoint })
+      }
+    })().then(function (urlEndPoint) {
+      if (!urlEndPoint.url) return Promise.reject('Invalid url endpoint')
+
+      sails.log.debug('Polling itin')
+      return _this.pollItin(urlEndPoint.url, itinObj).then((result) => {
+        result.urlEndPoint = urlEndPoint
+        return Promise.resolve(result)
+      }).catch((err) => {
+        sails.log.error(err)
+        sails.log.debug('Error polling itin ' + JSON.stringify(err) + err.message)
+        return Promise.reject(err)
+      })
+    }).catch((err) => {
+      sails.log.error(err)
+      return Promise.reject(err)
+    })
+  },
   // Obtains a session key and itinerary using the specified request objects and returns the interneraries.
   makeLivePricingApiRequest(sessionKeyObj, itinObj) {
     const _this = this
@@ -242,6 +331,7 @@ const exportObj = {
       })
     })
   },
+
   /*
       PUT request:http://partners.api.skyscanner.net/apiservices/pricing/v1.0/{session key}/booking?apiKey={apiKey}
       [Parameter	Required	Description	Data Type	Constraints]
@@ -339,6 +429,28 @@ const exportObj = {
         }
       ).catch((error) => reject(new Error('Error occurred requesting booking details')))
     })
+  },
+  getDefaultItinObject() {
+    return {
+      locationschema: exportObj.locationschemas.Iata, // location schema
+      carrierschema: exportObj.carrierschemas.Iata, // carrier schema
+      sorttype: exportObj.sorttypes.price,
+      sortorder: exportObj.sortorders.asc, // 'asc' || 'desc'
+      originairports: null, // Filter outgoing airports delim by ';'
+      destinationairports: null, // Filter incoming airports delim by ';'
+      maxStops: 10, // Max number of stops
+      outbounddeparttime: exportObj.departtimes.join(';'),
+      outbounddepartstarttime: null, // Start of depart time 'hh:mm'
+      outbounddepartendtime: null, // End of depart time 'hh:mm'
+      inbounddeparttime: exportObj.departtimes.join(';'),
+      inbounddepartstarttime: null, // Start of depart time 'hh:mm'
+      inbounddepartendtime: null, // Start of depart time 'hh:mm'
+      duration: exportObj.maxduration, // Max flight duration
+      includecarriers: null, // Iata carrier codes
+      excludecarriers: null, // Iata carrier codes
+      pagesize: 10,
+      pageindex: 0
+    }
   }
 }
 // The session request object
@@ -358,24 +470,7 @@ exportObj.sessionObj = {
   groupPricing: false
 }
 // Itinerary request object
-exportObj.itinObj = {
-  locationschema: exportObj.locationschemas.Iata, // location schema
-  carrierschema: exportObj.carrierschemas.Iata, // carrier schema
-  sorttype: exportObj.sorttypes.price,
-  sortorder: exportObj.sortorders.asc, // 'asc' || 'desc'
-  originairports: null, // Filter outgoing airports delim by ';'
-  destinationairports: null, // Filter incoming airports delim by ';'
-  maxStops: 10, // Max number of stops
-  outbounddeparttime: exportObj.departtimes.join(';'),
-  outbounddepartstarttime: null, // Start of depart time 'hh:mm'
-  outbounddepartendtime: null, // End of depart time 'hh:mm'
-  inbounddeparttime: exportObj.departtimes.join(';'),
-  inbounddepartstarttime: null, // Start of depart time 'hh:mm'
-  inbounddepartendtime: null, // Start of depart time 'hh:mm'
-  duration: exportObj.maxduration, // Max flight duration
-  includecarriers: null, // Iata carrier codes
-  excludecarriers: null, // Iata carrier codes
-}
+
 // Booking details request object
 exportObj.bookingDetailsObj = {
   outboundlegid: null,

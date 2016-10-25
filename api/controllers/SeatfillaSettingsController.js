@@ -10,6 +10,7 @@ module.exports = {
   */
   setStoredSettings(req, res) {
     obj = req.param('data')
+
     if (!obj) {
       return res.json(
         ResponseStatus.OK,
@@ -19,22 +20,22 @@ module.exports = {
         })
     }
 
+    sails.log.debug('Setting user settings :' + JSON.stringify(obj));
+
     const errors = []
     const types = []
 
     for (var key in obj) {
       if (obj.hasOwnProperty(key)) {
         if (!obj[key].key || !obj[key].data) {
-          return res.json(ResponseStatus.OK, {
-            status: 1738,
-            errors: ['Invalid request'],
-            errorMessage: 'Must have key and data set for all settings passed'
-          })
+          errors.push('Invalid object consturct for object ' + JSON.stringify(obj));
+          continue;
         }
         sails.log.debug('Setting user setting :' + obj[key].key)
 
         try {
-          UserSettingsService['setUser' + obj[key].key](req, obj[key].data).then(function(data){types.push(data)}).catch(function (err) {
+          UserSettingsService['setUser' + obj[key].key](req, obj[key].data).then(function(data){types.push(data)})
+          .catch(function (err) {
             sails.log.error(err)
             errors.push('Error setting ' + obj[key].key + ' err message = ' + err.message)
           })
@@ -44,6 +45,8 @@ module.exports = {
         }
       }
     }
+
+    sails.log.debug('Current session settings: ' + JSON.stringify(req.session));
 
     if (errors.length > 0) {
       return res.json(ResponseStatus.OK, { status: 1738, errors })
@@ -55,6 +58,10 @@ module.exports = {
      Gets the specified settings
   */
   getStoredSettings(req, res) {
-    return res.json(ResponseStatus.OK, UserSettingsService.getUserSettings(req, Object.keys(req.allParams())))
+    const settings = UserSettingsService.getUserSettings(req, Object.keys(req.allParams())).then(function(settings){
+          sails.log.debug('Retrieved user settings ' + JSON.stringify(settings));
+          settings.status = 200;
+          return res.json(ResponseStatus.OK, settings);
+    })
   }
 }

@@ -30,22 +30,28 @@ module.exports = {
       sails.log.debug('Finding or creating user address in UserLocationService.js/findOrCreateUserLocation')
       sails.log.debug(JSON.stringify(userLocation))
 
-      UserService.findOrCreateUserAddress(user.id, {
-        addressLine: userLocation.streetNumber + ',' + userLocation.street,
-        addressLineTwo: userLocation.city,
-        addressLineThree: userLocation.region,
-        formattedAddress: userLocation.formattedAddress,
-        postcode: userLocation.postalCode,
-        // Look up tables
-        city: userLocation.city,
-        country: userLocation.country,
-        state: userLocation.state,
-        user: user.id
-      }).catch(function (err) {
-        sails.log.error(err)
+      return new Promise(function (resolve, reject) {
+        UserService.findOrCreateUserAddress(user.id, {
+          addressLine: userLocation.streetNumber + ',' + userLocation.street,
+          addressLineTwo: userLocation.city,
+          addressLineThree: userLocation.region,
+          formattedAddress: userLocation.formattedAddress,
+          postcode: userLocation.postalCode,
+          // Look up tables
+          city: userLocation.city,
+          country: userLocation.country,
+          state: userLocation.state,
+          user: user.id
+        }).then(function (addr) {
+          return resolve({location:userLocation,address:addr})
+        }).catch(function (err) {
+          sails.log.error(err)
+          return reject(err);
+        })
       })
-
-      return Promise.resolve(userLocation)
+    }).catch(function (err) {
+      sails.log.error(err)
+      return Promise.reject(err)
     })
   },
   findOrCreateCountry(country) {
@@ -53,16 +59,16 @@ module.exports = {
 
       // If the country info doesnt exist...(problem with the country name??)
       if (!countryInfo) {
-        sails.log.debug('Country info before error:');
-        sails.log.debug(countryInfo);
+        sails.log.debug('Country info before error:')
+        sails.log.debug(countryInfo)
         return Promise.reject({ error: new Error('Invalid response'),
           message: 'Country info did not exist'
           + 'when retrieving from rest countries in UserLocationService.js/findOrCreateCountry.js'})
       }
 
       if (!Array.isArray(countryInfo) || countryInfo.length < 1) {
-        sails.log.debug('Country info before error:');
-        sails.log.debug(countryInfo);
+        sails.log.debug('Country info before error:')
+        sails.log.debug(countryInfo)
         return Promise.reject({ error: new Error('Invalid response in UserLocationService.js/findOrCreatCountry.js'),
         message: 'Country info was not an array or was empty in UserLocationService.js/findOrCreateCountry.js'})
       }
@@ -107,7 +113,7 @@ module.exports = {
               const rObj = {}
               rObj[eleKeys[0]] = key
               rObj[eleKeys[1]] = data
-              rObj['countryCode'] = countryInfo.alpha3Code;
+              rObj['countryCode'] = countryInfo.alpha3Code
               return rObj
             })
 
@@ -131,15 +137,15 @@ module.exports = {
       sails.log.debug('Mapped country info:')
       sails.log.debug(JSON.stringify(mappedCountryInfo))
 
-     
 
-      countryInfo.topLevelDomain = ((countryInfo.topLevelDomain && 
-      countryInfo.topLevelDomain.length > 0) && countryInfo.topLevelDomain[0]) || '';
-      countryInfo.latlng = countryInfo.latlng && countryInfo.latlng.toString();
 
-      const finalCountry = Object.assign(countryInfo, mappedCountryInfo);
+      countryInfo.topLevelDomain = ((countryInfo.topLevelDomain &&
+        countryInfo.topLevelDomain.length > 0) && countryInfo.topLevelDomain[0]) || ''
+      countryInfo.latlng = countryInfo.latlng && countryInfo.latlng.toString()
+
+      const finalCountry = Object.assign(countryInfo, mappedCountryInfo)
       sails.log.debug('Final country is : ')
-      sails.log.debug(JSON.stringify(finalCountry));
+      sails.log.debug(JSON.stringify(finalCountry))
 
       return new Promise(function (resolve, reject) {
         Country.findOrCreate({
@@ -148,12 +154,12 @@ module.exports = {
           finalCountry
         ).exec(function (err, country) {
           if (err) {
-            sails.log.debug('Error creating new country');
+            sails.log.debug('Error creating new country')
             sails.log.error(err)
             return reject(err)
           }else {
-            sails.log.debug('Found country record');
-            sails.log.debug(JSON.stringify(country));
+            sails.log.debug('Found country record')
+            sails.log.debug(JSON.stringify(country))
             return resolve(country)
           }
         })

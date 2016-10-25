@@ -153,14 +153,17 @@ module.exports = {
             collection: 'UserLocation',
             via: 'user'
         },
-        images: {
-            collection: 'UserImage',
-            via: 'user'
-        },
         //A user can have many support tickets.
         supportTickets: {
             collection: 'SupportTicket',
             via: 'user'
+        },
+        flightGroups:{
+            collection:'FlightGroup',
+            via:'members'
+        },
+        userProfile:{
+            model:'UserProfile'
         },
         emailConfirmed: () => {
             return this.isEmailConfirmed;

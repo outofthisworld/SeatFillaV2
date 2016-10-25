@@ -1,9 +1,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta property="og:url"           content="seatfilla.com" />
-	  <meta property="og:type"          content="website" />
-	  <meta property="og:title"         content="SeatFilla" />
-	  <meta property="og:description"   content="Find flights" />
-	  <meta property="og:image"         content="seatfilla.com" />
+	<meta property="og:type"          content="website" />
+	<meta property="og:title"         content="SeatFilla" />
+	<meta property="og:description"   content="Find flights" />
+	<meta property="og:image"         content="seatfilla.com" />
 
     <!--SCRIPTS-->
     <script src="/bower_components/jquery/dist/jquery.min.js"></script>
@@ -33,158 +33,402 @@
     <link rel="stylesheet" href="/styles/main.css">
     <!--STYLES END-->
 
-  
-<script>
-    $(document).ready(function(){
-        $.toaster({ priority : 'info',  message : 'Manage your account'})
-        $('.sf-account-menu li').removeAttr('class');
-        $('#AccountPanel').attr('class','active');
-    });
-  </script>
+    <style>
+   .bg_blur
+{
+    background-image:url('/images/skyline-dark.jpg');
+    height: 300px;
+    background-size: cover;
+}
+
+.follow_btn {
+    text-decoration: none;
+    position: absolute;
+    left: 35%;
+    top: 42.5%;
+    width: 35%;
+    height: 15%;
+    background-color: #007FBE;
+    padding: 10px;
+    padding-top: 6px;
+    color: #fff;
+    text-align: center;
+    font-size: 20px;
+    border: 4px solid #007FBE;
+}
+
+.follow_btn:hover {
+    text-decoration: none;
+    position: absolute;
+    left: 35%;
+    top: 42.5%;
+    width: 35%;
+    height: 15%;
+    background-color: #007FBE;
+    padding: 10px;
+    padding-top: 6px;
+    color: #fff;
+    text-align: center;
+    font-size: 20px;
+    border: 4px solid rgba(255, 255, 255, 0.8);
+}
+
+.header{
+    color : #808080;
+    margin-left:10%;
+    margin-top:70px;
+}
+
+.picture{
+    height:150px;
+    width:150px;
+    position:absolute;
+    top: 75px;
+    left:-75px;
+}
+
+.picture_mob{
+    position: absolute;
+    width: 35%;
+    left: 35%;
+    bottom: 70%;
+}
+
+.btn-style{
+    color: #fff;
+    background-color: #007FBE;
+    border-color: #adadad;
+    width: 33.3%;
+}
+
+.btn-style:hover {
+    color: #333;
+    background-color: #3D5DE0;
+    border-color: #adadad;
+    width: 33.3%;
+   
+}
+
+
+@media (max-width: 767px) {
+    .header{
+        text-align : center;
+    }
+    
+    
+    
+    .nav{
+        margin-top : 30px;
+    }
+}
+
+/*side*/
+td, th {
+    vertical-align: middle !important;
+}
+.left, .right {
+        float:left;
+}
+    
+.sidebar .left {
+        background: #fa1;
+        display: inline-block;
+        white-space: nowrap;
+        width: 50px;
+        transition: width 1s ;
+        position:relative;
+        min-height:445px;
+    }
+
+.sidebar .right {
+        background: #fff;
+        padding:50px;
+        min-width:350px;
+        transition: width 1s;
+        border-style:solid;
+        border-color:#ccc;
+        border-width:1px;
+        position:relative;
+        right:50px;
+         min-height:445px;
+    }    
+
+.sidebar .left:hover{
+    width: 250px;
+    
+}    
+
+.sidebar .item:hover {
+    background-color:orange;
+}
+        
+.sidebar .left .glyphicon {
+        margin:15px;
+        width:20px;
+        color:#fff;
+   
+    }
+    
+.sidebar .right .glyphicon {
+        color:#a9a9a9;
+    }
+.sidebar span.glyphicon.glyphicon-refresh{
+    font-size:17px;
+    vertical-align: middle !important;
+    }
+    
+.sidebar .item {
+        height:50px;
+        overflow:hidden;
+        color:#fff;
+    }
+.sidebar .title {
+        background-color:#eee;
+        border-style:solid;
+        border-color:#ccc;
+        border-width:1px;
+        box-sizing: border-box;
+    }
+.search:hover {
+        border-color:#4aa9fb;
+        border-width:1px;
+    }
+.search {
+    padding:3px 8px 3px !important;
+    }
+input[type=search] {
+    padding: 10px 0px 10px;
+	border: 0px solid #fff;
+	background: #eee;
+	-webkit-appearance: none;
+    width:90%;
+    float:none;
+}
+input[type=search]:focus {
+    outline:none;
+    }
+.type{
+    height: 47px;;
+    }
+.date{
+    background-color:#f7f7f7
+    }
+.docdate {
+    vertical-align:bottom !important;
+    }
+.distr {
+    margin: 0 0 5px;
+    font-size: 12px;
+    }
+.ndoc {
+    margin: 0 0 5px;
+    }
+.storage {
+    margin: 0;
+    color: #aaa !important;
+    font-size: 12px;
+    }
+</style>
 </head>
 
 <body>
    <%- partial ('../partials/nav.ejs') %>
-     
-   	<div class="container80 main-container">
-  		<div class="col-md-2 sidebar">
-  			<div class="row">
-
-	<div class="absolute-wrapper"> </div>
+    <div class="container-fluid" style="padding:80px;padding-top:110px;">
+	<div class="row panel">
+		<div class="col-md-4 bg_blur ">
+    	    <a href="#" class="follow_btn hidden-xs"><i class="fa fa-plus"></i> Link</a>
+		</div>
+        <div class="col-xs-8 col-sm-offset-2 col-md-8 col-md-offset-0">
+         
+          <div style="">
+           <img src="<%= data.UserProfile.image || 'http://placehold.it/350x150'%>" class="img-thumbnail picture hidden-xs" />
+           <img src="<%= data.UserProfile.image || 'http://placehold.it/350x150'%>" class="img-thumbnail visible-xs picture_mob" />
+           <%if(req.user && data.UserProfile.isOwnProfile){%>
+            <div class="pull-right">
+                    <input type="button" class="btn btn-primary" value="Update Info">
+            </div>
+           <%}%>
+           </div>
+           <div class="header text-center">
+                <h4><%=data.UserProfile.user.username%></h4>
+                <span>"<%=data.UserProfile.description%>"</span>
+           </div>
+           <div class="row nav">  
+           <br>
+           <hr/>  
+        <div class="col-md-4"></div>
+        <div class="col-md-8 col-xs-12" style="margin: 0px;padding: 0px;">
+            <div class="col-md-4 col-xs-4 btn"><i class="fa fa-weixin fa-lg"></i> Links 16</div>
+            <div class="col-md-4 col-xs-4 btn"><i class="fa fa-heart-o fa-lg"></i> 14</div>
+            <div class="col-md-4 col-xs-4 btn"><i class="fa fa-thumbs-o-up fa-lg"></i> 26</div>
+        </div>
+    </div>
+        </div>
+        
+    </div>   
+<div class="col-md-3 sidebar">
+   <div class="row">
 
 	<div class="side-menu">
-    <br/><br/><hr/>
-		<nav class="navbar navbar-default" role="navigation">
+	<nav class="navbar" style="" role="navigation">
 			<!-- Main Menu -->
-			<div class="side-menu-container" style="background-color:#fafafa;">
-            
-               <div class="" style="max-width:200px;border-style:solid;border-color:lightgrey;border-width:1px;">
-                <image src="/images/Logo.png" width="200" class="img img-responsive"/>
-                </div>    
-                <div class="sidebar-nav-fixed">
-               <h1>BlackJem</h1>
-               <hr/></br>
-             
+
+
+<div class="sidebar">
+<div class="row">
+<div class="col-xs-3">
+    <div class="left">
+    
+<div class="item">
+
+<span class="glyphicon glyphicon-th-large"></span>
+</div>
+<div class="item active">
+<span class="glyphicon glyphicon-th-list"></span>
+    One</div>
+<div class="item">
+<span class="glyphicon glyphicon-log-out"></span>
+    Two</div>
+<div class="item">
+<span class="glyphicon glyphicon-log-in"></span>
+    Three</div> 
+<div class="item">
+<span class="glyphicon glyphicon-random"></span>
+   Four</div>
+<div class="item">
+<span class="glyphicon glyphicon-remove"></span>
+    Five</div>    
+</div>
+</div>
+<div class="col-xs-9">
+<div class="right">
+<table class="table">
+  
+  <tr>
+    <td class="date">Last updated: <%= new Date(data.UserProfile.createdAt).toISOString() %> </td>
+  </tr>
+    <tr>
+    <td class="docs">
+    <p class="ndoc">Info</p>
+    <p class="distr">Info</p>
+    <p class="storage">Info</p>
+    </td>
+    <td class="docdate"></td>
+  </tr>
+  <tr>
+    <td class="docs">
+    <p class="ndoc">Info</p>
+    <p class="distr">Info</p>
+    <p class="storage">Info</p>
+    </td>
+    <td class="docdate"></td>
+  </tr>
+  <tr>
+    <td class="docs">
+    <p class="ndoc">Info</p>
+    <p class="distr">Info</p>
+    <p class="storage">Info</p>
+    </td>
+    <td class="docdate">, 14:16</td>
+  </tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+  <!-- FLIGHT CIRCLE FRIENDS -->
 
     <div class="flight-circle-friends"> 
-    <div class="">
-    <div class="panel-heading">
+    <div class="panel">
+    <div class=" panel-heading">
        <span class=""><p>My Flight circle </p></span>
     </div>
     <div class="panel-body">
             <div class="row">
-                <div class="col-xs-4">
+                <div class="col-xs-2 col-sm-2 col-md-3">
                     <a href="#" class="thumbnail">
                     <img src="http://placehold.it/150x150" class="img img-responsive">
                     </a>
                 </div>
-                <div class="col-xs-4">
+                <div class="col-xs-2 col-sm-2 col-md-3">
                     <a href="#" class="thumbnail">
                     <img src="http://placehold.it/150x150" class="img img-responsive">
                     </a>
                 </div>
-                <div class="col-xs-4">
+                <div class="col-xs-2 col-sm-2 col-md-3">
                     <a href="#" class="thumbnail">
                     <img src="http://placehold.it/150x150" class="img img-responsive">
                     </a>
                 </div>
-                <div class="col-xs-4">
+                <div class="col-xs-2 col-sm-2 col-md-3">
                     <a href="#" class="thumbnail">
                     <img src="http://placehold.it/150x150" class="img img-responsive">
                     </a>
                 </div>
-                <div class="col-xs-4">
+                <div class="col-xs-2 col-sm-2 col-md-3">
                     <a href="#" class="thumbnail">
                     <img src="http://placehold.it/150x150" class="img img-responsive">
                     </a>
                 </div>
-                <div class="col-xs-4">
+                <div class="col-xs-2 col-sm-2 col-md-3">
                     <a href="#" class="thumbnail">
                     <img src="http://placehold.it/150x150" class="img img-responsive">
                     </a>
                 </div>
-                <div class="col-xs-4">
+                <div class="col-xs-2 col-sm-2 col-md-3">
                     <a href="#" class="thumbnail">
                     <img src="http://placehold.it/150x150" class="img img-responsive">
                     </a>
                 </div>
-                <div class="col-xs-4">
+                <div class="col-xs-2 col-sm-2 col-md-3">
                     <a href="#" class="thumbnail">
                     <img src="http://placehold.it/150x150" class="img img-responsive">
                     </a>
                 </div>
-                <div class="col-xs-4">
+                <div class="col-xs-2 col-sm-2 col-md-3">
+                    <a href="#" class="thumbnail">
+                    <img src="http://placehold.it/150x150" class="img img-responsive">
+                    </a>
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-3">
+                    <a href="#" class="thumbnail">
+                    <img src="http://placehold.it/150x150" class="img img-responsive">
+                    </a>
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-3">
+                    <a href="#" class="thumbnail">
+                    <img src="http://placehold.it/150x150" class="img img-responsive">
+                    </a>
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-3">
                     <a href="#" class="thumbnail">
                     <img src="http://placehold.it/150x150" class="img img-responsive">
                     </a>
                 </div>
             </div> <!--row-->
             </div> <!--panel body-->
-            <div class="panel-footer">
-                <a href="#" class="pull-right"><p>View all</p></a>
+                       <div class="">
+                <a href="#" class="pull-right"><p> View all</p></a>
             </div>
-        </div>
-   </div>
-				<ul class="nav navbar-nav sf-account-menu">
-					<li id="AccountPanel" class="active"><a href="#"><span class="glyphicon glyphicon-stats"></span> Account panel</a></li>
-					<li id="ChangeDetails"><a href="#"><span class="glyphicon glyphicon-user"></span> Change my details</a></li>
-					<li><a href="FlightRequests"><span class="glyphicon glyphicon-plane"></span>My Flight requests</a></li>
-                    <li><a href="#"><span class="glyphicon 	glyphicon glyphicon-ok"></span>My accepted flight requests</a></li>
-                    <li><a href="#"><span class="glyphicon 	glyphicon glyphicon-ok"></span>Flight notifications</a></li>
-                
-					<li class="panel panel-default" id="dropdown">
-						<a data-toggle="collapse" href="#dropdown-lvl1">
-							<span class="glyphicon glyphicon-user"></span> Notifications <span class="caret"></span>
-						</a>
-
-				
-						<div id="dropdown-lvl1" class="panel-collapse collapse">
-							<div class="panel-body">
-								<ul class="nav navbar-nav">
-									<li><a href="#">Flight notifications</a></li>
-									<li><a href="#">Seatfilla notifications</a></li>
-
-									<!--<li class="panel panel-default" id="dropdown">
-										<a data-toggle="collapse" href="#dropdown-lvl2">
-											<span class="glyphicon glyphicon-off"></span> Sub Level <span class="caret"></span>
-										</a>
-										<div id="dropdown-lvl2" class="panel-collapse collapse">
-											<div class="panel-body">
-												<ul class="nav navbar-nav">
-													<li><a href="#">Link</a></li>
-													<li><a href="#">Link</a></li>
-													<li><a href="#">Link</a></li>
-												</ul>
-											</div>
-										</div>
-									</li>-->
-								</ul>
-							</div>
-						</div>
-					</li>
-                    <li><a href="#"><span class="glyphicon 	glyphicon glyphicon-search"></span>Recently searched</a></li>
-					<li><a href="#"><span class="glyphicon 	glyphicon glyphicon-heart"></span>My flight circle</a></li>
-                    	<li><a href="#"><span class="glyphicon 	glyphicon glyphicon-heart"></span>My flight groups</a></li>
-                    <li><a href="#"><span class="glyphicon 	glyphicon glyphicon-heart"></span>Invite friends</a></li>
-                     <li><a href="#"><span class="glyphicon glyphicon glyphicon-cloud"></span>API (Developers)</a></li>
-
-				</ul>
+            </div>
+         </div>
 			</div><!-- /.navbar-collapse -->
 		</nav>
         
 	</div>
-</div>  		</div>
-<br><br>
-  		<div class="col-md-10 content">
-  			  <div class="panel panel-default">
-	<div class="panel-heading">
-		My Account
-	</div>
-	<div class="panel-body">
-	 <%- body %>
-	</div>
-</div>
-  		</div>
+</div>  	
+	
+
+  		<div class="col-md-9 col-xs-8">
+  	
+            <div class="panel" style="">
+            <div class="panel-content">
+            <%- body %>
+            </div>
+            </div>
+        </div>
+  	
 
   	</div>
  

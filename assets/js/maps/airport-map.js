@@ -28,7 +28,7 @@ $(document).ready(function() {
 
 
         const airportData = options.airportData;
-
+        var numPolls = 0;
 
         var line;
 
@@ -241,7 +241,10 @@ $(document).ready(function() {
                 window.alert(JSON.stringify(response.errors));
             } else {
                 console.log(response);
+                const _button = $('#searchFlights');
+                _button.addClass('m-progress')
                 const sf_result = response.result;
+        
 
                 const dates = this.dates;
                 const userLocation = this.userLocation;
@@ -250,6 +253,31 @@ $(document).ready(function() {
                 const ticketInfo = this.ticketInfo;
 
                 /* Maybe change it to client side polling... */
+
+                _button.off('click');
+                _button.on('click',function(){
+                    numPolls+=1;
+                    $.ajax({
+                        type: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo.method,
+                        url:  '/maps/pollSkyScannerFlightLivePricingApi',
+                        data: {
+                            urlEndPoint:response.result.urlEndPoint.url,
+                            destinationName: destination.name,
+                            newskyscannerpageindex: parseInt(response.itinerary.pageindex) + 1,
+                            newgettyimagespageindex: ((numPolls * parseInt(response.itinerary.pagesize))) %
+                             parseInt(response.gettyimagespagesize) == 0? parseInt(response.gettyimagespageindex) + 1: response.gettyimagespageindex,
+                            gettyimagespagesize: response.gettyimagespagesize,
+                            skyscannerpagesize: response.itinerary.pagesize
+                        },
+                        success: populateFlightData.bind({
+                                dates,
+                                userLocation,
+                                origin,
+                                destination,
+                                ticketInfo
+                            })
+                    });
+                });
 
                 $("#flightResults").append($('<div></div>', { class: 'well well-sm' }).text(JSON.stringify(sf_result.Query)));
 
@@ -734,7 +762,7 @@ $(document).ready(function() {
                     $('#flightResults').append($liEle);
                 });
             }
-
+            _button.removeClass('m-progress');
             $('[id^=detail-]').hide();
         }
 

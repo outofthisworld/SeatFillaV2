@@ -71,8 +71,7 @@ module.exports = {
         // Use SkyScannerFlightService to make the request
         SkyScannerFlightService.makeLivePricingPollRequest(sessionObj, itinObj).then(function (result) {
           return callback(null, {result,
-            skyscannerpageindex:itinObj.pageindex,
-            skyscannerpagesize:itinobj.pagesize
+            itinObj
           });
         }).catch(function (error) {
           sails.log.error(error)
@@ -81,6 +80,8 @@ module.exports = {
         })
       }],
       getGettyImages: ['makeLivePricingApiRequest', function (callback, results) {
+        const itinObj = results.makeLivePricingApiRequest.itinObj;
+
         GettyImagesService.searchAndRetrieveUrls({
           phrase: req.body.destination.name + ' city skyline',
           page: 1,
@@ -110,11 +111,10 @@ module.exports = {
       }else {
         return res.json(ResponseStatus.OK, { status: 200,
           result: results.makeLivePricingApiRequest.result,
-          skyscannerpageindex:results.makeLivePricingApiRequest.skyscannerpageindex, 
-          skyscannerpagesize:results.makeLivePricingApiRequest.skyscannerpagesize,
+          itinerary: results.makeLivePricingApiRequest.itinObj,
           cityImages: results.getGettyImages.data,
-          gettyimagespageindex:results.getGettyImages.gettyimagespagesize,
-          gettyimagespagesize:results.getGettyImages.gettyimagespageindex
+          gettyimagespageindex:results.getGettyImages.gettyimagespageindex,
+          gettyimagespagesize:results.getGettyImages.gettyimagespagesize
         })
       }
     })
@@ -124,17 +124,20 @@ module.exports = {
       return res.json(ResponseStatus.CLIENT_BAD_REQUEST, {status: ResponseStatus.CLIENT_BAD_REQUEST,
       errors: ['No url end point specified']})
 
-    const sessionKey = req.param('urlEndPoint')
+    const urlEndPoint = req.param('urlEndPoint')
     const newPageIndex = req.param('newskyscannerpageindex')
     const newGettyPageIndex = req.param('newgettyimagespageindex');
     const gettyImagesPageSize = req.param('gettyimagespagesize');
     const skyscannerPageSize = req.param('skyscannerpagesize');
 
+    sails.log.debug(JSON.stringify(req.allParams()))
+
     const itinObj = SkyScannerFlightService.getDefaultItinObject()
     itinObj.pageindex = newPageIndex;
+    itinObj.pagesize = skyscannerPageSize;
 
     GettyImagesService.searchAndRetrieveUrls({
-      phrase: req.body.destination.name + ' city skyline',
+      phrase: req.param('destinationName') + ' city skyline',
       page: newGettyPageIndex || 1,
     }).then(function (data) {
 
@@ -150,12 +153,11 @@ module.exports = {
       }
 
       // Use SkyScannerFlightService to make the request
-      SkyScannerFlightService.makeLivePricingPollRequest(sessionObj,
+      SkyScannerFlightService.makeLivePricingPollRequest(null,
         itinObj, urlEndPoint).then(function (result) {
           return res.json(ResponseStatus.OK, { status: 200,
           result,
-          skyscannerpageindex:newPageIndex, 
-          skyscannerpagesize:skyscannerPageSize,
+          itinerary:itinObj,
           cityImages: arr,
           gettyimagespageindex:newGettyPageIndex,
           gettyimagespagesize:gettyImagesPageSize

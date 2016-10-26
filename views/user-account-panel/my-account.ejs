@@ -1,20 +1,83 @@
 
-      
+      <style>
+.user_name{
+    font-size:14px;
+    font-weight: bold;
+}
+.comments-list .media{
+    border-bottom: 1px dotted #ccc;
+}
+      </style>
 
 <p>helloooooooooooooooooooooooooooooooooooo world</p>
 
 <%= JSON.stringify(data.UserProfile) %>
+
+<div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                  <div class="page-header">
+                    <p><small class="pull-right">45 comments</small> Comments </p>
+                  </div> 
+                   <div class="comments-list">
+                       <div class="media">
+                                     <div class="pull-right"><p><small><a href="">Delete</a></p></div>
+                           <p class="pull-right"><small>5 days ago</small></p>
+                            <a class="media-left" href="#">
+                              <img src="http://lorempixel.com/40/40/people/1/">
+                            </a>
+                            <div class="media-body">
+                                
+                              <h4 class="media-heading user_name">Baltej Singh</h4>
+                              Wow! this is really great.
+                              
+                              <div class="replies">
+                              <hr/>
+                               <p> Replies : </p>
+
+                               <div class="media">
+                                  <p class="pull-right"><small>5 days ago</small></p>
+                                    <a class="media-left" href="#">
+                                      <img src="http://lorempixel.com/40/40/people/1/">
+                                    </a>
+                                    <div class="media-body">
+                                        
+                                      <h4 class="media-heading user_name">Baltej Singh</h4>
+                                      Wow! this is really great.
+                                      
+                                      <p><small><a href="">Like</a> - <a href="">Share</a></small></p>
+                                    </div>
+                                  </div>
+                              </div>
+                              
+                            </div>
+                          </div>
+                     
+                   </div>
+                    <form>
+      <div class="form-group">
+        <label for="comment">Your Comment</label>
+        <textarea name="comment" class="form-control" rows="3"></textarea>
+      </div>
+      <button type="submit" class="btn btn-default">Send</button>
+    </form>
+                    
+                    
+                </div>
+            </div>
+        </div>
 <div class="container">
   <div class="row">
     <div class="col-md-8">
       <h2 class="page-header">Comments</h2>
         <section class="comment-list">
           <!-- First Comment -->
+          <% data.UserProfile.comments.forEach(function(comment) {%>
           <article class="row">
             <div class="col-md-2 col-sm-2 hidden-xs">
               <figure class="thumbnail">
-                <img class="img-responsive" src="http://www.keita-gaming.com/assets/profile/default-avatar-c5d8ec086224cb6fc4e395f4ba3018c2.jpg" />
-                <figcaption class="text-center">username</figcaption>
+                <img class="img-responsive" src="<%= comment.user.userProfile.image|| 'http://www.keita-gaming.com/assets/profile/default-avatar-c5d8ec086224cb6fc4e395f4ba3018c2.jpg' %>" />
+                <figcaption class="text-center"><%=comment.user.username%></figcaption>
               </figure>
             </div>
             <div class="col-md-10 col-sm-10">
@@ -34,6 +97,7 @@
               </div>
             </div>
           </article>
+          <%})%>
 
             <article class="row">
             <div class="col-md-2 col-sm-2 hidden-xs">

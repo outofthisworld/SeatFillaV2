@@ -94,6 +94,9 @@ module.exports.policies = {
     ApiUsers: {
         '*': true
     },
+    Maps:{
+        '*':true
+    },
     SubscriptionController:{
         '*':false,
         'subscribeToUserSocketService':['passportAuth']

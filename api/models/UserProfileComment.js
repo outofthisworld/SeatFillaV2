@@ -12,6 +12,14 @@ module.exports = {
             model:'User',
             notNull:true,
             required:true
+        },
+        isReply:{
+            type:'boolean',
+            defaultsTo:false,
+        },
+        replies:{
+            collection:'UserProfileComment',
+            via: 'id'
         }
     }
 }

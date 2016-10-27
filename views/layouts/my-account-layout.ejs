@@ -36,9 +36,10 @@
     <style>
    .bg_blur
 {
-    background-image:url('/images/skyline-dark.jpg');
-    height: 300px;
+    background-color:orange;
+    height: 280px;
     background-size: cover;
+    opacity:0.4;
 }
 
 .follow_btn {
@@ -228,84 +229,220 @@ input[type=search]:focus {
     color: #aaa !important;
     font-size: 12px;
     }
+
+    /* Profile container */
+.profile {
+  margin: 20px 0;
+}
+
+/* Profile sidebar */
+.profile-sidebar {
+  padding: 20px 0 10px 0;
+  background: #fff;
+}
+
+.profile-userpic img {
+  float: none;
+  margin: 0 auto;
+  width: 50%;
+  height: 50%;
+  -webkit-border-radius: 50% !important;
+  -moz-border-radius: 50% !important;
+  border-radius: 50% !important;
+}
+
+.profile-usertitle {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.profile-usertitle-name {
+  color: #5a7391;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 7px;
+}
+
+.profile-usertitle-job {
+  text-transform: uppercase;
+  color: #5b9bd1;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.profile-userbuttons {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.profile-userbuttons .btn {
+  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 15px;
+  margin-right: 5px;
+}
+
+.profile-userbuttons .btn:last-child {
+  margin-right: 0px;
+}
+    
+.profile-usermenu {
+  margin-top: 30px;
+}
+
+.profile-usermenu ul li {
+  border-bottom: 1px solid #f0f4f7;
+}
+
+.profile-usermenu ul li:last-child {
+  border-bottom: none;
+}
+
+.profile-usermenu ul li a {
+  color: #93a3b5;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.profile-usermenu ul li a i {
+  margin-right: 8px;
+  font-size: 14px;
+}
+
+.profile-usermenu ul li a:hover {
+  background-color: #fafcfd;
+  color: #5b9bd1;
+}
+
+.profile-usermenu ul li.active {
+  border-bottom: none;
+}
+
+.profile-usermenu ul li.active a {
+  color: #5b9bd1;
+  background-color: #f6f9fb;
+  border-left: 2px solid #5b9bd1;
+  margin-left: -2px;
+}
+
+/* Profile Content */
+.profile-content {
+  padding: 20px;
+  background: #fff;
+  min-height: 460px;
+}
+
+
 </style>
+
 </head>
 
 <body>
    <%- partial ('../partials/nav.ejs') %>
-    <div class="container-fluid" style="padding:80px;padding-top:110px;">
+   
+<div class="container-fluid" style="padding:180px;padding-top:110px;">
 	<div class="row panel">
 		<div class="col-md-4 bg_blur ">
-    	    <a href="#" class="follow_btn hidden-xs"><i class="fa fa-plus"></i> Link</a>
+            
 		</div>
         <div class="col-xs-8 col-sm-offset-2 col-md-8 col-md-offset-0">
          
-          <div style="">
-           <img src="<%= data.UserProfile.image || 'http://placehold.it/350x150'%>" class="img-thumbnail picture hidden-xs" />
-           <img src="<%= data.UserProfile.image || 'http://placehold.it/350x150'%>" class="img-thumbnail visible-xs picture_mob" />
-           <%if(req.user && data.UserProfile.isOwnProfile){%>
-            <div class="pull-right">
-                    <input type="button" class="btn btn-primary" value="Update Info">
+            <div style="">
+                <img src="<%= data.UserProfile.image || 'http://placehold.it/350x150'%>" class="img-thumbnail picture hidden-xs" />
+                <img src="<%= data.UserProfile.image || 'http://placehold.it/350x150'%>" class="img-thumbnail visible-xs picture_mob" />
+                <%if(req.user && data.UserProfile.isOwnProfile){%>
+                    <div class="pull-right">
+                            <input type="button" class="btn btn-primary" value="Update Info">
+                    </div>
+                <%}%>
             </div>
-           <%}%>
-           </div>
-           <div class="header text-center">
-                <h4><%=data.UserProfile.user.username%></h4>
-                <span>"<%=data.UserProfile.description%>"</span>
-           </div>
-           <div class="row nav">  
-           <br>
-           <hr/>  
-        <div class="col-md-4"></div>
+            <div class="header text-center">
+                    <h4><%=data.UserProfile.user.username%></h4>
+                    <span>"<%=data.UserProfile.description%>"</span> 
+                    <div class="col-xs-12">
+
+            </div>
+            </div>
+            
+            <div class="row nav">  
+            <br>
+            <hr/>  
+        <div class="col-md-4">
+        </div>
         <div class="col-md-8 col-xs-12" style="margin: 0px;padding: 0px;">
             <div class="col-md-4 col-xs-4 btn"><i class="fa fa-weixin fa-lg"></i> Links 16</div>
             <div class="col-md-4 col-xs-4 btn"><i class="fa fa-heart-o fa-lg"></i> 14</div>
             <div class="col-md-4 col-xs-4 btn"><i class="fa fa-thumbs-o-up fa-lg"></i> 26</div>
         </div>
+        
     </div>
         </div>
         
     </div>   
 <div class="col-md-3 sidebar">
+
    <div class="row">
 
 	<div class="side-menu">
 	<nav class="navbar" style="" role="navigation">
 			<!-- Main Menu -->
-
-
 <div class="sidebar">
-<div class="row">
-<div class="col-xs-3">
-    <div class="left">
-    
-<div class="item">
 
-<span class="glyphicon glyphicon-th-large"></span>
-</div>
-<div class="item active">
-<span class="glyphicon glyphicon-th-list"></span>
-    One</div>
-<div class="item">
-<span class="glyphicon glyphicon-log-out"></span>
-    Two</div>
-<div class="item">
-<span class="glyphicon glyphicon-log-in"></span>
-    Three</div> 
-<div class="item">
-<span class="glyphicon glyphicon-random"></span>
-   Four</div>
-<div class="item">
-<span class="glyphicon glyphicon-remove"></span>
-    Five</div>    
-</div>
-</div>
-<div class="col-xs-9">
-<div class="right">
-<table class="table">
+<div class="row">
+   <div class="col-md-12">
   
+          
+			<div class="profile-sidebar">
+	
+				<!-- SIDEBAR USER TITLE -->
+				<div class="profile-usertitle">
+					<div class="profile-usertitle-name">
+						Marcus Doe
+					</div>
+					<div class="profile-usertitle-job">
+						Developer
+					</div>
+                    
+				</div>
+				<!-- END SIDEBAR USER TITLE -->
+                <!-- SIDEBAR MENU -->
+				<div class="profile-usermenu">
+					<ul class="nav">
+						<li class="active">
+							<a href="#">
+							<i class="glyphicon glyphicon-home"></i>
+							Overview </a>
+						</li>
+						<li>
+							<a href="#">
+							<i class="glyphicon glyphicon-user"></i>
+							Account Settings </a>
+						</li>
+						<li>
+							<a href="#" target="_blank">
+							<i class="glyphicon glyphicon-ok"></i>
+							Tasks </a>
+						</li>
+						<li>
+							<a href="#">
+							<i class="glyphicon glyphicon-flag"></i>
+							Help </a>
+						</li>
+					</ul>
+				</div>
+				<!-- END MENU -->
+				<!-- SIDEBAR BUTTONS -->
+				<div class="profile-userbuttons">
+					<button type="button" class="btn btn-success btn-sm">Follow</button>
+					<button type="button" class="btn btn-danger btn-sm">Message</button>
+				</div><br/>
+
+                <div class="" style="background-color:white;">
+<table class="table">
   <tr>
-    <td class="date">Last updated: <%= new Date(data.UserProfile.createdAt).toISOString() %> </td>
+    <td class="">Last updated: <%= new Date(data.UserProfile.createdAt).toISOString() %> </td>
   </tr>
     <tr>
     <td class="docs">
@@ -323,28 +460,13 @@ input[type=search]:focus {
     </td>
     <td class="docdate"></td>
   </tr>
-  <tr>
-    <td class="docs">
-    <p class="ndoc">Info</p>
-    <p class="distr">Info</p>
-    <p class="storage">Info</p>
-    </td>
-    <td class="docdate">, 14:16</td>
-  </tr>
 </table>
 </div>
-</div>
-</div>
-</div>
 
-  <!-- FLIGHT CIRCLE FRIENDS -->
+                 
+            <!-- FLIGHT CIRCLE FRIENDS -->
 
-    <div class="flight-circle-friends"> 
-    <div class="panel">
-    <div class=" panel-heading">
-       <span class=""><p>My Flight circle </p></span>
-    </div>
-    <div class="panel-body">
+            <div class="flight-circle-friends"> 
             <div class="row">
                 <div class="col-xs-2 col-sm-2 col-md-3">
                     <a href="#" class="thumbnail">
@@ -406,15 +528,16 @@ input[type=search]:focus {
                     <img src="http://placehold.it/150x150" class="img img-responsive">
                     </a>
                 </div>
-            </div> <!--row-->
-            </div> <!--panel body-->
-                       <div class="">
-                <a href="#" class="pull-right"><p> View all</p></a>
-            </div>
-            </div>
+            </div> <!--row-->  
          </div>
-			</div><!-- /.navbar-collapse -->
-		</nav>
+			
+			</div>
+		</div>
+
+    </div>
+</div>
+	</div><!-- /.navbar-collapse -->
+</nav>
         
 	</div>
 </div>  	

@@ -18,7 +18,7 @@ module.exports = {
         const socketId = sails.sockets.getId(req);
 
         UserSocketService.subscribe(req.user.id, socketId).then(function(){
-            return res.ok();
+            return res.ok({status:ResponseStatus.OK});
         }).catch(function(err){
             return res.badRequest();
         })

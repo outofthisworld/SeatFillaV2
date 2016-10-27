@@ -51,14 +51,14 @@ module.exports.http = {
 
                 if (!userProfile.description || userProfile.description.length < 5) {
                   sails.log.debug('Updating profile')
-                  return UserProfile.update({id: userProfile.id},{description:'Welcome to seatfilla'})
+                  return UserProfile.update({id: userProfile.id}, {description: 'Welcome to seatfilla'})
                     .then(function (userProfile) {
                       sails.log.debug('Updated user profile')
-                      user.userProfile = userProfile;
+                      user.userProfile = userProfile
                       return Promise.resolve()
                     })
-            }else {
-                  user.userProfile = userProfile;
+                }else {
+                  user.userProfile = userProfile
                   return Promise.resolve()
                 }
               }
@@ -84,7 +84,7 @@ module.exports.http = {
                 } else {
                   sails.log.debug('User settings were' + JSON.stringify(userSettings))
                   sails.log.debug('Current location was ' + userSettings.currentLocation)
-                return Promise.resolve()
+                  return Promise.resolve()
                 }
               }
             })
@@ -154,12 +154,19 @@ module.exports.http = {
       req.isDELETE = function () {
         return req.method === 'DELETE'
       }
+      req.setParam = function(paramName,paramValue){
+          delete req.query[paramName];
+          delete req.body[paramName];
+          delete req.params[paramName];
+          
+          req.body[paramName] = paramValue
+      }
       next()
     },
     resModifer: function (req, res, next) {
       next()
     },
-    localePreference:function(req,res,next){
+    localePreference: function (req, res, next) {
       UserSettingsService.setUserLocalePreference(req, req.headers['Accept-Language'])
     },
 
@@ -171,7 +178,7 @@ module.exports.http = {
 
     requestLogger: function (req, res, next) {
       console.log('Requested :: ', req.method, req.url)
-      console.log('Headers: ' +  JSON.stringify(req.headers))
+      console.log('Headers: ' + JSON.stringify(req.headers))
 
       return next()
     }

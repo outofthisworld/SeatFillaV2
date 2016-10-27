@@ -1,5 +1,7 @@
 module.exports = {
     index(req, res) {
+        sails.log.debug(sails.models['user'])
+      
        return res.ok({ user: req.user }, {
             view: 'index',
         });

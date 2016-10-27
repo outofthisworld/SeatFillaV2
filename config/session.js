@@ -26,15 +26,16 @@ module.exports.session = {
      * 
      ***************************************************************************/
 
-    // adapter: 'redis',
-    adapter: 'redis',
-    host: process.env.REDIS_HOST,
-    port: process.env.REDIS_PORT,
-    //ttl: <redis session TTL in seconds>,
-    db: process.env.REDIS_DB || 0,
-    pass: process.env.REDIS_PASSWORD,
-    // prefix: 'sess:',
-
+     adapter: 'memory',
+    /*
+        adapter: 'redis',
+        host: process.env.REDIS_HOST,
+        port: process.env.REDIS_PORT,
+        //ttl: <redis session TTL in seconds>,
+        db: process.env.REDIS_DB || 0,
+        pass: process.env.REDIS_PASSWORD,
+        // prefix: 'sess:',
+    */
 
     /*
         Use the following settings to enable this app to use mongo as its shared session store:

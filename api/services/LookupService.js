@@ -71,7 +71,7 @@ module.exports = {
       }
   */
   rest_countries_get_country_info_by_c_code(countryCode) {
-    if (!countryCode) throw new Error('Invalid params to LookupService.js/rest_countries_get_country_info')
+    if (!countryCode) throw new Error('Invalid params to LookupService.js/rest_countries_get_country_info_by_c_code')
 
     const countryInfoEndpoint = 'https://restcountries.eu/rest/v1/alpha/' + countryCode
 
@@ -125,7 +125,7 @@ module.exports = {
     })
   },
   rest_countries_get_country_info_by_c_name(countryName) {
-    if (!countryName) throw new Error('Invalid params to LookupService.js/rest_countries_get_country_info')
+    if (!countryName) throw new Error('Invalid params to LookupService.js/rest_countries_get_country_info_by_c_name')
 
     const countryInfoEndpoint = 'https://restcountries.eu/rest/v1/name/' + countryName;
 

@@ -7,125 +7,271 @@
 .comments-list .media{
     border-bottom: 1px dotted #ccc;
 }
+
       </style>
 
-<p>helloooooooooooooooooooooooooooooooooooo world</p>
 
-<%= JSON.stringify(data.UserProfile) %>
 
-<div class="container">
+<div class="container-fluid">
+
+
+<!--COMMENTS-->
             <div class="row">
-                <div class="col-md-8">
+                <div class="col-xs-12">
                   <div class="page-header">
                     <p><small class="pull-right">45 comments</small> Comments </p>
                   </div> 
-                   <div class="comments-list">
-                       <div class="media">
-                                     <div class="pull-right"><p><small><a href="">Delete</a></p></div>
-                           <p class="pull-right"><small>5 days ago</small></p>
-                            <a class="media-left" href="#">
-                              <img src="http://lorempixel.com/40/40/people/1/">
-                            </a>
-                            <div class="media-body">
-                                
-                              <h4 class="media-heading user_name">Baltej Singh</h4>
-                              Wow! this is really great.
-                              
-                              <div class="replies">
-                              <hr/>
-                               <p> Replies : </p>
-
-                               <div class="media">
-                                  <p class="pull-right"><small>5 days ago</small></p>
-                                    <a class="media-left" href="#">
-                                      <img src="http://lorempixel.com/40/40/people/1/">
-                                    </a>
-                                    <div class="media-body">
-                                        
-                                      <h4 class="media-heading user_name">Baltej Singh</h4>
-                                      Wow! this is really great.
-                                      
-                                      <p><small><a href="">Like</a> - <a href="">Share</a></small></p>
-                                    </div>
-                                  </div>
-                              </div>
-                              
-                            </div>
+                   <div class="comments-list" id="commentsList">
+                   </div>       
+                          <form>
+                          <div class="form-group">
+                            <label for="comment">Your Comment</label>
+                            <textarea name="comment" id="top-level-comment-message" class="form-control" rows="3"></textarea>
                           </div>
-                     
-                   </div>
-                    <form>
-      <div class="form-group">
-        <label for="comment">Your Comment</label>
-        <textarea name="comment" class="form-control" rows="3"></textarea>
-      </div>
-      <button type="submit" class="btn btn-default">Send</button>
-    </form>
-                    
-                    
+                          <button type="submit" id="top-level-comment-btn" class="btn btn-default">Send</button>
+                        </form>        
                 </div>
             </div>
-        </div>
-<div class="container">
-  <div class="row">
-    <div class="col-md-8">
-      <h2 class="page-header">Comments</h2>
-        <section class="comment-list">
-          <!-- First Comment -->
-          <% data.UserProfile.comments.forEach(function(comment) {%>
-          <article class="row">
-            <div class="col-md-2 col-sm-2 hidden-xs">
-              <figure class="thumbnail">
-                <img class="img-responsive" src="<%= comment.user.userProfile.image|| 'http://www.keita-gaming.com/assets/profile/default-avatar-c5d8ec086224cb6fc4e395f4ba3018c2.jpg' %>" />
-                <figcaption class="text-center"><%=comment.user.username%></figcaption>
-              </figure>
-            </div>
-            <div class="col-md-10 col-sm-10">
-              <div class="panel panel-default arrow left">
-                <div class="panel-body">
-                  <header class="text-left">
-                    <div class="comment-user"><i class="fa fa-user"></i> That Guy</div>
-                    <time class="comment-date" datetime="16-12-2014 01:05"><i class="fa fa-clock-o"></i> Dec 16, 2014</time>
-                  </header>
-                  <div class="comment-post">
-                    <p>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    </p>
-                  </div>
-                  <p class="text-right"><a href="#" class="btn btn-default btn-sm"><i class="fa fa-reply"></i> reply</a></p>
-                </div>
-              </div>
-            </div>
-          </article>
-          <%})%>
+        </div><!--COMMENTS END-->
 
-            <article class="row">
-            <div class="col-md-2 col-sm-2 hidden-xs">
-              <figure class="thumbnail">
-                <img class="img-responsive" src="http://www.keita-gaming.com/assets/profile/default-avatar-c5d8ec086224cb6fc4e395f4ba3018c2.jpg" />
-                <figcaption class="text-center">username</figcaption>
-              </figure>
-            </div>
-            <div class="col-md-10 col-sm-10">
-              <div class="panel panel-default arrow left">
-                <div class="panel-body">
-                  <header class="text-left">
-                    <div class="comment-user"><i class="fa fa-user"></i> That Guy</div>
-                    <time class="comment-date" datetime="16-12-2014 01:05"><i class="fa fa-clock-o"></i> Dec 16, 2014</time>
-                  </header>
-                  <div class="comment-post">
-                    <p>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    </p>
-                  </div>
-                  <p class="text-right"><a href="#" class="btn btn-default btn-sm"><i class="fa fa-reply"></i> reply</a></p>
-                </div>
-              </div>
-            </div>
-          </article>
-          
-          
-        </section>
-    </div>
-  </div>
+  <br/>
 </div>
+
+
+<script>
+   $(document).ready(function() {
+
+       //The number of comments to load to the page.
+       const numCommentsToRetrieve = 5;
+
+       //Sort by their creation time
+       const sortBy = 'createdAt';
+
+       //order the comments in descending order
+       const sortOrder = 'DESC';
+
+       //For `show more` 
+       const moreCommentsAreAvailable = true;
+
+       //Obtain this by embedding it from the server
+       const userProfileId = 1;
+
+       //Obtain all the 'top level' comments from the server
+       const commentQueryObj = {
+           userProfile: 1,
+           isReply: false
+       }
+
+       io.socket.on('userprofilecomment.create', function(comment) {
+           console.log('Comment:')
+           console.log(comment);
+      
+           var $parentEle;
+           const commentObj = createCommentObjectFromResponse(comment);
+           var $comment = createDynamicComment(commentObj);
+
+           if (comment.isReply) {
+               $parentEle = $('#commentsList .replies[data-attr-parent-comment-id=' + comment.parentCommentId + ']');
+           } else {
+               comment = createTopLevelComment(commentObj, $comment);
+               $parentEle = $('#commentsList');
+           }
+
+           $($comment).hide(0);
+           $parentEle.prepend($($comment).slideDown(800).fadeIn(1000));
+       })
+
+       io.socket.on('userprofilecomment.destroy', function(event) {
+
+       })
+
+       io.socket.on('userprofilecomment.update', function(event) {
+
+       })
+
+       io.socket.get('/UserProfileComment?sort=' + sortBy + ' ' +
+           sortOrder + '&limit=' + numCommentsToRetrieve +
+           '&where=' + JSON.stringify(commentQueryObj),
+           function(resData, jwres) {
+               console.log(JSON.stringify(resData));
+
+               if (resData.length < numCommentsToRetrieve || resData.length == 0) {
+                   moreCommentsAreAvailable = false;
+                   return;
+               }
+
+               resData.userProfileComments.forEach(function(comment) {
+
+                   var commentObj = createCommentObjectFromResponse(comment);
+                   var $comment = createDynamicComment(commentObj);
+                   $comment = createTopLevelComment(commentObj, $comment);
+
+                   $('#commentsList').append($comment);
+
+                   comment.replies.forEach(function(reply) {
+                       const replyObj = createCommentObjectFromResponse(reply);
+                       replyObj.parentCommentId = commentObj.id;
+                       $($comment).find('.replies').prepend(createDynamicComment(replyObj)
+                           .append($('<br/>')).append($('<hr/>')))
+                   })
+               })
+
+           })
+
+       function createCommentObjectFromResponse(comment) {
+
+           return {
+               title: comment.user.username,
+               image: (comment.user.userProfile && comment.user.userProfile.image) ||
+                   'http://lorempixel.com/40/40/people/1/',
+               message: comment.message,
+               id: comment.id,
+               parentCommentId: comment.parentCommentId || null,
+               hasReplies: comment.replies && comment.replies.length > 0
+           }
+       }
+
+       function createTopLevelComment(options, $media) {
+
+           const commentId = options.id;
+           const hasReplies = options.hasReplies;
+
+           $media.append($('<br/>')).append($('<hr/>'))
+
+           const $replyPanel = $('<div></div>', {
+               id: commentId,
+               class: 'panel panel-default panel-comment-reply'
+           })
+           const $replyPanelHeading = $('<div></div>', {
+               class: 'panel-heading'
+           }).text('Comment replies')
+
+           if (!hasReplies) {
+               $replyPanelHeading.css('display', 'none')
+           }
+
+           const $replyMessageContainer = $('<div></div>', {
+               class: 'replies',
+               'data-attr-parent-comment-id': commentId
+           });
+
+           const $replyCommentForm = $('<form></form>', {
+               class: 'reply-comment-form'
+           }).css('display', 'none')
+           const $formGroupContainer = $('<div></div>', {
+               class: 'form-group container-fluid commentbox'
+           })
+           const $label = $('<label></label>', {}).attr('for', 'comment').append($('<small></small>').text('Write your reply'));
+           const $textArea = $('<textarea></textarea>', {
+               class: 'form-control',
+               required: 'required',
+               rows: 2
+           });
+
+           const $button = $('<input/>', {
+               value: 'Send',
+               class: 'btn btn-default btn-sm pull-right',
+               on: {
+                   click: function() {
+                       $.ajax({
+                           method: 'post',
+                           url: '/UserProfileComment/replyToComment',
+                           data: {
+                               parentCommentId: commentId,
+                               message: $textArea.val(),
+                               userProfile: userProfileId,
+                               isReply: true
+                           },
+                           success: function(res) {
+                               console.log(JSON.stringify(res))
+                               if (res.status == 200) {
+
+                               } else {
+                                   console.log(JSON.stringify(res.error))
+                               }
+                           }
+                       })
+                   }
+               }
+           });
+
+           const $reply = $('<a></a>', {
+               class: 'pull-right',
+               on: {
+                   click: function() {
+                       $replyCommentForm.slideToggle(500);
+                   }
+               }
+           }).append($('<small></small>').text('Reply'));
+
+           $media.append($replyPanel
+               .append($replyPanelHeading)
+               .append($replyMessageContainer)
+               .append($reply)
+               .append($('<br/>')).append($('<hr/>'))
+               .append($replyCommentForm
+                   .append($formGroupContainer
+                       .append($label)
+                       .append($textArea)
+                       .append($button))))
+
+           return $media;
+       }
+
+       function createDynamicComment(options) {
+
+           const commentTitle = options.title;
+           const commentImage = options.image;
+           const commentMessage = options.message;
+           const commentId = options.id;
+           const parentCommentId = options.parentCommentId;
+
+           const $media = $('<div></div>', {
+               class: 'media'
+           }).css('padding', '10px');
+           const $right = $('<div></div>', {
+               class: 'pull-right'
+           }).append(
+               $('<p></p>').append($('<a></a>').append($('<small></small>').text('Delete'))))
+           const $right2 = $('<p></p>', {
+               class: 'pull-right'
+           }).append($('<small></small').text('5 days ago'))
+           const $mediaLeft = $('<a></a>', {
+               class: 'media-left'
+           }).append(
+               $('<img></img>').attr('src', commentImage))
+           const $mediaBody = $('<div></div>', {
+               class: 'media-body'
+           });
+           const $h4mediaheading = $('<h4></h4>', {
+               class: 'media-heading user_name'
+           }).text(commentTitle)
+           const $mediabodyContent = commentMessage
+
+           $media.append($right).append($right2).append($mediaLeft).append($mediaBody
+               .append($h4mediaheading).append($mediabodyContent))
+
+           return $media;
+       }
+
+       $('#top-level-comment-button').on('click', function() {
+           $.ajax({
+               method: 'post',
+               url: '/UserProfileComment/create',
+               data: {
+                   message: $('#top-level-comment-message').val(),
+                   userProfile: userProfileId,
+                   isReply: false
+               },
+               success: function(res) {
+                   console.log(JSON.stringify(res))
+                   if (res.status == 200) {
+
+                   } else {
+                       console.log(JSON.stringify(res.error))
+                   }
+               }
+           })
+       })
+   })
+</script>

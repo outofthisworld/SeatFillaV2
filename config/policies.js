@@ -46,7 +46,7 @@ module.exports.policies = {
         '*':true,
         'find': ['getPolicy', 'adminPolicy', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
         'findOne': ['getPolicy', 'adminPolicy', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
-        'create': ['postPolicy', 'createAccountPolicy', 'notLoggedInPolicy', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
+        'create': ['postPolicy', 'createAccountPolicy', 'notLoggedInPolicy'],
         'index': ['getPolicy','passportAuth'],
     },
     AuthController: {

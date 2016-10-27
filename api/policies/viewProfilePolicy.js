@@ -51,7 +51,14 @@ module.exports = function (req, res, next) {
             return callback(null, userProfile[0])
           }else {
             const error = new Error('Invalid array length for userProfile : ' + userProfile.length)
-            return callback(error, null)
+            if(!userProfile){
+              UserProfile.findOrCreate({user:user,description:'Welcome to seatfilla'})
+              .exec(function(err,profile){
+                  return callback(error, profile)
+              })
+            }else{
+              return callback(error, null)
+            }
           }
         }
       })
@@ -112,97 +119,6 @@ module.exports = function (req, res, next) {
         return callback(null, false)
       }
     }],
-    findUserProfileComments: ['findUserProfile', function (callback, results) {
-      UserProfileComment.find({userProfile: results.findUserProfile.id, isReply:false })
-        .populate('user').populate('replies')
-        .exec(function (err, comments) {
-          if (err) {return callback(err, null)
-          }else {
-            sails.log.debug('Comments : ' + JSON.stringify(comments))
-            if(comments.length > 0){
-              if(comments[0].replies.length == 0){
-                comments[0].replies.add(2);
-                comments[0].save(function(err){
-                  if(err) sails.log.error(err);
-                })
-              }
-            }
-            return callback(null, comments)}
-        })
-    }],
-    findUserProfileCommentUserProfile: ['findUserProfileComments', function (callback, results) {
-      sails.log.debug('Finding user profile comment user profiles')
-
-      if (results.findUserProfileComments.length == 0) {
-        return callback(null, results.findUserProfileComments)
-      }
-
-      results.findUserProfileComments.forEach(function (userProfileComment, indx) {
-        UserProfile.find({user: userProfileComment.user.id})
-          .exec(function (err, result) {
-            if (err) {
-              sails.log.error(err)
-              return callback(err, null)
-            }
-
-            const finalProfile = Array.isArray(result)
-            && result.length == 1 ? result[0] : result
-            results.findUserProfileComments[indx].user.userProfile = finalProfile
-
-            if (indx == results.findUserProfileComments.length - 1) {
-              callback(null, results.findUserProfileComments)
-            }
-          })
-      })
-    }],
-    findUserProfileCommentReplyUsers: ['findUserProfileComments', function (callback, results) {
-      if (results.findUserProfileComments.length == 0) {
-        return callback(null, results.findUserProfileComments)
-      }
-     
-      results.findUserProfileComments.forEach(function (comment, commentIndx) {
-
-      
-        comment.replies.forEach(function (reply, replyIndx) {
-          User.findOne({id: reply.user})
-            .exec(function (err, result) {
-              if (err) {
-                sails.log.error(err)
-                return callback(err, null)
-              }
-
-              results.findUserProfileComments[commentIndx].replies[replyIndx].user = result;
-            })
-        })
-
-        if(commentIndx == results.findUserProfileComments.length-1){
-            return callback(null, results.findUserProfileComments)
-        }
-      })
-    }],
-    findUserProfileCommentReplyUserProfiles: ['findUserProfileCommentReplyUsers', function (callback, results) {
-      if (results.findUserProfileCommentReplyUsers.length == 0) {
-        return callback(null, results.findUserProfileComments)
-      }
-
-       results.findUserProfileCommentReplyUsers.forEach(function (comment, commentIndx) {
-        comment.replies.forEach(function (reply, replyIndx) {
-          UserProfile.findOne({id: reply.user})
-            .exec(function (err, result) {
-              if (err) {
-                sails.log.error(err)
-                return callback(err, null)
-              }
-
-              results.findUserProfileCommentReplyUsers[commentIndx].replies[replyIndx].user.userProfile = result;
-            })   
-        })
-
-         if(commentIndx == results.findUserProfileCommentReplyUsers.length-1){
-            return callback(null, results.findUserProfileCommentReplyUsers)
-         }
-      })
-    }],
     findUserProfileImages: ['findUserProfile', function (callback, results) {
       UserProfileImage.find({userProfile: results.findUserProfile.id})
         .exec(function (err, images) {
@@ -219,13 +135,16 @@ module.exports = function (req, res, next) {
     req.options.userprofile = Object.assign({}, results.findUserProfile)
     req.options.userprofile.user = results.findUser
     req.options.userprofile.images = results.findUserProfileImages
-    req.options.userprofile.comments = results.findUserProfileCommentReplyUserProfiles
+   // req.options.userprofile.comments = results.findUserProfileCommentReplyUserProfiles
     req.options.userprofile.userLinks = results.findUserProfileLinkUserProfile
     req.options.userprofile.isLink = results.isLink
     req.options.userprofile.isOwnProfile = results.isOwnProfile
 
     sails.log.debug('Constructed user profile: ')
     sails.log.debug(JSON.stringify(req.options.userprofile))
+
+
+    req.flash('toaster-info','Viewing profile for ' + req.options.userprofile.user.username);
     return next()
   })
 }

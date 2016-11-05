@@ -1,6 +1,6 @@
 {
   "name": "geolocator",
-  "description": "A utility for getting geo-location information, geocoding, address look-ups, distance & durations, timezone information and more...",
+  "description": "A utility for getting geo-location information via HTML5 and IP look-ups, geocoding, address look-ups, distance and durations, timezone information and more...",
   "main": "dist/geolocator.js",
   "authors": [
     "Onur Yıldırım"
@@ -39,12 +39,12 @@
     "test",
     "tests"
   ],
-  "version": "2.0.0",
-  "_release": "2.0.0",
+  "version": "2.1.0",
+  "_release": "2.1.0",
   "_resolution": {
     "type": "version",
-    "tag": "v2.0.0",
-    "commit": "5ce7470743988584c037f80fd46ca953742abb0d"
+    "tag": "v2.1.0",
+    "commit": "1aa60f3df46a0e9cfbdbab7554fe14890beca691"
   },
   "_source": "https://github.com/onury/geolocator.git",
   "_target": "^2.0.0",

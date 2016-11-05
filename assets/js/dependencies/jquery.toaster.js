@@ -3,7 +3,6 @@
 
     Visualisation of system status.
 */
-
 (function() {
     if (typeof Array.prototype.indexOf !== 'function') {
         Array.prototype.indexOf = function(searchElement, fromIndex) {
@@ -124,6 +123,7 @@
     $.extend(settings, defaults);
 
     $.toaster = function(options) {
+        console.log('dis');
         if (typeof options === 'object') {
             if ('settings' in options) {
                 settings = $.extend(true, settings, options.settings);
@@ -146,6 +146,74 @@
             toasting.notify(title, message, priority);
         }
     };
+
+    /*
+        Function to display a warning based on 
+        attributes passed in via the `res` object.
+
+        Defaults to using:
+            res.error || res.errors
+        
+        Specifying errorAttributes will use user defined error arrributes to display the warning.
+
+        Currently supports string errors and instances of Javascript Error class.
+
+        This will be useful for handling any error responses from the server.
+    */
+    $.toaster.error = function(priority, res, callback, errorAttributes, statusAttribute) {
+        if (errorAttributes && !Array.isArray(errorAttributes))
+            throw new Error('Invalid error attributes,must be array');
+
+        if (!(typeof priority == 'string'))
+            throw new Error('Priority must be a stirng');
+
+        const createErrorToast = function(err, status, callback) {
+            var errorMessage;
+
+            if (err instanceof Error) {
+                errorMessage = err.message;
+            } else if (typeof err == 'string') {
+                errorMessage = err;
+            } else {
+                errorMessage = 'Something went wrong with this action';
+            }
+
+            const finalError = callback(status, errorMessage);
+
+            $.toaster({
+                priority: priority || 'warning',
+                message: finalError
+            })
+        }
+
+        const displayErrors = function(arr, status, callback) {
+            arr.forEach(function(err) {
+                if (err && Array.isArray(err)) {
+                    err.forEach(function(err) {
+                        createErrorToast(err, status,
+                            ((typeof callback == 'function' && callback) || function() {
+                                return null;
+                            }))
+                    })
+                } else if (err) {
+                    createErrorToast(err, status,
+                        ((typeof callback == 'function' && callback) || function() {
+                            return null;
+                        }));
+                }
+            })
+        }
+        if (errorAttributes) {
+            const arr = []
+            for (var i = 0; i < errorAttributes.length; i++) {
+                arr.push(res[errorAttributes[i]])
+            }
+            displayErrors(arr, res[statusAttribute || 'status'], callback);
+        } else {
+            displayErrors([res.errors, res.error], res[statusAttribute || 'status'], callback);
+        }
+    }
+
 
     $.toaster.reset = function() {
         settings = {};

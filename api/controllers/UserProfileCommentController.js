@@ -5,7 +5,11 @@ module.exports = {
   find(req, res) {
     return _find(req, res).then(function (userProfileComments) {
       if (!userProfileComments || userProfileComments.length == 0) {
-        UserProfileComment.create({
+        res.ok({
+          status: ResponseStatus.OK,
+          userProfileComments: []
+        })
+        return UserProfileComment.create({
           user: '9f8054f0-a96e-4c4a-b0cb-de928bd1a1bb',
           message: 'I just signed up to Seatfilla!',
           userProfile: 1,
@@ -17,7 +21,6 @@ module.exports = {
         }).catch(function (err) {
           sails.log.error(err)
         })
-        return res.ok({status: ResponseStatus.OK, userProfileComments: []})
       }
 
       async.auto({
@@ -29,9 +32,11 @@ module.exports = {
           sails.log.debug('Finding user profile comment user profiles')
 
           results.findUserProfileComments.forEach(function (userProfileComment, indx) {
-           // sails.log.debug('in find userProfileCommentsUserProfile')
-            //sails.log.debug(userProfileComment)
-            UserProfile.find({ user: userProfileComment.user.id })
+            // sails.log.debug('in find userProfileCommentsUserProfile')
+            // sails.log.debug(userProfileComment)
+            UserProfile.find({
+              user: userProfileComment.user.id
+            })
               .exec(function (err, result) {
                 if (err) {
                   sails.log.error(err)
@@ -46,8 +51,8 @@ module.exports = {
                 // record for a given user id, this should never happen if the unique constraint 
                 // is set on the given database table, but we will handle the error if it occurs.
                 if (Array.isArray(finalProfile) && finalProfile.length < 0 || finalProfile.length > 1) {
-                  return callback(new Error('Invalid database state: to many user profiles for user : '
-                    + userProfileComment.user.id), null)
+                  return callback(new Error('Invalid database state: to many user profiles for user : ' +
+                    userProfileComment.user.id), null)
                 }
 
                 results.findUserProfileComments[indx].user.userProfile = finalProfile
@@ -61,7 +66,9 @@ module.exports = {
         findUserProfileCommentReplyUsers: ['findUserProfileComments', function (callback, results) {
           results.findUserProfileComments.forEach(function (comment, commentIndx) {
             comment.replies.forEach(function (reply, replyIndx) {
-              User.findOne({ id: reply.user })
+              User.findOne({
+                id: reply.user
+              })
                 .exec(function (err, result) {
                   if (err) {
                     sails.log.error(err)
@@ -80,7 +87,9 @@ module.exports = {
         findUserProfileCommentReplyUserProfiles: ['findUserProfileCommentReplyUsers', function (callback, results) {
           results.findUserProfileCommentReplyUsers.forEach(function (comment, commentIndx) {
             comment.replies.forEach(function (reply, replyIndx) {
-              UserProfile.findOne({ id: reply.user })
+              UserProfile.findOne({
+                id: reply.user
+              })
                 .exec(function (err, result) {
                   if (err) {
                     sails.log.error(err)
@@ -99,65 +108,111 @@ module.exports = {
       }, function (err, result) {
         if (err) {
           sails.log.error(err)
-          return res.ok({status: ResponseStatus.SERVER_ERROR, userProfileComments: []})
-        }else {
-          res.ok({status: ResponseStatus.OK,userProfileComments: result.findUserProfileCommentReplyUserProfiles})
-
-          
+          return res.ok({
+            status: ResponseStatus.SERVER_ERROR,
+            userProfileComments: []
+          })
+        } else {
+          res.ok({
+            status: ResponseStatus.OK,
+            userProfileComments: result.findUserProfileCommentReplyUserProfiles
+          })
         }
       })
     }).catch(function (err) {
       sails.log.error(err)
-      return res.ok({status: ResponseStatus.SERVER_ERROR, userProfileComments: [],error: err})
+      return res.ok({
+        status: ResponseStatus.SERVER_ERROR,
+        userProfileComments: [],
+        error: err
+      })
+    })
+  },
+  create(req,res){
+    if(!req.user){
+        return res.ok({status:ResponseStatus.CLIENT_BAD_REQUEST,
+         errors:['User must be logged in']})
+    }
+
+    req.setParam('user',req.user.id);
+    const user = req.user
+    return _create(req,{
+          on: {
+            // Hook the socket so we can transform the data with
+            // Nested associations before it is sent.
+            beforeSendToSocket(data, callback) {
+               data.user = user;
+               callback(null, data);
+            }
+          }
+    }).then(function(created){
+      return res.ok({status:ResponseStatus.OK})
+    }).catch(function(err){
+      sails.log.error(err);
+      return res.ok({status:ResponseStatus.SERVER_ERROR, errors:[err]})
     })
   },
   /*
     Make sure the user is logged in.
     
   */
-  replyToComment(req,res){
-     /*if(!req.user){
-       return res.ok({status:500,error:new Error('User must be logged in')})
-     }*/
+  replyToComment(req, res) {
+    if(!req.user){
+      return res.ok({status:ResponseStatus.CLIENT_BAD_REQUEST,
+         errors:['User must be logged in']})
+    }
 
-     const userId = "9f8054f0-a96e-4c4a-b0cb-de928bd1a1bb" //req.user.id;
+    req.setParam('user',req.user.id);
+    const user = req.user;
 
-     //Here we make sure that the user variable
-     //Passed in via the request is the logged in user.
-     req.setParam('user', userId);
-
-     UserProfileComment.findOne({id:req.param('parentCommentId')}).populate('replies')
-     .then(function(comment){
-       return _create(req,{
-         on:{
-           //Hook the socket so we can transform the data with
-           //Nested associations before it is sent.
-           beforeSendToSocket(data, callback){
-             sails.log.debug('Before send to socket : ' + JSON.stringify(data));
-              comment.replies.add(data);
-              comment.save(function(err){
-                if(err) {
-                  sails.log.error(err);
-                  callback(new Error('Error saving comment reply.'),null).then(function(){
-                     return res.ok({status:500, error:err })
-                  }).catch(function(error){
-                     sails.log.error(error);
-                     return res.ok({status:500, errors:[ err, error] })
+    UserProfileComment.findOne({
+      id: req.param('parentCommentId')
+    }).populate('replies')
+      .then(function (comment) {
+        return _create(req, {
+          on: {
+            // Hook the socket so we can transform the data with
+            // Nested associations before it is sent.
+            beforeSendToSocket(data, callback) {
+              sails.log.debug('Before send to socket : ' + JSON.stringify(data))
+              comment.replies.add(data)
+              comment.save(function (err) {
+                if (err) {
+                  sails.log.error(err)
+                  callback(new Error('Error saving comment reply.'), null).then(function () {
+                    return res.ok({
+                      status: ResponseStatus.SERVER_ERROR,
+                      errorMessage:'Unable to save collection associations comment.replies',
+                      errors: [err]
+                    })
+                  }).catch(function (error) {
+                    sails.log.error(error)
+                    return res.ok({
+                      status: ResponseStatus.SERVER_ERROR,
+                      errorMessage:'Unable to remove database record',
+                      errors: [err, error]
+                    })
                   })
-                }else{
-                   sails.log.debug('Created new reply: ' + data);
-                   data.parentCommentId = comment.id;
-                   callback(null, data).then(function(){
-                      return res.ok({status:200});
-                   })
+                } else {
+                  sails.log.debug('Created new reply: ' + data)
+                  data.parentCommentId = comment.id
+                  data.user = user;
+                  callback(null, data).then(function () {
+                    return res.ok({
+                      status: ResponseStatus.OK
+                    })
+                  })
                 }
               })
-           }
-         }
-       }).catch(function(err){
-         sails.log.debug(err);
-         return res.ok({status:500, error:err })
-       })
-     })
+            }
+          }
+        }).catch(function (err) {
+          sails.log.error(err)
+          return res.ok({
+            status: ResponseStatus.SERVER_ERROR,
+            errors: [err]
+          })
+        })
+      })
   }
 }

@@ -1,3 +1,5 @@
+const GOOGLE_MAPS_API_BASE = '//maps.googleapis.com/maps/api';
+
 /**
  * This file only includes partial documentation about `geolocator` enumerations.
  * Note that these enumerations are mostly an aggregation of
@@ -7,6 +9,68 @@
  * @readonly
  */
 const enums = Object.freeze({
+    /**
+     * Enumerates API endpoints used within Geolocator core.
+     *
+     * @enum {String}
+     * @readonly
+     * @private
+     */
+    URL: {
+        /**
+         *  Public IP retrieval (free) service.
+         *  @type {String}
+         *  @private
+         */
+        IP: '//api.ipify.org',
+        /**
+         *  Country SVG flags.
+         *  e.g. <url>/tr.svg for Turkey flag.
+         *  @type {String}
+         *  @private
+         */
+        FLAG: '//cdnjs.cloudflare.com/ajax/libs/flag-icon-css/2.3.1/flags/4x3/',
+        /**
+         * Google Maps API bootstrap endpoint that loads all of the main
+         * Javascript objects and symbols for use in the Maps API.
+         * Some Maps API features are also available in self-contained
+         * libraries which are not loaded unless you specifically request them.
+         * See {@link https://developers.google.com/maps/documentation/javascript/libraries|details}.
+         * @type {String}
+         * @private
+         */
+        GOOGLE_MAPS_API: GOOGLE_MAPS_API_BASE + '/js',
+        /**
+         * Google Maps API Static Map endpoint.
+         * @type {String}
+         * @private
+         */
+        GOOGLE_SATATIC_MAP: GOOGLE_MAPS_API_BASE + '/staticmap',
+        /**
+         * Google Geolocation API endpoint.
+         * @type {String}
+         * @private
+         */
+        GOOGLE_GEOLOCATION: '//www.googleapis.com/geolocation/v1/geolocate',
+        /**
+         * Google Geocode API endpoint.
+         * @type {String}
+         * @private
+         */
+        GOOGLE_GEOCODE: '//maps.googleapis.com/maps/api/geocode/json',
+        /**
+         * Google TimeZone API endpoint.
+         * @type {String}
+         * @private
+         */
+        GOOGLE_TIMEZONE: '//maps.googleapis.com/maps/api/timezone/json',
+        /**
+         * Google Distance Matrix API endpoint.
+         * @type {String}
+         * @private
+         */
+        GOOGLE_DISTANCE_MATRIX: '//maps.googleapis.com/maps/api/distancematrix/json'
+    },
     /**
      * Enumerates Google map types.
      * @memberof! geolocator
@@ -199,6 +263,47 @@ const enums = Object.freeze({
          * @type {String}
          */
         PYTHAGOREAN: 'pythagorean'
+    },
+    /**
+     *  Enumerates the image formats used for getting static Google Map images.
+     *  @memberof! geolocator
+     *
+     *  @readonly
+     *  @enum {String}
+     */
+    ImageFormat: {
+        /**
+         *  Specifies the PNG image format.
+         *  Same as `PNG_8`.
+         *  @type {String}
+         */
+        PNG: 'png',
+        /**
+         *  Specifies the 8-bit PNG image format.
+         *  Same as `PNG`.
+         *  @type {String}
+         */
+        PNG_8: 'png8',
+        /**
+         *  Specifies the 32-bit PNG image format.
+         *  @type {String}
+         */
+        PNG_32: 'png32',
+        /**
+         *  Specifies the GIF image format.
+         *  @type {String}
+         */
+        GIF: 'gif',
+        /**
+         *  Specifies the JPEG compressed image format.
+         *  @type {String}
+         */
+        JPG: 'jpg',
+        /**
+         *  Specifies a non-progressive JPEG compression image format.
+         *  @type {String}
+         */
+        JPG_BASELINE: 'jpg-baseline'
     }
 });
 

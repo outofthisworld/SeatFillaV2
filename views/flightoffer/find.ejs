@@ -1,0 +1,137 @@
+<style>
+.glyphicon { margin-right:5px; }
+.thumbnail
+{
+    margin-bottom: 20px;
+    padding: 0px;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    border-radius: 0px;
+}
+
+.item.list-group-item
+{
+    float: none;
+    width: 100%;
+    background-color: #fff;
+    margin-bottom: 10px;
+}
+.caption h4{
+    font-size:16px;
+}
+.caption .btn{
+    float:right;
+}
+
+.item.list-group-item:nth-of-type(odd):hover,.item.list-group-item:hover
+{
+    background: #428bca;
+}
+
+.item.list-group-item .list-group-image
+{
+    margin-right: 10px;
+}
+.item.list-group-item .thumbnail
+{
+    margin-bottom: 0px;
+}
+.item.list-group-item .caption
+{
+    padding: 9px 9px 0px 9px;
+}
+.item.list-group-item:nth-of-type(odd)
+{
+    background: #eeeeee;
+}
+
+.item.list-group-item:before, .item.list-group-item:after
+{
+    display: table;
+    content: " ";
+}
+
+.item.list-group-item img
+{
+    float: left;
+}
+.item.list-group-item:after
+{
+    clear: both;
+}
+.list-group-item-text
+{
+    margin: 0 0 11px;
+}
+
+
+</style>
+<script>
+$(document).ready(function() {
+    $('#list').click(function(event){event.preventDefault();$('#products .item').addClass('list-group-item');});
+    $('#grid').click(function(event){event.preventDefault();$('#products .item').removeClass('list-group-item');$('#products .item').addClass('grid-group-item');});
+
+    setInterval(function(){
+        const $itemDiv = $('<div></div>',{class:'item col-xs-4 col-lg-4'});
+        const $thumbNail = $('<div></div>',{class:'thumbnail'});
+        const $itemImage = $('<img/>',{src:'http://placehold.it/400x250/000/fff'});
+        const $caption = $('<div></div>',{class:'caption'});
+
+        const $h4 = $('<h4></h4>',{'class':'group inner list-group-item-heading'}).text('Product title');
+        const $p = $('<p></p>',{class:'group inner list-group-item-text'}).text('Product description... Lorem ipsum dolor sit amet, consectetuer adipiscing elit,sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat');
+        const $row =    $('<div></div>',{class:'row'});
+           
+        const $div_12_1 = $('<div></div>',{class:'col-xs-12 col-md-6'});
+        const $div_12_2 =  $('<div></div>',{class:'col-xs-12 col-md-6'});
+        const $p_1 = $('<p></p>',{class:'lead'}).text('$1.00');
+        const $viewDets =  $('<a></a>',{class:'btn btn-info',href:''}).text('View details');
+        $itemDiv.append(
+            $thumbNail.append($itemImage)
+            .append(
+                $caption.append($h4)
+                .append($p)
+                .append($row
+                    .append($div_12_1.append($p_1))
+                    .append($div_12_2.append($viewDets) )
+                )
+            )
+        );
+        $itemDiv.fadeOut(0);
+        $('#products').append($itemDiv.fadeIn(1000));
+    },3000);
+});
+</script>
+
+<div class="container80" style="margin-top:50px">
+    <div class="well row" style="background-color:transparent;background-image:none;">
+        <div class="button-group pull-right">
+            <a href="#" id="list" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-th-list">
+            </span>List</a> <a href="#" id="grid" class="btn btn-default btn-sm">
+            <span class="glyphicon glyphicon-th"></span>Grid</a>
+        </div>
+    </div>
+    <div id="products" class="row list-group">
+
+        <div class="item  col-xs-4 col-lg-4">
+            <div class="thumbnail">
+                <img class="group list-group-image" src="http://placehold.it/400x250/000/fff" alt="" />
+                <div class="caption">
+                    <h4 class="group inner list-group-item-heading">
+                        Product title</h4>
+                    <p class="group inner list-group-item-text">
+                        Product description... Lorem ipsum dolor sit amet, consectetuer adipiscing elit,
+                        sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+                    <div class="row">
+                        <div class="col-xs-12 col-md-6">
+                            <p class="lead">
+                                $21.000</p>
+                        </div>
+                        <div class="col-xs-12 col-md-6">
+                            <a class="btn btn-info" href="">Add to cart</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

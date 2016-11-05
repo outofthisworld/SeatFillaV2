@@ -1,399 +1,1288 @@
 
 <style>
-.featured-jobs {
-  padding: 70px 0px;
-  background-color:#fafafa;
+
+.portfolio-item {
+    margin-bottom: 25px;
 }
-.featured-jobs .thumbnail {
-  padding: 20px;
+
+.panel{
+	background-image:none;
 }
-.featured-jobs .thumbnail img {
-  float: left;
-  margin: 0 10px 10px 0;
+
+nav.left-nav {
+ 
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
 }
-.featured-jobs .thumbnail .feature-link {
-  color: #77c7dc;
+nav.left-nav ul {
+	background-color: #14B9FF;
+  width: 250px;
+  margin-top: 50px;
+	display:none;
+	height:100%;
 }
-.featured-jobs .thumbnail .feature-link h3 {
-  padding-left: 10px;
-  margin: 0 0 6px;
-  font-size: 18px;
+nav.left-nav ul:hover li {
+  color: rgba(255, 255, 255, 0.5);
+
 }
-.featured-jobs .thumbnail .meta {
-  color: #f16060;
-  font-size: 11px;
+nav.left-nav ul li {
+  transition-duration: 0.25s;
+  display: block;
+  color: white;
+  letter-spacing: 0.02em;
+  text-align: center;
+	padding:20px;
 }
-.featured-jobs .thumbnail p {
-  font-size: 12px;
-  margin: 0 0 5px;
+nav.left-nav ul li:hover {
+  cursor: pointer;
+  color: white;
 }
-.featured-jobs .thumbnail .feature-btns {
+.openNav {
+  transition-duration: 0.5s;
+  transition-timing-function: swing;
+  min-width: 50px;
+  min-height: 50px;
+	width:40px;
+  background-color: #14B9FF;
+  position: fixed;
+	top:5px;
+  left: 52px;
+  z-index: 9;
+	border-radius:30px;
+}
+.openNav:hover {
+  cursor: pointer;
+}
+.openNav .icon {
+  transition-duration: 0.2s;
   position: absolute;
-  bottom: -13px;
-  left: 15px;
+  width: 30px;
+  height: 2px;
+  background-color: white;
+  top: 24px;
+  left: 10px;
+}
+.openNav .icon:before,
+.openNav .icon:after {
+  transition-duration: 0.5s;
+  background-color: white;
+  position: absolute;
+  content: "";
+  width: 30px;
+  height: 2px;
+  left: 0px;
+}
+.openNav .icon:before {
+  top: -7px;
+}
+.openNav .icon:after {
+  top: 7px;
+}
+.openNav.open {
+  
+}
+.openNav.open .icon {
+  background-color: transparent;
+}
+.openNav.open .icon:before,
+.openNav.open .icon:after {
+  top: 0;
+}
+.openNav.open .icon:before {
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
+.openNav.open .icon:after {
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+.navOpen {
+  overflow: hidden;
+}
+.wrapper {
+  transition-duration: 0.5s;
+  transition-timing-function: swing;
+  width: 100%;
+  height: 100%;
+  position: relative;
+
+}
+.wrapper.open {
+  transform: translateX(250px);
+  -webkit-transform: translateX(250px);
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.2);
 }
 
-@media only screen and (max-width: 1024px) {
+/*  bhoechie tab */
+div.seatfilla-container{
+  z-index: 1;
+  width:100%;
+  padding: 0 !important;
+  border:3px solid white;
+	background-color:white;
+  -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+  box-shadow: 0 6px 12px rgba(0,0,0,.175);
+  -moz-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+  background-clip: padding-box;
+	background-color: #14B9FF;
+  opacity: 1;
+	border-radius:5px;
+	max-height:306px;
+	overflow:hidden;
+}	
+div.seatfilla-menu{
+  padding-right: 0;
+  padding-left: 0;
+  padding-bottom: 0;
+	border-radius:3px;
+	border-radius:5px;
+}
 
-.thumbnail { margin-bottom:50px; }
+div.seatfilla-menu ul.list-group{
+  margin-bottom: 0;
+  list-style:none;
+	min-height:100%;
+	width:100%;
+	margin:auto;
+	background-color:white;
+}
+div.seatfilla-menu ul.list-group>a{
+  margin-bottom: 0;
+  text-align:left;
+}
+div.seatfilla-menu ul.list-group>a .glyphicon,
+div.seatfilla-menu ul.list-group>a .fa {
+     color: #14B9FF;
+		 text-align:center;
+		 margin:auto;
+}
+div.seatfilla-menu ul.list-group>a:first-child{
+  border-top-right-radius: 0;
+  -moz-border-top-right-radius: 0;
+}
+div.seatfilla-menu ul.list-group>a:last-child{
+  border-bottom-right-radius: 0;
+  -moz-border-bottom-right-radius: 0;
+}
+div.seatfilla-menu ul.list-group>a.active,
+div.seatfilla-menu ul.list-group>a.active .glyphicon,
+div.seatfilla-menu ul.list-group>a.active .fa{
+  background-color: #004c99;
+  background-image: #5A55A3;
+  color: #ffffff;
+}
+div.seatfilla-menu ul.list-group>a.active:after{
+  content: '';
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  margin-top: -13px;
+  border-left: 0;
+  border-bottom: 13px solid transparent;
+  border-top: 13px solid transparent;
+  border-left: 10px solid #5A55A3;
+}
 
-.featured-jobs .thumbnail .feature-btns { bottom:17px; }
+.trip-plan-items .list-group-item{
+	text-align:center;
+	text-decoration:none;
+	font-size:20px;
+	color:black;
+	background-color:white;
+	max-height:150px;
+	padding:60px;
+}
 
+div.seatfilla-content{
+  /* border: 1px solid #eeeeee; */
+  padding-left: 20px;
+  padding-top: 10px;
+}
 
-    }
+div.seatfilla div.seatfilla-content:not(.active){
+  display: none;
+}
 
-@media only screen and (max-width: 790px) {
+.seatfilla-content input{
+	padding:10px;
+	margin-top:20px;
+	margin-bottom:10px;
 
-.thumbnail { margin-bottom:50px; }
+}
+.seatfilla-content select{
+	padding:10px;
+	margin-top:20px;
+	margin-bottom:10px;
+	color:white;
+}
 
-.featured-jobs .thumbnail .feature-btns { bottom:-33px; }
+    .list {
+			height: 60vh;
+			position: relative;
+			width: 100%;
+		}
+		
+		.bid-list{
+			height: inherit;
+			width: 100%;
+			overflow: hidden;
+		}
+		
+		.bid-list a {
+			width: 100%;
+			text-decoration: none;
+			display: block;
+			color: #000;
+		}
+		
+		.list-control {
+			position: absolute;
+			width: 100%;
+			left: 0;
+			font-size: 20px;
+			color: #fff;
+			text-align: center;
+			text-shadow: 0 1px 2px rgba(0,0,0,.6);
+			background-color: rgba(0,0,0,0);
+			filter: alpha(opacity=50);
+			opacity: .4;
+		}
+		.list .up{
+			top: 0;
+	
+		}
+		
+		.list .up:hover{
+			top: 0;
+		
+		}
+		.list .down{
+			bottom: 0;
 
-
-    }
-.featured-jobs .row{
-  margin-top:45px;
+		}
+		
+		.list .down:hover{
+			bottom: 0;
+		}
+	
+		.control-height{
+			height: 45px;
+		}
+		
+		.list .list-group{
+			margin-bottom: 0;
+		}
+		
+		.arrow{
+			top: 13px;
+		}
+		.bigdrop {
+    width: 600px !important;
 }
 </style>
+
+
+<script>
+$(document).ready(function(){
+	var open = false;
+	
+	function toggleNav(){
+		$("body").toggleClass("navOpen");
+		$("nav").toggleClass("open");
+		$(".wrapper").toggleClass("open");
+		$("nav.left-nav ul").toggle();
+		$('.openNav').toggleClass("open");
+		open = !open;
+		if(open){
+			console.log('opened');
+			setTimeout(function(){
+							$(document).on('click',toggleNav);
+			},500)
+		}else{
+			console.log('closed');
+			$(document).off('click');
+		}
+	}
+	$(".openNav").click(toggleNav);
+
+var step = 100;
+var scrolling = false;
+
+// Wire up events for the 'scrollUp' link:
+$(".up").bind("click", function(event) {
+    event.preventDefault();
+    // Animates the scrollTop property by the specified
+    // step.
+    $(".bid-list").animate({
+        scrollTop: "-=" + step + "px"
+    });
+}).bind("mouseover", function(event) {
+    scrolling = true;
+    scrollContent("up");
+}).bind("mouseout", function(event) {
+    scrolling = false;
+});
+
+
+$(".down").bind("click", function(event) {
+    event.preventDefault();
+    $(".bid-list").animate({
+        scrollTop: "+=" + step + "px"
+    });
+}).bind("mouseover", function(event) {
+    scrolling = true;
+    scrollContent("down");
+}).bind("mouseout", function(event) {
+    scrolling = false;
+});
+
+	$('.js-data-example-ajax').select2({
+    minimumInputLength: 2,
+		placeholder:'Search users',
+    ajax: {
+        url: '/user/find',
+        dataType: 'json',
+        type: "GET",
+        quietMillis: 50,
+        data: function (term) {
+            return 'where='+JSON.stringify({username:{contains:term.term}});
+        },
+				processResults: function (data, params) {
+						console.log(data);
+						return {
+							results: data,
+							pagination: {
+								more: false
+							}
+						};
+					},
+					cache: true
+				},
+				escapeMarkup(markup){
+					return markup;
+				},
+				templateResult: function(data){
+					return 	'<a href="/UserProfile/' + data.username + '"/>' +
+					'<div class="panel panel-info">' +
+					'<div class="panel-body">' +
+					 data.username +
+					'</div></div></a>'
+				},
+
+				width: 'resolve',
+				dropdownAutoWidth : true
+    });
+})
+	
+
+</script>
 </head>
+
+
+
 <body>
- <%- partial ('partials/nav.ejs') %>
-      
-    
-        <div id="section_container">
-        <section id="section1bg" class="section_img section-full">
-      <div class="container" style="padding:100px;">
 
- 		<h2 style="color:white;">Get where you need to go at Seatfilla </h2>
-	   <div class="col-xs-12">
-				<form id="flightSearchForm">
-					<div class ="panel" style="background-color:white;border-style:solid;border-color:lightgrey;padding:10px;">
-					<div class="panel-heading" style="background-color:#2196F3">
-						<p style="color:white;text-transform:uppercase;">Search for flights</p>
-					</div>
-					<div class="row" style="margin-top:10px">
-						<div class="col-xs-4">
-							<div class="col-xs-12">
-							<div class="form-group">
-								<select id="city" class="input form-control" />
-								<option>Departure city</option>
-								</select>
-									<select id="city" class="input form-control" value="Departure city"/>
-										<option>Arrival city</option>
-								</select>
-							</div>
-							<br>
-							<div class="form-group">
-							<div class="col-xs-3">
-								<label for="adults"><p>Adults</p></label>
-								<input id="adults" class="form-control" type="number" value="1"/>
-								</div>
-									<div class="col-xs-3">
-									<label for="children"><p>Children</p></label>
-									<input id="children" class="form-control" type="number" value="0"/>
-								</div>
-								<div class="col-xs-3">
-									<label for="infants"><p>Infants</p></label>
-									<input id="infants" class="form-control" type="number" value="0"/>
-								</div>
-							</div>
+   <%- partial ('partials/nav.ejs') %>
+<nav class="left-nav">
+  <ul>
+    <li>Home</li>
+    <li>Products</li>
+    <li>Shopping Cart</li>
+    <li>Contact</li>
+  </ul>
+</nav>
 
-							</div>
-						</div>
-						<div class="col-xs-5" >
-								<div class="col-xs-6" style="margin:0px;padding:5px;">
-			 						<div class="panel date-picker" style="width:100%;height:200px;margin:0px;padding:0px;">								
-									<div class="panel-heading" style="background-color:#2196F3;padding:10px;">
-									<p class="text-white"><i class="fa fa-plane" style="color:white;"></i> Departure date</p>
-									</div>
-									<div class = "panel-content">
-										<div style="margin-auto;width:50px;height:90px;"><i class="fa fa-search" style="margin-auto;width:80px;height:200px"></i></div>
-										<p class="text-center">Choose</p>
-									</div>		
-								</div>
-							</div>
-								<div class="col-xs-6"  style="margin:0px;padding:5px;">
-			 						<div class="panel date-picker" style="width:100%;height:200px;margin:0px;padding:0px;">								
-									<div class="panel-heading" style="background-color:#2196F3;padding:10px;">
-							<p class="text-white"><i class="fa fa-plane" style="color:white;"></i> Arrival date</p>
-									</div>
-									<div class = "panel-content">
-										<i class="fa fa-plus" style="font-size:50px;color;black;"></i>
-										<p class="text-center">Choose</p>
-									</div>		
-								</div>
-							</div>
-						</div>
-						<div class="col-sm-3 col-md-3 col-lg-2 col-xs-3">
-						<div class="pull-right">
-						<a href="#">
-							<i class="fa fa-search" style="min-width:120px;max-width:120px;font-size:100px;background-color:orange;color:white;border-color:white;border-style:solid;border-width:5px;"></i>
-						<a>
-						<a href="#">
-							<i class="fa fa-map-marker" style="min-width:120px;max-width:120px;font-size:100px;background-color:#2196F3;color:white;;border-color:white;border-style:solid;border-width:5px;"></i>
-						<a>
-						</div>
-						</div>
-					</div>
-				</div>
-				</form>
-      </div>
-    </section>
+<div class="wrapper">
+ 	 												<paper-material elevation="5">
+<section id="top" class="site-wrapper" style="height:90vh;">
+ 
+    <div class="site-wrapper-inner">
 
+        <div class="masthead clearfix wow fadeIn" data-wow-delay=".9s">
+            <div class="inner">
+                <h1 class="wow fadeInDownBig text-white pull-left"><img src="images/Logo.png" width="50" height="50"/> Seat<span class="thin">filla</span></h1>
 
-<section class="featured-jobs">
-    <div class="col-md-4">
-  <div class="col-xs-12">
-                 <header>
-                <h2 class="text-center">Latest bids</h2>
-              </header>
-          <aside>
-          <div class="row">
-            <section class="content">
-						<div class="table-container">
-							<table class="table table-filter">
-								<tbody>
-									<tr>
-									
-										<td>
-											<a href="javascript:;" class="star">
-												<i class="glyphicon glyphicon-star"></i>
-											</a>
-										</td>
-										<td>
-											<div class="media">
-												<a href="#" class="pull-left">
-																								<img src="https://s3.amazonaws.com/uifaces/faces/twitter/fffabs/128.jpg" class="media-photo img-circle img-responsive">
-												</a>
-												<div class="media-body">
-													<span class="media-meta">Febrero 13, 2016</span>	
-													<p class="summary">Ut enim ad minim veniam, quis nostrud exercitation...</p>
-												</div>
-											</div>
-										</td>
-									</tr>
-									<tr>
-										
-										<td>
-											<a href="javascript:;" class="star">
-												<i class="glyphicon glyphicon-star"></i>
-											</a>
-										</td>
-										<td>
-											<div class="media">
-												<a href="#" class="pull-left">
-													<img src="https://s3.amazonaws.com/uifaces/faces/twitter/fffabs/128.jpg" class="media-photo img-circle img-responsive">
-												</a>
-												<div class="media-body">
-													<span class="media-meta">Febrero 13, 2016</span>
-													
-													<p class="summary">Ut enim ad minim veniam, quis nostrud exercitation...</p>
-												</div>
-											</div>
-										</td>
-									</tr>
-									<tr >
-										
-										<td>
-											<a href="javascript:;" class="star">
-												<i class="glyphicon glyphicon-star"></i>
-											</a>
-										</td>
-										<td>
-											<div class="media">
-												<a href="#" class="pull-left">
-																		<img src="https://s3.amazonaws.com/uifaces/faces/twitter/fffabs/128.jpg" class="media-photo img-circle img-responsive">
-												</a>
-												<div class="media-body">
-													<span class="media-meta">Febrero 13, 2016</span>
-													
-													<p class="summary">Ut enim ad minim veniam, quis nostrud exercitation...</p>
-												</div>
-											</div>
-										</td>
-									</tr>
-									<tr >
-										
-										<td>
-											<a href="javascript:;" class="star star-checked">
-												<i class="glyphicon glyphicon-star"></i>
-											</a>
-										</td>
-										<td>
-											<div class="media">
-												<a href="#" class="pull-left">
-													<img src="https://s3.amazonaws.com/uifaces/faces/twitter/fffabs/128.jpg" class="media-photo img-circle img-responsive">
-												</a>
-												<div class="media-body">
-													<span class="media-meta">Febrero 13, 2016</span>
-													<p class="summary">Ut enim ad minim veniam, quis nostrud exercitation...</p>
-												</div>
-											</div>
-										</td>
-									</tr>
-									<tr>
-										
-										<td>
-											<a href="javascript:;" class="star">
-												<i class="glyphicon glyphicon-star"></i>
-											</a>
-										</td>
-										<td>
-											<div class="media">
-												<a href="#" class="pull-left">
-																									<img src="https://s3.amazonaws.com/uifaces/faces/twitter/fffabs/128.jpg" class="media-photo img-circle img-responsive">
-												</a>
-												<div class="media-body">	
-													<p class="summary">Ut enim ad minim veniam, quis nostrud exercitation...</p>
-												</div>
-											</div>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-            </section>
             </div>
-           </aside>
-           </div>
+        </div>
+
+        <div class="container">
+            <div class="">
+          <h4 class="text-white wow fadeInRightBig">get where you need to go</h4>	
+								
+<div class="container wow fadeInLeftBig">
+    <div class="row">
+        <div class="col-lg-5 col-md-12 col-sm-8 col-xs-9 seatfilla-container">
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 seatfilla-menu">
+              <ul class="list-group trip-plan-items">
+
+                <a href="#" class="list-group-item ">
+                  <i class="glyphicon glyphicon-tasks"></i>Schedule
+                </a>  
+                <a href="#" class="list-group-item ">
+               <i class="glyphicon glyphicon-transfer"></i>My trips
+                </a>
+								
+ 
+              </ul>
+            </div>
+            <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9 seatfilla">
+               
+              
+                <div class="seatfilla-content active">
+																
+												<div class="row">
+																	<div class="col-xs-8 col-sm-8 col-md-8">
+							
+																				<form role="form">
+																					<div class="row">
+																						<div class="col-xs-6 col-sm-6 col-md-6">
+																							<div class="form-group">
+																								<input type="text" name="first_name" id="first_name" class="form-control input pholderWhite" placeholder="Departure city">
+																							</div>
+																						</div>
+																						<div class="col-xs-6 col-sm-6 col-md-6">
+																							<div class="form-group">
+																								<input type="text" name="last_name" id="last_name" class="form-control pholderWhite" placeholder="Destination city">
+																							</div>
+																						</div>
+																					</div>
+																						<div class="row">
+																						<div class="col-xs-6 col-sm-6 col-md-6">
+																							<div class="form-group">
+																								<select class="form-control input">
+																								<option>One</option>
+																											<option>One</option>
+																								</select>
+																							</div>
+																						</div>
+																						<div class="col-xs-6 col-sm-6 col-md-6">
+																							<div class="form-group">
+																								<select class="form-control input"></select>
+																							</div>
+																						</div>
+																					</div>
+																					<div class="row">
+																						<div class="col-xs-6 col-sm-6 col-md-6">
+																							<div class="form-group">
+																								<input type="text" name="password" id="password" class="form-control input pholderWhite" placeholder="Password">
+																							</div>
+																						</div>
+																						<div class="col-xs-6 col-sm-6 col-md-6">
+																							<div class="form-group">
+																								<input type="text" name="password_confirmation" id="password_confirmation" class="form-control input pholderWhite" placeholder="Confirm Password">
+																							</div>
+																						</div>
+																					</div>
+																		
+																					<input type="submit" value="Register" class="btn btn-default btn-block">
+																		
+																				</form>
+																				
+																	</div><!--col-8-->
+
+																	<div class="col-xs-4">
+																	     <ul class="list-group" style="height:100%;margin:0px;padding:10px;">
+																		
+																				<a href="#" class="list-group-item " style="background-color:orange;color:white;border-radius:0px;border-width:2px;border-color:white;border-style:solid;margin:2px;">
+																					<i class="fa fa-search fa-5x"></i>
+																				</a>  
+																						
+																	<a href="#" class="list-group-item " style="background-color:orange;color:white;border-radius:0px;border-width:2px;border-color:white;border-style:solid;margin:2px;">
+																					<i class="fa fa-map fa-5x"></i>
+																				</a>
+																			</ul>
+																	</div>
+																												
+																
+											</div>
+
+                </div>
+    
+               
+                <div class="seatfilla-content">
+                    <center>
+                      <h1 class="glyphicon glyphicon-transfer" style="font-size:12em;color:#00001a"></h1>
+                      <h2 style="margin-top: 0;color:#00001a"><a href="" class="btn btn-sm btn-primary btn-block" role="button">Trips</a></h2>
+                      <h3 style="margin-top: 0;color:#00001a">MY Trips </h3>
+                    </center>
+                </div>
+                
+								
+               
+            </div>
+        </div>
+  </div>
+</div> 
+</section>
+</paper-material>
+
+<div id="sponsor">
+    <div class="container">
+        <div class="row sponsor text-center wow fadeInLeft">
+            <div class="col-md-2 gray col-md-offset-1">
+                <a href="/"><img src="img/logo1.png" alt=""></a>
+            </div>
+            <div class="col-md-2">
+                <a href="/"><img src="img/logo2.png" alt=""></a>
+            </div>
+            <div class="col-md-2">
+                <a href="/"><img src="img/logo3.png" alt=""></a>
+            </div>
+            <div class="col-md-2">
+                <a href="/"><img src="img/logo4.png" alt=""></a>
+            </div>
+            <div class="col-md-2">
+                <a href="/"><img src="img/logo5.png" alt=""></a>
+            </div>
+        </div>
     </div>
-    <div class="col-md-8">
-    <h2 class="text-center">Flight deals</h2>
-		<div class="row">
+</div>
 
-				<!-- first feature job -->
-				<div class="col-sm-6 col-md-4">
+
+<section id="" class="section_img section-full">
+
+<div class="portfolio wow fadeIn container">
+    <div class="container-fluid text-center">
+		<h2 class="">Check out these offers in your area</h2>
+		<div class="container-fluid">
+            <div id="flights-2" class="carousel slide wow fadeInRight">
+                
+                <!-- Carousel items -->
+                <div class="carousel-inner">
+           
+							<% (function loadItems1(){for(var i = 0; i < 12 && data.images.length;i+=4){ %>
+											<%if(i==0){%>
+											 <div class="item active">
+											<%}else{%>
+											 <div class="item">
+											<%}%>
+											<div class="row">
+											<%for(var j = i; (j < i+4) && (j < data.images.length);j++){%>
+												      <div class="col-sm-6 col-md-6 col-lg-3 portfolio-item no-pad">
+															<a data-target="#portfolioModal2" class="portfolio-link" data-toggle="modal">
+																	<div class="caption">
+																			<div class="caption-content">
+																					Project Title 2
+																			</div>
+																	</div>
+																	<img src="<%=data.images[j].displaySizeImage%>" class="img img-responsive" style="min-width:250px;max-width:250px;min-height:300px;max-height:300px;" alt="">
+															</a>
+													</div>
+										<%}%>
+											</div>
+											</div>
+								<%}})()%>
+
 					
-						<div class="thumbnail">
-								<img data-src="holder.js/90x70" alt="advetiser logo">
-								<a href="" class="feature-link"><h3>Job Title heading</h3></a>
-								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia...</p>
-								<span class="meta">Posted by Recruiter - 12/12/2014</span>
-								<div class="feature-btns"><a href="#" class="btn btn-info" role="button"><span class="glyphicon glyphicon-file"></span> View Details</a> <a href="#" class="btn btn-default" role="button"><span class="glyphicon glyphicon-star-empty"></span> Shortlist</a></div>
+                </div>
+                		<div class="" style="width:110%;position:absolute;bottom:50%;">
+							 <div class="col-xs-6">
+								</div>
+								<div class="col-xs-6" style="">
+                <a class="right" style="" href="#flights-3"  data-slide="next">
+									<i class="fa fa-arrow-right fa-3x" aria-hidden="true"></i>
+								</a>
+								</div>
 						</div>
-					
-				</div>
 
-				<!-- second feature job -->
-				<div class="col-sm-6 col-md-4">
+            </div>
+            <!--/myCarousel-->
+        </div>
+
+				<div class="container-fluid">
+            <div id="flights-2" class="carousel slide wow fadeInLeft">
+                
+                <!-- Carousel items -->
+                <div class="carousel-inner">
+           
+							<% (function loadItems2(){for(var i = 12; i < 24 && i < data.images.length;i+=4){ %>
+											<%if(i==12){%>
+											 <div class="item active">
+											<%}else{%>
+											 <div class="item">
+											<%}%>
+											<div class="row">
+											<%for(var j = i; (j < i+4) && (j < data.images.length);j++){%>
+												      <div class="col-sm-6 col-md-6 col-lg-3 portfolio-item no-pad">
+															<a data-target="#portfolioModal2" class="portfolio-link" data-toggle="modal">
+																	<div class="caption">
+																			<div class="caption-content">
+																					Project Title 2
+																			</div>
+																	</div>
+																	<img src="<%=data.images[j].displaySizeImage%>" class="img img-responsive" style="min-width:250px;max-width:250px;min-height:300px;max-height:300px;" alt="">
+															</a>
+													</div>
+										<%}%>
+											</div>
+											</div>
+								<%}})()%>
+
 					
-							<div class="thumbnail">
-								<img data-src="holder.js/90x70" alt="advetiser logo">
-								<a href="" class="feature-link"><h3>Job Title heading</h3></a>
-								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia...</p>
-								<span class="meta">Posted by Recruiter - 12/12/2014</span>
-								<div class="feature-btns"><a href="#" class="btn btn-info" role="button"><span class="glyphicon glyphicon-file"></span> View Details</a> <a href="#" class="btn btn-default" role="button"><span class="glyphicon glyphicon-star-empty"></span> Shortlist</a></div>
+                </div>
+                <div class="" style="width:110%;position:absolute;bottom:50%;">
+							 <div class="col-xs-6">
+								</div>
+								<div class="col-xs-6" style="">
+                <a class="right" style="" href="#flights-3"  data-slide="next">
+									<i class="fa fa-arrow-right fa-3x" aria-hidden="true"></i>
+								</a>
+								</div>
 						</div>
-					
-				</div>
 
-				<!-- third feature job -->
-				<div class="col-sm-6 col-md-4">
+            </div>
+            <!--/myCarousel-->
+        </div>
+
+
+				<div class="container-fluid">
+            <div id="flights-3" class="carousel slide wow fadeInRight">
+                
+                <!-- Carousel items -->
+                <div class="carousel-inner">
+           
+							<% (function loadItems3(){
+								
+								for(var i = 24; i < 36 && data.images.length;i+=4){ %>
+				
+											<%if(i==24){%>
+											 <div class="item active">
+											<%}else{%>
+											 <div class="item">
+											<%}%>
+											<div class="row">
+											<%for(var j = 0; (j < 4) && (j + i < data.images.length);j++){%>
+							
+												      <div class="col-sm-6 col-md-6 col-lg-3 portfolio-item no-pad">
+															<a data-target="#portfolioModal2" class="portfolio-link" data-toggle="modal">
+																	<div class="caption">
+																			<div class="caption-content">
+																					Project Title 2
+																			</div>
+																	</div>
+																	<img src="<%=data.images[j+i].displaySizeImage%>" class="img img-responsive" style="min-width:250px;max-width:250px;min-height:300px;max-height:300px;" alt="">
+															</a>
+													</div>
+										<%}%>
+											</div>
+											</div>
+								<%}})()%>
+
 					
-							<div class="thumbnail">
-								<img data-src="holder.js/90x70" alt="advetiser logo">
-								<a href="" class="feature-link"><h3>Job Title heading</h3></a>
-								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia...</p>
-								<span class="meta">Posted by Recruiter - 12/12/2014</span>
-								<div class="feature-btns"><a href="#" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-file"></span> View Details</a> <a href="#" class="btn btn-default" role="button"><span class="glyphicon glyphicon-star-empty"></span> Shortlist</a></div>
+                </div>
+
+							<div class="" style="width:110%;position:absolute;bottom:50%;">
+							 <div class="col-xs-6">
+								</div>
+								<div class="col-xs-6" style="">
+                <a class="right" style="" href="#flights-3"  data-slide="next">
+									<i class="fa fa-arrow-right fa-3x" aria-hidden="true"></i>
+								</a>
+								</div>
 						</div>
-					
-				</div>
 
-			</div>
-      <div class="row">
 
-				<!-- first feature job -->
-				<div class="col-sm-6 col-md-4">
-					
-						<div class="thumbnail">
-								<img data-src="holder.js/90x70" alt="advetiser logo">
-								<a href="" class="feature-link"><h3>Job Title heading</h3></a>
-								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia...</p>
-								<span class="meta">Posted by Recruiter - 12/12/2014</span>
-								<div class="feature-btns"><a href="#" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-file"></span> View Details</a> <a href="#" class="btn btn-default" role="button"><span class="glyphicon glyphicon-star-empty"></span> Shortlist</a></div>
-						</div>
-					
-				</div>
+            </div>
+            <!--/myCarousel-->
+        </div>
 
-				<!-- second feature job -->
-				<div class="col-sm-6 col-md-4">
-					
-							<div class="thumbnail">
-								<img data-src="holder.js/90x70" alt="advetiser logo">
-								<a href="" class="feature-link"><h3>Job Title heading</h3></a>
-								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia...</p>
-								<span class="meta">Posted by Recruiter - 12/12/2014</span>
-								<div class="feature-btns"><a href="#" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-file"></span> View Details</a> <a href="#" class="btn btn-default" role="button"><span class="glyphicon glyphicon-star-empty"></span> Shortlist</a></div>
-						</div>
-					
-				</div>
+    </div>
+</div>
 
-				<!-- third feature job -->
-				<div class="col-sm-6 col-md-4">
-					
-							<div class="thumbnail">
-								<img data-src="holder.js/90x70" alt="advetiser logo">
-								<a href="" class="feature-link"><h3>Job Title heading</h3></a>
-								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia...</p>
-								<span class="meta">Posted by Recruiter - 12/12/2014</span>
-								<div class="feature-btns"><a href="#" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-file"></span> View Details</a> <a href="#" class="btn btn-default" role="button"><span class="glyphicon glyphicon-star-empty"></span> Shortlist</a></div>
-						</div>
-					
-				</div>
-
-			</div>
-
-       <div class="row">
-
-				<!-- first feature job -->
-				<div class="col-sm-6 col-md-4">
-					
-						<div class="thumbnail">
-								<img data-src="holder.js/90x70" alt="advetiser logo">
-								<a href="" class="feature-link"><h3>Job Title heading</h3></a>
-								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia...</p>
-								<span class="meta">Posted by Recruiter - 12/12/2014</span>
-								<div class="feature-btns"><a href="#" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-file"></span> View Details</a> <a href="#" class="btn btn-default" role="button"><span class="glyphicon glyphicon-star-empty"></span> Shortlist</a></div>
-						</div>
-					
-				</div>
-
-				<!-- second feature job -->
-				<div class="col-sm-6 col-md-4">
-					
-							<div class="thumbnail">
-								<img data-src="holder.js/90x70" alt="advetiser logo">
-								<a href="" class="feature-link"><h3>Job Title heading</h3></a>
-								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia...</p>
-								<span class="meta">Posted by Recruiter - 12/12/2014</span>
-								<div class="feature-btns"><a href="#" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-file"></span> View Details</a> <a href="#" class="btn btn-default" role="button"><span class="glyphicon glyphicon-star-empty"></span> Shortlist</a></div>
-						</div>
-					
-				</div>
-
-				<!-- third feature job -->
-				<div class="col-sm-6 col-md-4">
-					
-							<div class="thumbnail">
-								<img data-src="holder.js/90x70" alt="advetiser logo">
-								<a href="" class="feature-link"><h3>Job Title heading</h3></a>
-								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia...</p>
-								<span class="meta">Posted by Recruiter - 12/12/2014</span>
-								<div class="feature-btns"><a href="#" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-file"></span> View Details</a> <a href="#" class="btn btn-default" role="button"><span class="glyphicon glyphicon-star-empty"></span> Shortlist</a></div>
-						</div>
-					
-				</div>
-		
-	</div>
+<div class="work">
+    <div class="portfolio-modal modal fade" id="portfolioModal1" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="backgrid" data-dismiss="modal">
+                <i class="icon ion-grid size-48"></i>
+            </div>
+            <div class="close-modal" data-dismiss="modal">
+                <i class="icon ion-ios-close-empty size-96"></i>
+            </div>
+            <div class="container">
+                <h2>Magic Bicycle - Artweek Boston 2015</h2>
+                <hr>
+                <div class="row">
+                    <div class="col-md-8">
+                        <img src="img/portfolio/1.jpg" class="img-responsive img-centered" alt="">
+                        <div class="embed-responsive embed-responsive-16by9">
+                            <iframe src="https://player.vimeo.com/video/64254212" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <p>We have created a new theme that will help designers, developers and companies create simple and beautiful business or personal website quickly and easily.</p>
+                        <p>We believe that the best user interfaces strive for simplicity. Fewer steps to take, fewer concepts to learn and a minified congnitive load. We are obsessed with beautiful digital experiences putting the user at the centre of everything we make.</p>
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam cursus. Morbi ut mi. Nullam enim leo, egestas id, condimentum at, laoreet mattis, massa. Sed eleifend nonummy diam. Praesent mauris ante, elementum et, bibendum at, posuere sit amet, nibh. Duis tincidunt lectus quis dui viverra vestibulum.</p>
+                        <p>
+                            Client: <strong><a href="http://forbetterweb.com">ForBetterWeb</a></strong><br>
+                            Date: <strong>April 2015</strong><br>
+                            Service: <strong>Web Development</strong>
+                        </p>
+                        <button type="button" class="border-button-black" data-dismiss="modal">CLOSE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="portfolio-modal modal fade" id="portfolioModal2" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="backgrid" data-dismiss="modal">
+                <i class="icon ion-grid size-48"></i>
+            </div>
+            <div class="close-modal" data-dismiss="modal">
+                <i class="icon ion-ios-close-empty size-96"></i>
+            </div>
+            <div class="container">
+                <h2>Laaamp - Berlin Biennale</h2>
+                <hr>
+                <div class="row">
+                    <div class="col-md-8">
+                        <img src="img/portfolio/2.jpg" class="img-responsive img-centered" alt="">
+                        <div class="embed-responsive embed-responsive-16by9">
+                            <iframe src="https://player.vimeo.com/video/33967829" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <p>We have created a new theme that will help designers, developers and companies create simple and beautiful business or personal website quickly and easily.</p>
+                        <p>We believe that the best user interfaces strive for simplicity. Fewer steps to take, fewer concepts to learn and a minified congnitive load. We are obsessed with beautiful digital experiences putting the user at the centre of everything we make.</p>
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam cursus. Morbi ut mi. Nullam enim leo, egestas id, condimentum at, laoreet mattis, massa. Sed eleifend nonummy diam. Praesent mauris ante, elementum et, bibendum at, posuere sit amet, nibh. Duis tincidunt lectus quis dui viverra vestibulum.</p>
+                        <p>
+                            Client: <strong><a href="http://forbetterweb.com">ForBetterWeb</a></strong><br>
+                            Date: <strong>April 2015</strong><br>
+                            Service: <strong>Web Development</strong>
+                        </p>
+                        <button type="button" class="border-button-black" data-dismiss="modal">CLOSE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="portfolio-modal modal fade" id="portfolioModal3" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="backgrid" data-dismiss="modal">
+                <i class="icon ion-grid size-48"></i>
+            </div>
+            <div class="close-modal" data-dismiss="modal">
+                <i class="icon ion-ios-close-empty size-96"></i>
+            </div>
+            <div class="container">
+                <h2>Smart bottle - NYC magazine</h2>
+                <hr>
+                <div class="row">
+                    <div class="col-md-8">
+                        <img src="img/portfolio/3.jpg" class="img-responsive img-centered" alt="">
+                        <div class="embed-responsive embed-responsive-16by9">
+                            <iframe src="https://player.vimeo.com/video/78937043" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <p>We have created a new theme that will help designers, developers and companies create simple and beautiful business or personal website quickly and easily.</p>
+                        <p>We believe that the best user interfaces strive for simplicity. Fewer steps to take, fewer concepts to learn and a minified congnitive load. We are obsessed with beautiful digital experiences putting the user at the centre of everything we make.</p>
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam cursus. Morbi ut mi. Nullam enim leo, egestas id, condimentum at, laoreet mattis, massa. Sed eleifend nonummy diam. Praesent mauris ante, elementum et, bibendum at, posuere sit amet, nibh. Duis tincidunt lectus quis dui viverra vestibulum.</p>
+                        <p>
+                            Client: <strong><a href="http://forbetterweb.com">ForBetterWeb</a></strong><br>
+                            Date: <strong>April 2015</strong><br>
+                            Service: <strong>Web Development</strong>
+                        </p>
+                        <button type="button" class="border-button-black" data-dismiss="modal">CLOSE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="portfolio-modal modal fade" id="portfolioModal4" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="backgrid" data-dismiss="modal">
+                <i class="icon ion-grid size-48"></i>
+            </div>
+            <div class="close-modal" data-dismiss="modal">
+                <i class="icon ion-ios-close-empty size-96"></i>
+            </div>
+            <div class="container">
+                <h2>Big Bear - ios app</h2>
+                <hr>
+                <div class="row">
+                    <div class="col-md-8">
+                        <img src="img/portfolio/4.jpg" class="img-responsive img-centered" alt="">
+                        <div class="embed-responsive embed-responsive-16by9">
+                            <iframe src="https://player.vimeo.com/video/64254212" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <p>We have created a new theme that will help designers, developers and companies create simple and beautiful business or personal website quickly and easily.</p>
+                        <p>We believe that the best user interfaces strive for simplicity. Fewer steps to take, fewer concepts to learn and a minified congnitive load. We are obsessed with beautiful digital experiences putting the user at the centre of everything we make.</p>
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam cursus. Morbi ut mi. Nullam enim leo, egestas id, condimentum at, laoreet mattis, massa. Sed eleifend nonummy diam. Praesent mauris ante, elementum et, bibendum at, posuere sit amet, nibh. Duis tincidunt lectus quis dui viverra vestibulum.</p>
+                        <p>
+                            Client: <strong><a href="http://forbetterweb.com">ForBetterWeb</a></strong><br>
+                            Date: <strong>April 2015</strong><br>
+                            Service: <strong>Web Development</strong>
+                        </p>
+                        <button type="button" class="border-button-black" data-dismiss="modal">CLOSE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="portfolio-modal modal fade" id="portfolioModal5" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="backgrid" data-dismiss="modal">
+                <i class="icon ion-grid size-48"></i>
+            </div>
+            <div class="close-modal" data-dismiss="modal">
+                <i class="icon ion-ios-close-empty size-96"></i>
+            </div>
+            <div class="container">
+                <h2>Cover - Bootstrap Template</h2>
+                <hr>
+                <div class="row">
+                    <div class="col-md-8">
+                        <img src="img/portfolio/5.jpg" class="img-responsive img-centered" alt="">
+                        <img src="img/portfolio/55.jpg" class="img-responsive img-centered" alt="">
+                    </div>
+                    <div class="col-md-4">
+                        <p>We have created a new theme that will help designers, developers and companies create simple and beautiful business or personal website quickly and easily.</p>
+                        <p>We believe that the best user interfaces strive for simplicity. Fewer steps to take, fewer concepts to learn and a minified congnitive load. We are obsessed with beautiful digital experiences putting the user at the centre of everything we make.</p>
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam cursus. Morbi ut mi. Nullam enim leo, egestas id, condimentum at, laoreet mattis, massa. Sed eleifend nonummy diam. Praesent mauris ante, elementum et, bibendum at, posuere sit amet, nibh. Duis tincidunt lectus quis dui viverra vestibulum.</p>
+                        <p>
+                            Client: <strong><a href="http://forbetterweb.com">ForBetterWeb</a></strong><br>
+                            Date: <strong>April 2015</strong><br>
+                            Service: <strong>Web Development</strong>
+                        </p>
+                        <button type="button" class="border-button-black" data-dismiss="modal">CLOSE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="portfolio-modal modal fade" id="portfolioModal6" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="backgrid" data-dismiss="modal">
+                <i class="icon ion-grid size-48"></i>
+            </div>
+            <div class="close-modal" data-dismiss="modal">
+                <i class="icon ion-ios-close-empty size-96"></i>
+            </div>
+            <div class="container">
+                <h2>Vintage Box</h2>
+                <hr>
+                <div class="row">
+                    <div class="col-md-8">
+                        <img src="img/portfolio/6.jpg" class="img-responsive img-centered" alt="">
+                        <div class="embed-responsive embed-responsive-16by9">
+                            <iframe src="https://player.vimeo.com/video/126783354" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <p>We have created a new theme that will help designers, developers and companies create simple and beautiful business or personal website quickly and easily.</p>
+                        <p>We believe that the best user interfaces strive for simplicity. Fewer steps to take, fewer concepts to learn and a minified congnitive load. We are obsessed with beautiful digital experiences putting the user at the centre of everything we make.</p>
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam cursus. Morbi ut mi. Nullam enim leo, egestas id, condimentum at, laoreet mattis, massa. Sed eleifend nonummy diam. Praesent mauris ante, elementum et, bibendum at, posuere sit amet, nibh. Duis tincidunt lectus quis dui viverra vestibulum.</p>
+                        <p>
+                            Client: <strong><a href="http://forbetterweb.com">ForBetterWeb</a></strong><br>
+                            Date: <strong>April 2015</strong><br>
+                            Service: <strong>Web Development</strong>
+                        </p>
+                        <button type="button" class="border-button-black" data-dismiss="modal">CLOSE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="portfolio-modal modal fade" id="portfolioModal7" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="backgrid" data-dismiss="modal">
+                <i class="icon ion-grid size-48"></i>
+            </div>
+            <div class="close-modal" data-dismiss="modal">
+                <i class="icon ion-ios-close-empty size-96"></i>
+            </div>
+            <div class="container">
+                <h2>ProJector - Artweek Boston 2015</h2>
+                <hr>
+                <div class="row">
+                    <div class="col-md-8">
+                        <img src="img/portfolio/7.jpg" class="img-responsive img-centered" alt="">
+                    </div>
+                    <div class="col-md-4">
+                        <p>We have created a new theme that will help designers, developers and companies create simple and beautiful business or personal website quickly and easily.</p>
+                        <p>
+                            Client: <strong><a href="http://forbetterweb.com">ForBetterWeb</a></strong><br>
+                            Date: <strong>April 2015</strong><br>
+                            Service: <strong>Web Development</strong>
+                        </p>
+                        <button type="button" class="border-button-black" data-dismiss="modal">CLOSE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="portfolio-modal modal fade" id="portfolioModal8" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="backgrid" data-dismiss="modal">
+                <i class="icon ion-grid size-48"></i>
+            </div>
+            <div class="close-modal" data-dismiss="modal">
+                <i class="icon ion-ios-close-empty size-96"></i>
+            </div>
+            <div class="container">
+                <h2>Octopus - seafood restaurant logo</h2>
+                <hr>
+                <div class="row">
+                    <div class="col-md-8">
+                        <img src="img/portfolio/8.jpg" class="img-responsive img-centered" alt="">
+                    </div>
+                    <div class="col-md-4">
+                        <p>We have created a new theme that will help designers, developers and companies create simple and beautiful business or personal website quickly and easily.</p>
+                        <p>
+                            Client: <strong><a href="http://forbetterweb.com">ForBetterWeb</a></strong><br>
+                            Date: <strong>April 2015</strong><br>
+                            Service: <strong>Web Development</strong>
+                        </p>
+                        <button type="button" class="border-button-black" data-dismiss="modal">CLOSE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="portfolio-modal modal fade" id="portfolioModal9" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="backgrid" data-dismiss="modal">
+                <i class="icon ion-grid size-48"></i>
+            </div>
+            <div class="close-modal" data-dismiss="modal">
+                <i class="icon ion-ios-close-empty size-96"></i>
+            </div>
+            <div class="container">
+                <h2>Illustration for code-design magazine</h2>
+                <hr>
+                <div class="row">
+                    <div class="col-md-8">
+                        <img src="img/portfolio/9.gif" class="img-responsive img-centered" alt="">
+                    </div>
+                    <div class="col-md-4">
+                        <p>We have created a new theme that will help designers, developers and companies create simple and beautiful business or personal website quickly and easily.</p>
+                        <p>
+                            Client: <strong><a href="http://forbetterweb.com">ForBetterWeb</a></strong><br>
+                            Date: <strong>April 2015</strong><br>
+                            Service: <strong>Web Development</strong>
+                        </p>
+                        <button type="button" class="border-button-black" data-dismiss="modal">CLOSE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="portfolio-modal modal fade" id="portfolioModal10" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="backgrid" data-dismiss="modal">
+                <i class="icon ion-grid size-48"></i>
+            </div>
+            <div class="close-modal" data-dismiss="modal">
+                <i class="icon ion-ios-close-empty size-96"></i>
+            </div>
+            <div class="container">
+                <h2>Awesome Chairs</h2>
+                <hr>
+                <div class="row">
+                    <div class="col-md-8">
+                        <img src="img/portfolio/10.jpg" class="img-responsive img-centered" alt="">
+                    </div>
+                    <div class="col-md-4">
+                        <p>We have created a new theme that will help designers, developers and companies create simple and beautiful business or personal website quickly and easily.</p>
+                        <p>
+                            Client: <strong><a href="http://forbetterweb.com">ForBetterWeb</a></strong><br>
+                            Date: <strong>April 2015</strong><br>
+                            Service: <strong>Web Development</strong>
+                        </p>
+                        <button type="button" class="border-button-black" data-dismiss="modal">CLOSE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="portfolio-modal modal fade" id="portfolioModal11" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="backgrid" data-dismiss="modal">
+                <i class="icon ion-grid size-48"></i>
+            </div>
+            <div class="close-modal" data-dismiss="modal">
+                <i class="icon ion-ios-close-empty size-96"></i>
+            </div>
+            <div class="container">
+                <h2>smart office</h2>
+                <hr>
+                <div class="row">
+                    <div class="col-md-8">
+                        <img src="img/portfolio/11.jpg" class="img-responsive img-centered" alt="">
+                    </div>
+                    <div class="col-md-4">
+                        <p>We have created a new theme that will help designers, developers and companies create simple and beautiful business or personal website quickly and easily.</p>
+                        <p>
+                            Client: <strong><a href="http://forbetterweb.com">ForBetterWeb</a></strong><br>
+                            Date: <strong>April 2015</strong><br>
+                            Service: <strong>Web Development</strong>
+                        </p>
+                        <button type="button" class="border-button-black" data-dismiss="modal">CLOSE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="portfolio-modal modal fade" id="portfolioModal12" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="backgrid" data-dismiss="modal">
+                <i class="icon ion-grid size-48"></i>
+            </div>
+            <div class="close-modal" data-dismiss="modal">
+                <i class="icon ion-ios-close-empty size-96"></i>
+            </div>
+            <div class="container">
+                <h2>Travel App</h2>
+                <hr>
+                <div class="row">
+                    <div class="col-md-8">
+                        <img src="img/portfolio/12.jpg" class="img-responsive img-centered" alt="">
+                    </div>
+                    <div class="col-md-4">
+                        <p>We have created a new theme that will help designers, developers and companies create simple and beautiful business or personal website quickly and easily.</p>
+                        <p>
+                            Client: <strong><a href="http://forbetterweb.com">ForBetterWeb</a></strong><br>
+                            Date: <strong>April 2015</strong><br>
+                            Service: <strong>Web Development</strong>
+                        </p>
+                        <button type="button" class="border-button-black" data-dismiss="modal">CLOSE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </section>
 
-   
 
-          
+
+<section id="section3bg">
+<div class="container">
+    <div class="col-md-3">
+
+
+             <header>
+                <h2 class="text-center">Latest bids</h2>
+              </header>
+         
+
+					<aside>
+<div class="row">
+		<div class="">
+					<div class="">
+					</div>
+            		
+             	<div class="list">
+						<div class="bid-list">
+						
+						<div class="list-group">
+							<div class="control-height list-group-item"></div>
+							<a class="list-group-item" href="#">lorem ipsum
+								<span class="badge blue">32</span>
+							</a>
+							
+							<a class="list-group-item" href="#">lorem ipsum
+								<span class="badge blue">32</span>
+							</a>
+							<a class="list-group-item" href="#">lorem ipsum
+								<span class="badge blue">32</span>
+							</a>
+							<a class="list-group-item" href="#">lorem ipsum
+								<span class="badge blue">32</span>
+							</a>
+							<a class="list-group-item" href="#">lorem ipsum
+								<span class="badge blue">32</span>
+							</a>
+							<a class="list-group-item" href="#">lorem ipsum
+								<span class="badge blue">32</span>
+							</a>
+							<a class="list-group-item" href="#">lorem ipsum
+								<span class="badge blue">32</span>
+							</a>
+							<a class="list-group-item" href="#">lorem ipsum
+								<span class="badge blue">32</span>
+							</a>
+							<a class="list-group-item" href="#">lorem ipsum
+								<span class="badge blue">32</span>
+							</a>
+							<a class="list-group-item" href="#">lorem ipsum
+								<span class="badge blue">32</span>
+							</a>
+							<a class="list-group-item" href="#">lorem ipsum
+								<span class="badge blue">32</span>
+							</a>
+							<a class="list-group-item" href="#">lorem ipsum
+								<span class="badge blue">32</span>
+							</a>
+							<a class="list-group-item" href="#">lorem ipsum
+								<span class="badge blue">32</span>
+							</a>
+							<div class="control-height list-group-item"></div>
+							</div>
+							
+							
+						</div>
+						<a class="list-control control-height up" href="#">
+							<span class="block-center glyphicon glyphicon-chevron-up arrow" aria-hidden="true"></span>
+						</a>
+						<a class="list-control control-height down" href="#">
+           					<span class="glyphicon glyphicon-chevron-down arrow" aria-hidden="true"></span>
+           				</a>
+             		</div>
+              	</div>
+	</div>
+
+					</aside>
+
+					
+    	</div>
+		
+    <div class="col-xs-12 col-md-9 container wow slideInRight">
+    <h2 class="text-center">Flight deals</h2>
+		  <!-- Projects Row -->
+        <div class="row">
+            <div class="col-md-4 portfolio-item">
+                <a href="#">
+                    <img class="img-responsive" src="http://placehold.it/700x400" alt="">
+                </a>
+								<div class="container-fluid text-white">
+                <div class="text-center">
+								<hr/>
+                    <a href="#"><h1 class="">Project Name</h1></a>
+								<hr/>
+                </div>
+				
+                <p class="">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p>
+								</div>
+					  </div>
+            <div class="col-md-4 portfolio-item">
+                <a href="#">
+                    <img class="img-responsive" src="http://placehold.it/700x400" alt="">
+                </a>
+                <h3>
+                    <a href="#">Project Name</a>
+                </h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p>
+            </div>
+            <div class="col-md-4 portfolio-item">
+                <a href="#">
+                    <img class="img-responsive" src="http://placehold.it/700x400" alt="">
+                </a>
+                <h3>
+                    <a href="#">Project Name</a>
+                </h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p>
+            </div>
+        </div>
+        <!-- /.row -->
+
+        <!-- Projects Row -->
+        <div class="row">
+            <div class="col-md-4 portfolio-item">
+                <a href="#">
+                    <img class="img-responsive" src="http://placehold.it/700x400" alt="">
+                </a>
+                <h3>
+                    <a href="#">Project Name</a>
+                </h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p>
+            </div>
+            <div class="col-md-4 portfolio-item">
+                <a href="#">
+                    <img class="img-responsive" src="http://placehold.it/700x400" alt="">
+                </a>
+                <h3>
+                    <a href="#">Project Name</a>
+                </h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p>
+            </div>
+            <div class="col-md-4 portfolio-item">
+                <a href="#">
+                    <img class="img-responsive" src="http://placehold.it/700x400" alt="">
+                </a>
+                <h3>
+                    <a href="#">Project Name</a>
+                </h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p>
+            </div>
+        </div>
+
+        <!-- Projects Row -->
+        <div class="row">
+            <div class="col-md-4 portfolio-item">
+                <a href="#">
+                    <img class="img-responsive" src="http://placehold.it/700x400" alt="">
+                </a>
+                <h3>
+                    <a href="#">Project Name</a>
+                </h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p>
+            </div>
+            <div class="col-md-4 portfolio-item">
+                <a href="#">
+                    <img class="img-responsive" src="http://placehold.it/700x400" alt="">
+                </a>
+                <h3>
+                    <a href="#">Project Name</a>
+                </h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p>
+            </div>
+            <div class="col-md-4 portfolio-item">
+                <a href="#">
+                    <img class="img-responsive" src="http://placehold.it/700x400" alt="">
+                </a>
+                <h3>
+                    <a href="#">Project Name</a>
+                </h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p>
+            </div>
+        </div>
+        <!-- /.row -->
+				</div>
+		</section>
+
+
+
+
+<section id="action-parallax2" class="" data-speed="4" data-type="background">
+    <div class="overlay-dark"></div>
+    <div class="container text-center wow fadeIn">
+        <h2>SOME FACTS</h2>
+        <div class="row">
+            <div class="col-sm-3">
+                <i class="icon icon-heading ion-ios-monitor size-64"></i>
+                <span class='numscroller' data-min='0' data-max='29' data-delay='7' data-increment="2">0</span>
+                Themes released
+            </div>
+            <div class="col-sm-3">
+                <i class="icon icon-heading ion-ios-body size-64"></i>
+                <span class='numscroller' data-min='0' data-max='2775' data-delay='7' data-increment="10">0</span>
+                Community members
+            </div>
+            <div class="col-sm-3">
+                <i class="icon icon-heading ion-trophy size-64"></i>
+                <span class='numscroller' data-min='0' data-max='7' data-delay='3' data-increment="1">0</span>
+                Winning awars
+            </div>
+            <div class="col-sm-3">
+                <i class="icon icon-heading ion-android-checkmark-circle size-64"></i>
+                <span class='numscroller' data-min='0' data-max='78' data-delay='7' data-increment="3">0</span>
+                Completed project
+            </div>
+        </div>
+    </div>
+</section>
 
 <section>
 <div class="container">
 <div class="carousel slide" id="myCarousel">
+
         <div class="carousel-inner">
             <div class="item active">
                     <ul class="thumbnails">
@@ -552,8 +1441,6 @@
                     </ul>
               </div><!-- /Slide3 --> 
         </div>
-        
-       
 	   <nav>
 			<ul class="control-box pager">
 				<li><a data-slide="prev" href="#myCarousel" class=""><i class="glyphicon glyphicon-chevron-left"></i></a></li>
@@ -563,449 +1450,206 @@
 	   <!-- /.control-box -->   
                               
     </div><!-- /#myCarousel -->
-    
+	</div>
 
-  <div class="row">
-    <h2>Cheap destinations</h2>
-  </div>
-  <div class='row'>
-    <div class='col-md-8'>
-      <div class="carousel slide media-carousel" id="media">
-        <div class="carousel-inner">
-          <div class="item  active">
-            <div class="row">
-              <div class="col-md-4">
-                <a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-              </div>          
-              <div class="col-md-4">
-                <a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-              </div>
-              <div class="col-md-4">
-                <a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-              </div>        
-            </div>
-          </div>
-          <div class="item">
-            <div class="row">
-              <div class="col-md-4">
-                <a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-              </div>          
-              <div class="col-md-4">
-                <a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-              </div>
-              <div class="col-md-4">
-                <a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-              </div>        
-            </div>
-          </div>
-          <div class="item">
-            <div class="row">
-              <div class="col-md-4">
-                <a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-              </div>          
-              <div class="col-md-4">
-                <a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-              </div>
-              <div class="col-md-4">
-                <a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-              </div>      
-            </div>
-          </div>
-        </div>
-		<div class="carousel-indicators">
-      
-        <a data-slide="next" href="#media" class="right carousel-control">›</a>
-		</div>
-      </div>                          
-    </div>
-  </div>
-
-   <div class="row">
-    <h2>One-way</h2>
-  </div>
-    <div class='row'>
-    <div class='col-md-8'>
-      <div class="carousel slide media-carousel" id="media">
-        <div class="carousel-inner">
-          <div class="item  active">
-            <div class="row">
-              <div class="col-md-4">
-                <a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-              </div>          
-              <div class="col-md-4">
-                <a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-              </div>
-              <div class="col-md-4">
-                <a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-              </div>        
-            </div>
-          </div>
-          <div class="item">
-            <div class="row">
-              <div class="col-md-4">
-                <a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-              </div>          
-              <div class="col-md-4">
-                <a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-              </div>
-              <div class="col-md-4">
-                <a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-              </div>        
-            </div>
-          </div>
-          <div class="item">
-            <div class="row">
-              <div class="col-md-4">
-                <a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-              </div>          
-              <div class="col-md-4">
-                <a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-              </div>
-              <div class="col-md-4">
-                <a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-              </div>      
-            </div>
-          </div>
-        </div>
-		<div class="carousel-indicators">
-      
-        <a data-slide="next" href="#media" class="right carousel-control">›</a>
-		</div>
-      </div>                          
-    </div>
-  </div>
 </section>
 
-<section> <!--Latest bid section-->
-          <!--Latest bids-->
-          <div class="col-xs-12">
-                 <header>
-                <h2 class="text-center">Latest bids</h2>
-              </header>
-          <aside>
-          <div class="row">
-            <section class="content">
-						<div class="table-container">
-							<table class="table table-filter">
-								<tbody>
-									<tr>
-									
-										<td>
-											<a href="javascript:;" class="star">
-												<i class="glyphicon glyphicon-star"></i>
-											</a>
-										</td>
-										<td>
-											<div class="media">
-												<a href="#" class="pull-left">
-																								<img src="https://s3.amazonaws.com/uifaces/faces/twitter/fffabs/128.jpg" class="media-photo img-circle img-responsive">
-												</a>
-												<div class="media-body">
-													<span class="media-meta">Febrero 13, 2016</span>	
-													<p class="summary">Ut enim ad minim veniam, quis nostrud exercitation...</p>
-												</div>
-											</div>
-										</td>
-									</tr>
-									<tr>
-										
-										<td>
-											<a href="javascript:;" class="star">
-												<i class="glyphicon glyphicon-star"></i>
-											</a>
-										</td>
-										<td>
-											<div class="media">
-												<a href="#" class="pull-left">
-													<img src="https://s3.amazonaws.com/uifaces/faces/twitter/fffabs/128.jpg" class="media-photo img-circle img-responsive">
-												</a>
-												<div class="media-body">
-													<span class="media-meta">Febrero 13, 2016</span>
-													
-													<p class="summary">Ut enim ad minim veniam, quis nostrud exercitation...</p>
-												</div>
-											</div>
-										</td>
-									</tr>
-									<tr >
-										
-										<td>
-											<a href="javascript:;" class="star">
-												<i class="glyphicon glyphicon-star"></i>
-											</a>
-										</td>
-										<td>
-											<div class="media">
-												<a href="#" class="pull-left">
-																		<img src="https://s3.amazonaws.com/uifaces/faces/twitter/fffabs/128.jpg" class="media-photo img-circle img-responsive">
-												</a>
-												<div class="media-body">
-													<span class="media-meta">Febrero 13, 2016</span>
-													
-													<p class="summary">Ut enim ad minim veniam, quis nostrud exercitation...</p>
-												</div>
-											</div>
-										</td>
-									</tr>
-									<tr >
-										
-										<td>
-											<a href="javascript:;" class="star star-checked">
-												<i class="glyphicon glyphicon-star"></i>
-											</a>
-										</td>
-										<td>
-											<div class="media">
-												<a href="#" class="pull-left">
-													<img src="https://s3.amazonaws.com/uifaces/faces/twitter/fffabs/128.jpg" class="media-photo img-circle img-responsive">
-												</a>
-												<div class="media-body">
-													<span class="media-meta">Febrero 13, 2016</span>
-													<p class="summary">Ut enim ad minim veniam, quis nostrud exercitation...</p>
-												</div>
-											</div>
-										</td>
-									</tr>
-									<tr>
-										
-										<td>
-											<a href="javascript:;" class="star">
-												<i class="glyphicon glyphicon-star"></i>
-											</a>
-										</td>
-										<td>
-											<div class="media">
-												<a href="#" class="pull-left">
-																									<img src="https://s3.amazonaws.com/uifaces/faces/twitter/fffabs/128.jpg" class="media-photo img-circle img-responsive">
-												</a>
-												<div class="media-body">	
-													<p class="summary">Ut enim ad minim veniam, quis nostrud exercitation...</p>
-												</div>
-											</div>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-            </section>
-            </div>
-           </aside>
-           </div>
-</section><!--Latest bid section end-->
-
- <section  class="section how-it-works" id="how-it-works">
-        <div class="container">
-            <div class="row text-center">
-                <div class="how-it-works-heading">
-                    <h2 class="section-title">What is Seatfilla</h2>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12 board">
-                    <div class="board-inner">
-                        <ul class="nav nav-tabs" id="myTab">
-                            <div class="liner"></div>
-                            <li class="active">
-                                <a href="#home"  role="tab" data-toggle="tab">
-                      <span class="round-tabs one">
-                              <i class="">1</i>
-                      </span>
-                                </a></li>
-							
-                            <li><a href="#profile" role="tab" data-toggle="tab">
-                     <span class="round-tabs two">
-                         <i class="">2</i>
-                     </span>
-                            </a>
-                            </li>
-                            <li><a href="#prototyping" role="tab" data-toggle="tab">
-                     <span class="round-tabs three">
-                          <i class="">3</i>
-                     </span> </a>
-                            </li>
-
-                            <li><a href="#uidesign"  role="tab" data-toggle="tab">
-                         <span class="round-tabs four">
-                              <i class="">4</i>
-                         </span>
-                            </a></li>
-
-                            <li><a href="#doner" role="tab" data-toggle="tab">
-                         <span class="round-tabs five">
-                              <i class="">5</i>
-                         </span> </a>
-                            </li>
-
-                        </ul></div>
-
-                    <div class="tab-content">
-                        <div class="tab-pane fade in active" id="home">
-
-                            <h2 class="head text-center">Searching Flights</h2>
-                            <p class="lead text-center">
-                                Seatfilla allows you to search flights to numerous destinations around the world easily and quickly by scanning
-								various sources for the cheapsest flights.
-                            </p>
-                        </div>
-                        <div class="tab-pane fade" id="profile">
-                            <h2 class="head text-center">Requesting Flights</h2>
-                            <p class="lead text-center">
-                                Seatfilla users can request flights between any destinations and dates and be notified by our system
-								should we come accross any flights matching your description. Aditionally, these flight requests
-								are monitored by Seatfilla ticket providers - one of them might just accept your request at a discounted rate!
-                            </p>
-                        </div>
-                        <div class="tab-pane fade" id="prototyping">
-                            <h2 class="head text-center">Purchase/Bid on Flight Tickets</h2>
-                            <p class="lead text-center">
-                                Take advantage of Seatfilla and it's flights offered by our various partners. These flights often are marginally cheaper
-								than the original cost and can either be bidded on/purchased depending on our suppliers choice when supplying the ticket to our platform. 
-                            </p>
-
-                        </div>
-                        <div class="tab-pane fade" id="uidesign">
-                            <h2 class="head text-center">Join our newsletter</h2>
-                            <p class="lead text-center">
-                                Receive updates about the cheapest flights available from your country!
-                            </p>
-
-                        </div>
-                        <div class="tab-pane fade" id="doner">
-                            <div class="text-center">
-                                <i class="img-intro icon-checkmark-circle"></i>
+<!-- testimonials -->
+<section id="testimonials">
+    <div class="container wow fadeIn">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h2 class="text-center">Testimonials</h2>
+                <div id="carousel-testimonials" class="carousel slide carousel-fade" data-ride="carousel">
+                    <!-- Indicators -->
+                    <ol class="carousel-indicators">
+                        <li data-target="#carousel-testimonials" data-slide-to="0" class="active"></li>
+                        <li data-target="#carousel-testimonials" data-slide-to="1"></li>
+                        <li data-target="#carousel-testimonials" data-slide-to="2"></li>
+                    </ol>
+                    <!-- Wrapper for slides -->
+                    <div class="carousel-inner" role="listbox">
+                        <div class="item active">
+                            <img src="img/avatar1.jpg" alt="">
+                            <div class="carousel-caption">
+                                <p class="lead">Thank you very much, the theme is great! Very concise and simple.
+                                    <span class="carousel-name">Richard Kindall, Cover Customer</span></p>
                             </div>
-                            <h2 class="head text-center">API (For Developers)</h2>
-                            <p class="lead text-center">
-                                If you are a developer, you can take advantage of our API to check out the places people frequently want to travel
-								and the types of prices they're willing to pay. Also, with a verified API key (contact required) you can use our flight
-								offer API endpoint to send flights to us!
-                            </p>
-                          
                         </div>
-                  
+                        <div class="item">
+                            <img src="img/avatar2.jpg" alt="">
+                            <div class="carousel-caption">
+                                <p class="lead">Adorable minimalist theme! Should be working well as a canvas for any upcoming project.
+                                    <span class="carousel-name">David Cohen, Cover Customer</span></p>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <img src="img/avatar3.jpg" alt="">
+                            <div class="carousel-caption">
+                                <p class="lead">Amazing and SUPER easy to incorporate, looks like a great theme, full functionality indeed
+                                    <span class="carousel-name">Jane Navarro, Cover Customer</span></p>
+                            </div>
+                        </div>
                     </div>
-
                 </div>
             </div>
         </div>
-		</section>
+    </div>
+</section>
 
 
-
-       
-         
-          <section id="section2bg" class="section section_img">
-   
-            <section class="container">
-              <h2>Multiple Devices</h1>
-              <aside class="left" style="position:absolute;top:30%;">
-                <h2>Try our app</h2>
-                <ul>
-                  <li>Instant bidding</li>
-                   <li>Instant bidding</li>
-                    <li>Instant bidding</li>
-                </ul>
-              </aside>
-              <img src="./images/white_iphone.png" class="center-block img img-responsive easing"/>
-              <aside class="right">
-                <h2>Available Now</h2>
-                <p>
-                  Try out our app available on both IOS/Android devices.
-                </p>
-              </aside> 
+   <section id="features">
+    <div class="container-fluid text-center wow fadeIn">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h2>Try out our app</h2>
+                <p class="lead">We have created a new theme that will help designers, developers and companies create simple and beautiful business or personal website quickly and easily.</p>
             </div>
-          </section>
         </div>
-        <div id="live-chat">
-        
-        <header class="clearfix">
-            
-            <a href="#" class="chat-close">x</a>
+        <div class="col-md-10 col-md-offset-1">
+            <div class="row">
+                <div class="col-lg-9 wow fadeInLeft" data-wow-delay="0.2s" data-wow-duration="2s">
+                    <div class="row">
+                        <div class="col-sm-4 wow fadeIn">
+                            <h1><i class="icon icon-heading ion-ios-box-outline size-64"></i>Demos <sup><span class="label label-danger ">New</span></sup></h1>
+                            <p>7 Unique Premade Demos</p>
+                        </div>
+                        <div class="col-sm-4">
+                            <h1><i class="icon icon-heading ion-ios-settings size-64"></i> multi-purpose</h4>
+                            <p>A truly multi-purpose theme</p>
+                        </div>
+                        <div class="col-sm-4">
+                            <h1><i class="icon icon-heading ion-ios-pie-outline size-64"></i>High conversion</h4>
+                            <p>Optimized for high conversion.</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <h1><i class="icon icon-heading ion-ios-monitor-outline size-64"></i>Seo Optimized</h4>
+                            <p>Seo Optimized, lightweight code based on bootstrap.</p>
+                        </div>
+                        <div class="col-sm-4">
+                            <h1><i class="icon icon-heading ion-ios-search size-64"></i>Good readability</h4>
+                            <p> Clean Design focused on good readability</p>
+                        </div>
+                        <div class="col-sm-4">
+                            <h1><i class="icon icon-heading ion-iphone size-64"></i> Responsive</h4>
+                            <p>This theme looks great on any screen size or device</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <img src="img/features.jpg" class="img-features2 wow  fadeInRight" data-wow-delay="0.2s" data-wow-duration="2s" alt="responsive">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-            <h4>Live messenger</h4>
 
-            <span class="chat-message-counter">3</span>
+   <section id="action">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 text-center wow fadeIn">
+                <i class="icon icon-heading ion-ios-monitor-outline size-96 fa-opacity"></i>
+                <br>
+                <h2 class="text-white">Cover is the perfect theme for your next project!</h2>
+                <p class="lead text-white">
+                    <b>Cover</b> will make your life as a Webdesigner easier
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
 
-        </header>
+<section id="about">
+    <div class="container-fluid text-center wow fadeIn">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h2>digital<span class="thin">experiences</span></h2>
+                <p class="lead">We believe that the best user interfaces strive for simplicity. Fewer steps to take, fewer concepts to learn and a minified congnitive load. We are obsessed with beautiful digital experiences putting the user at the centre of everything we make.</p>
+            </div>
+        </div>
+        <div class="col-md-10 col-md-offset-1">
+            <div class="row">
+                <div class="col-lg-3 col-sm-6 wow fadeIn" data-wow-delay="0.2s">
+                    <h3><i class="icon icon-heading ion-ios-stopwatch-outline size-64"></i>Lightweight</h3>
+                    <p>Easy to use and fast loading.</p>
+                </div>
+                <div class="col-lg-3 col-sm-6 wow fadeIn" data-wow-delay="0.4s">
+                    <h3><i class="icon icon-heading ion-ios-checkmark-outline size-64"></i>Contact Form</h3>
+                    <p>Working, User-Friendly Contact Form</p>
+                </div>
+                <div class="col-lg-3 col-sm-6 wow fadeIn" data-wow-delay="0.6s">
+                    <h3><i class="icon icon-heading ion-navicon size-64"></i>Smart Menu  <sup><span class="label label-danger ">New</span></sup></h3>
+                    <p>Collapse the navbar on click or scroll</p>
+                </div>
+                <div class="col-lg-3 col-sm-6 wow fadeIn" data-wow-delay="0.8s">
+                    <h3><i class="icon icon-heading ion-ios-infinite-outline size-64"></i>Lifetime updates</h3>
+                    <p>Lifetime free updates</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-        <div class="chat">
-            
-            <div class="chat-history">
-                
-                <div class="chat-message clearfix">
-                    
-                    <img src="http://lorempixum.com/32/32/people" alt="" width="32" height="32">
+<section id="contact">
+    <div class="container wow fadeIn">
+        <div class="row">
+            <div class="col-md-6">
+                <h2>contact<span class="thin">us</span></h2>
+                <p class="lead text-muted">Feel free to contact us to provide some feedback on our templates, give us suggestions for new templates and themes, or to just say hello!</p>
+                <h3><i class="icon ion-android-call"></i> (123) 456-7890</h3>
+                <h4 class="lead text-muted"><i class="icon ion-android-mail"></i> info@youwebsite.com<br>
+                    <i class="icon ion-ios-location"></i> 2345 Some Ave, New York, NY 23458</h4>
+            </div>
+            <div class="col-md-5 col-md-offset-1">
+                <h2>Say<span class="thin">hello</span></h2>
+                <!-- Contact Form - Enter your email address on line 17 of the mail/contact_me.php file to make this form work. -->
+                <!-- WARNING: Some web hosts do not allow emails to be sent through forms to common mail hosts like Gmail or Yahoo. It's recommended that you use a private domain email address! -->
+                <!-- NOTE: To use the contact form, your site must be on a live web host with PHP! The form will not work locally! -->
+                <form name="sentMessage" id="contactForm" novalidate>
+                    <div class="control-group">
+                        <div class="form-group floating-label-form-group controls">
+                            <label for="name" class="sr-only control-label">You Name</label>
+                            <input type="text" class="form-control input-lg" placeholder="You Name" id="name" required data-validation-required-message="Please enter name">
+                            <span class="help-block text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="form-group floating-label-form-group controls">
+                            <label for="email" class="sr-only control-label">You Email</label>
+                            <input type="email" class="form-control input-lg" placeholder="You Email" id="email" required data-validation-required-message="Please enter email">
+                            <span class="help-block text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="form-group floating-label-form-group controls">
+                            <label for="phone" class="sr-only control-label">You Phone</label>
+                            <input type="tel" class="form-control input-lg" placeholder="You Phone" id="phone" required data-validation-required-message="Please enter phone number">
+                            <span class="help-block text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="form-group floating-label-form-group controls">
+                            <label for="message" class="sr-only control-label">Message</label>
+                            <textarea rows="2" class="form-control input-lg" placeholder="Message" id="message" required="" data-validation-required-message="Please enter a message." aria-invalid="false"></textarea>
+                            <span class="help-block text-danger"></span>
+                        </div>
+                    </div>
+                    <div id="success"></div>
+                    <button type="submit" class="btn border-button-black">Send</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
 
-                    <div class="chat-message-content clearfix">
-                        
-                        <span class="chat-time">13:35</span>
 
-                        <h5>John Doe</h5>
 
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error, explicabo quasi ratione odio dolorum harum.</p>
+ </div>
 
-                    </div> <!-- end chat-message-content -->
 
-                </div> <!-- end chat-message -->
-
-                <hr>
-
-                <div class="chat-message clearfix">
-                    
-                    <img src="http://gravatar.com/avatar/2c0ad52fc5943b78d6abe069cc08f320?s=32" alt="" width="32" height="32">
-
-                    <div class="chat-message-content clearfix">
-                        
-                        <span class="chat-time">13:37</span>
-
-                        <h5>Marco Biedermann</h5>
-
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Blanditiis, nulla accusamus magni vel debitis numquam qui tempora rem voluptatem delectus!</p>
-
-                    </div> <!-- end chat-message-content -->
-
-                </div> <!-- end chat-message -->
-
-                <hr>
-
-                <div class="chat-message clearfix">
-                    
-                    <img src="http://lorempixum.com/32/32/people" alt="" width="32" height="32">
-
-                    <div class="chat-message-content clearfix">
-                        
-                        <span class="chat-time">13:38</span>
-
-                        <h5>John Doe</h5>
-
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing.</p>
-
-                    </div> <!-- end chat-message-content -->
-
-                </div> <!-- end chat-message -->
-
-                <hr>
-
-            </div> <!-- end chat-history -->
-
-            <p class="chat-feedback">Your partner is typing…</p>
-
-            <form action="#" method="post">
-
-                <fieldset>
-                    
-                    <input type="text" placeholder="Type your message…" autofocus>
-                    <input type="hidden">
-
-                </fieldset>
-
-            </form>
-
-        </div> <!-- end chat -->
-
-    </div> <!-- end live-chat -->
-	</section>
-
-	</div>
+     
 <%- partial ('partials/footer.ejs') %>
-    
+</body>

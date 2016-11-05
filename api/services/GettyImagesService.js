@@ -97,9 +97,10 @@ module.exports = {
           const reqObject = {
             phrase: options.phrase,
             page: options.page || 1,
-            page_size: 100,
+            page_size: options.pageSize || 100,
             exclude_nudity: true,
-            embed_content_only: options['embed_content_only'] || true
+            embed_content_only: options['embed_content_only'] || true,
+            fields: 'display_set' || options.fields
           }
 
           const sendData = querystring.stringify(reqObject)
@@ -151,12 +152,32 @@ module.exports = {
   },
   searchAndRetrieveUrls(options) {
     const _self = this;
+    options.fields = 'display_set';
     return new Promise((resolve, reject) => {
       _self.makeImagesRequest(options).then(function (res) {
+        sails.log.debug(JSON.stringify(res));
         if (res && res.images) {
-          // console.log(JSON.stringify(res))
+          
+          //Map the images
           resolve(res.images.map(function (image) {
-            return { embededImage: image['uri_oembed'], displaySizeImage: image['display_sizes'][0].uri }
+
+              for(var i = 0; i <  image.display_sizes.length;i++){
+                    sails.log.debug('Display sizes: ' + JSON.stringify(image.display_sizes))
+                if(image.display_sizes[i].name != 'comp'){
+                  continue;
+                }
+                sails.log.debug('Returning : ' + JSON.stringify(image.display_sizes[i]))
+                return image.display_sizes[i];
+              }
+              
+              return null;
+
+          //Reject any images that didn't have `comp`
+          }).filter(function(image){
+              return image != null;
+          }).map(function(image){
+            sails.log.debug('Returning: ' + JSON.stringify(image))
+            return { displaySizeImage: image.uri}
           }))
         } else {
           reject(new Error('Could not obtain response'))

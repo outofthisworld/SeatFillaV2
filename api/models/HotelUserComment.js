@@ -1,0 +1,30 @@
+module.exports = {
+    autoPK:true,
+    attributes: {
+        id:{
+            type:'integer',
+            primaryKey:true,
+        },
+        hotel:{
+            model:'hotel',
+            notNull:true,
+            required:true
+        },
+        user:{
+            model:'user',
+            notNull:true,
+            required:true
+        },
+        isReply:{
+            type:'boolean',
+            defaultsTo:false,
+        },
+        message:{
+            type:'string',
+            defaultsTo:''
+        },
+        replies:{
+            collection:'HotelUserComment'
+        }
+    }
+}

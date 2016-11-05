@@ -1,10 +1,3 @@
-/*
-    Created by Dale.
-
-    Loads currencies on each page load and users currency preference on page load, 
-    uses client side session storage if applicable to reduce page load times.
-*/
-
 $(document).ready(function() {
 
     (function retrieveCurrencies() {

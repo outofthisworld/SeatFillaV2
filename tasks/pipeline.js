@@ -1,38 +1,21 @@
-/**
- * grunt/pipeline.js
- *
- * The order in which your css, javascript, and template files should be
- * compiled and linked from your views and static HTML files.
- *
- * (Note that you can take advantage of Grunt-style wildcard/glob/splat expressions
- * for matching multiple files, and ! in front of an expression to ignore files.)
- *
- * For more information see:
- *   https://github.com/balderdashy/sails-docs/blob/master/anatomy/myApp/tasks/pipeline.js.md
- */
 
 
-// CSS files to inject in order
-//
-// (if you're using LESS with the built-in default config, you'll want
-//  to change `assets/styles/importer.less` instead.)
 var cssFilesToInject = [
     'bower_components/bootstrap/dist/css/bootstrap.min.css',
     'bower_components/bootstrap/dist/css/bootstrap-theme.min.css',
+    'bower_components/select2/dist/css/select2.min.css',
     'styles/**/*.css',
 ];
 
 // Client-side javascript files to inject in order
-// (uses Grunt-style wildcard/glob/splat expressions)
 var jsFilesToInject = [
-    'bower_components/jquery/dist/jquery.min.js',
-    'bower_components/bootstrap/dist/js/bootstrap.min.js',
-    'bower_components/platform/platform.js',
-    'bower_components/webcomponentsjs/webcomponents-lite.min.js',
-
     // Load sails.io before everything else
     'js/dependencies/sails.io.js',
 
+    'bower_components/jquery/dist/jquery.min.js',
+    'bower_components/bootstrap/dist/js/bootstrap.min.js',
+    'bower_components/select2/dist/js/select2.full.min.js',
+    'bower_components/jsrender.min.js',
     // Dependencies like jQuery, or Angular are brought in here
     'js/dependencies/**/*.js',
 
@@ -42,15 +25,6 @@ var jsFilesToInject = [
 ];
 
 
-// Client-side HTML templates are injected using the sources below
-// The ordering of these templates shouldn't matter.
-// (uses Grunt-style wildcard/glob/splat expressions)
-//
-// By default, Sails uses JST templates and precompiles them into
-// functions for you.  If you want to use jade, handlebars, dust, etc.,
-// with the linker, no problem-- you'll just want to make sure the precompiled
-// templates get spit out to the same file.  Be sure and check out `tasks/README.md`
-// for information on customizing and installing new tasks.
 var templateFilesToInject = [
     'templates/**/*.html',
 

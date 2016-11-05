@@ -12,6 +12,8 @@ const supportedCountriesApiEndPoint = 'http://partners.api.skyscanner.net/apiser
 const supportedCurrenciesApiEndPoint = 'http://partners.api.skyscanner.net/apiservices/reference/v1.0/currencies'
 // The end point for obtaining supported locales
 const supportedLocalesApiEndPoint = 'http://partners.api.skyscanner.net/apiservices/reference/v1.0/locales'
+//The end point for obtaining hotel suggestions
+const hotelAutoSuggestEndpoint = 'http://partners.api.skyscanner.net/apiservices/hotels/autosuggest/v2/'
 
 module.exports = {
   /*
@@ -50,7 +52,7 @@ module.exports = {
         method: 'GET'
       },
         function (err, res, body) {
-          if (err) return reject(ErrorUtils.createNewError('Error in response when calling getSuportedCountries', arguments, err))
+          if (err) return reject(err)
           else return resolve(res.body.Countries)
         })
     })
@@ -101,7 +103,7 @@ module.exports = {
         method: 'GET'
       },
         function (err, res, body) {
-          if (err) return reject(ErrorUtils.createNewError('Error in response when calling getCurrencyCodes', arguments, err))
+          if (err) return reject(err)
           else return resolve(res.body)
         }))
     })
@@ -129,8 +131,45 @@ module.exports = {
         method: 'GET'
       },
         function (err, res, body) {
-          if (err) return reject(ErrorUtils.createNewError('Error in response when calling getCurrencyCodes', arguments, err))
+          if (err) return reject(err)
           else return resolve(res.body.Locales)
+        })
+    })
+  },
+  /*
+    GET:
+    http://partners.api.skyscanner.net/apiservices/hotels/autosuggest/v2/NZ/NZD/en-US/auckland?apikey=prtl6749387986743898559646983194
+  
+    param `options`:
+        An object of the following structure:
+         {
+           countryCode:'',
+           currencyCode:'',
+           locale:'',
+           query:''
+         }
+  */
+  getHotelAutoSuggestResults(options){
+     return new Promise((resolve, reject) => {
+      const pathString = _.values(options).join('/')
+      const finalPath = hotelAutoSuggestEndpoint + (pathString || '') + '?apiKey=' + apiKey
+      sails.log.debug('Final path to hotelAutoSuggest was: ' + finalPath);
+      request({
+        headers: {
+          'Accept': 'application/json'
+      },
+        uri: finalPath,
+        method: 'GET'
+      },
+        function (err, res, body) {
+          if (err) return reject(err)
+          else {
+            try{
+            return resolve(JSON.parse(res.body))
+            }catch(err){
+              return reject(err);
+            }
+          }
         })
     })
   }

@@ -76,13 +76,14 @@ module.exports = {
       if (req.user) {
         return UserSettings
         .find({user:req.user.id})
+        .populate('currentLocation')
         .then(function(userSettings){
             if(Array.isArray(userSettings))
                 userSettings = userSettings[0]
 
             const obj = {}
-            for (key in keyArr) {
-               obj[key] =  userSettings[key] || req.session[key]
+            for (var i = 0; i < keyArr.length;i++) {
+               obj[keyArr[i]] =  userSettings[keyArr[i]] || req.session[keyArr[i]]
             }
             return Promise.resolve(obj);
         }).catch(function(err){
@@ -92,23 +93,26 @@ module.exports = {
       } else {
           const obj = {}
           sails.log.debug('Current session is: ' + JSON.stringify(req.session));
-          for (key in keyArr) {
-            obj[key] = req.session[key]
+          for (var i = 0; i < keyArr.length;i++) {
+               obj[keyArr[i]] = req.session[keyArr[i]]
           }
           return Promise.resolve(obj);
       }
   },
   getUserCurrentLocation(req){
+    sails.log.debug('Reteriving current location with req: ' + req);
     return this.getUserSettings(req, ['currentLocation']).then(function(result){
        return Promise.resolve(result.currentLocation)});
   },
   getUserCurrencyCodePreference(req){
+    sails.log.debug('Reteriving currency code preference with req: ' + req);
     return this.getUserSettings(req,['currencyCodePreference']).then(function(result){ 
-      return Promise.resolve(result.currencyCodePreference)});
+      return Promise.resolve(result.currencyCodePreference || 'USD')});
   },
   getUserLocalePreference(req){
+    sails.log.debug('Reteriving locale preference with req: ' + req);
     return this.getUserSettings(req,['localePreference']).then(function(result){
-      return Primise.resolve(result.localePreference)
+      return Promise.resolve(result.localePreference || 'en-US')
     });
   },
   setUserCurrencyCodePreference(req, currencyCode) {

@@ -1,3 +1,4 @@
+
 module.exports = {
     coercePK(model){
        if(typeof model == 'string'){

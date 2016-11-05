@@ -2,11 +2,15 @@ const passport = require('passport')
 
 module.exports = {
   authenticateLocal(req, res, object) {
+    if (req.user)  {
+        req.logOut() || req.logout();
+    }
+
     return new Promise(function (resolve, reject) {
       (passport.authenticate('local', function (err, user) {
         if (err || !user) {
           sails.log.debug('Error authentication via passport')
-          sails.log.debug(err)
+          sails.log.error(err)
           sails.log.debug(user)
           return resolve({ status:err && err.status || sails.config.passport.errorCodes().ErrorUnknown , error: 
             err || new Error('Error unknown'), errorMessage: err && err.message || 'Unknown error' })
@@ -32,6 +36,10 @@ module.exports = {
     })
   },
   authenticateFacebook(req, res, redirectObj) {
+     if (req.user)  {
+        req.logOut() || req.logout();
+    }
+
     return new Promise(function (resolve, reject) {
       if (redirectObj && redirectObj.failiureRedirect) {
         req.session.failiureRedirect = redirectObj.failiureRedirect
@@ -50,6 +58,10 @@ module.exports = {
     })
   },
   authenticateGoogle(req, res, redirectObj) {
+    if (req.user)  {
+        req.logOut() || req.logout();
+    }
+
       return new Promise(function(resolve,reject){
             if (redirectObj && redirectObj.failiureRedirect) {
                 req.session.failiureRedirect = redirectObj.failiureRedirect
@@ -69,7 +81,11 @@ module.exports = {
 
   },
   authenticateTwitter(req, res, redirectObj) {
-       return new Promise(function (resolve, reject) {
+    if (req.user)  {
+        req.logOut() || req.logout();
+    }
+
+    return new Promise(function (resolve, reject) {
             if (redirectObj && redirectObj.failiureRedirect) {
                 req.session.failiureRedirect = redirectObj.failiureRedirect
             }

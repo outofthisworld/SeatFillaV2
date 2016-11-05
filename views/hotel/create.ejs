@@ -1,0 +1,474 @@
+
+
+<script>
+        $("<link/>", {
+            rel: "stylesheet",
+            type: "text/css",
+            href: "/independent-css/dropzone.css"
+        }).appendTo("head");
+
+        $.getScript('/scripts/dropzone.js',function(data, textStatus, jqxhr){
+            if(!(jqxhr.status == 200)){
+                alert('Error loading dropzone.js');
+            }else{
+                Dropzone.autoDiscover = false;
+                 $("#myElement").dropzone({
+                        url:'hotel/create',
+                        paramName:'file',
+                        dictDefaultMessage: "Drag/click to upload hotel images ( max: 10 )",
+                        autoProcessQueue: false,
+                        addRemoveLinks: true,
+                        uploadMultiple: true,
+                        parallelUploads: 10,
+                        maxFiles: 10,
+                        maxFilesize: 20, //20mb
+                        createImageThumbnails: true,
+                        acceptedFiles: 'image/*',
+                        init: function() {
+                            const dzClosure = this; 
+
+                            $('#send').on("click", function(e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                dzClosure.processQueue();
+                            });
+
+                            var added = false;
+                            this.on("sendingmultiple", function(data, xhr, formData) {
+                                if(!added){
+                                    $('form#createHotel :input').each(function(){
+                                        console.log(formData);
+                                        console.log(data);
+                                        const $input = $(this);
+                                        console.log('prepending data .. ' + $input.attr('name') + ' : ' + $input.val())
+                                        formData.append($input.attr('name'), $input.val());
+                                    });
+                                    added = true;
+                                }
+                                formData.append('fileData', JSON.stringify(data));
+                            });
+                            
+                    }
+                });
+            }
+        });
+
+        const amenMapping = {
+                'LAUNDRY':'.icon-laundry',
+                'WIFISERVICE':'.icon-wifi',
+                'FIREPLACE':'.icon-fireplace',
+                'LUGGAGESTORAGE':'.icon-suitcase',
+                'GARDEN':'.icon-garden',
+                'FIREEXTINGUISHER':'.icon-fire-extinguisher',
+                'BED':'.icon-bed',
+                'TAXI':'.icon-taxi',
+                'BALCONY':'.icon-terrace',
+                'TOILETPAPER':'.icon-toilet-paper',
+                'TOOTHPASTE':'.icon-toothbrush-toothpaste',
+                'TOOTHBURSH':'.icon-toothbrush-toothpaste',
+                'GYMNASIUM':'.icon-gym-equipment',
+                'PS4':'.icon-game-console',
+                'PS3':'.icon-game-console',
+                'PS2':'.icon-game-console',
+                'XBOX':'.icon-game-console',
+                'PHONE':'.icon-phone',
+                'BABYSITTINGSERVICE':'.icon-child-care',
+                'CHILDREN':'.icon-child-care',
+                'KIDS':'.icon-child-care',
+                'PHONESERVICE':'.icon-phone',
+                'ROOMSERVICE':'.icon-phone-service',
+                'XBOX 360':'.icon-game-console',
+                'XBOX-360':'.icon-game-console',
+                'GAMECONSOLE':'.icon-game-console',
+                'NINTENDO':'.icon-game-console',
+                'NINTENDO WII':'.icon-game-console',
+                'WII':'.icon-game-console',
+                'PRIVATEBEACH':'.icon-beach',
+                'MEETINGROOM':'.icon-meeting-table',
+                'BATH':'.icon-bath',
+                'BUNKBED':'.icon-bunk-beds',
+                'BUNKBEDS':'.icon-bunk-beds',
+                'SHOWER':'.icon-shower',
+                'LAMP':'.icon-lamp',
+                'LIGHTING':'.icon-lamp',
+                'BICYCLE':'.icon-bicycle',
+                'ATM':'.icon-atm',
+                'BLENDER':'.icon-blender',
+                'CLOCK':'.icon-clock',
+                'WALLCLOCK':'.icon-clock',
+                'ALARMCLOCK':'.icon-clock',
+                'STORE':'.icon-store',
+                'ANIMAL':'.icon-animal',
+                'ANIMALS':'.icon-animal',
+                'PETSALLOWEDSERVICE':'.icon-animals',
+                'FITNESSCENTER':'.icon-dumbbell',
+                'CAMERA':'.icon-camera',
+                'YOGA':'.flaticon-yoga-mat',
+                'DISABLED':'.icon-wheel-chair',
+                'WHEELCHAIR':'.icon-wheel-chair',
+                'BUSINESSCENTER':'.icon-meeting',
+                'FRONTDESK24HSERVICE':'.icon-reception',
+                'GYMNASIUM':'.icon-gym-equipment',
+                'DISABLEDFACILITY':'.icon-wheel-chair',
+                'LIMOUSINESERVICE':'.icon-taxi',
+                'FIRSTAID':'.icon-first-aid',
+                'HEATING':'.icon-heater',
+                'HORSE':'.icon-horse',
+                'TOWEL':'.icon-towel',
+                'OVEN':'.icon-oven',
+                'SCALES':'icon-scales',
+                'LOCK':'.icon-lock',
+                'PADLOCK':'.icon-lock',
+                'COOKTOP':'.icon-oven',
+                'BICYCLE':'.icon-bicycle',
+                'COOKING':'.icon-oven',
+                'MASSAGE':'.icon-massage',
+                'MINIBAR':'.icon-bar-fridge',
+                'MINI-BAR':'.icon-bar-fridge',
+                'MINIBARSERVICE':'.icon-bar-fridge',
+                'DESK':'.icon-desk',
+                'LIFT':'.icon-lift',
+                'ELEVATOR':'.icon-lift',
+                'SHAMPOO':'.icon-shampoo',
+                'MIRROR':'.icon-mirror',
+                'AIRCONDITIONER':'.icon-air-conditioner',
+                'AIRCONDITIONING':'.icon-air-conditioner',
+                'HEATER':'.icon-heater',
+                'FRIDGE':'.icon-refrigerator',
+                'REFRIGERATOR':'.icon-refrigerator',
+                'MICROWAVE':'.icon-microwave',
+                'NEWSPAPER':'.icon-newspaper',
+                'HAIRDRYER':'.icon-hairdryer',
+                'IRON':'.icon-iron',
+                'LAPTOP':'.icon-computer',
+                'COMPUTER':'.icon-computer',
+                'COFEEMAKER':'.icon-coffee-machine',
+                'COFEE':'.icon-coffee',
+                'INDOORSWIMMINGPOOL':'.icon-outdoor-pool',
+                'INDOORPOOL':'.icon-outdoor-pool',
+                'CHILDRENPOOL':'.icon-outdoor-pool-sunumbrella',
+                'CHILDRENSWIMMINGPOOL':'.icon-outdoor-pool-subumbrella',
+                'BUSINESSCENTER':'.icon-meeting',
+                'CONFERENCEFACILITIES':'icon-meeting',
+                'CONFERENCEFACILITY':'icon-meeting',
+                'BREAKFAST':'.icon-eating-utensils',
+                'RESTAURANT':'.icon-restaurant',
+                'TENNISCOURT':'.icon-tennis-court',
+                'RADIO':'',
+                'STEAMROOM':'',
+                'FAX':'',
+                'PHOTOCOPIER':'',
+                'PHOTOCOPYINGSERVICE':'',     
+                'BEAUTYSALON':'',
+                'RADIOSERVICE':'',
+                'RADIO':'',
+                'CURRENCYEXCHANGE':'',
+                'CURRENCYEXCHANGESERVICE':'',
+                'WAKEUPCALL':'',
+                'WAKEUPCALLSERVICE':'',
+                'LOUNGE':'.icon-couch',
+                'BIN':'.icon-bin',
+                'BARFRIDGE':'.icon-bar-fridge',
+                'BARREFRIDGERATOR':'.icon-bar-fridge',
+                'TV':'.icon-television-flatscreen',
+                'DVD':'.icon-dvd',
+                'TELEPHONE':'.icon-phone',
+                'EXPRESSCHECKOUT':'.icon-credit-card',
+                'EXPRESSCHECKOUTSERVICE':'.icon-credit-card',
+                'CONFERENCEFACILITIES':'.icon-meeting',
+                'MULTILINGUALSTAFFSERVICE':'.icon-doorman',
+                'MULTILINGUALSTAFF':'.icon-doorman',
+                'RECEPTIONAREA':'.icon-reception',
+                'TELEVISION':'.icon-television-flatscreen',
+                'DAILYNEWSPAPERSERVICE':'.icon-newspaper',
+                'PINGPONG':'.icon-ping-pong',
+                'PING-PONG':'.icon-ping-pong',
+                'PING PONG':'.icon-ping-pong',
+                'FITNESSCENTRE':'.icon-dumbbell',
+                'SMOKINGAREA':'.icon-smoking',
+                'BABYSITTINGSERVICE':'.icon-child-care',
+                'SUNUMBRELLA':'.icon-sun-umbrella',
+                'NONSMOKINGSERVICE':'.icon-no-smoking',
+                'BAR':'.icon-beer',
+                'GOLF':'.icon-golf-club',
+                'GOLFCOURSE':'.icon-golf-club',
+                'GOLF-COURSE':'.icon-golf-club',
+                'SATTELITETV':'.icon-television-antenna',
+                'DOORMAN':'.icon-door-man',
+                'SAUNA':'',
+                'PARKING':'.icon-parking',
+                'MARINA':'.icon-marina',
+                'SHOP':'.icon-shop',
+                'EXPRESSCHECKINSERVICE':'.icon-credit-card',
+                'CONCIERGESERVICE':'.icon-doorman',
+                'DOORMAN':'.icon-doorman',
+                'OUTDOORSWIMMINGPOOL':'.icon-outdoor-swimming-pool',
+                'SPA':'.icon-spa',
+                'ROOMSERVICE':'.icon-room-service',
+                'MASSAGE':'.icon-massage',
+                'MASSAGESERVICE':'.icon-massage',
+                'INTERNETACCESSSERVICE':'.icon-wifi',
+                'SAFEDEPOSITBOX':'.icon-safe',
+                'FIRSTAID':'.icon-first-aid',
+                'FIRSTAIDKIT':'.icon-first-aid',
+                'LUGGAGECART':'.icon-luggage-trolley',
+                'LUGGAGETROLLEY':'.icon-luggage-troller',
+                'LIFEGUARD':'.icon-life-guard',
+                'CONSIERGE':'.icon-reception',
+                'CONSIERGESERVICE':'.icon-reception',
+                'BEACH':'.icon-beach',
+                'SMOKINGAREA':'.icon-smoking'
+            }
+    $('#createHotel').validate();
+   
+     $("#hotelAmenities").select2({
+      tags: Object.keys(amenMapping)
+      .map(function(key){return key.toLowerCase()})
+      .sort(function(left,right){
+          return left.localeCompare(right);
+      }),
+      tokenSeparators: [",", " "],
+      multiple:true,
+    })
+
+    $(document).ready(function(){
+            $("#hotelAmenities").on("change", function(e) { 
+                console.log($('#hotelAmenities').find(':selected').text());
+                $('#hotelAmenities').find(':selected')
+                .css({'background-color':'#f3934a','background-image':'none','color':'lightblue'});
+            });
+    })
+ 
+
+     $(".tags").select2({
+      tokenSeparators: [",", " "],
+      multiple:true,
+      tags:true,
+      maximumSelectionLength: 5, 
+    });
+
+
+</script>
+
+<style>
+    label{
+        font-weight:normal; 
+        font-size:14px;    
+    }
+    legend{
+        text-align:center;
+    }
+    .noPad{
+        padding:0px;
+    }
+    .noMargin{
+        margin:0px;
+    }
+</style>
+
+
+<div class="row">
+
+<div class="col-xs-8 noPad noMargin">
+
+<form id="createHotel" action="<%= '/userprofile/' + req.user.username + '/hotel/create' %>" method="post" class="form-horizontal" enctype="multipart/form-data">
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="Nom22">Hotel name</label>  
+  <div class="col-md-6">
+  <input name="hotelName" placeholder="Hotel name" class="form-control input-md" required="" type="text">
+  </div>
+</div>
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="Nom22">Hotel description</label>  
+  <div class="col-md-6">
+  <input name="description" placeholder="Hotel description" class="form-control input-md" required="" type="text">
+  </div>
+</div>
+
+<div class="form-group">
+  <label class="col-md-4 control-label" for="Nom22">Star rating</label>  
+  <div class="col-md-2">
+  <input name="starRating" placeholder="1-5" class="form-control input-md" required="" type="number" max="5" min="1">
+  </div>
+</div>
+
+<div class="form-group">
+  <label class="col-md-4 control-label" for="Nom22">Hotel amenities</label>  
+  <div class="col-md-6">
+  <select id="hotelAmenities" name="hotelAmenities[]" multiple class="form-control input-md amenities" required>
+  </select>
+  <small>* Please tag the types of amenities your hotel provides</small>
+  </div>
+</div>
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="Nom22">Hotel Address Line One</label>  
+  <div class="col-md-6">
+  <input name="addressLine" placeholder="Address line one" class="form-control input-md" required="" type="text">
+  </div>
+</div>
+
+<div class="form-group">
+  <label class="col-md-4 control-label" for="Nom22">Hotel Address Line Two</label>  
+   <div class="col-md-6">
+  <input  name="addressLineTwo" placeholder="Address Line Two" class="form-control input-md" required="" type="text">
+  </div>
+</div>
+
+<div class="form-group">
+  <label class="col-md-4 control-label" for="Nom22">Hotel Address Line Three</label>  
+  <div class="col-md-6">
+  <input name="addressLineThree" placeholder="Address Line Three" class="form-control input-md" required="" type="text">
+  </div>
+</div>
+
+<div class="form-group">
+  <label class="col-md-4 control-label" for="selectbasic">Hotel Country</label>
+  <div class="col-md-6">
+    <select id="country" name="country" class="form-control" required>
+    <option value="New Zealand">New zealand</option>
+    </select>
+  </div>
+</div>
+
+<div class="form-group">
+  <label class="col-md-4 control-label" for="selectbasic">Hotel City</label>
+  <div class="col-md-6">
+    <select id="city" name="city" class="form-control" required>
+    <option value="Auckland">Auckland</option>
+    </select>
+  </div>
+</div>
+
+<div class="form-group">
+  <label class="col-md-4 control-label" for="selectbasic">Hotel State</label>
+    <div class="col-md-6">
+    <select id="state" name="state" class="form-control">
+        <option value="None">None</option>
+    </select>
+  </div>
+</div>
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="num">Hotel Longitude</label>  
+  <div class="col-md-3">
+  <input name="longitude" placeholder="Longitude" class="form-control input-md" required type="text">
+  </div>
+  <div class="col-md-2">
+    <select name="direction" class="form-control">
+    <option value="°N">
+        °N
+    </option>
+     <option value="°W">
+        °W
+    </option>
+     <option value="°E">
+        °E
+    </option>
+    <option value="°S">
+        °S
+    </option>
+    </select>
+  </div>
+</div>
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="num">Hotel Latitude</label>  
+  <div class="col-md-3">
+  <input name="latitude" placeholder="Latitude" class="form-control input-md" required type="text">
+  </div>
+  <div class="col-md-2">
+    <select name="direction" class="form-control">
+    <option value="°N">
+        °N
+    </option>
+     <option value="°W">
+        °W
+    </option>
+     <option value="°E">
+        °E
+    </option>
+    <option value="°S">
+        °S
+    </option>
+    </select>
+  </div>
+</div>
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="CP">Hotel Postal code</label>  
+  <div class="col-md-3">
+     <input name="postcode" placeholder="Postal code" class="form-control input-md" required type="text">
+  </div>
+</div>
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="commune">Hotel Website URL</label>  
+  <div class="col-md-6">
+  <input name="websiteURL" placeholder="Hotel website URL" class="form-control input-md" required="" type="text">
+  </div>
+</div>
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="mail">Hotel Booking URL</label>  
+  <div class="col-md-6">
+  <input name="bookingURL" placeholder="Hotel booking URL" class="form-control input-md" required="" type="text">
+  </div>
+</div>
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="mail">Hotel phone number</label>  
+  <div class="col-md-3">
+  <input name="phoneNumber" placeholder="Ph. No" class="form-control input-md" required="" type="phone">
+  </div>
+  <label class="col-md-3 control-label" for="callingCode">Calling code</label>
+  <div class="col-md-2">
+    <input id="callingCode" name="callingCode" class="form-control input-md" type="number" required/>
+  </div>
+</div>
+
+
+<div class="form-group">
+  <label class="col-md-4 control-label" for="Nom22">Hotel search terms</label>  
+  <div class="col-md-6">
+  <select name="hotelTags[]" multiple class="form-control input-md tags" required>
+  </select>
+  <small>* Please enter some search terms that will help users locate your hotel on Seatfilla</small>
+  </div>
+</div>
+
+<!-- Button -->
+<div class="form-group">
+  <div class="col-md-8">
+    <button id="send" name="send" class="btn btn-primary">Create hotel</button>
+  </div>
+</div>
+
+</form> <!--form-->
+
+</div> <!--col-9-->
+
+<div class="col-xs-4">
+
+
+<form id="myElement" class="dropzone">
+    
+ </form>
+  
+
+</div> <!--col-4-->
+
+
+</div> <!--row-->
+

@@ -44,10 +44,11 @@
 module.exports.policies = {
     UserController: {
         '*':true,
-        'find': ['getPolicy', 'adminPolicy', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
-        'findOne': ['getPolicy', 'adminPolicy', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
+       // 'find': ['getPolicy', 'adminPolicy', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
+        //'findOne': ['getPolicy', 'adminPolicy', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
         'create': ['postPolicy', 'createAccountPolicy', 'notLoggedInPolicy'],
         'index': ['getPolicy','passportAuth'],
+        'update':['passportAuth','isOwnProfilePolicy']
     },
     AuthController: {
         '*': false,
@@ -82,7 +83,7 @@ module.exports.policies = {
         'create': ['apiPolicy'],
         'delete': ['apiPolicy'],
         'update': ['apiPolicy'],
-        'find': ['apiPolicy'] //Remove this later
+        'find':true
     },
     //The following need updating, but are all access for now.
     RequestController: {
@@ -100,5 +101,19 @@ module.exports.policies = {
     SubscriptionController:{
         '*':false,
         'subscribeToUserSocketService':['passportAuth']
+    },
+    HotelController:{
+        '*':true,
+        'create':['passportAuth','isOwnProfilePolicy']
+    },
+    ListingsController:{
+        '*':true
+    },
+    UserProfileComment:{
+        '*':true
+    },
+    UserSettings:{
+        '*':false,
+        'update':['isOwnProfilePolicy']
     }
 };

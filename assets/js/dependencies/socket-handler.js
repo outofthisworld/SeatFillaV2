@@ -1,7 +1,3 @@
-/*
-    Created by Dale.
-*/
-
 
 //Handle any reconnection procedures
 io.socket.on('reconnecting', function(numAttempts) {

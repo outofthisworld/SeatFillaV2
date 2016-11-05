@@ -82,11 +82,12 @@ module.exports = {
       getGettyImages: ['makeLivePricingApiRequest', function (callback, results) {
         const itinObj = results.makeLivePricingApiRequest.itinObj;
 
-        GettyImagesService.searchAndRetrieveUrls({
-          phrase: req.body.destination.name + ' city skyline',
-          page: 1,
-          pageSize: 100
-        }).then(function (data) {
+      GettyImagesService.searchAndRetrieveUrls({
+        phrase: req.body.destination.name + ' city skyline',
+        page: 1,
+        pageSize: 100
+      }).then(function (data) {
+   
           var arr = []
           for (var i = 0; i < itinObj.pagesize && data.length; i++) {
             arr.push({

@@ -153,6 +153,10 @@ module.exports = {
             collection: 'UserLocation',
             via: 'user'
         },
+        hotels:{
+            collection:'Hotel',
+            via:'user'
+        },
         //A user can have many support tickets.
         supportTickets: {
             collection: 'SupportTicket',

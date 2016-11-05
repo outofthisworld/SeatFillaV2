@@ -35,27 +35,21 @@ module.exports.routes = {
     'get /': 'HomeController.index',
     'get /login': 'HomeController.login',
 
-    'get /User/*':{
-        locals:{
-            layout: 'layouts/my-account-layout.ejs'
-        }
-    },
+ 
     'get /Provider/*':{
         locals:{
             layout: 'layouts/provider-layout.ejs'
         }
     },
     
-    /***** USER PROFILE PATHS *****/
-     'get /User/:username':{
-        controller:'UserProfileController',
-        action:'index',
-        policy:'viewProfilePolicy'
-    },
+
     'get /UserProfile/:username':{
         controller:'UserProfileController',
-        action:'index',
-        policy:'viewProfilePolicy'
+        action:'findOneByUser',
+        policy:'viewProfilePolicy',
+        locals:{
+            layout:'layouts/profile-layout'
+        }
     },
     /**********/
 
@@ -64,48 +58,50 @@ module.exports.routes = {
     /*
         Is own profile policy
         -create,destroy,update
-
-        Is user link policy
-        -findByUser,
-        Is member policy
-        -findOne
-
-        view profile policy
     */
+
+    'get /ajax/templates/*.html':{
+        policy:'acceptPolicy'
+    },
 
     'get /UserProfile/:username/FlightGroup/Create':{
         controller:'FlightGroupController',
         action:'create',
+        policy:'viewProfilePolicy',
         locals:{
-            layout:'layouts/my-account-layout'
+            layout:'layouts/profile-layout'
         }
     },
     'get /UserProfile/:username/FlightGroup/:id/Destroy':{
         controller:'FlightGroupController',
         action:'destroy',
+        policy:'viewProfilePolicy',
         locals:{
-            layout:'layouts/my-account-layout'
+            layout:'layouts/profile-layout'
         }
     },
     'get /UserProfile/:username/FlightGroup/:id/Update':{
         controller:'FlightGroupController',
         action:'update',
+        policy:'viewProfilePolicy',
         locals:{
-            layout:'layouts/my-account-layout'
+            layout:'layouts/profile-layout'
         }
     },
     'get /UserProfile/:username/FlightGroup/:id':{
         controller:'FlightGroupController',
         action:'findOne',
+        policy:'viewProfilePolicy',
         locals:{
-            layout:'layouts/my-account-layout'
+            layout:'layouts/profile-layout'
         }
     },
     'get /UserProfile/:username/FlightGroups/':{
         controller:'FlightGroupController',
         action:'findByUser',
+        policy:'viewProfilePolicy',
         locals:{
-            layout:'layouts/my-account-layout'
+            layout:'layouts/profile-layout'
         }
     },
     /* ********************* */
@@ -114,49 +110,105 @@ module.exports.routes = {
     'get /UserProfile/FlightRequest/Create/':{
         controller:'FlightRequestController',
         action:'create',
+        policy:'viewProfilePolicy',
         locals:{
-            layout:'layouts/my-account-layout'
+            layout:'layouts/profile-layout'
         }
     },
     'get /UserProfile/:username/FlightRequest/Create/':{
         controller:'FlightRequestController',
         action:'create',
+        policy:'viewProfilePolicy',
         locals:{
-            layout:'layouts/my-account-layout'
+            layout:'layouts/profile-layout'
         }
     },
     'get /UserProfile/FlightReqest/:id/Destroy':{
         controller:'FlightRequestController',
         action:'destroy',
+        policy:'viewProfilePolicy',
         locals:{
-            layout:'layouts/my-account-layout'
+            layout:'layouts/profile-layout'
         }
     },
     'get /UserProfile/FlightRequest/:id/Update':{
         controller:'FlightRequestController',
         action:'update',
+        policy:'viewProfilePolicy',
         locals:{
-            layout:'layouts/my-account-layout'
+            layout:'layouts/profile-layout'
         }
     },
     'get /UserProfile/:username/FlightRequest/:id':{
         controller:'FlightRequestController',
         action:'findOne',
+        policy:'viewProfilePolicy',
         locals:{
-            layout:'layouts/my-account-layout'
+            layout:'layouts/profile-layout'
         }
     },
     'get /UserProfile/:username/FlightRequest/':{
         controller:'FlightRequestController',
         action:'findByUser',
+        policy:'viewProfilePolicy',
         locals:{
-            layout:'layouts/my-account-layout'
+            layout:'layouts/profile-layout'
         }
     },
     /* ********************* */
+    'get /UserProfile/:username/update':{
+        controller:'UserController',
+        action:'update', 
+        policy:'viewProfilePolicy',
+        locals:{
+            layout:'layouts/profile-layout'
+        }
+    },
 
+    'get /UserProfile/:username/uploadProfileImage':{
+        controller:'UserProfileController',
+        action:'uploadProfileImage',
+        policy:'viewProfilePolicy',
+        locals:{
+            layout:'layouts/profile-layout'
+        }
+    },
+
+    'get /UserProfile/:username/UpdateSettings':{
+        controller:'UserSettingsController',
+        action:'update', //isOwnProfile
+        policy:'viewProfilePolicy',
+        locals:{
+            layout:'layouts/profile-layout'
+        }
+    },
+    'get /UserProfile/:username/provider':{
+        controller:'UserProfileController',
+        action:'providerSection', //isOwnProfile
+        policy:'viewProfilePolicy',
+        locals:{
+            layout:'layouts/profile-layout'
+        }
+    },
 
     /*** MISC ****/
+    'get /User/create':{
+        controller:'HomeController',
+        action:'register'
+    },
+
+    'get /UserProfile/:username/Hotel/Create':{
+        controller:'HotelController',
+        action:'create',
+        policy:'viewProfilePolicy',
+        locals:{
+            layout:'layouts/profile-layout'
+        }
+    },
+    'post /UserProfile/:username/Hotel/Create':{
+        controller:'HotelController',
+        action:'create',
+    }
 
 
     

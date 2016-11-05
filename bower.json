@@ -41,7 +41,9 @@
     "paper-dropdown-menu": "PolymerElements/paper-dropdown-menu#^1.4.1",
     "iron-dropdown": "PolymerElements/iron-dropdown#^1.5.2",
     "iron-list": "PolymerElements/iron-list#^1.3.9",
-    "jquery-validation": "^1.15.1"
+    "jquery-validation": "^1.15.1",
+    "select2": "^4.0.3",
+    "jsrender": "^0.9.82"
   },
   "resolutions": {
     "polymer": "^1.6.1",

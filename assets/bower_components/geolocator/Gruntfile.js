@@ -44,7 +44,7 @@ module.exports = function (grunt) {
         'copy': {
             options: {
                 mode: false,
-                encoding: "utf-8"
+                encoding: 'utf-8'
             },
             'example': {
                 files: [
@@ -69,10 +69,18 @@ module.exports = function (grunt) {
             'dist': {
                 files: [
                     {
+                        expand: true,
                         src: [
                             'dist/geolocator.min.js'
                         ],
-                        dest: '../../onury.github.io/'
+                        dest: '../../onury.github.io/',
+                        // rename geolocator.min.js to geolocator.js bec.
+                        // example/index.html has reference to geolocator.js not
+                        // geolocator.min.js - otherwise, webpack-server will
+                        // not hot-update.
+                        rename: function (dest) { // (dest, src)
+                            return dest + 'dist/geolocator.js';
+                        }
                     }
                 ]
             }
@@ -147,7 +155,7 @@ module.exports = function (grunt) {
     grunt.registerTask('doc', ['docma', 'copy:example', 'copy:dist']);
     grunt.registerTask('min', ['webpack:min']);
     grunt.registerTask('build', ['webpack:full', 'webpack:min']);
-    grunt.registerTask('build-all', ['dust', 'build', 'doc']);
+    grunt.registerTask('build-all', ['build', 'doc']);
     grunt.registerTask('test', ['build', 'connect', 'watch:test']);
     grunt.registerTask('watch-compile', ['watch:compile']);
 

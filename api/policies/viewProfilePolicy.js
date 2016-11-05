@@ -3,6 +3,7 @@ module.exports = function (req, res, next) {
   sails.log.debug('In view profile policy')
   sails.log.debug('Attemping to view profile :' + req.param('username'))
 
+
   if (!req.param('username')) return res.notFound()
 
   req.options = req.options || {}
@@ -17,29 +18,17 @@ module.exports = function (req, res, next) {
         if (isOwnProfile()) {
           return Promise.resolve(req.user)
         }else {
-          return User.find({ username: req.param('username')})
+          return User.findOne({ username: req.param('username')})
+          .then(function(user){return Promise.resolve(user)})
         }
       })()).then(function (user) {
-        if (!user)
-          return callback(new Error('User not found'), null)
-
-        if (Array.isArray(user)) {
-          if (user.length == 1) {
-            return callback(null, user[0])
-          }else {
-            return callback(
-              new Error('Invalid array length in map user viewProfilePolicy.js/findUser called from findUser'),
-              null)
-          }
-        }else {
-          return callback(null, user)
-        }
+        if (!user) return callback(new Error('User not found'), null)
+        else return callback(null, user)
       }).catch(function (err) {
         sails.log.error(err)
         return callback(err, null)
       })
     },
-
     findUserProfile: ['findUser', function (callback, results) {
       const user = results.findUser
       UserProfile.find({
@@ -129,22 +118,22 @@ module.exports = function (req, res, next) {
   }, function (err, results) {
     if (err) {
       sails.log.error(err)
-      return res.badRequest()
+      return res.redirect('/404');
+    }else{
+      req.options.userprofile = Object.assign({}, results.findUserProfile)
+      req.options.userprofile.user = results.findUser
+      req.options.userprofile.images = results.findUserProfileImages
+    // req.options.userprofile.comments = results.findUserProfileCommentReplyUserProfiles
+      req.options.userprofile.userLinks = results.findUserProfileLinkUserProfile
+      req.options.userprofile.isLink = results.isLink
+      req.options.userprofile.isOwnProfile = results.isOwnProfile
+
+      sails.log.debug('Constructed user profile: ')
+      sails.log.debug(JSON.stringify(req.options.userprofile))
+
+
+      
+      return next()
     }
-
-    req.options.userprofile = Object.assign({}, results.findUserProfile)
-    req.options.userprofile.user = results.findUser
-    req.options.userprofile.images = results.findUserProfileImages
-   // req.options.userprofile.comments = results.findUserProfileCommentReplyUserProfiles
-    req.options.userprofile.userLinks = results.findUserProfileLinkUserProfile
-    req.options.userprofile.isLink = results.isLink
-    req.options.userprofile.isOwnProfile = results.isOwnProfile
-
-    sails.log.debug('Constructed user profile: ')
-    sails.log.debug(JSON.stringify(req.options.userprofile))
-
-
-    req.flash('toaster-info','Viewing profile for ' + req.options.userprofile.user.username);
-    return next()
   })
 }

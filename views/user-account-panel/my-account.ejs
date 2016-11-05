@@ -14,7 +14,6 @@
 
 <div class="container-fluid">
 
-
 <!--COMMENTS-->
             <div class="row">
                 <div class="col-xs-12">
@@ -28,7 +27,7 @@
                             <label for="comment">Your Comment</label>
                             <textarea name="comment" id="top-level-comment-message" class="form-control" rows="3"></textarea>
                           </div>
-                          <button type="submit" id="top-level-comment-btn" class="btn btn-default">Send</button>
+                          <input id="top-level-comment-btn" value="Post comment" class="btn btn-default"/>
                         </form>        
                 </div>
             </div>
@@ -37,241 +36,308 @@
   <br/>
 </div>
 
-
 <script>
-   $(document).ready(function() {
+  $(document).ready(function() {
 
-       //The number of comments to load to the page.
-       const numCommentsToRetrieve = 5;
+    //The number of comments to load to the page.
+    const numCommentsToRetrieve = 5;
 
-       //Sort by their creation time
-       const sortBy = 'createdAt';
+    //Sort by their creation time
+    const sortBy = 'createdAt';
 
-       //order the comments in descending order
-       const sortOrder = 'DESC';
+    //order the comments in descending order
+    const sortOrder = 'DESC';
 
-       //For `show more` 
-       const moreCommentsAreAvailable = true;
+    //For `show more` 
+    const moreCommentsAreAvailable = true;
 
-       //Obtain this by embedding it from the server
-       const userProfileId = 1;
+    //Obtain this by embedding it from the server
+    const userProfileId = "<%= data.UserProfile.id %>";
 
-       //Obtain all the 'top level' comments from the server
-       const commentQueryObj = {
-           userProfile: 1,
-           isReply: false
-       }
+    //Obtain this by embedding it from the server
+    const userId = "<%= (req.user && req.user.id) || null %>";
 
-       io.socket.on('userprofilecomment.create', function(comment) {
-           console.log('Comment:')
-           console.log(comment);
-      
-           var $parentEle;
-           const commentObj = createCommentObjectFromResponse(comment);
-           var $comment = createDynamicComment(commentObj);
+    //Obtain all the 'top level' comments from the server
+    const commentQueryObj = {
+        userProfile: 1,
+        isReply: false
+    }
 
-           if (comment.isReply) {
-               $parentEle = $('#commentsList .replies[data-attr-parent-comment-id=' + comment.parentCommentId + ']');
-           } else {
-               comment = createTopLevelComment(commentObj, $comment);
-               $parentEle = $('#commentsList');
-           }
+    io.socket.on('UserProfileComment',function(event){
+        console.log('Recieved user profile comment:');
+        console.log(event);
+    })
 
-           $($comment).hide(0);
-           $parentEle.prepend($($comment).slideDown(800).fadeIn(1000));
-       })
+    io.socket.on('userprofilecomment.create', function(comment) {
+        console.log('Comment:')
+        console.log(comment);
 
-       io.socket.on('userprofilecomment.destroy', function(event) {
+        var $parentEle;
+        const commentObj = createCommentObjectFromResponse(comment);
+        var $comment = createDynamicComment(commentObj);
 
-       })
+        if (comment.isReply) {
+            $parentEle = $('#commentsList .replies[data-attr-parent-comment-id=' + comment.parentCommentId + ']');
+        } else {
+            $comment = createTopLevelComment(commentObj, $comment);
+            if (userId != comment.user.id) {
+                $.toaster({
+                    priority: 'info',
+                    message: 'A new comment has just been created by ' + commentObj.title
+                })
+            }
+            $parentEle = $('#commentsList');
+        }
 
-       io.socket.on('userprofilecomment.update', function(event) {
+        $comment.hide(0);
+        $parentEle.append($comment.slideDown(800).fadeIn(1000));
+    })
 
-       })
+    io.socket.on('userprofilecomment.destroy', function(event) {
 
-       io.socket.get('/UserProfileComment?sort=' + sortBy + ' ' +
-           sortOrder + '&limit=' + numCommentsToRetrieve +
-           '&where=' + JSON.stringify(commentQueryObj),
-           function(resData, jwres) {
-               console.log(JSON.stringify(resData));
+    })
 
-               if (resData.length < numCommentsToRetrieve || resData.length == 0) {
-                   moreCommentsAreAvailable = false;
-                   return;
-               }
+    io.socket.on('userprofilecomment.update', function(event) {
 
-               resData.userProfileComments.forEach(function(comment) {
+    })
 
-                   var commentObj = createCommentObjectFromResponse(comment);
-                   var $comment = createDynamicComment(commentObj);
-                   $comment = createTopLevelComment(commentObj, $comment);
+    io.socket.on('userprofilecomment.remove',function(event){
 
-                   $('#commentsList').append($comment);
+    })
 
-                   comment.replies.forEach(function(reply) {
-                       const replyObj = createCommentObjectFromResponse(reply);
-                       replyObj.parentCommentId = commentObj.id;
-                       $($comment).find('.replies').prepend(createDynamicComment(replyObj)
-                           .append($('<br/>')).append($('<hr/>')))
-                   })
-               })
+    io.socket.on('userprofilecomment.add',function(event){
 
-           })
+    })
 
-       function createCommentObjectFromResponse(comment) {
+    io.socket.get('/UserProfileComment?sort=' + sortBy + ' ' +
+        sortOrder + '&limit=' + numCommentsToRetrieve +
+        '&where=' + JSON.stringify(commentQueryObj),
+        function(resData, jwres) {
+            console.log(JSON.stringify(resData));
 
-           return {
-               title: comment.user.username,
-               image: (comment.user.userProfile && comment.user.userProfile.image) ||
-                   'http://lorempixel.com/40/40/people/1/',
-               message: comment.message,
-               id: comment.id,
-               parentCommentId: comment.parentCommentId || null,
-               hasReplies: comment.replies && comment.replies.length > 0
-           }
-       }
+            if (resData.length < numCommentsToRetrieve || resData.length == 0) {
+                moreCommentsAreAvailable = false;
+                return;
+            }
 
-       function createTopLevelComment(options, $media) {
+            resData.userProfileComments.forEach(function(comment) {
 
-           const commentId = options.id;
-           const hasReplies = options.hasReplies;
+                var commentObj = createCommentObjectFromResponse(comment);
+                var $comment = createDynamicComment(commentObj);
+                $comment = createTopLevelComment(commentObj, $comment);
 
-           $media.append($('<br/>')).append($('<hr/>'))
+                $('#commentsList').append($comment);
 
-           const $replyPanel = $('<div></div>', {
-               id: commentId,
-               class: 'panel panel-default panel-comment-reply'
-           })
-           const $replyPanelHeading = $('<div></div>', {
-               class: 'panel-heading'
-           }).text('Comment replies')
+                comment.replies.forEach(function(reply) {
+                    const replyObj = createCommentObjectFromResponse(reply);
+                    replyObj.parentCommentId = commentObj.id;
+                    $($comment).find('.replies').prepend(createDynamicComment(replyObj)
+                        .append($('<br/>')).append($('<hr/>')))
+                })
+            })
 
-           if (!hasReplies) {
-               $replyPanelHeading.css('display', 'none')
-           }
+        })
 
-           const $replyMessageContainer = $('<div></div>', {
-               class: 'replies',
-               'data-attr-parent-comment-id': commentId
-           });
+    function commentTimeSince(whenMs, commentDateMs) {
+        const createdOnDays = Math.abs((commentDateMs - whenMs) / 1000 / 60 / 60 / 24);
 
-           const $replyCommentForm = $('<form></form>', {
-               class: 'reply-comment-form'
-           }).css('display', 'none')
-           const $formGroupContainer = $('<div></div>', {
-               class: 'form-group container-fluid commentbox'
-           })
-           const $label = $('<label></label>', {}).attr('for', 'comment').append($('<small></small>').text('Write your reply'));
-           const $textArea = $('<textarea></textarea>', {
-               class: 'form-control',
-               required: 'required',
-               rows: 2
-           });
+        var timeString = 'Days';
+        var time = createdOnDays;
 
-           const $button = $('<input/>', {
-               value: 'Send',
-               class: 'btn btn-default btn-sm pull-right',
-               on: {
-                   click: function() {
-                       $.ajax({
-                           method: 'post',
-                           url: '/UserProfileComment/replyToComment',
-                           data: {
-                               parentCommentId: commentId,
-                               message: $textArea.val(),
-                               userProfile: userProfileId,
-                               isReply: true
-                           },
-                           success: function(res) {
-                               console.log(JSON.stringify(res))
-                               if (res.status == 200) {
+        if (time < 1) {
+            time *= 24;
+            timeString = 'Hours'
+        }
 
-                               } else {
-                                   console.log(JSON.stringify(res.error))
-                               }
-                           }
-                       })
-                   }
-               }
-           });
+        if (time < 1) {
+            time *= 60;
+            timeString = 'Minutes';
+        }
 
-           const $reply = $('<a></a>', {
-               class: 'pull-right',
-               on: {
-                   click: function() {
-                       $replyCommentForm.slideToggle(500);
-                   }
-               }
-           }).append($('<small></small>').text('Reply'));
+        if (time < 1) {
+            time *= 60;
+            timeString = 'Seconds';
+        }
 
-           $media.append($replyPanel
-               .append($replyPanelHeading)
-               .append($replyMessageContainer)
-               .append($reply)
-               .append($('<br/>')).append($('<hr/>'))
-               .append($replyCommentForm
-                   .append($formGroupContainer
-                       .append($label)
-                       .append($textArea)
-                       .append($button))))
+        return {
+            timeString,
+            time: Math.floor(time)
+        }
+    }
 
-           return $media;
-       }
+    function createCommentObjectFromResponse(comment) {
+        const created = commentTimeSince(new Date().getTime(),
+            new Date(comment.createdAt).getTime());
 
-       function createDynamicComment(options) {
+        return {
+            title: comment.user.username,
+            image: (comment.user.userProfile && comment.user.userProfile.image) ||
+                'http://lorempixel.com/40/40/people/1/',
+            message: comment.message,
+            id: comment.id,
+            parentCommentId: comment.parentCommentId || null,
+            hasReplies: comment.replies && comment.replies.length > 0,
+            created: created.time + ' ' + created.timeString + ' ' + 'ago'
+        }
+    }
 
-           const commentTitle = options.title;
-           const commentImage = options.image;
-           const commentMessage = options.message;
-           const commentId = options.id;
-           const parentCommentId = options.parentCommentId;
+    function createTopLevelComment(options, $media) {
 
-           const $media = $('<div></div>', {
-               class: 'media'
-           }).css('padding', '10px');
-           const $right = $('<div></div>', {
-               class: 'pull-right'
-           }).append(
-               $('<p></p>').append($('<a></a>').append($('<small></small>').text('Delete'))))
-           const $right2 = $('<p></p>', {
-               class: 'pull-right'
-           }).append($('<small></small').text('5 days ago'))
-           const $mediaLeft = $('<a></a>', {
-               class: 'media-left'
-           }).append(
-               $('<img></img>').attr('src', commentImage))
-           const $mediaBody = $('<div></div>', {
-               class: 'media-body'
-           });
-           const $h4mediaheading = $('<h4></h4>', {
-               class: 'media-heading user_name'
-           }).text(commentTitle)
-           const $mediabodyContent = commentMessage
+        const commentId = options.id;
+        const hasReplies = options.hasReplies;
 
-           $media.append($right).append($right2).append($mediaLeft).append($mediaBody
-               .append($h4mediaheading).append($mediabodyContent))
+        $media.append($('<br/>')).append($('<hr/>'))
 
-           return $media;
-       }
+        const $replyPanel = $('<div></div>', {
+            id: commentId,
+            class: 'panel panel-default panel-comment-reply'
+        })
+        const $replyPanelHeading = $('<div></div>', {
+            class: 'panel-heading'
+        }).text('Comment replies')
 
-       $('#top-level-comment-button').on('click', function() {
-           $.ajax({
-               method: 'post',
-               url: '/UserProfileComment/create',
-               data: {
-                   message: $('#top-level-comment-message').val(),
-                   userProfile: userProfileId,
-                   isReply: false
-               },
-               success: function(res) {
-                   console.log(JSON.stringify(res))
-                   if (res.status == 200) {
+        if (!hasReplies) {
+            $replyPanelHeading.css('display', 'none')
+        }
 
-                   } else {
-                       console.log(JSON.stringify(res.error))
-                   }
-               }
-           })
-       })
-   })
+        const $replyMessageContainer = $('<div></div>', {
+            class: 'replies',
+            'data-attr-parent-comment-id': commentId
+        });
+
+        const $replyCommentForm = $('<form></form>', {
+            class: 'reply-comment-form'
+        }).css('display', 'none')
+        const $formGroupContainer = $('<div></div>', {
+            class: 'form-group container-fluid commentbox'
+        })
+        const $label = $('<label></label>', {}).attr('for', 'comment').append($('<small></small>').text('Write your reply'));
+        const $textArea = $('<textarea></textarea>', {
+            class: 'form-control',
+            required: 'required',
+            rows: 2
+        });
+
+        const $button = $('<input/>', {
+            value: 'Send',
+            class: 'btn btn-default btn-sm pull-right',
+            on: {
+                click: function() {
+                    $.ajax({
+                        method: 'post',
+                        url: '/UserProfileComment/replyToComment',
+                        data: {
+                            parentCommentId: commentId,
+                            message: $textArea.val(),
+                            userProfile: userProfileId,
+                            isReply: true
+                        },
+                        success: function(res) {
+                            console.log(JSON.stringify(res))
+                            if (res.status == 200) {
+                                $textArea.val('');
+                            } else {
+                                  $.toaster.error('warning', res, function(status,finalMessage){
+                                    if(status == 400){
+                                        var pathname = window.location.pathname;
+                                        return finalMessage + ' ' + '<a href="/Login?redirectSuccess=' + pathname + '">Login</a>'
+                                    }
+                                 });
+                            }
+                        }
+                    })
+                }
+            }
+        });
+
+        const $reply = $('<a></a>', {
+            class: 'pull-right',
+            style:'margin-right:10px',
+            on: {
+                click: function() {
+                    $replyCommentForm.slideToggle(500);
+                }
+            }
+        }).append($('<small></small>').text('Reply'));
+
+        $media.append($replyPanel
+            .append($replyPanelHeading)
+            .append($replyMessageContainer)
+            .append($reply)
+            .append($('<br/>')).append($('<hr/>'))
+            .append($replyCommentForm
+                .append($formGroupContainer
+                    .append($label)
+                    .append($textArea)
+                    .append($button))))
+
+        return $media;
+    }
+
+    function createDynamicComment(options) {
+
+        const commentTitle = options.title;
+        const commentImage = options.image;
+        const commentMessage = options.message;
+        const commentId = options.id;
+        const commentCreatedAt = options.created;
+        const parentCommentId = options.parentCommentId;
+
+        const $media = $('<div></div>', {
+            class: 'media'
+        }).css('padding', '10px');
+        const $right = $('<div></div>', {
+            class: 'pull-right'
+        }).append(
+            $('<p></p>').append($('<a></a>').append($('<small></small>').text('Delete'))))
+        const $right2 = $('<p></p>', {
+            class: 'pull-right'
+        }).append($('<small></small').text(commentCreatedAt))
+        const $mediaLeft = $('<a></a>', {
+            class: 'media-left'
+        }).append(
+            $('<img></img>').attr('src', commentImage))
+        const $mediaBody = $('<div></div>', {
+            class: 'media-body'
+        });
+        const $h4mediaheading = $('<h4></h4>', {
+            class: 'media-heading user_name'
+        }).text(commentTitle)
+        const $mediabodyContent = commentMessage
+
+        $media.append($right).append($right2).append($mediaLeft).append($mediaBody
+            .append($h4mediaheading).append($mediabodyContent))
+
+        return $media;
+    }
+
+     $('#top-level-comment-btn').on('click', function() {
+        $.ajax({
+            method: 'POST',
+            url: '/UserProfileComment/',
+            data: {
+                message: $('#top-level-comment-message').val(),
+                userProfile: userProfileId,
+                isReply: false
+            },
+            success: function(res) {
+                console.log(JSON.stringify(res))
+                if (res.status == 200) {
+                    $('#top-level-comment-message').val('');
+                    $.toaster({
+                        priority: 'info',
+                        message: 'Succesfully created new comment'
+                    })
+                } else {
+                    $.toaster.error('warning', res, function(status,finalMessage){
+                        if(status == 400){
+                            var pathname = window.location.pathname;
+                            return finalMessage + ' ' + '<a href="/Login?redirectSuccess=' + pathname + '">Login</a>'
+                        }
+                    });
+                }
+            }
+        })
+    })
+})
 </script>

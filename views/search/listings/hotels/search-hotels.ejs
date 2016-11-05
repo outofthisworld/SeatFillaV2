@@ -1,0 +1,315 @@
+<style>
+    hide {
+        display:none;
+    }
+.list-group {border-radius: 0;}
+.list-group .list-group-item {background-color: transparent;overflow: hidden;border: 0;border-radius: 0;padding: 0 16px;}
+.list-group .list-group-item .row-picture,
+.list-group .list-group-item .row-action-primary {float: left;display: inline-block;padding-right: 16px;padding-top: 8px;}
+.list-group .list-group-item .row-picture img,
+.list-group .list-group-item .row-action-primary img,
+.list-group .list-group-item .row-picture i,
+.list-group .list-group-item .row-action-primary i,
+.list-group .list-group-item .row-picture label,
+.list-group .list-group-item .row-action-primary label {display: block;width: 56px;height: 56px;}
+.list-group .list-group-item .row-picture img,
+.list-group .list-group-item .row-action-primary img {background: rgba(0, 0, 0, 0.1);padding: 1px;}
+.list-group .list-group-item .row-picture img.circle,
+.list-group .list-group-item .row-action-primary img.circle {border-radius: 100%;}
+.list-group .list-group-item .row-picture i,
+.list-group .list-group-item .row-action-primary i {background: rgba(0, 0, 0, 0.25);border-radius: 100%;text-align: center;line-height: 56px;font-size: 20px;color: white;}
+.list-group .list-group-item .row-picture label,
+.list-group .list-group-item .row-action-primary label {margin-left: 7px;margin-right: -7px;margin-top: 5px;margin-bottom: -5px;}
+.list-group .list-group-item .row-content {display: inline-block;width: calc(100% - 92px);min-height: 66px;}
+.list-group .list-group-item .row-content .action-secondary {position: absolute;right: 16px;top: 16px;}
+.list-group .list-group-item .row-content .action-secondary i {font-size: 20px;color: rgba(0, 0, 0, 0.25);cursor: pointer;}
+.list-group .list-group-item .row-content .action-secondary ~ * {max-width: calc(100% - 30px);}
+.list-group .list-group-item .row-content .least-content {position: absolute;right: 16px;top: 0px;color: rgba(0, 0, 0, 0.54);font-size: 14px;}
+.list-group .list-group-item .list-group-item-heading {color: rgba(0, 0, 0, 0.77);font-size: 20px;line-height: 29px;}
+.list-group .list-group-separator {clear: both;overflow: hidden;margin-top: 10px;margin-bottom: 10px;}
+.list-group .list-group-separator:before {content: "";width: calc(100% - 90px);border-bottom: 1px solid rgba(0, 0, 0, 0.1);float: right;}
+
+.bg-profile{background-color: #3498DB !important;height: 150px;z-index: 1;}
+.bg-bottom{height: 100px;margin-left: 30px;}
+.img-profile{display: inline-block !important;background-color: #fff;border-radius: 6px;margin-top: -50%;padding: 1px;vertical-align: bottom;border: 2px solid #fff;-moz-box-sizing: border-box;box-sizing: border-box;color: #fff;z-index: 2;}
+.row-float{margin-top: -40px;}
+.explore a {color: green; font-size: 13px;font-weight: 600}
+.twitter a {color:#4099FF}
+.img-box{box-shadow: 0 3px 6px rgba(0,0,0,.16),0 3px 6px rgba(0,0,0,.23);border-radius: 2px;border: 0;}
+</style>
+
+
+<!-- JSRender List item template for displaying hotel items -->
+<script type="text/html" id="list-item-template">
+             <div class="row"> 
+                    <div class="col-xs-12 col-sm-3 col-md-3">
+                        <a href="#">
+                            <img src="{{:image}}" class="img-responsive img-box img-thumbnail"/> 
+                        </a>
+                    </div> 
+                    <div class="col-xs-12 col-sm-9 col-md-9">
+                        <div class="list-group">
+                            <div class="list-group-item">
+                                <div class="row-picture">
+                                    <a href="#">
+                                        <img src="{{:image}}" class="circle img-thumbnail img-box"/>
+                                    </a>
+                                </div>
+                                <div class="row-content">
+                                    <div class="list-group-item-heading">
+                                        <a href="#">
+                                            <small>{{:name}}</small>
+                                        </a>
+                                            <h1>Popularity description:</h1>
+                                            </hr>
+                                            <p>{{:popularity_desc}}</p>
+                                    </div>
+                                   
+                                </div>
+                            </div>
+                        </div>
+                        <p><a href="#">{{:name}}</a></p>
+                        <p>{{:star_rating}}</p>
+                        <p>{{:longitude}}</p>
+                        <p>{{:latitude}}</p>
+                          <ul>
+                                {{for amenities}}
+                                   <li>Name: {{:name}} <img class="{{:~getAmenityIcon(key)}}" width="50" height="50" src="/images/imagetransparent.png"></img/></li>
+                                {{/for}}
+                            </ul>
+                    </div> 
+            </div>
+</script>
+<script>
+
+       const amenMapping = {
+                'LAUNDRY':'.icon-laundry',
+                'WIFISERVICE':'.icon-wifi',
+                'FIREPLACE':'.icon-fireplace',
+                'LUGGAGESTORAGE':'.icon-suitcase',
+                'GARDEN':'.icon-garden',
+                'FIREEXTINGUISHER':'.icon-fire-extinguisher',
+                'BED':'.icon-bed',
+                'TAXI':'.icon-taxi',
+                'BALCONY':'.icon-terrace',
+                'TOILETPAPER':'.icon-toilet-paper',
+                'TOOTHPASTE':'.icon-toothbrush-toothpaste',
+                'TOOTHBURSH':'.icon-toothbrush-toothpaste',
+                'GYMNASIUM':'.icon-gym-equipment',
+                'PS4':'.icon-game-console',
+                'PS3':'.icon-game-console',
+                'PS2':'.icon-game-console',
+                'XBOX':'.icon-game-console',
+                'PHONE':'.icon-phone',
+                'BABYSITTINGSERVICE':'.icon-child-care',
+                'CHILDREN':'.icon-child-care',
+                'KIDS':'.icon-child-care',
+                'ADOLESCENTS':'.icon-child-care',
+                'PHONESERVICE':'.icon-phone',
+                'ROOMSERVICE':'.icon-phone-service',
+                'XBOX 360':'.icon-game-console',
+                'XBOX-360':'.icon-game-console',
+                'GAMECONSOLE':'.icon-game-console',
+                'NINTENDO':'.icon-game-console',
+                'NINTENDO WII':'.icon-game-console',
+                'WII':'.icon-game-console',
+                'PRIVATEBEACH':'.icon-beach',
+                'MEETINGROOM':'.icon-meeting-table',
+                'BATH':'.icon-bath',
+                'BUNKBED':'.icon-bunk-beds',
+                'BUNKBEDS':'.icon-bunk-beds',
+                'SHOWER':'.icon-shower',
+                'LAMP':'.icon-lamp',
+                'LIGHTING':'.icon-lamp',
+                'BICYCLE':'.icon-bicycle',
+                'ATM':'.icon-atm',
+                'BLENDER':'.icon-blender',
+                'CLOCK':'.icon-clock',
+                'WALLCLOCK':'.icon-clock',
+                'ALARMCLOCK':'.icon-clock',
+                'STORE':'.icon-store',
+                'ANIMAL':'.icon-animal',
+                'ANIMALS':'.icon-animal',
+                'PETSALLOWEDSERVICE':'.icon-animals',
+                'FITNESSCENTER':'.icon-dumbbell',
+                'CAMERA':'.icon-camera',
+                'YOGA':'.flaticon-yoga-mat',
+                'DISABLED':'.icon-wheel-chair',
+                'WHEELCHAIR':'.icon-wheel-chair',
+                'BUSINESSCENTER':'.icon-meeting',
+                'FRONTDESK24HSERVICE':'.icon-reception',
+                'GYMNASIUM':'.icon-gym-equipment',
+                'DISABLEDFACILITY':'.icon-wheel-chair',
+                'LIMOUSINESERVICE':'.icon-taxi',
+                'FIRSTAID':'.icon-first-aid',
+                'HEATING':'.icon-heater',
+                'HORSE':'.icon-horse',
+                'TOWEL':'.icon-towel',
+                'OVEN':'.icon-oven',
+                'SCALES':'icon-scales',
+                'LOCK':'.icon-lock',
+                'PADLOCK':'.icon-lock',
+                'COOKTOP':'.icon-oven',
+                'BICYCLE':'.icon-bicycle',
+                'COOKING':'.icon-oven',
+                'MASSAGE':'.icon-massage',
+                'MINIBAR':'.icon-bar-fridge',
+                'MINI-BAR':'.icon-bar-fridge',
+                'MINIBARSERVICE':'.icon-bar-fridge',
+                'DESK':'.icon-desk',
+                'LIFT':'.icon-lift',
+                'ELEVATOR':'.icon-lift',
+                'SHAMPOO':'.icon-shampoo',
+                'MIRROR':'.icon-mirror',
+                'AIRCONDITIONER':'.icon-air-conditioner',
+                'AIRCONDITIONING':'.icon-air-conditioner',
+                'HEATER':'.icon-heater',
+                'FRIDGE':'.icon-refrigerator',
+                'REFRIGERATOR':'.icon-refrigerator',
+                'MICROWAVE':'.icon-microwave',
+                'NEWSPAPER':'.icon-newspaper',
+                'HAIRDRYER':'.icon-hairdryer',
+                'IRON':'.icon-iron',
+                'LAPTOP':'.icon-computer',
+                'COMPUTER':'.icon-computer',
+                'COFEEMAKER':'.icon-coffee-machine',
+                'COFEE':'.icon-coffee',
+                'INDOORSWIMMINGPOOL':'.icon-outdoor-pool',
+                'INDOORPOOL':'.icon-outdoor-pool',
+                'CHILDRENPOOL':'.icon-outdoor-pool-sunumbrella',
+                'CHILDRENSWIMMINGPOOL':'.icon-outdoor-pool-subumbrella',
+                'BUSINESSCENTER':'.icon-meeting',
+                'CONFERENCEFACILITIES':'icon-meeting',
+                'CONFERENCEFACILITY':'icon-meeting',
+                'BREAKFAST':'.icon-eating-utensils',
+                'RESTAURANT':'.icon-restaurant',
+                'TENNISCOURT':'.icon-tennis-court',
+                'RADIO':'',
+                'STEAMROOM':'',
+                'FAX':'',
+                'PHOTOCOPIER':'',
+                'PHOTOCOPYINGSERVICE':'',     
+                'BEAUTYSALON':'',
+                'RADIOSERVICE':'',
+                'RADIO':'',
+                'CURRENCYEXCHANGE':'',
+                'CURRENCYEXCHANGESERVICE':'',
+                'WAKEUPCALL':'',
+                'WAKEUPCALLSERVICE':'',
+                'LOUNGE':'.icon-couch',
+                'BIN':'.icon-bin',
+                'BARFRIDGE':'.icon-bar-fridge',
+                'BARREFRIDGERATOR':'.icon-bar-fridge',
+                'TV':'.icon-television-flatscreen',
+                'DVD':'.icon-dvd',
+                'TELEPHONE':'.icon-phone',
+                'EXPRESSCHECKOUT':'.icon-credit-card',
+                'EXPRESSCHECKOUTSERVICE':'.icon-credit-card',
+                'CONFERENCEFACILITIES':'.icon-meeting',
+                'MULTILINGUALSTAFFSERVICE':'.icon-doorman',
+                'MULTILINGUALSTAFF':'.icon-doorman',
+                'RECEPTIONAREA':'.icon-reception',
+                'TELEVISION':'.icon-television-flatscreen',
+                'DAILYNEWSPAPERSERVICE':'.icon-newspaper',
+                'PINGPONG':'.icon-ping-pong',
+                'PING-PONG':'.icon-ping-pong',
+                'PING PONG':'.icon-ping-pong',
+                'FITNESSCENTRE':'.icon-dumbbell',
+                'SMOKINGAREA':'.icon-smoking',
+                'BABYSITTINGSERVICE':'.icon-child-care',
+                'SUNUMBRELLA':'.icon-sun-umbrella',
+                'NONSMOKINGSERVICE':'.icon-no-smoking',
+                'BAR':'.icon-beer',
+                'GOLF':'.icon-golf-club',
+                'GOLFCOURSE':'.icon-golf-club',
+                'GOLF-COURSE':'.icon-golf-club',
+                'SATTELITETV':'.icon-television-antenna',
+                'DOORMAN':'.icon-door-man',
+                'SAUNA':'',
+                'PARKING':'.icon-parking',
+                'MARINA':'.icon-marina',
+                'SHOP':'.icon-shop',
+                'EXPRESSCHECKINSERVICE':'.icon-credit-card',
+                'CONCIERGESERVICE':'.icon-doorman',
+                'DOORMAN':'.icon-doorman',
+                'OUTDOORSWIMMINGPOOL':'.icon-outdoor-swimming-pool',
+                'SPA':'.icon-spa',
+                'ROOMSERVICE':'.icon-room-service',
+                'MASSAGE':'.icon-massage',
+                'MASSAGESERVICE':'.icon-massage',
+                'INTERNETACCESSSERVICE':'.icon-wifi',
+                'SAFEDEPOSITBOX':'.icon-safe',
+                'FIRSTAID':'.icon-first-aid',
+                'FIRSTAIDKIT':'.icon-first-aid',
+                'LUGGAGECART':'.icon-luggage-trolley',
+                'LUGGAGETROLLEY':'.icon-luggage-troller',
+                'LIFEGUARD':'.icon-life-guard',
+                'CONSIERGE':'.icon-reception',
+                'CONSIERGESERVICE':'.icon-reception',
+                'BEACH':'.icon-beach',
+                'SMOKINGAREA':'.icon-smoking'
+            }
+
+$.ajax({
+    method:'GET',
+    url:'/Listings/hotelListings',
+    success:function(result,s,xhr){
+        if(xhr.status == 200 && result.result){
+            //100 icons mapped to hotel amenities for dynamic display    
+            $('.progressNotification').removeClass('hide').slideDown(2000, function(){
+                  $('.noResults').addClass('hide')
+                  $('.progressNotification').addClass('active');
+
+                //First we map the hotel listings 
+                const hotelListings = window.seatfilla.globals.response.skyscannerAPI.mapHotelAPIResponse(
+                result.result.requestHotelDetails.body);
+
+                //Log for debug
+                console.log(hotelListings);
+
+            
+                if(hotelListings && hotelListings.hotels && hotelListings.hotels.length > 0){
+                      var tmpl = $.templates("#list-item-template");
+
+                      hotelListings.hotels.forEach(function(hotel){
+                          hotel.image = 'http://'+hotel.images[3].imagePath;
+                          const html = tmpl.render(hotel,{
+                              getAmenityIcon(string){
+                                    console.log('Getting icon for: ' + string);
+                                    const icon = amenMapping[string];
+                                    console.log('Icon was: ' + icon);
+                                    return (icon && icon.substring(1,icon.length)) || '';
+                              }
+                          });
+                          $('#hotelListings').append(html);
+                      })
+                }else{
+                    $('.noResults').removeClass('hide')
+                }
+                $('.progressNotification').removeClass('active');
+                $('.progressNotification').addClass('hide');
+            });    
+        }else{
+            console.log(result);
+            alert('Error retrieving data')
+        }
+    }
+})
+</script>
+<div class="container-fluid">
+        <div class="noResults hide">
+            <h1>Sorry, we couldn't find any results!</h1>
+        </div>
+        <div class="progressNotification">
+		<p>We're fetching some results based on what we can decipher, please wait</p>
+   
+        <div class="progress progress-striped active page-progress-bar">
+            <div class="progress-bar" style="width: 100%;"></div>
+        </div>
+        </div>
+<div class="container-fluid">
+	<div class="row" id="hotelListings">
+	</div>
+</div>
+</div>
+

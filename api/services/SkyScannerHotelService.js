@@ -61,9 +61,10 @@ module.exports = {
             return reject({ error})
           }
 
-          sails.log.debug('Next poll url: ' + res.headers.Location)
+          sails.log.debug('Next poll url: ' + res.headers.location)
           sails.log.debug('Hotel session body: ' + res.body)
-          return resolve({ body: result, url: res.headers.Location })
+          sails.log.debug('Response headers from requesting hotel session were ' + JSON.stringify(res.headers))
+          return resolve({ body: result, url: res.headers.location })
         } catch (err) {
           sails.log.error(err)
           return reject({ error: err })

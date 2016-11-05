@@ -1,11 +1,3 @@
-/*
-    Contains all the configuration and global variables/functions for the Seatfilla website.
-    Useful global functions will be found in this file and have been kept in one file to reduce
-    server load time when retrieving several files.
-
-    Created by Dale.
-*/
-
 window.seatfilla = window.seatfilla || {}
 window.seatfilla.globals = window.seatfilla.globals || {}
 
@@ -512,8 +504,107 @@ window.seatfilla.globals.forms.validateAndSerialize = function (form, successEle
       })
     }
   })
+}
 
-  window.seatfilla.globals.moveWindowToId = function (id) {
+window.seatfilla.globals.moveWindowToId = function (id) {
     window.location = ('' + window.location).replace(/#[A-Za-z0-9_]*$/, '') + id
   }
-}
+/*
+window.seatfilla.globals.data.retrieveCityData().forEach(function(item) {
+                $('.cities').append($('<option></option>', { value: item.iataCode, 'data-val-cityname': item.name })
+                .text(item.name + ', ' + item.countryName));
+         });
+*/
+window.seatfilla.globals.response = window.seatfilla.globals.response || {};
+window.seatfilla.globals.response.skyscannerAPI = window.seatfilla.globals.response.skyscannerAPI || {};
+
+/*
+  Maps a hotel API response, done client side
+  to reduce server load and spread computation 
+  to client side.
+*/
+window.seatfilla.globals.response.skyscannerAPI.mapHotelAPIResponse = function(result, options){
+    if(!result || !result.hotels) throw new Error('Invalid results object in seatfilla-config.js');
+
+    const imageHostUrl = result.image_host_url;
+
+    result.hotels = result.hotels.map(function(hotel){
+      if(hotel){ 
+
+      hotel.amenities = hotel.amenities.map(function(amId){
+        const amenity = result.amenities.find(function(amen){
+          return amen.id == amId;
+        })
+
+        if(!amenity) throw new Error('Invalid response mapping in seatfilla-config.js/mapHotelApiResponse');
+
+        return amenity;
+      }) 
+
+      if(hotel.images && imageHostUrl){
+        const arr = [];
+        for(var key in hotel.images){
+          const firstPathPart =  imageHostUrl + key;
+           for(var keyTwo in hotel.images[key]){
+             const width = hotel.images[key][keyTwo][0];
+             const height = hotel.images[key][keyTwo][0];
+
+             //We can change this into a callback later, but for now a range is good
+             const greaterThanOrETSmallestWidth = false;
+             const lessThanOrETGreatestWidth = false;
+             const greaterThanOrETSmallestHeight = false;
+             const lessThanOrETGreatestHeight = false;
+         
+            if(options){
+             if((options.smallestWidth && width >= options.smallestWidth) || !options.smallestWidth)
+                greaterThanOrETSmallestWidth = true;
+              
+             if((options.greatestWidth && width <= options.greatestWidth) || !options.greatestWidth)
+                lessThanOrETGreatestWidth = true;
+              
+             if((options.smallestHeight && height >= options.smallestHeight) || !options.smallestHeight)
+                greaterThanOrETSmallestHeight = true;
+              
+             if((options.greatestWidth && height <= options.greatestHeight) || !options.greatestHeight)
+                lessThanOrETGreatestHeight = true;
+
+              if(greaterThanOrETSmallestWidth && lessThanOrETGreatestWidth && 
+                greaterThanOrETSmallestHeight && lessThanOrETGreatestHeight)
+                   arr.push(firstPathPart + keyTwo);
+            }else{
+               arr.push({imagePath: firstPathPart + keyTwo, width, height});
+            }
+           }
+        }
+        hotel.images = arr;
+      }
+
+      return hotel;
+      }else{
+        return null;
+      }
+    }).filter(function(hotel){
+      return hotel != null;
+    })
+
+    if('hotels_prices' in result){
+        result['hotels_prices'].map(function(hotelPrice){
+            if('agent_prices' in hotelPrice){
+              hotelPrice['agent_prices'] = hotelPrice['agent_prices'].map(function(agentPrice){
+
+                const agent = result.agents.find(function(result){
+                  console.log('result: ' + result);
+                  console.log('agent price: ' + agentPrice);
+                  return result.id == agentPrice.id
+                })
+
+                
+                agentPrice.id = agent;
+                return agentPrice;
+              })
+            }
+            return hotelPrice;
+        })
+    }
+    return result;
+  }

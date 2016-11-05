@@ -26,7 +26,7 @@ module.exports.http = {
       })
 
       passport.deserializeUser(function (id, done) {
-        User.findOne({ id: id })
+        return User.findOne({ id: id })
           .populate('roles')
           .populate('userSettings')
           .populate('userLocations')
@@ -42,12 +42,11 @@ module.exports.http = {
             return Promise.reject(err)
           }
 
-          UserProfile.findOrCreate({user: user.id })
+          return UserProfile.findOrCreate({user: user.id })
             .then(function (userProfile) {
               if (!userProfile) {
                 return Promise.reject(err)
               }else {
-                sails.log.debug('Found user profile : ' + JSON.stringify(userProfile))
 
                 if (!userProfile.description || userProfile.description.length < 5) {
                   sails.log.debug('Updating profile')
@@ -77,9 +76,6 @@ module.exports.http = {
                     user.userSettings = userSettings
                     user.userSettings.currentLocation = userLoc
                     return Promise.resolve()
-                  }).catch(function (err) {
-                    sails.log.error(err)
-                    return Promise.reject(err)
                   })
                 } else {
                   sails.log.debug('User settings were' + JSON.stringify(userSettings))
@@ -91,17 +87,21 @@ module.exports.http = {
           }).then(function () {
             return new Promise(function (resolve, reject) {
               user.addresses.forEach(function (address, indx) {
+                
                 Country.findOne({alpha3Code: address.countryInfo }).then(function (country) {
                   user.addresses[indx].countryInfo = country
                 }).catch(function (err) {
                   sails.log.error(err)
                   return reject(err)
                 })
+
+                if(indx == user.addresses.length-1){
+                    return resolve()
+                }
               })
-              return resolve()
             })
           }).then(function () {
-            sails.log.debug('Resolving user: ' + JSON.stringify(user))
+            //sails.log.debug('Resolving user: ' + JSON.stringify(user))
             return Promise.resolve(done(null, user))
           }).catch(function (err) {
             sails.log.error(err)
@@ -155,11 +155,9 @@ module.exports.http = {
         return req.method === 'DELETE'
       }
       req.setParam = function(paramName,paramValue){
-          delete req.query[paramName];
-          delete req.body[paramName];
-          delete req.params[paramName];
-          
-          req.body[paramName] = paramValue
+          req.body[paramName] = paramValue;
+          req.query[paramName] = paramValue
+          req.path[paramName] = paramValue;
       }
       next()
     },

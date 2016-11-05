@@ -1,5 +1,6 @@
 import utils from '../lib/utils';
 import fetch from '../lib/fetch';
+import enums from './enums';
 import GeoError from './geo.error';
 
 /**
@@ -110,8 +111,7 @@ const geoHelper = {
             }
         }
 
-        let isUS = o.country_s === 'US',
-            geometry = data.geometry;
+        let geometry = data.geometry;
         return {
             coords: geometry && geometry.location ? {
                 latitude: geometry.location.lat,
@@ -139,12 +139,8 @@ const geoHelper = {
                     || o.administrative_area_level_1
                     || '',
                 postalCode: o.postal_code || '',
-                state: isUS
-                    ? (o.administrative_area_level_1 || '')
-                    : '',
-                stateCode: isUS
-                    ? (o.administrative_area_level_1_s || '')
-                    : '',
+                state: o.administrative_area_level_1 || '',
+                stateCode: o.administrative_area_level_1_s || '',
                 country: o.country || '',
                 countryCode: o.country_s || ''
             },
@@ -155,23 +151,50 @@ const geoHelper = {
         };
     },
 
-    geocode(xhrOpts, raw, callback) {
-        // console.log(xhrOpts.url);
-        fetch.xhr(xhrOpts, (err, xhr) => {
-            let response = utils.safeJsonParse(xhr.responseText);
-            if (response === null) {
-                if (err === null) {
-                    err = new GeoError(GeoError.Code.INVALID_RESPONSE);
-                }
-            } else if (response.status !== 'OK') {
-                err = GeoError.fromGoogleResponse(response);
-                response = null;
-            } else {
-                response = raw
-                    ? response
-                    : geoHelper.formatGeocodeResults(response.results);
+    geocode(reverse, conf, options, callback) {
+        let opts = {};
+        if (utils.isString(options)) {
+            opts = {};
+            let prop = reverse ? 'placeId' : 'address';
+            opts[prop] = options;
+        } else if (utils.isPlainObject(options)) {
+            opts = options;
+        } else {
+            throw new GeoError(GeoError.Code.INVALID_PARAMETERS);
+        }
+
+        if (reverse) {
+            let coordsSet = utils.isNumber(options.latitude)
+                && utils.isNumber(options.longitude);
+            if (!utils.isString(options.placeId) && !coordsSet) {
+                throw new GeoError(GeoError.Code.INVALID_PARAMETERS);
             }
-            callback(err, response);
+        }
+
+        opts = utils.extend({
+            key: conf.google.key || '',
+            language: conf.language || 'en',
+            raw: false
+        }, opts);
+
+        let query = geoHelper.buildGeocodeParams(opts, reverse),
+            url = utils.setProtocol(enums.URL.GOOGLE_GEOCODE, conf.https),
+            xhrOpts = {
+                url: `${url}?${query}`
+            };
+
+        fetch.xhr(xhrOpts, (err, xhr) => {
+            if (err) return callback(GeoError.create(err), null);
+
+            let response = utils.safeJsonParse(xhr.responseText),
+                gErr = GeoError.fromResponse(response);
+
+            if (gErr) return callback(gErr, null);
+
+            response = options.raw
+                ? response
+                : geoHelper.formatGeocodeResults(response.results);
+            callback(null, response);
         });
     },
 
@@ -252,6 +275,30 @@ const geoHelper = {
         });
 
         return arr;
+    },
+
+    // Converts a map-styles object in to static map styles (formatted query-string params).
+    // See https://developers.google.com/maps/documentation/static-maps/styling
+    mapStylesToParams(styles) {
+        if (!styles) return '';
+        if (!utils.isArray(styles)) styles = [styles];
+        let result = [];
+        styles.forEach((v, i, a) => {
+            let style = '';
+            if (v.stylers) { // only if there is a styler object
+                if (v.stylers.length > 0) { // Needs to have a style rule to be valid.
+                    style += (v.hasOwnProperty('featureType') ? 'feature:' + v.featureType : 'feature:all') + '|';
+                    style += (v.hasOwnProperty('elementType') ? 'element:' + v.elementType : 'element:all') + '|';
+                    v.stylers.forEach((val, i, a) => {
+                        let propName = Object.keys(val)[0],
+                            propVal = val[propName].toString().replace('#', '0x');
+                        style += propName + ':' + propVal + '|';
+                    });
+                }
+            }
+            result.push('style=' + encodeURIComponent(style));
+        });
+        return result.join('&');
     }
 
 };

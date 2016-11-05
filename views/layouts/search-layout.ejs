@@ -6,22 +6,29 @@
 	  <meta property="og:image"         content="seatfilla.com" />
 
     <!--SCRIPTS-->
+    <script src="/js/dependencies/sails.io.js"></script>
     <script src="/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="/bower_components/platform/platform.js"></script>
-    <script src="/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
-    <script src="/js/dependencies/sails.io.js"></script>
+    <script src="/bower_components/select2/dist/js/select2.full.min.js"></script>
     <script src="/js/dependencies/chat.js"></script>
+    <script src="/js/dependencies/device.min.js"></script>
     <script src="/js/dependencies/facebook.js"></script>
     <script src="/js/dependencies/geo-location.js"></script>
     <script src="/js/dependencies/geolocator.min.js"></script>
+    <script src="/js/dependencies/index.js"></script>
+    <script src="/js/dependencies/jquery.easing.min.js"></script>
+    <script src="/js/dependencies/jquery.mb.YTPlayer.js"></script>
     <script src="/js/dependencies/jquery.toaster.js"></script>
     <script src="/js/dependencies/jquery.validate.js"></script>
     <script src="/js/dependencies/login.js"></script>
+    <script src="/js/dependencies/nav-toggle.js"></script>
     <script src="/js/dependencies/notification-service.js"></script>
     <script src="/js/dependencies/seatfilla-config.js"></script>
+    <script src="/js/dependencies/select2.full.min.js"></script>
+    <script src="/js/dependencies/sidebar.js"></script>
     <script src="/js/dependencies/socket-handler.js"></script>
     <script src="/js/dependencies/supported-currencies.js"></script>
+    <script src="/js/dependencies/wow.min.js"></script>
     <!--SCRIPTS END-->
     <link rel="import" href="/bower_components/paper-button/paper-button.html">
     <link rel="import" href="/bower_components/paper-toast/paper-toast.html">
@@ -29,7 +36,10 @@
     <!--STYLES-->
     <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/bower_components/select2/dist/css/select2.min.css">
+    <link rel="stylesheet" href="/styles/animate.css">
     <link rel="stylesheet" href="/styles/importer.css">
+    <link rel="stylesheet" href="/styles/ionicons.css">
     <link rel="stylesheet" href="/styles/main.css">
     <!--STYLES END-->
 
@@ -39,10 +49,7 @@
     $.toaster({ priority : 'info',  message : 'Search deals'});
     
     $('#flight-search-details').load('/ajax/flight-search-nav.ejs',function finished(){
-        window.seatfilla.globals.data.retrieveCityData().forEach(function(item) {
-                $('.cities').append($('<option></option>', { value: item.iataCode, 'data-val-cityname': item.name })
-                .text(item.name + ', ' + item.countryName));
-         });
+        
     });
   });
 

@@ -11,6 +11,7 @@
             if(!(jqxhr.status == 200)){
                 alert('Error loading dropzone.js');
             }else{
+                console.log(data);
                 Dropzone.autoDiscover = false;
                  $("#myElement").dropzone({
                         url:'hotel/create',
@@ -46,6 +47,12 @@
                                     added = true;
                                 }
                                 formData.append('fileData', JSON.stringify(data));
+                            });
+
+                             this.on("complete", function (file) {
+                                if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
+                                    $('createHotel').sfResetForm();
+                                }
                             });
                             
                     }

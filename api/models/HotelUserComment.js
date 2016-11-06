@@ -1,10 +1,5 @@
 module.exports = {
-    autoPK:true,
     attributes: {
-        id:{
-            type:'integer',
-            primaryKey:true,
-        },
         hotel:{
             model:'hotel',
             notNull:true,
@@ -19,12 +14,17 @@ module.exports = {
             type:'boolean',
             defaultsTo:false,
         },
+        title:{
+            type:'string',
+            defaultsTo:''
+        },
         message:{
             type:'string',
             defaultsTo:''
         },
         replies:{
-            collection:'HotelUserComment'
+            collection:'HotelUserComment',
+            via:'id'
         }
     }
 }

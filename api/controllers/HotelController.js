@@ -1,6 +1,7 @@
-const _find = require('../out/find')
-const _create = require('../out/create')
-const _findOne = require('../out/findOne')
+const _find = require('../out/find'),
+      _create = require('../out/create'),
+      _findOne = require('../out/findOne'),
+      _add = require('../out/add');
 
 module.exports = {
   retrieveSkyScannerListings(req, res) {
@@ -349,12 +350,17 @@ module.exports = {
       layout: 'layouts/search-layout'
     })
   },
+  add(req,res){
+    req.setParam('user',req.user.id);
+    _add(req,res);
+  },
   findOne(req, res) {
-    if (!req.param('hotelData') && !req.param('id'))
-      return res.badRequest()
-
     async.auto({
       findOrCreateHotel(callback) {
+
+        if (!req.param('hotelData') && !req.param('id'))
+          return callback(new Error('Invalid request'),null);
+
         var hotelData = null
         var id = null
         var provider = null
@@ -383,15 +389,36 @@ module.exports = {
           // No need to check if hotel isn't null, error will be thrown by _findOne.
           // This will subscribe the requestee to all events via -
           // .publishUpdate(), .publishDestroy(), .publishAdd(), .publishRemove(), and .message().
-          _findOne(req).then(function (hotel) {
-            return callback(null, {
-              id,
-              hotel,
-            provider})
-          }).catch(function (err) {
-            sails.log.error(err)
-            return callback(err, null)
+          async.auto({
+            findHotel:function(callback){
+                 _findOne(req).then(function (hotel) {
+                  return callback(null, {
+                    id,
+                    hotel,
+                  provider})
+                }).catch(function (err) {
+                  sails.log.error(err)
+                  return callback(err, null)
+                })
+            },
+             populateHotelInfo:['findHotel',function(callback,results){
+                HotelInfo.findOne({hotel:results.findHotel.id}).then(function(hotelInfo){
+                  if(!hotelInfo) callback(new Error('Invalid database state '),null);
+                  results.findHotel.hotelInfo = hotelInfo;
+                  return callback(null,results.findHotel)
+                }).catch(function(err){
+                  return callback(err,null);
+                })
+             }
+            ]
+          },function(err,results){
+              if(err){
+                return callback(err,null);
+              }else{
+                return callback(null,results.populateHotelInfo);
+              }
           })
+
         } else {
           Hotel.findOrCreate({
           id}, {
@@ -399,17 +426,15 @@ module.exports = {
             return callback(null, {
               id,
               hotelData,
-            provider})
+              provider })
           }).catch(function (err) {
             return callback(err, null)
-          })
+        })
         }
       }
     }, function (err, results) {
       if (err) return res.badRequest()
-      else return res.ok({
-          hotel: results.findOrCreateHotel
-        })
+      else return res.ok(results.findOrCreateHotel)
     })
   }
 }

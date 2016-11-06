@@ -56,7 +56,7 @@ module.exports = function findRecords (req, res) {
        }
 
        sails.log.debug('Joining socket room :' + req.options.model);
-       sails.sockets.join(req, req.options.model);
+       sails.sockets.join(req, req.options.model || req.options.controller);
 
       // Also subscribe to instances of all associated models
       _.each(matchingRecords, function (record) {

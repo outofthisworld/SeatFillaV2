@@ -276,7 +276,7 @@ window.seatfilla.globals.cache.get = function (options) {
           console.log('Got stored setting for key ' + options.key)
           console.log('result was ' + result)
           const res = window.seatfilla.globals.tryParseJsonResult(result)
-          return callback(result.status, result[options.key])
+          return callback(result.status, result[options.key] || null)
         }
       })
     }
@@ -547,13 +547,16 @@ window.seatfilla.globals.response.skyscannerAPI.mapHotelAPIResponse = function(r
           const firstPathPart =  imageHostUrl + key;
            for(var keyTwo in hotel.images[key]){
              const width = hotel.images[key][keyTwo][0];
-             const height = hotel.images[key][keyTwo][0];
+             const height = hotel.images[key][keyTwo][1];
 
              //We can change this into a callback later, but for now a range is good
-             const greaterThanOrETSmallestWidth = false;
-             const lessThanOrETGreatestWidth = false;
-             const greaterThanOrETSmallestHeight = false;
-             const lessThanOrETGreatestHeight = false;
+             var greaterThanOrETSmallestWidth = false;
+             var lessThanOrETGreatestWidth = false;
+             var greaterThanOrETSmallestHeight = false;
+             var lessThanOrETGreatestHeight = false;
+
+            if(keyTwo.endsWith('order') || keyTwo.endsWith('provider'))
+              continue;
          
             if(options){
              if((options.smallestWidth && width >= options.smallestWidth) || !options.smallestWidth)
@@ -570,7 +573,7 @@ window.seatfilla.globals.response.skyscannerAPI.mapHotelAPIResponse = function(r
 
               if(greaterThanOrETSmallestWidth && lessThanOrETGreatestWidth && 
                 greaterThanOrETSmallestHeight && lessThanOrETGreatestHeight)
-                   arr.push(firstPathPart + keyTwo);
+                    arr.push({imagePath: firstPathPart + keyTwo, width, height});
             }else{
                arr.push({imagePath: firstPathPart + keyTwo, width, height});
             }

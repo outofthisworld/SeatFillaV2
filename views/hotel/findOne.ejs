@@ -1,12 +1,14 @@
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDBWrH7DuCZ8wNlOXgINCtI_gT9NkDRq4"></script>
 <script>
+
 $(window).ready(function(){
     $.getScript('/scripts/hotelFindOne.js',function(data, textStatus, jqxhr){
         if(jqxhr.status == 200){
             window.seatfilla.globals.initHotelScript({
                 id:<%= data.id || null %>,
                 provider:'<%= data.provider || null %>',
-                hotel:<%- JSON.stringify(data.hotel) || null %>,
-                hotelInfo: <%- JSON.stringify(data.hotelInfo)  || null %>
+                hotel:<%- JSON.stringify(data.hotel || '')%>,
+                hotelInfo: <%- JSON.stringify(data.hotelInfo || {}) %>
             })
         }else{
             alert('Error loading hotelFindOne.js');
@@ -231,7 +233,6 @@ $(window).ready(function(){
 
  <!--Hotel template for Seatfilla hotels -->
  <script type="text/html" id="seatfillaHotelTemplate">
-
 	<div class="container main-container panel" style="padding:50px;border-color:lightblue;">
 			<div class="container-fluid">
 				<div class="row">
@@ -273,6 +274,12 @@ $(window).ready(function(){
                             </tbody>
                         </table>
                         </div>
+												<div class="row">
+																	<div class="action pull-right">
+									<button class="add-to-cart btn btn-default pull-right" type="button">Share</button>
+							<button class="add-to-cart btn btn-default pull-right" type="button">add to cart</button>
+						</div>
+												</div>
 					</div>
 					<div class="details col-md-6">
 						<h2 class="product-title">{{:hotelInfo.hotelName}}</h2>
@@ -314,10 +321,9 @@ $(window).ready(function(){
                     </div>
 						<h4 class="price">current price: <span>$180</span></h4>
 						<p class="vote"><strong>91%</strong> of buyers enjoyed this product! <strong>(87 votes)</strong></p>
-					
-						<div class="action">
-							<button class="add-to-cart btn btn-default pull-right" type="button">add to cart</button>
-						</div>
+							<div id="map">
+
+													</div>
 					</div>
 				</div><!--row-->
                 <br/>
@@ -357,9 +363,11 @@ $(window).ready(function(){
                         </div>
 					</div>
 
-                    <br/><hr/>
+                    <br/>
                     <div class="row">
 						<div class="panel panel-default">
+
+													<%if(req.user){%>
                             <form id="hotelReviewForm">
                             <div class="panel-heading">
                                 <p> Write a review </p>
@@ -384,6 +392,9 @@ $(window).ready(function(){
                                 </div>
                             </div>
                             </form>
+													 <%}else{%>
+													 	 <button class="btn btn-info btn-sm pull-right">Please login to write a review</button>
+													 <%}%>
                         </div>
 					</div>
 				</div>
@@ -407,8 +418,8 @@ $(window).ready(function(){
 				</div>
 			</div>
 
-			<div class="col-sm-3 rating-block well-sm">
-				<h1 style="noPad noMargin">Rating breakdown</h1>
+			<div class="col-sm-3 rating-block well-sm" style="min-height:410px;">
+				<h1 class="noPad noMargin">Rating breakdown</h1>
                 <br/>
 				<div class="pull-left">
 					<div class="pull-left" style="width:35px; line-height:1;">
@@ -482,58 +493,110 @@ $(window).ready(function(){
     </div><!--container main-->
 </script>
 
+
 <!--Hotel template for skyscanner hotels -->
- <script type="text/html" id="skyscannerHotelTemplate">
-	<div class="container main-container panel">
-			<div class="container-fliud">
-
+<script type="text/html" id="skyscannerHotelTemplate">
+	<div class="container main-container panel" style="padding:50px;border-color:lightblue;">
+			<div class="container-fluid">
 				<div class="row">
-					<div class="preview col-md-6">			
-						<div class="preview-pic tab-content">
-						  <div class="tab-pane active" id="pic-1"><img src="http://placekitten.com/400/252" /></div>
-						  <div class="tab-pane" id="pic-2"><img src="http://placekitten.com/400/252" /></div>
-						  <div class="tab-pane" id="pic-3"><img src="http://placekitten.com/400/252" /></div>
-						  <div class="tab-pane" id="pic-4"><img src="http://placekitten.com/400/252" /></div>
-						  <div class="tab-pane" id="pic-5"><img src="http://placekitten.com/400/252" /></div>
-						</div>
-						<ul class="preview-thumbnail nav nav-tabs">
-						  <li class="active"><a data-target="#pic-1" data-toggle="tab"><img src="http://placekitten.com/200/126" /></a></li>
-						  <li><a data-target="#pic-2" data-toggle="tab"><img src="http://placekitten.com/200/126" /></a></li>
-						  <li><a data-target="#pic-3" data-toggle="tab"><img src="http://placekitten.com/200/126" /></a></li>
-						  <li><a data-target="#pic-4" data-toggle="tab"><img src="http://placekitten.com/200/126" /></a></li>
-						  <li><a data-target="#pic-5" data-toggle="tab"><img src="http://placekitten.com/200/126" /></a></li>
-						</ul>
-					</div>
-
-					<div class="details col-md-6">
-						<h1 class="product-title">men's shoes fashion</h1>
-						<div class="rating">
-							<div class="stars">
-								<span class="fa fa-star checked"></span>
-								<span class="fa fa-star checked"></span>
-								<span class="fa fa-star checked"></span>
-								<span class="fa fa-star"></span>
-								<span class="fa fa-star"></span>
-							</div>
-							<span class="review-no">41 reviews</span>
-						</div>
-						<p class="product-description">Suspendisse quos? Tempus cras iure temporibus? Eu laudantium cubilia sem sem! Repudiandae et! Massa senectus enim minim sociosqu delectus posuere.</p>
-						<h4 class="price">current price: <span>$180</span></h4>
-						<p class="vote"><strong>91%</strong> of buyers enjoyed this product! <strong>(87 votes)</strong></p>
-					
-						<div class="action">
+					<div class="preview col-md-6" style="margin-top:80px;">
+                        <div class="row">			
+                            <div class="preview-pic tab-content">
+                            {{for hotel.images}}
+                                {{if #index == 0}}
+                                    <div class="tab-pane active" id="pic-{{:#getIndex()}}"><img class="img img-responsive" src="http://{{:imagePath}}"/></div>
+                                {{else}}
+                                    <div class="tab-pane" id="pic-{{:#getIndex()}}"><img class="img img-responsive" src="http://{{:imagePath}}"/></div>
+                                {{/if}}
+                            {{/for}}
+                            </div>
+                            <ul class="preview-thumbnail nav nav-tabs">
+                            {{for hotel.images}}
+                                {{if #index == 0}}
+                                        <li class="active"><a data-target="#pic-{{:#getIndex()}}" data-toggle="tab"><img class="img img-thumbnail" src="http://{{:imagePath}}" /></a></li>
+                                {{else}}
+                                        <li class=""><a data-target="#pic-{{:#getIndex()}}" data-toggle="tab"><img class="img img-thumbnail" src="http://{{:imagePath}}" /></a></li>
+                                {{/if}}
+                            {{/for}}
+                            </ul>
+                        </div>
+                        <div class="row">
+                            <h4 style="padding:10px;font-size:24px;">Booking details</h4>
+                           <table class="table panel table-hover table-bordered">
+                            <thead>
+                            <tr>
+                                <th>Hotel website URL</th>
+                                <th>Booking URL</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td><a href="">Visit hotel website</a></td>
+                                <td><a href="">Book this hotel</a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        </div>
+												<div class="row">
+																	<div class="action pull-right">
+									<button class="add-to-cart btn btn-default pull-right" type="button">Share</button>
 							<button class="add-to-cart btn btn-default pull-right" type="button">add to cart</button>
 						</div>
+												</div>
+					</div>
+					<div class="details col-md-6">
+						<h2 class="product-title">{{:hotel.name}}</h2>
+                        <hr/><br/>
+												<div class="rating">
+													<div class="stars pull-right">
+														Hotel stars ({{:hotel.star_rating}})
+														<span class="fa fa-star checked"></span>
+														<span class="fa fa-star checked"></span>
+														<span class="fa fa-star checked"></span>
+														<span class="fa fa-star"></span>
+														<span class="fa fa-star"></span>
+													</div>
+												</div>
+                        <div class="panel">
+                            <div class="panel-body">
+						    								<p class="product-description">{{:hotel.popularity_desc}}</p>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="col-md-12">
+                        <p>Amenities</p>
+                        <div class="tags">
+                        <a href="http://www.jquery2dotnet.com/search/label/css" class="btn-warning">CSS</a> <a href="http://www.jquery2dotnet.com/search/label/Javascript" class="btn-primary">Java Script</a>
+                            <a href="http://www.jquery2dotnet.com/search/label/jquery" class="btn-danger">jQuery</a> <a href="http://www.jquery2dotnet.com/search/label/html5" class="btn-success">HTML5</a> <a href="http://www.jquery2dotnet.com/search/label/css3" class="btn-info">CSS3</a> <a href="http://www.jquery2dotnet.com/search?q=demo" class="btn-danger">DEMO</a>
+                            <a href="http://www.jquery2dotnet.com/search/label/mvc4" class="btn-warning">MVC4</a> <a href="http://www.jquery2dotnet.com/search/label/asp.net" class="btn-info">ASP.Net</a> <a href="http://www.jquery2dotnet.com/search/label/c%23" class="btn-primary">C#</a> <a href="http://www.jquery2dotnet.com/search/label/wpf" class="btn-success">WPF</a>
+                            <a href="http://www.jquery2dotnet.com/search/label/linq" class="btn-primary">linq</a> <a href="http://www.jquery2dotnet.com/search/label/bootstrap" class="btn-danger">Bootstrap</a>
+                        </div>
+                        <br/>
+                        </div>
+                       <div class="col-md-12">
+                        <p>Hotel tags</p>
+                        <div class="tags">
+                        <a href="http://www.jquery2dotnet.com/search/label/css" class="btn-warning">CSS</a> <a href="http://www.jquery2dotnet.com/search/label/Javascript" class="btn-primary">Java Script</a>
+                            <a href="http://www.jquery2dotnet.com/search/label/jquery" class="btn-danger">jQuery</a> <a href="http://www.jquery2dotnet.com/search/label/html5" class="btn-success">HTML5</a> <a href="http://www.jquery2dotnet.com/search/label/css3" class="btn-info">CSS3</a> <a href="http://www.jquery2dotnet.com/search?q=demo" class="btn-danger">DEMO</a>
+                            <a href="http://www.jquery2dotnet.com/search/label/mvc4" class="btn-warning">MVC4</a> <a href="http://www.jquery2dotnet.com/search/label/asp.net" class="btn-info">ASP.Net</a> <a href="http://www.jquery2dotnet.com/search/label/c%23" class="btn-primary">C#</a> <a href="http://www.jquery2dotnet.com/search/label/wpf" class="btn-success">WPF</a>
+                            <a href="http://www.jquery2dotnet.com/search/label/linq" class="btn-primary">linq</a> <a href="http://www.jquery2dotnet.com/search/label/bootstrap" class="btn-danger">Bootstrap</a>
+                        </div>
+                    </div>
+						<h4 class="price">current price: <span>$180</span></h4>
+						<p class="vote"><strong>91%</strong> of buyers enjoyed this product! <strong>(87 votes)</strong></p>
+							<p>Hotel location<p>
+							<div id="map">
+							</div>
 					</div>
 				</div><!--row-->
-
                 <br/>
-                <hr/>
+                <hr/><br/>
                 <div class="row">
                 <div class="col-sm-6">
 				<hr/>
 				<div class="review-block">
 					<div class="row">
+                    <br/>
 						<div class="col-sm-3">
 							<img src="http://dummyimage.com/60x60/666/ffffff&text=No+Image" class="img-rounded">
 							<div class="review-block-name"><a href="#">nktailor</a></div>
@@ -559,104 +622,80 @@ $(window).ready(function(){
 							</div>
 							<div class="review-block-title">this was nice in buy</div>
 							<div class="review-block-description">this was nice in buy. this was nice in buy. this was nice in buy. this was nice in buy this was nice in buy this was nice in buy this was nice in buy this was nice in buy</div>
-						</div>
+                             <br/><br/>
+                        </div>
 					</div>
-					<hr/>
-					<div class="row">
-						<div class="col-sm-3">
-							<img src="http://dummyimage.com/60x60/666/ffffff&text=No+Image" class="img-rounded">
-							<div class="review-block-name"><a href="#">nktailor</a></div>
-							<div class="review-block-date">January 29, 2016<br/>1 day ago</div>
-						</div>
-						<div class="col-sm-9">
-							<div class="review-block-rate">
-								<button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
-								  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-								</button>
-								<button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
-								  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-								</button>
-								<button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
-								  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-								</button>
-								<button type="button" class="btn btn-default btn-grey btn-xs" aria-label="Left Align">
-								  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-								</button>
-								<button type="button" class="btn btn-default btn-grey btn-xs" aria-label="Left Align">
-								  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-								</button>
-							</div>
-							<div class="review-block-title">this was nice in buy</div>
-							<div class="review-block-description">this was nice in buy. this was nice in buy. this was nice in buy. this was nice in buy this was nice in buy this was nice in buy this was nice in buy this was nice in buy</div>
-						</div>
-					</div>
-					<hr/>
-					<div class="row">
-						<div class="col-sm-3">
-							<img src="http://dummyimage.com/60x60/666/ffffff&text=No+Image" class="img-rounded">
-							<div class="review-block-name"><a href="#">nktailor</a></div>
-							<div class="review-block-date">January 29, 2016<br/>1 day ago</div>
-						</div>
-						<div class="col-sm-9">
-							<div class="review-block-rate">
-								<button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
-								  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-								</button>
-								<button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
-								  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-								</button>
-								<button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
-								  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-								</button>
-								<button type="button" class="btn btn-default btn-grey btn-xs" aria-label="Left Align">
-								  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-								</button>
-								<button type="button" class="btn btn-default btn-grey btn-xs" aria-label="Left Align">
-								  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-								</button>
-							</div>
-							<div class="review-block-title">this was nice in buy</div>
-							<div class="review-block-description">this was nice in buy. this was nice in buy. this was nice in buy. this was nice in buy this was nice in buy this was nice in buy this was nice in buy this was nice in buy</div>
-						</div>
+
+                    <br/>
+                    <div class="row">
+						<div class="panel panel-default">
+
+													<%if(req.user){%>
+                            <form id="hotelReviewForm">
+                            <div class="panel-heading">
+                                <p> Write a review </p>
+                            </div>
+                            <div class="panel-content">
+                                <textarea name="message" rows="5" class="form-control" required min="100" placeholder="Your review"></textarea>
+                                <input type="hidden" name="hotel" value="{{:hotel.id}}"/>
+                            </div>
+                            <div class="panel-footer" style="min-height:80px;">
+                                <div class="col-xs-12">
+                                    <label class="col-xs-12 text-black" for="">Please submit your rating with this review</label>
+                                    <div class="col-xs-8">
+                                        <div class="review-block-rate">
+                                            {{for ~range(0,5)}}
+                                            <button type="button" class="btn btn-xs btn-grey btn-review-rating" data-attr-rating="{{:#getIndex()+1}}" aria-label="Left Align">
+                                            <span class="glyphicon glyphicon-star" style="margin-top:2px;" aria-hidden="true"></span>
+                                            </button>
+                                            {{/for}} 
+                                        </div>
+                                    </div>
+                                   <button type="submit" id="submitReview" class="btn btn-info pull-right">Submit review</button>
+                                </div>
+                            </div>
+                            </form>
+													 <%}else{%>
+													 	 <button class="btn btn-info btn-sm pull-right">Please login to write a review</button>
+													 <%}%>
+                        </div>
 					</div>
 				</div>
                 </div>
                 <div class="col-sm-3">
-				<div class="rating-block">
-					<h1>Average user rating</h1>
-					<h2 class="bold padding-bottom-7">4.3 <small>/ 5</small></h2>
-					<button type="button" class="btn btn-warning btn-sm" aria-label="Left Align">
-					  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-					</button>
-					<button type="button" class="btn btn-warning btn-sm" aria-label="Left Align">
-					  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-					</button>
-					<button type="button" class="btn btn-warning btn-sm" aria-label="Left Align">
-					  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-					</button>
+				<div class="rating-block">  
+					<h1 style="noPad noMargin">Average user rating</h1>
+					<h2 class="bold text-center">{{:averageRating}}<small>/5</small></h2>
+                    <div class="input-group" style="margin:auto;">
+                    {{for ~range(0,~floor(averageRating))}}
+                        <button type="button" class="btn btn-warning btn-sm" aria-label="Left Align">
+                        <span class="glyphicon glyphicon-star" aria-hidden="true" data-rating-value="{{:~add(#index,1)}}"></span>
+                        </button>
+                    {{/for}}
+                    {{for ~range(0,~sub(5,~floor(averageRating)))}}
 					<button type="button" class="btn btn-default btn-grey btn-sm" aria-label="Left Align">
-					  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+					  <span class="glyphicon glyphicon-star" aria-hidden="true" data-rating-value="{{:~add(#index,1)}}"></span>
 					</button>
-					<button type="button" class="btn btn-default btn-grey btn-sm" aria-label="Left Align">
-					  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-					</button>
+                    {{/for}}
+                    </div>
 				</div>
 			</div>
 
-			<div class="col-sm-3">
-				<h1>Rating breakdown</h1>
+			<div class="col-sm-3 rating-block well-sm" style="min-height:410px;">
+				<h1 class="noPad noMargin">Rating breakdown</h1>
+                <br/>
 				<div class="pull-left">
 					<div class="pull-left" style="width:35px; line-height:1;">
 						<div style="height:9px; margin:5px 0;">5 <span class="glyphicon glyphicon-star"></span></div>
 					</div>
 					<div class="pull-left" style="width:180px;">
 						<div class="progress" style="height:9px; margin:8px 0;">
-						  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="5" style="width: 1000%">
+						  <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="5" style="width: 1000%">
 							<span class="sr-only">80% Complete (danger)</span>
 						  </div>
 						</div>
 					</div>
-					<div class="pull-right" style="margin-left:10px;">1</div>
+					<div class="pull-right" style="margin-left:10px;">{{:~numUsersWhoRated(5)}}</div>
 				</div>
 				<div class="pull-left">
 					<div class="pull-left" style="width:35px; line-height:1;">
@@ -664,12 +703,12 @@ $(window).ready(function(){
 					</div>
 					<div class="pull-left" style="width:180px;">
 						<div class="progress" style="height:9px; margin:8px 0;">
-						  <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="4" aria-valuemin="0" aria-valuemax="5" style="width: 80%">
+						  <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="4" aria-valuemin="0" aria-valuemax="5" style="width: 80%">
 							<span class="sr-only">80% Complete (danger)</span>
 						  </div>
 						</div>
 					</div>
-					<div class="pull-right" style="margin-left:10px;">1</div>
+					<div class="pull-right" style="margin-left:10px;">{{:~numUsersWhoRated(4)}}</div>
 				</div>
 
 				<div class="pull-left">
@@ -678,12 +717,12 @@ $(window).ready(function(){
 					</div>
 					<div class="pull-left" style="width:180px;">
 						<div class="progress" style="height:9px; margin:8px 0;">
-						  <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="3" aria-valuemin="0" aria-valuemax="5" style="width: 60%">
+						  <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="3" aria-valuemin="0" aria-valuemax="5" style="width: 60%">
 							<span class="sr-only">80% Complete (danger)</span>
 						  </div>
 						</div>
 					</div>
-					<div class="pull-right" style="margin-left:10px;">0</div>
+					<div class="pull-right" style="margin-left:10px;">{{:~numUsersWhoRated(3)}}</div>
 				</div>
 				<div class="pull-left">
 					<div class="pull-left" style="width:35px; line-height:1;">
@@ -696,7 +735,7 @@ $(window).ready(function(){
 						  </div>
 						</div>
 					</div>
-					<div class="pull-right" style="margin-left:10px;">0</div>
+					<div class="pull-right" style="margin-left:10px;">{{:~numUsersWhoRated(2)}}</div>
 				</div>
 				<div class="pull-left">
 					<div class="pull-left" style="width:35px; line-height:1;">
@@ -704,22 +743,23 @@ $(window).ready(function(){
 					</div>
 					<div class="pull-left" style="width:180px;">
 						<div class="progress" style="height:9px; margin:8px 0;">
-						  <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="5" style="width: 20%">
+						  <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="5" style="width: 20%">
 							<span class="sr-only">80% Complete (danger)</span>
 						  </div>
 						</div>
 					</div>
-					<div class="pull-right" style="margin-left:10px;">0</div>
+					<div class="pull-right" style="margin-left:10px;">{{:~numUsersWhoRated(1)}}</div>
 				</div>
 			</div>	
         </div>     
 	</div><!--container fluid-->
-    </div><!--container main-->
-    </script>
+</div><!--container main-->
+</script>
 
-    <div id="templateContainer"><!-- page will be rendered here --></div>
+<div id="loading" class="hide">
 
-
-    <%- partial ('../partials/footer.ejs') %>
+</div>
+<div id="templateContainer"><!-- page will be rendered here --></div>
+<%- partial ('../partials/footer.ejs') %>
 </body>
 

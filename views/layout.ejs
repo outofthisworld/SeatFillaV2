@@ -1,12 +1,13 @@
     <!DOCTYPE HTML>
     <html>
     <head>
+    <title><%= data.title || "Seatfilla.com" %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta property="og:url"           content="seatfilla.com" />
-	<meta property="og:type"          content="website" />
-	<meta property="og:title"         content="SeatFilla" />
-	<meta property="og:description"   content="Find flights" />
-	<meta property="og:image"         content="seatfilla.com" />
+    <meta property="og:url"           content="<%= data.url || 'http://seatfilla.com' %> " />
+	<meta property="og:type"          content="<%= data.type || 'article' %>"/>
+	<meta property="og:title"         content="<%= data.title || 'Cheap hotel at Seatfilla' %>" />
+	<meta property="og:description"   content="<%= data.description || 'Check out this amazing hotel!' %>" />
+	<meta property="og:image"         content="<%= data.image || 'http://wwww.seatfilla.com/images/Logo.png' %>" />
 
     <!--SCRIPTS-->
     <script src="/js/dependencies/sails.io.js"></script>

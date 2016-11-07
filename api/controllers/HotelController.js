@@ -7,6 +7,9 @@ module.exports = {
   retrieveSkyScannerListings(req, res) {
     async.auto({
       getPrefferedCurrency: function (callback) {
+        if(req.param('prefferedCurrency'))
+          return callback(null,req.param('prefferedCurrency'))
+
         UserSettingsService.getUserCurrencyCodePreference(req).then(function (preference) {
           sails.log.debug('User currency code preference was : ' + preference)
           return callback(null, preference)
@@ -16,6 +19,9 @@ module.exports = {
         })
       },
       getUserLocation: function (callback) {
+        if(req.param('userLocation'))
+            return callback(null,req.param('userLocation'))
+
         UserSettingsService.getUserCurrentLocation(req).then(function (result) {
           sails.log.debug('User location was : ' + JSON.stringify(result))
           return callback(null, result)
@@ -25,21 +31,28 @@ module.exports = {
         })
       },
       getUserLocalePreference: function (callback) {
+        if(req.headers['accept-language'])
+          return callback(null,req.headers['accept-language'])
+
         UserSettingsService.getUserLocalePreference(req).then(function (result) {
           sails.log.debug('User locale preference was :' + result)
-          return callback(null, result)
+          return callback(null, result || 'en-US')
         }).catch(function (err) {
           sails.log.error(err)
           return callback(err, null)
         })
       },
       retrieveMostReleventHotel: ['getPrefferedCurrency', 'getUserLocation', 'getUserLocalePreference', function (callback, results) {
+        if(results.getUserLocation && results.getUserLocation.coords)
+          return callback(null,null);
+
         SkyScannerLookupService.getHotelAutoSuggestResults({
-          countryCode: ((req.param('destination') && req.param('destination').countryId) || (results.getUserLocation && results.getUserLocation.countryCode)) || 'NZ',
-          currencyCode: req.param('prefferedCurrency') || results.getPrefferedCurrency,
-          locale: req.headers['accept-language'] || results.getUserLocalePreference,
-          query: req.param('hotelQuery') || results.getUserLocation && resuts.getUserLocation.region ||
-            results.getUserLocation && results.getUserLocation.city || results.getUserLocation && results.getUserLocation.country || 'Paris'
+          countryCode: (results.getUserLocation && results.getUserLocation.countryCode) || 'NZ',
+          currencyCode:  results.getPrefferedCurrency,
+          locale:  results.getUserLocalePreference,
+          query: req.param('hotelQuery') || results.getUserLocation && results.getUserLocation.region ||
+            results.getUserLocation && results.getUserLocation.city || 
+            results.getUserLocation && results.getUserLocation.country || 'Auckland'
         }).then(function (result) {
           sails.log.debug('Results from getHotel auto suggestions: ' + JSON.stringify(result))
           const hotelSuggestions = result.results
@@ -62,34 +75,41 @@ module.exports = {
           })
 
           // Find the most relevent suggestion for this user
-          const mostRelSuggestion = mappedSuggestions.find(function (suggestion) {
+          const mostRelSuggestion = mappedSuggestions.filter(function (suggestion) {
             sails.log.debug('Checking hotel suggestion: ' + JSON.stringify(suggestion))
 
             if (!suggestion['parent_place_id'] || !suggestion['parent_place_id']['city_name'] || !suggestion['parent_place_id']['country_name'])
               return false
 
+            sails.log.debug('User location is:')
+            sails.log.debug(results.getUserLocation);
+
             const cityContainsQuery = suggestion['parent_place_id']['city_name'].includes(req.param('hotelQuery') && req.param('hotelQuery').toLowerCase() || '')
             const countryContainsQuery = suggestion['parent_place_id']['country_name'].toLowerCase().includes(req.param('hotelQuery') && req.param('hotelQuery').toLowerCase() || '')
-            const cityContainsUserCity = suggestion['parent_place_id']['city_name'].toLowerCase().includes(results.getUserLocation && results.getUserLocation.city.toLowerCase() || '')
-            const countryContainsUserCountry = suggestion['parent_place_id']['country_name'].toLowerCase().includes(results.getUserLocation && results.getUserLocation.country.toLowerCase() || '')
-            const def = true; // suggestion['parent_place_id']['city_name'].toLowerCase().includes('Auckland')
-
+            const cityContainsUserCity = suggestion['parent_place_id']['city_name'].toLowerCase().includes(results.getUserLocation && results.getUserLocation.address && results.getUserLocation.address.city.toLowerCase() || '')
+            const countryContainsUserCountry = suggestion['parent_place_id']['country_name'].toLowerCase().includes(results.getUserLocation && results.getUserLocation.address && results.getUserLocation.address.country.toLowerCase() || '')
+   
+         
             sails.log.debug('City contains query ' + cityContainsQuery)
             sails.log.debug('Country contains query: ' + countryContainsQuery)
             sails.log.debug('City contains user city ' + cityContainsUserCity)
             sails.log.debug('Country contains user country ' + countryContainsUserCountry)
-            sails.log.debug('Default: ' + def)
+    
 
-            return (((suggestion['geo_type'] == 'City' || suggestion['geo_type'] == 'Nation') &&
-              ((
+            if((suggestion['geo_type'] == 'City' || suggestion['geo_type'] == 'Nation') &&
+              (
               // Any of these
               cityContainsQuery || countryContainsQuery ||
               cityContainsUserCity || countryContainsUserCountry
-              )) || def)) && true; // This must be here, we're returning true to find, not a found object.
+              )
+              ){
+              return true;
+            }else{
+              return false;
+            }
           })
 
-          sails.log.debug('Most relevent hotel was : ' + JSON.stringify(mostRelSuggestion))
-          return callback(null, mostRelSuggestion || null)
+          return callback(null, mostRelSuggestion[(Math.floor(Math.random() * (mostRelSuggestion.length-1)))] || null)
         }).catch(function (err) {
           sails.log.error(err)
           return callback(err, null)
@@ -107,10 +127,11 @@ module.exports = {
         sessionObject.locale = req.headers['accept-language'] || results.getUserLocalePreference
 
         // Where the hotel is (Here we will check countryInfo for long lat to a country if we can't get it from users location)
-        sessionObject.entityId = results.retrieveMostReleventHotel && results.retrieveMostReleventHotel['individual_id'] ||
-          (((results.getUserLocation && results.getUserLocation.longitude) || 36.8485) +
-          ',' + ((results.getUserLocation && results.getUserLocation.latitude) || 174.7633)) + '-latlong'
+        sessionObject.entityId = (results.retrieveMostReleventHotel && results.retrieveMostReleventHotel['individual_id']) ||
+          (((results.getUserLocation &&  results.getUserLocation.coords && parseFloat(results.getUserLocation.coords.latitude)) || 36.8485) +
+          ',' + ((results.getUserLocation && results.getUserLocation.coords && parseFloat(results.getUserLocation.coords.longitude)) || 174.7633)) + '-latlong'
 
+        sails.log.debug('Entity id was : ' + sessionObject.entityId);
         // The check in date for the hotel
         sessionObject.checkindate = (req.param('dates') && req.param('dates').departure) || (new Date().toISOString().slice(0, 10))
 
@@ -126,12 +147,7 @@ module.exports = {
         sails.log.debug('Created hotels session object : ' + JSON.stringify(sessionObject))
         return callback(null, sessionObject)
       }],
-      buildRequestObject: ['getPrefferedCurrency', 'getUserLocation', function (callback, results) {
-        const hotelRequestObject = SkyScannerHotelService.getDefaultHotelRequestObject()
-        // hotelRequestObject.city = req.param('destination').airportCityId
-        return callback(null, hotelRequestObject)
-      }],
-      requestHotelDetails: ['buildSessionObject', 'buildRequestObject', function (callback, results) {
+      initiateSession: ['buildSessionObject', function (callback, results) {
         SkyScannerHotelService.createSession(results.buildSessionObject).then(function (result) {
           return callback(null, result)
         }).catch(function (err) {
@@ -145,11 +161,44 @@ module.exports = {
         return res.badRequest(err)
       } else {
         sails.log.debug('Results were : ' + JSON.stringify(results))
-        return res.ok({
-          status: 200,
-          result: results
-        })
+        results.status = 200;
+        return res.ok(results)
       }
+    })
+  },
+  pollSkyScannerSession(req,res){
+
+      if(!req.param('nextPollUrl') || !req.wantsJSON)
+          return res.badRequest();
+
+      const defaultHotelRequestObject = SkyScannerHotelService.getDefaultHotelRequestObject();
+      const nextPollUrl = req.param('nextPollUrl');
+      defaultHotelRequestObject.pageSize = req.param('pageSize') ||  defaultHotelRequestObject.pageSize;
+      defaultHotelRequestObject.pageIndex = req.param('pageIndex') ||  defaultHotelRequestObject.pageIndex;
+      defaultHotelRequestObject.imageLimit = req.param('imageLimit') ||defaultHotelRequestObject.imageLimit;
+      defaultHotelRequestObject.sortOrder = req.param('sortOrder') || defaultHotelRequestObject.sortOrder;
+      defaultHotelRequestObject.sortColumn = req.param('sortColumn') ||   defaultHotelRequestObject.sortColumn;
+
+      SkyScannerHotelService.requestHotelDetails(nextPollUrl, defaultHotelRequestObject)
+      .then(function(result){
+        sails.log.debug('Recieved result from requesting hotel details');
+        sails.log.debug(JSON.stringify(result));
+        return res.ok(result);
+      }).catch(function(err){
+        sails.log.err(err);
+        return res.badRequest(err);
+      })
+  },
+  hotelDetails(req,res){
+    if(!req.param('detailsUrl') || !req.param('hotelIds') || !req.wantsJSON)
+      return res.badRequest('Invalid parameters supplied')
+
+    SkyScannerHotelService.createHotelDetails(req.param('detailsUrl'),
+    req.param('hotelIds')).then(function(result){
+        return res.ok(result);
+    }).catch(function(err){
+      sails.log.error(err);
+      return res.badRequest(err);
     })
   },
   create(req, res) {
@@ -361,6 +410,8 @@ module.exports = {
         if (!req.param('hotelData') && !req.param('id'))
           return callback(new Error('Invalid request'),null);
 
+        sails.log.debug(req.allParams())
+
         var hotelData = null
         var id = null
         var provider = null
@@ -403,10 +454,15 @@ module.exports = {
             },
              populateHotelInfo:['findHotel',function(callback,results){
                 HotelInfo.findOne({hotel:results.findHotel.id}).then(function(hotelInfo){
-                  if(!hotelInfo) callback(new Error('Invalid database state '),null);
+                  if(!hotelInfo){
+                     const error = new Error('Invalid state ');
+                     error.code = 117;
+                     return callback(error,null);
+                  }
                   results.findHotel.hotelInfo = hotelInfo;
                   return callback(null,results.findHotel)
                 }).catch(function(err){
+                  sails.log.error(err);
                   return callback(err,null);
                 })
              }
@@ -421,20 +477,35 @@ module.exports = {
 
         } else {
           Hotel.findOrCreate({
-          id}, {
-          id}).then(function () {
-            return callback(null, {
-              id,
-              hotelData,
-              provider })
+          id}, { 
+                id,
+                user:null,
+                hotelInfo:null
+              }).then(function () {
+
+              //Find hotel info...
+              return callback(null, {
+                id,
+                hotel:hotelData,
+                provider })
           }).catch(function (err) {
             return callback(err, null)
         })
         }
       }
     }, function (err, results) {
-      if (err) return res.badRequest()
-      else return res.ok(results.findOrCreateHotel)
+      sails.log.debug('Results:')
+      sails.log.debug(JSON.stringify(results));
+      if (err) {
+        if(err.code == 117) return res.redirect('/hotel');
+        sails.log.error(err);
+        sails.log.debug('Retruning server error')
+        return res.serverError(err)
+      }
+      else {
+        sails.log.debug('Hotel results : ' + JSON.stringify(results.findOrCreateHotel))
+        return res.ok(results.findOrCreateHotel || {})
+      }
     })
   }
 }

@@ -2284,7 +2284,7 @@ select#soflow-color {
    
    .top_bar {
        background-color: #14B9FF;
-       max-height: 50px;
+       max-height: 55px;
        width: 100%;
        position: fixed;
        z-index: 3;
@@ -3576,4 +3576,8 @@ background:url(/images/hotelicons_svg2/abc.svg) no-repeat;
  background:url(/images/hotelicons_svg2/workspace.svg) no-repeat;
 }
 
+.modal-backdrop
+{
+    opacity:0.5 !important;
+}
 

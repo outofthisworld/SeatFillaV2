@@ -1,123 +1,12 @@
 
-<style>
-/* Remove that awful yellow color and border from today in Schedule */
-.fc-today {
-  opacity: 0;
-  border: none;
-}
+<div class="container-fluid">
 
-/* Styling for each event from Schedule */
-.fc-time-grid-event.fc-v-event.fc-event {
-  border-radius: 4px;
-  border: none;
-  padding: 5px;
-  opacity: .65;
-  left: 5% !important;
-  right: 5% !important;
-}
-
-/* Bolds the name of the event and inherits the font size */
-.fc-event {
-  font-size: inherit !important;
-  font-weight: bold !important;
-}
-
-/* Remove the header border from Schedule */
-.fc td, .fc th {
-  border-style: none !important;
-  border-width: 1px !important;
-  padding: 0 !important;
-  vertical-align: top !important;
-}
-
-/* Inherits background for each event from Schedule. */
-.fc-event .fc-bg {
-  z-index: 1 !important;
-  background: inherit !important;
-  opacity: .25 !important;
-}
-
-/* Normal font weight for the time in each event */
-.fc-time-grid-event .fc-time {
-  font-weight: normal !important;
-}
-
-/* Apply same opacity to all day events */
-.fc-ltr .fc-h-event.fc-not-end, .fc-rtl .fc-h-event.fc-not-start {
-  opacity: .65 !important;
-  margin-left: 12px !important;
-  padding: 5px! important;
-}
-
-/* Apply same opacity to all day events */
-.fc-day-grid-event.fc-h-event.fc-event.fc-not-start.fc-end {
-  opacity: .65 !important;
-  margin-left: 12px !important;
-  padding: 5px! important;
-}
-
-.center {
-    margin-top:50px;   
-}
-
-.modal-header {
-	padding-bottom: 5px;
-}
-
-.modal-footer {
-    	padding: 0;
-	}
-    
-.modal-footer .btn-group button {
-	height:40px;
-	border-top-left-radius : 0;
-	border-top-right-radius : 0;
-	border: none;
-	border-right: 1px solid #ddd;
-}
-	
-.modal-footer .btn-group:last-child > button {
-	border-right: 0;
-}
-</style>
-<body>
-
-
-<h2>Make a flight request</h2>
-<hr/>
-
-<br/>
-<div class="container80">
-<div id='calendar'></div>
-
-
-<div class="panel panel-default">
-    <div class="panel-heading text-center">
-        <h1>Flight requests</h1>
-    </div>
-
-    <div class="panel-content">
-    <br/>
-        <p>The calendar below allows you to submit flight requests to Seatfilla. By submitting a flight request, Seatfilla will notify you of any cheap flights it comes accross whilst
-        scanning various airlines and travel agents via site notifications and email.<br/><br/> Providers of flights to Seatfilla can also see these requests and contact us if they would like to offer you a flight, we will also notify you when this happens
-        along with instructions on how to proceed.<br/><br/> If you recieve an accepted flight offer but do not wish to fly anymore, this is fine and you will be able to decline the flight offer.
-        Accepted flight requests normally have time limits on how long you have before you can no longer accept them so that the ticket still has the potential to be sold to the next interested party.</p>
-    </div>
-</div>
-</div>
-<!-- line modal -->
-<div class="modal fade" id="squarespaceModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-	<div class="modal-content">
-		<div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
-			<h2 class="modal-title" id="lineModalLabel">Flight request information</h2>
-		</div>
-		<div class="modal-body">
+<div style="display:none;" id="template">
+        <div style="width:80%;">
 			<form id="flightRequestForm">
               <div class="form-group">
                 <label for="flight_type">Type of request</label>
-                <select id="flight_type" class="form-control">
+                <select id="flight_type" class="form-control noselect">
                 <option value="Oneway">One-way</option>
                 <option value="Return" selected>Return Flight</option>
                 </select>
@@ -125,39 +14,51 @@
               <div class="row">
                     <div class="col-xs-6">
                         <label for="departureDateStart">Departure Date</label>   
-                        <input type="date" name="departureDateStart" id="departure_date" class="form-control" required disabled/>
+                        <input type="date" name="departureDateStart" id="departure_date" class="form-control" required/>
                     </div>
                     <div class="col-xs-6">
                         <label for="departureDateEnd">Latest Departure Date</label>   
-                        <input type="date" name="departureDateEnd" id="departureDateEnd" class="form-control"/>
+                        <input type="date" name="departureDateEnd" id="departure_date_end" class="form-control"/>
                     </div>
               </div>
               <div class="row">
                     <div class="col-xs-6">
                         <label  for="returnDateStart">Return Date</label> 
-                        <input type="date" name="returnDateStart" id="return_date" class="form-control" required disabled/>
+                        <input type="date" name="returnDateStart" id="return_date" class="form-control" required/>
                     </div>
                     <div class="col-xs-6">
                         <label  for="returnDateEnd">Latest Return Date</label> 
-                        <input type="date" name="returnDateEnd" id="returnDateEnd" class="form-control"/>
+                        <input type="date" name="returnDateEnd" id="return_date_end" class="form-control"/>
                     </div>
+              </div>
+                <div class="row">
+                <div class="col-xs-6">
+                        <label for="departure_country">From country</label>   
+                        <select id="departure_country" name="departureCountry" data-attr-cityLink="#departure_city" class="country noselect form-control" required/> 
+                        </select>
+                </div>
+                <div class="col-xs-6">
+                        <label for="to_country">To country</label> 
+                        <select id="to_country" name="arrivalCountry" data-attr-cityLink="#to_city" class="country noselect form-control" required/>
+                        </select>
+                </div>
               </div>
               <div class="row">
                 <div class="col-xs-6">
                         <label for="departure_city">From city</label>   
-                        <select id="departure_city" name="departureIataCode" class="form-control cities" required/> 
+                        <select id="departure_city" name="departureIataCode" class="city noselect form-control" required/> 
                         </select>
                 </div>
                 <div class="col-xs-6">
                         <label  for="to_city">To city</label> 
-                        <select id="to_city" name="arrivalIataCode" class="form-control cities" required/>
+                        <select id="to_city" name="arrivalIataCode" class="city noselect form-control" required/>
                         </select>
                 </div>
               </div>
               <div class="row">
               <div class="col-xs-8">
               <label for="cabin_class">Cabin class</label>   
-                <select id="cabin_class" name="cabinClass" class="form-control" required/>
+                <select id="cabin_class" name="cabinClass" class="form-control noselect" required/>
                 <option value="Economy" selected>Economy</option>
                 <option value="PremiumEconomy">Premium Economy</option>
                 <option value="Business">Business Class</option>
@@ -196,249 +97,30 @@
                 </select>
                 </div>
             </div>
-            <button style="display:hidden;" type="submit"></button>
             </form>
-		</div>
-		<div class="modal-footer">
-			<div class="btn-group btn-group-justified text-center" role="group" aria-label="group button">
-				
-				<div class="btn-group btn-delete hidden" role="group">
-					<button type="button" class="btn btn-danger" data-dismiss="modal"  role="button">Close</button>
-				</div>
-
-			</div>
-            <input type="button" id="sub" class="btn btn-info btn-block" value="Create request"/>
-		</div>
-	</div>
-  </div>
+            </div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.0.1/fullcalendar.min.js"></script>
-<script src="/js/maps/airport-data2.js"></script>
-<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.0.1/fullcalendar.min.css">
-<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.0.1/fullcalendar.print.css" media="print">
-<script>
-		$(document).ready(function()
-		{
-            $('#squarespaceModal').on("hidden.bs.modal", function () {
-                 lastSelected = null;
-            });
 
-            window.seatfilla.globals.geolocation.getUserLocation(function(status,userLoc){
-                var count = 0;
-                console.log('User loc:')
-                console.log(userLoc);
-                window.seatfilla.globals.inputs.data.retrieveCityData().forEach(function(item) {
-                    if(count == 0){
-                        console.log(item);
-                        count++;
-                    }
+<h2 class="text-center">Make a flight request</h2>
+<div id="scheduler_here" class="dhx_cal_container" style='width:100%;height:1000px;'>
+    <div class="dhx_cal_navline">
+        <div class="dhx_cal_prev_button">&nbsp;</div>
+        <div class="dhx_cal_next_button">&nbsp;</div>
+        <div class="dhx_cal_today_button"></div>
+        <div class="dhx_cal_date"></div>
+        <div class="dhx_cal_tab" name="day_tab" style="right:204px;"></div>
+        <div class="dhx_cal_tab" name="week_tab" style="right:140px;"></div>
+        <div class="dhx_cal_tab" name="month_tab" style="right:76px;"></div>
+    </div>
+    <div class="dhx_cal_header"></div>
+    <div class="dhx_cal_data"></div>       
+</div>
 
-                    const $opt = $('<option></option>', { 
-                         value: item.iataCode,
-                        'data-val-city': item.name,
-                        'data-val-continentId':item.continentId,
-                        'data-val-continentName':item.continentName,
-                        'data-val-countryName':item.countryName,
-                        'data-val-countryId':item.countryId,
-                        'data-val-currency':item.currency,
-                        'data-val-location':item.location,
-                        'data-val-cityId':item.id
-                        }).text(item.name + ', ' + item.countryName);
-            
-                    if(status == 200 && userLoc && (userLoc.address.countryCode == item.countryId
-                      && (item.name.toLowerCase() == userLoc.address.city.toLowerCase() 
-                      || item.name.toLowerCase() == userLoc.address.region.toLowerCase()))){
-                        $opt.attr('selected','selected');
-                    }
+</div>
 
-                    $('.cities').append($opt);
-                });
-
-            })
-
-			var date = new Date();
-			var d = date.getDate();
-			var m = date.getMonth();
-			var y = date.getFullYear();
-			const eventColors =['#C2185B','#E91E63','#F44336','#673AB7','#3F51B5','#2196F3','#00BCD4','#03A9F4','#8BC34A','#EC407A','#FF1744'];
-            var lastSelected = null;
-			var calendar = $('#calendar').fullCalendar(
-			{
-				header:
-				{
-					left: 'prev,next today',
-					center: 'title',
-					right: ''
-				},
-                customButtons: {
-                    myCustomButton: {
-                        text: 'New Flight Request',
-                        click: function() {
-                            alert('clicked the custom button!');
-                        }
-                    }
-                },
-                defaultView:'month',
-				selectable: true,
-				selectHelper: true,
-				select: function(start, end, allDay)
-				{
-                    var check = start._d.toJSON().slice(0,10); 
-                    var today = new Date().toJSON().slice(0,10);
-                    if(check < today)
-                    {
-                        alert('Selected date has already been');
-                        calendar.fullCalendar('unselect');	
-                        return;
-                    }
- 
-					if (lastSelected){		
-                            const startDate = new Date(lastSelected.start);
-                            const sd_day = startDate.getDay();
-                            const sd_year = startDate.getFullYear();
-                            const sd_month = startDate.getMonth();
-                            const sd_timezone_offset = startDate.getTimezoneOffset();
-
-                            const endDate = new Date(end);
-                            endDate.setDate(endDate.getDate()-1);
-                            const ed_day = endDate.getDay();
-                            const ed_year = endDate.getFullYear();
-                            const ed_month = endDate.getMonth();
-                            const ed_timezone_offset = endDate.getTimezoneOffset();
-
-                            var dp_sd_day = ("0" + startDate.getDate()).slice(-2);
-                            var dp_sd_month = ("0" + (sd_month + 1)).slice(-2);
-                            var departure_date = sd_year+"-"+(dp_sd_month)+"-"+(dp_sd_day);
-                            $('#departure_date').val(departure_date);
-
-                            var dp_ed_day = ("0" + endDate.getDate()).slice(-2);
-                            var dp_ed_month = ("0" + (ed_month + 1)).slice(-2);
-                            var return_date = ed_year+"-"+(dp_ed_month)+"-"+(dp_ed_day);
-                            $('#return_date').val(return_date);
-
-                            $('#squarespaceModal').modal('show');
-
-                            $('#currency').html("");
-                            $('#currency').html($('#seatfilla_currencies').html());
-
-                            $('#currencySymbol').html($('#seatfilla_currencies').find(':selected').attr('data-symbol'));
-
-                            $('#currency').on('change',function(){
-                                 $('#currencySymbol').html($(this).find(':selected').attr('data-symbol'));
-                            });
-
-                            if(startDate.getTime() ==  endDate.getTime()){
-                                $('#departureDateEnd').val(departure_date);
-                                $('#departureDateEnd').attr('disabled','disabled');
-                                $('#returnDateEnd').attr('disabled','disabled');
-                                 $('#returnDateEnd').val(return_date);
-                            }
-                                    
-                            $('#sub').on('click',function(){
-                                    function validateDates(){
-                                            var departureDateEnd;
-                                            var returnDateEnd;
-                                            var departure_date =  new Date($('#departure_date').val());
-                                            var return_date = new Date($('#return_date').val());
-
-                                            //These are optional so parse them carefully
-                                            try{
-                                                departureDateEnd = new Date($('#departureDateEnd').val());
-                                            }catch(err){departureDateEnd = null}
-
-                                            try{
-                                            returnDateEnd = new Date($('#returnDateEnd').val());
-                                            }catch(err){returnDateEnd = null}
-
-                                            if(!(departure_date >= return_date)){
-                                                alert('Departure date must be after the return date.');
-                                                return false;
-                                            }
-                                            
-                                            if(departureDateEnd && departureDateEnd < departure_date){
-                                                alert('Departure date end must after or equal to the departure date');
-                                                return false;
-                                            }
-
-                                            if(returnDateEnd && returnDateEnd < return_date){
-                                                alert('Return date end must after or equal to the return date');
-                                                return false;
-                                            }
-
-                                            return true;
-                                    }
-                                    var $flightRequestForm = $('#flightRequestForm')
-                                    if (!$flightRequestForm[0].checkValidity()) {
-                                        $flightRequestForm.find(':submit').click()
-                                    }else if(validateDates()){
-                                        console.log('validated date');
-                                        const data = {};            
-                                   
-                                        const depCity = $('#departure_city :selected');
-                                        const arrivalCity = $('#departure_city :selected');
-                                        data.departureDateStart = startDate.toISOString();
-                                        data.departureDateEnd = new Date($('#departureDateEnd').val()).toISOString();
-                                        data.returnDateStart = endDate.toISOString();
-                                        data.returnDateEnd = new Date($('#returnDateEnd').val()).toISOString();
-                                        data.timeZoneOffset = sd_timezone_offset;
-                                        data.departureCity = depCity.attr('data-val-city');
-                                        data.departureCityId = depCity.attr('data-val-cityId');
-                                        data.departureContinent = depCity.attr('data-val-continentName');
-                                        data.departureContinentId = depCity.attr('data-val-continentId');
-                                        data.departureCountry = depCity.attr('data-val-countryName');
-                                        data.departureCountryId = depCity.attr('data-val-countryId');
-                                        data.departureCountryCurrency = depCity.attr('data-val-currency');
-                                        data.departureCityLocation = depCity.attr('data-val-location');
-
-                                        data.arrivalCity = arrivalCity.attr('data-val-city');
-                                        data.arrivalCityId = arrivalCity.attr('data-val-cityId');
-                                        data.arrivalContinent = arrivalCity.attr('data-val-continentName');
-                                        data.arrivalContinentId = arrivalCity.attr('data-val-continentId');
-                                        data.arrivalCountry = arrivalCity.attr('data-val-countryName');
-                                        data.arrivalCountryId = arrivalCity.attr('data-val-countryId');
-                                        data.arrivalCountryCurrency = arrivalCity.attr('data-val-currency');
-                                        data.arrivalCityLocation = arrivalCity.attr('data-val-location');
-
-                                        console.log('Serialized data:')
-                                        console.log(data);
-
-                                        data.requestLocale = 'en-US';
-
-                                        $.ajax({
-                                            type: "POST",
-                                            url: '/FlightRequest/Create',
-                                            data: data,
-                                            success: function(res,s,xhr){
-                                                if(xhr.statusCode==200){
-                                                    calendar.fullCalendar('renderEvent',
-                                                        {
-                                                            title: 'Flight Request ' + $('#departure_date').val() + '-' + $('return_date').val(),
-                                                            start: lastSelected.start,
-                                                            end:e.toISOString(),
-                                                            allDay: allDay,
-                                                            color: eventColors[Math.ceil(Math.random() * eventColors.length) % eventColors.length]
-                                                        },
-                                                        true);
-                                                    $('#sub').off('click');
-                                                    calendar.fullCalendar('unselect');	
-                                                    $('#squarespaceModal').modal('hide');
-                                                }else{
-                                                    alert('Error saving event');
-                                                }
-                                            }
-                                        });
-                                    }
-                               });
-                            }else{
-                                lastSelected = {start,end,allDay};
-                            }
-					
-				},
-				editable: true,
-				events: []
-			});
-		});
-</script>
-</body>
+	
+<!-- SCRIPTS WILL BE AUTOMATICALLY LOADED WHEN PAGE IS SENT VIA AJAX (see lazy-script-loader.js)-->
+<div style="display:hidden;" data-attr-lazyload-sync="" data-attr-href="/independent-css/scheduler/dhtmlxscheduler.css"></div>
+<div style="display:hidden;" data-attr-lazyload-sync="" data-attr-src="/scripts/scheduler/dhtmlxscheduler.js"></div>
+<div style="display:hidden;" data-attr-lazyload-sync="" data-attr-src="/scripts/flightRequestScheduler.js"></div>
 

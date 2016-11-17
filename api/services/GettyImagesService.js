@@ -176,7 +176,7 @@ module.exports = {
           }).filter(function(image){
               return image != null;
           }).map(function(image){
-            sails.log.debug('Returning: ' + JSON.stringify(image))
+        
             return { displaySizeImage: image.uri}
           }))
         } else {

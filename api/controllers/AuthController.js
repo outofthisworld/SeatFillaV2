@@ -28,6 +28,12 @@ module.exports = {
         if (!req.user.isEmailVerified) {
           req.flash('toaster-notification',
             'Your email is not currently verified')
+
+            NotificationService.sendDedicatedNotificationAsync(req)({
+              title: 'Email needs verification',
+              message: 'Your email is not currently verified, if you need the email resent please click here <a href="/home/resendVerificationEmail">resend</a>',
+              link:'/home/resendVerificationEmail'
+            });
         }else {
           req.flash('toaster-notification', 'Welcome back to Seatfilla!')
         }
@@ -35,6 +41,7 @@ module.exports = {
         if (req.wantJSON) {
           return res.json(ResponseStatus.OK, result)
         }else {
+           sails.log.debug('Redirect with success ' + JSON.stringify(req.allParams()))
           return res.redirect(req.allParams().redirectSuccess || '/')
         }
       }else {

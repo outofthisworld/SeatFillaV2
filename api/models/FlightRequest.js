@@ -106,21 +106,21 @@ module.exports = {
             defaultsTo: true
         },
         departureDateStart: {
-            type: 'date',
+            type: 'datetime',
             required: true,
             notNull: true
         },
         departureDateEnd: {
-            type: 'date',
+            type: 'datetime',
             required: true,
             notNull: true
         },
         returnDateStart: {
-            type: 'date',
+            type: 'datetime',
             defaultsTo: null
         },
         returnDateEnd: {
-            type: 'date',
+            type: 'datetime',
             defaultsTo: null
         },
         adults: {
@@ -162,14 +162,12 @@ module.exports = {
             type: 'boolean',
             defaultsTo:true
         },
-        isAccepted:{
-            type:'boolean',
-            defaultsTo:false
-        },
         //One to many (User can have many requests,
         //request can have one user.)
         user: {
-            model: 'user'
+            model: 'user',
+            notNull:true,
+            required:true
         }
     },
     beforeCreate: function(record, cb) {

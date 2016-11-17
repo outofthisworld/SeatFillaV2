@@ -2,15 +2,15 @@ const request = require('supertest')
 const assert = require('assert');
 
 describe('User controller tests', function () {
-  describe('POST /user/create', function () {
+  /*describe('POST /user/create', function () {
     it('respond with json', function (done) {
 
-      User.destroy({email:'dale@farpoint.co.nz'}).exec(function(err){
+      /*User.destroy({email:'dale@farpoint.co.nz'}).exec(function(err){
         if(err){
           return done(err);
         }
       });
-
+      
       request(sails.hooks.http.app)
         .post('/user/create')
         .set('Accept', 'application/json')
@@ -39,6 +39,8 @@ describe('User controller tests', function () {
 
           done();
         })
+            done();
     })
-  })
+
+  })*/
 })

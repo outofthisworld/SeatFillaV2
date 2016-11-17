@@ -16,59 +16,173 @@ Initializes the hotel script
         throw new Error('io not defined');
 
 
-    var waitingDialog = waitingDialog || (function ($) {
- 
-	var $dialog = $(
-		'<div class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true" style="padding-top:15%; overflow-y:visible;">' +
-		'<div class="modal-dialog modal-m">' +
-		'<div class="modal-content">' +
-			'<div class="modal-header"><h3 style="margin:0;"></h3></div>' +
-			'<div class="modal-body">' +
-				'<div class="progress progress-striped active" style="margin-bottom:0;"><div class="progress-bar" style="width: 100%"></div></div>' +
-			'</div>' +
-		'</div></div></div>');
-
-        return {
-            show: function (message, options) {
-                // Assigning defaults
-                if (typeof options === 'undefined') {
-                    options = {};
-                }
-                if (typeof message === 'undefined') {
-                    message = 'Loading';
-                }
-                var settings = $.extend({
-                    dialogSize: 'm',
-                    progressType: '',
-                    onHide: null // This callback runs after the dialog was hidden
-                }, options);
-
-                // Configuring dialog
-                $dialog.find('.modal-dialog').attr('class', 'modal-dialog').addClass('modal-' + settings.dialogSize);
-                $dialog.find('.progress-bar').attr('class', 'progress-bar');
-                if (settings.progressType) {
-                    $dialog.find('.progress-bar').addClass('progress-bar-' + settings.progressType);
-                }
-                $dialog.find('h3').text(message);
-                // Adding callbacks
-                if (typeof settings.onHide === 'function') {
-                    $dialog.off('hidden.bs.modal').on('hidden.bs.modal', function (e) {
-                        settings.onHide.call($dialog);
-                    });
-                }
-                // Opening dialog
-                $dialog.modal();
-            },
-            /**
-             * Closes dialog
-             */
-            hide: function () {
-                $dialog.modal('hide');
-            }
-        };
-
-    })($);
-
+      const amenMapping = {
+      'LAUNDRY': '.icon-laundry',
+      'WIFISERVICE': '.icon-wifi',
+      'FIREPLACE': '.icon-fireplace',
+      'LUGGAGESTORAGE': '.icon-suitcase',
+      'GARDEN': '.icon-garden',
+      'FIREEXTINGUISHER': '.icon-fire-extinguisher',
+      'BED': '.icon-bed',
+      'TAXI': '.icon-taxi',
+      'BALCONY': '.icon-terrace',
+      'TOILETPAPER': '.icon-toilet-paper',
+      'TOOTHPASTE': '.icon-toothbrush-toothpaste',
+      'TOOTHBURSH': '.icon-toothbrush-toothpaste',
+      'GYMNASIUM': '.icon-gym-equipment',
+      'PS4': '.icon-game-console',
+      'PS3': '.icon-game-console',
+      'PS2': '.icon-game-console',
+      'XBOX': '.icon-game-console',
+      'PHONE': '.icon-phone',
+      'BABYSITTINGSERVICE': '.icon-child-care',
+      'CHILDREN': '.icon-child-care',
+      'KIDS': '.icon-child-care',
+      'ADOLESCENTS': '.icon-child-care',
+      'PHONESERVICE': '.icon-phone',
+      'ROOMSERVICE': '.icon-phone-service',
+      'XBOX 360': '.icon-game-console',
+      'XBOX-360': '.icon-game-console',
+      'GAMECONSOLE': '.icon-game-console',
+      'NINTENDO': '.icon-game-console',
+      'NINTENDO WII': '.icon-game-console',
+      'WII': '.icon-game-console',
+      'PRIVATEBEACH': '.icon-beach',
+      'MEETINGROOM': '.icon-meeting-table',
+      'BATH': '.icon-bath',
+      'BUNKBED': '.icon-bunk-beds',
+      'BUNKBEDS': '.icon-bunk-beds',
+      'SHOWER': '.icon-shower',
+      'LAMP': '.icon-lamp',
+      'LIGHTING': '.icon-lamp',
+      'BICYCLE': '.icon-bicycle',
+      'ATM': '.icon-atm',
+      'BLENDER': '.icon-blender',
+      'CLOCK': '.icon-clock',
+      'WALLCLOCK': '.icon-clock',
+      'ALARMCLOCK': '.icon-clock',
+      'STORE': '.icon-store',
+      'ANIMAL': '.icon-animal',
+      'ANIMALS': '.icon-animal',
+      'PETSALLOWEDSERVICE': '.icon-animals',
+      'FITNESSCENTER': '.icon-dumbbell',
+      'CAMERA': '.icon-camera',
+      'YOGA': '.flaticon-yoga-mat',
+      'DISABLED': '.icon-wheel-chair',
+      'WHEELCHAIR': '.icon-wheel-chair',
+      'BUSINESSCENTER': '.icon-meeting',
+      'FRONTDESK24HSERVICE': '.icon-reception',
+      'GYMNASIUM': '.icon-gym-equipment',
+      'DISABLEDFACILITY': '.icon-wheel-chair',
+      'LIMOUSINESERVICE': '.icon-taxi',
+      'FIRSTAID': '.icon-first-aid',
+      'HEATING': '.icon-heater',
+      'HORSE': '.icon-horse',
+      'TOWEL': '.icon-towel',
+      'OVEN': '.icon-oven',
+      'SCALES': 'icon-scales',
+      'LOCK': '.icon-lock',
+      'PADLOCK': '.icon-lock',
+      'COOKTOP': '.icon-oven',
+      'BICYCLE': '.icon-bicycle',
+      'COOKING': '.icon-oven',
+      'MASSAGE': '.icon-massage',
+      'MINIBAR': '.icon-bar-fridge',
+      'MINI-BAR': '.icon-bar-fridge',
+      'MINIBARSERVICE': '.icon-bar-fridge',
+      'DESK': '.icon-desk',
+      'LIFT': '.icon-lift',
+      'ELEVATOR': '.icon-lift',
+      'SHAMPOO': '.icon-shampoo',
+      'MIRROR': '.icon-mirror',
+      'AIRCONDITIONER': '.icon-air-conditioner',
+      'AIRCONDITIONING': '.icon-air-conditioner',
+      'HEATER': '.icon-heater',
+      'FRIDGE': '.icon-refrigerator',
+      'REFRIGERATOR': '.icon-refrigerator',
+      'MICROWAVE': '.icon-microwave',
+      'NEWSPAPER': '.icon-newspaper',
+      'HAIRDRYER': '.icon-hairdryer',
+      'IRON': '.icon-iron',
+      'LAPTOP': '.icon-computer',
+      'COMPUTER': '.icon-computer',
+      'COFEEMAKER': '.icon-coffee-machine',
+      'COFEE': '.icon-coffee',
+      'INDOORSWIMMINGPOOL': '.icon-outdoor-pool',
+      'INDOORPOOL': '.icon-outdoor-pool',
+      'CHILDRENPOOL': '.icon-outdoor-pool-sunumbrella',
+      'CHILDRENSWIMMINGPOOL': '.icon-outdoor-pool-subumbrella',
+      'BUSINESSCENTER': '.icon-meeting',
+      'CONFERENCEFACILITIES': 'icon-meeting',
+      'CONFERENCEFACILITY': 'icon-meeting',
+      'BREAKFAST': '.icon-eating-utensils',
+      'RESTAURANT': '.icon-restaurant',
+      'TENNISCOURT': '.icon-tennis-court',
+      'RADIO': '',
+      'STEAMROOM': '',
+      'FAX': '',
+      'PHOTOCOPIER': '',
+      'PHOTOCOPYINGSERVICE': '',
+      'BEAUTYSALON': '',
+      'RADIOSERVICE': '',
+      'RADIO': '',
+      'CURRENCYEXCHANGE': '',
+      'CURRENCYEXCHANGESERVICE': '',
+      'WAKEUPCALL': '',
+      'WAKEUPCALLSERVICE': '',
+      'LOUNGE': '.icon-couch',
+      'BIN': '.icon-bin',
+      'BARFRIDGE': '.icon-bar-fridge',
+      'BARREFRIDGERATOR': '.icon-bar-fridge',
+      'TV': '.icon-television-flatscreen',
+      'DVD': '.icon-dvd',
+      'TELEPHONE': '.icon-phone',
+      'EXPRESSCHECKOUT': '.icon-credit-card',
+      'EXPRESSCHECKOUTSERVICE': '.icon-credit-card',
+      'CONFERENCEFACILITIES': '.icon-meeting',
+      'MULTILINGUALSTAFFSERVICE': '.icon-doorman',
+      'MULTILINGUALSTAFF': '.icon-doorman',
+      'RECEPTIONAREA': '.icon-reception',
+      'TELEVISION': '.icon-television-flatscreen',
+      'DAILYNEWSPAPERSERVICE': '.icon-newspaper',
+      'PINGPONG': '.icon-ping-pong',
+      'PING-PONG': '.icon-ping-pong',
+      'PING PONG': '.icon-ping-pong',
+      'FITNESSCENTRE': '.icon-dumbbell',
+      'SMOKINGAREA': '.icon-smoking',
+      'BABYSITTINGSERVICE': '.icon-child-care',
+      'SUNUMBRELLA': '.icon-sun-umbrella',
+      'NONSMOKINGSERVICE': '.icon-no-smoking',
+      'BAR': '.icon-beer',
+      'GOLF': '.icon-golf-club',
+      'GOLFCOURSE': '.icon-golf-club',
+      'GOLF-COURSE': '.icon-golf-club',
+      'SATTELITETV': '.icon-television-antenna',
+      'DOORMAN': '.icon-door-man',
+      'SAUNA': '',
+      'PARKING': '.icon-parking',
+      'MARINA': '.icon-marina',
+      'SHOP': '.icon-shop',
+      'EXPRESSCHECKINSERVICE': '.icon-credit-card',
+      'CONCIERGESERVICE': '.icon-doorman',
+      'DOORMAN': '.icon-doorman',
+      'OUTDOORSWIMMINGPOOL': '.icon-outdoor-swimming-pool',
+      'SPA': '.icon-spa',
+      'ROOMSERVICE': '.icon-room-service',
+      'MASSAGE': '.icon-massage',
+      'MASSAGESERVICE': '.icon-massage',
+      'INTERNETACCESSSERVICE': '.icon-wifi',
+      'SAFEDEPOSITBOX': '.icon-safe',
+      'FIRSTAID': '.icon-first-aid',
+      'FIRSTAIDKIT': '.icon-first-aid',
+      'LUGGAGECART': '.icon-luggage-trolley',
+      'LUGGAGETROLLEY': '.icon-luggage-troller',
+      'LIFEGUARD': '.icon-life-guard',
+      'CONSIERGE': '.icon-reception',
+      'CONSIERGESERVICE': '.icon-reception',
+      'BEACH': '.icon-beach',
+      'SMOKINGAREA': '.icon-smoking'
+  }
 
 
     var isInitialized = false;
@@ -222,6 +336,27 @@ Initializes the hotel script
                             $(ele).addClass('btn-warning');
                         });
                 })
+
+          
+                    $('#myCarousel').carousel({
+                        interval: 10000
+                    })
+
+                    $('.fdi-Carousel .item').each(function () {
+                        var next = $(this).next();
+                        if (!next.length) {
+                            next = $(this).siblings(':first');
+                        }
+                        next.children(':first-child').clone().appendTo($(this));
+
+                        if (next.next().length > 0) {
+                            next.next().children(':first-child').clone().appendTo($(this));
+                        }
+                        else {
+                            $(this).siblings(':first').children(':first-child').clone().appendTo($(this));
+                        }
+                    });
+         
             }
 
             //Check what state the document is in
@@ -378,6 +513,10 @@ Initializes the hotel script
                     },
                     httpImgPath: function(imgPath) {
                         return 'http://' + imgPath;
+                    },
+                    getAmenityIcon(string) {
+                        const icon = amenMapping[string];
+                        return (icon && icon.substring(1, icon.length)) || '';
                     }
                 }
 
@@ -400,7 +539,7 @@ Initializes the hotel script
                     const hotelTags = results[3];
 
                     const template = $.templates('#seatfillaHotelTemplate');
-                    waitingDialog.hide();
+                    $.waitingDialog.hide();
                     renderPage(template.render({
                             hotel: options.hotel,
                             hotelInfo: options.hotelInfo,
@@ -430,9 +569,17 @@ Initializes the hotel script
                                     if (result.body.status == "COMPLETE") {
                                         console.log('Final result after poll was:');
                                         console.log(result);
-                                        waitingDialog.hide();
+                                        $.waitingDialog.hide();
+
+                                        viewHelpers.getAgentDetails = function(id){
+                                            return result.body.agents.find(function(agent){
+                                                return agent.id == id;
+                                            })
+                                        }
+
                                         renderPage(template.render({
-                                                hotel: options.hotel,
+                                                hotel:options.hotel,
+                                                extendedHotelInfo:result.body.hotels[0],                                              
                                                 hotelInfo: result.body,
                                                 hotelUserRatings,
                                                 hotelUserComments,
@@ -459,7 +606,7 @@ Initializes the hotel script
             })
         } 
     
-        waitingDialog.show('Loading hotel.. ' + options.hotel.name ||
+        $.waitingDialog.show('Loading hotel.. ' + options.hotel.name ||
          (options.hotelInfo && options.hotelInfo.hotelName));
         populateData();
 

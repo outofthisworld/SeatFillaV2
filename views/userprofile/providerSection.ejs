@@ -1,0 +1,68 @@
+
+<style>
+
+.nav-tabs li{
+    max-height:60px;
+    background:transparent;
+    background-image:none;
+}
+
+
+
+label{
+    font-weight:normal;
+    padding:5px;
+}
+
+</style>
+
+<script>
+
+    
+    $(document).ready(function(){
+
+        $('#tabContentPane').load('/userprofile/<%=req.user.username%>/api');
+
+       
+        $('a[data-toggle="tab"]').on('click',function(){
+            if(!$(this).hasClass('active')){
+                const _this = $(this);
+                $.get($(this).attr('data-page'),function(res){
+                    $('a[data-toggle="tab"]').removeClass('active');
+                    _this.addClass('active');
+                    $('#tabContentPane').html(res);
+                }).fail(function(){
+                    $('a[data-toggle="tab"]').removeClass('active');
+                    _this.addClass('active');
+                    alert('Error loading data');
+                })
+            }
+        })
+    })
+</script>
+
+                        <ul class="nav-tabs">
+                              <li><a data-page="api" data-toggle="tab">Api section</a></li>
+                             <li class="dropdown">
+                                <a href="#" data-toggle="dropdown"> Manage hotels <span class="caret"></span></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a class="" data-toggle="tab" data-page="hotel/create">Create hotel</a></li>
+                                    <li><a data-toggle="tab">View my hotels</a></li>
+                                </ul>
+                            </li>
+                            <li><a data-toggle="tab">Info 2</a></li>
+                            <li><a data-toggle="tab">Info 3</a></li>
+                            <li class="dropdown">
+                                <a data-toggle="dropdown">Dropdown <span class="caret"></span></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a data-toggle="tab">Info 4</a></li>
+                                    <li><a data-toggle="tab">Info 5</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                
+  
+                        <div id="tabContentPane" class="container-fluid">
+                        </div>
+     
+ 

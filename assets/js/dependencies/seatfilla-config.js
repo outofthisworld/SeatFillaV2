@@ -92,7 +92,7 @@ window.seatfilla.globals.locale.getPrefferedCurrency = function (cb) {
   window.seatfilla.globals.cache.get({
     key: 'CurrencyCodePreference',
     type: 'session',
-    useServerStore:true,
+    useServerStore: true,
     success: function (status, result) {
       console.log('Getting currency code preference from cache ' + status + ' result was ' + result)
       if (status == 200 && result) {
@@ -107,7 +107,7 @@ window.seatfilla.globals.locale.getPrefferedCurrency = function (cb) {
           console.log(JSON.stringify(r))
           if (s == 200 && r) {
             if (r && r.currencies && Array.isArray(r.currencies)) {
-              window.seatfilla.globals.locale.setPrefferedCurrency(r.currencies[0],function(status,result){
+              window.seatfilla.globals.locale.setPrefferedCurrency(r.currencies[0], function (status, result) {
                 console.log('Attempted to set preffered currency to ' + r.currencies[0])
               })
               return cb(status, r.currencies[0])
@@ -160,51 +160,51 @@ window.seatfilla.globals.cookies.getCookie = function (cname) {
 window.seatfilla.globals.cache = window.seatfilla.globals.cache || {}
 window.seatfilla.globals.cache.events = window.seatfilla.globals.cache.events || {}
 
-window.seatfilla.globals.cache.on = function(eventType, func, eventIdentifier){
-    if(!(typeof func == 'function')) 
-    throw new Error('Invalid params to seatfilla-config.js/window.seatfilla.globals.cache.on');
+window.seatfilla.globals.cache.on = function (eventType, func, eventIdentifier) {
+  if (!(typeof func == 'function'))
+    throw new Error('Invalid params to seatfilla-config.js/window.seatfilla.globals.cache.on')
 
-    if(!(eventType in window.seatfilla.globals.cache.events) || 
-        !Array.isArray(window.seatfilla.globals.cache.events[eventType])){
-       window.seatfilla.globals.cache.events[eventType] = [];
-    }
+  if (!(eventType in window.seatfilla.globals.cache.events) ||
+    !Array.isArray(window.seatfilla.globals.cache.events[eventType])) {
+    window.seatfilla.globals.cache.events[eventType] = []
+  }
 
-    if(eventIdentifier)
-        func.cacheEventIdentifer = eventIdentifier;
+  if (eventIdentifier)
+    func.cacheEventIdentifer = eventIdentifier
 
-    window.seatfilla.globals.cache.events[eventType].push(func);
+  window.seatfilla.globals.cache.events[eventType].push(func)
 }
 
-window.seatfilla.globals.cache.removeOn = function(eventType, optIdentifier){
-    if(!typeof eventType == 'string' || (optIdentifier && !(typeof optIdentifier == 'string')))
-        throw new Error('Invalid params to seatfilla-config.js/removeOn');
+window.seatfilla.globals.cache.removeOn = function (eventType, optIdentifier) {
+  if (!typeof eventType == 'string' || (optIdentifier && !(typeof optIdentifier == 'string')))
+    throw new Error('Invalid params to seatfilla-config.js/removeOn')
 
-    if(!eventType in window.seatfilla.globals.cache.events) 
-        throw new Error('Invalid event type in seatfilla-config.js/removeOn');
+  if (!eventType in window.seatfilla.globals.cache.events)
+    throw new Error('Invalid event type in seatfilla-config.js/removeOn')
 
-    if(optIdentifier){
-        window.seatfilla.globals.cache.events[eventType].filter(function(it,indx){
-            if(it.optIdentifier == optIdentifier) {  
-                console.log('Removing cache event with event type ' + eventType + ' with identifier ' + optIdentifier);
-                window.seatfilla.globals.cache.events[eventType].slice(indx,1);
-            }
-        })
-    }else{
-        console.log('Removing all cache events with event type ' + eventType);
-        delete window.seatfilla.globals.cache.events[eventType];
-    }
+  if (optIdentifier) {
+    window.seatfilla.globals.cache.events[eventType].filter(function (it, indx) {
+      if (it.optIdentifier == optIdentifier) {
+        console.log('Removing cache event with event type ' + eventType + ' with identifier ' + optIdentifier)
+        window.seatfilla.globals.cache.events[eventType].slice(indx, 1)
+      }
+    })
+  }else {
+    console.log('Removing all cache events with event type ' + eventType)
+    delete window.seatfilla.globals.cache.events[eventType]
+  }
 }
 
-window.seatfilla.globals.cache.notifyCacheEvent = function(eventType,params){
-    const _self = this;
+window.seatfilla.globals.cache.notifyCacheEvent = function (eventType, params) {
+  const _self = this
 
-    if(window.seatfilla.globals.cache.events[eventType]){
-      const arr = window.seatfilla.globals.cache.events[eventType];
+  if (window.seatfilla.globals.cache.events[eventType]) {
+    const arr = window.seatfilla.globals.cache.events[eventType]
 
-      arr.forEach(function(value){
-          value.apply(_self, params);
-      });
-    }
+    arr.forEach(function (value) {
+      value.apply(_self, params)
+    })
+  }
 }
 
 window.seatfilla.globals.cache.put = function (options) {
@@ -212,22 +212,22 @@ window.seatfilla.globals.cache.put = function (options) {
     throw new Error('Invalid input into window.seatfilla.globals.cache.put')
 
   const callback = options.success && typeof options.success == 'function' ? options.success : function () {}
-  const eventObj = {};
+  const eventObj = {}
 
   if (!window.seatfilla.globals.browserSupportsWebStorage()) {
     if (navigator.cookieEnabled) {
       window.seatfilla.globals.cookies.setCookie(options.key, JSON.stringify(options.data), options.expiration || 1)
-      eventObj.storedInCookie = true;
+      eventObj.storedInCookie = true
     }
   } else {
     (function useStore (obj) {
-      eventObj.storedInLocalOrSessionStorage = true;
+      eventObj.storedInLocalOrSessionStorage = true
       obj.setItem(options.key, JSON.stringify(options.data))
     })(((options.type == 'session' ? sessionStorage : localStorage) || sessionStorage))
   }
 
   if (options.useServerStore) {
-    console.log('Sending ' + JSON.stringify(options) + ' to server');
+    console.log('Sending ' + JSON.stringify(options) + ' to server')
     $.ajax({
       type: 'POST',
       url: '/SeatfillaSettings/setStoredSettings',
@@ -238,21 +238,21 @@ window.seatfilla.globals.cache.put = function (options) {
         const res = window.seatfilla.globals.tryParseJsonResult(result)
         console.log('Recieved result from posting key: ' + options.key + ' with data ' + JSON.stringify(options.data) + ' to SeatfillaSettings/setStoredSettings')
         console.log('Response was ' + JSON.stringify(res))
-        eventObj.useServerStore = true;
-        eventObj.serverResult = res;
-        eventObj.objectResultStatus = res.status;
-        eventObj.xhrResponseStatus = xhr.status;
-        window.seatfilla.globals.cache.notifyCacheEvent('store',[options.key, options, eventObj])
-        console.log('Returning return code ' + res.status + ' for cache put (server store) for key ' + options.key);
+        eventObj.useServerStore = true
+        eventObj.serverResult = res
+        eventObj.objectResultStatus = res.status
+        eventObj.xhrResponseStatus = xhr.status
+        window.seatfilla.globals.cache.notifyCacheEvent('store', [options.key, options, eventObj])
+        console.log('Returning return code ' + res.status + ' for cache put (server store) for key ' + options.key)
         return callback(res.status, res)
       }
     })
-  }else{
-    const returnCode = eventObj.storedInCookie || eventObj.storedInLocalOrSessionStorage? 200:500;
-    console.log('Returning return code ' + returnCode + ' for cache put for key ' + options.key);
-    console.log('Not using server store');
-    window.seatfilla.globals.cache.notifyCacheEvent('store',[options.key, options, eventObj])
-    return callback(returnCode, eventObj);
+  }else {
+    const returnCode = eventObj.storedInCookie || eventObj.storedInLocalOrSessionStorage ? 200 : 500
+    console.log('Returning return code ' + returnCode + ' for cache put for key ' + options.key)
+    console.log('Not using server store')
+    window.seatfilla.globals.cache.notifyCacheEvent('store', [options.key, options, eventObj])
+    return callback(returnCode, eventObj)
   }
 }
 
@@ -276,7 +276,7 @@ window.seatfilla.globals.cache.get = function (options) {
           console.log('Got stored setting for key ' + options.key)
           console.log('result was ' + result)
           const res = window.seatfilla.globals.tryParseJsonResult(result)
-          return callback(result.status, result[options.key] || null)
+          return callback(result.status || xhr.status, result[options.key] || null)
         }
       })
     }
@@ -287,8 +287,6 @@ window.seatfilla.globals.cache.get = function (options) {
     })((options.type == 'session' ? sessionStorage : localStorage) || sessionStorage)
   }
 }
-
-
 
 /* End cache */
 
@@ -304,6 +302,42 @@ window.seatfilla.globals.geolocation.setUserLocation = function (location, callb
     useServerStore: true,
     success: callback
   })
+}
+
+window.seatfilla.globals.setUser = function(user){
+    window.seatfilla.globals.cache.put({
+    key: 'user',
+    data: user,
+    type: 'session',
+    useServerStore: false,
+    success: callback
+  })
+}
+
+window.seatfilla.globals.getUser = function (callback) {
+   window.seatfilla.globals.cache.get({
+    key: 'user',
+    type: 'session',
+    useServerStore: false,
+    success: function (status, result) {
+      if(status == 200 && result && result.id){
+          console.log('retrieved user from cache')
+          return callback(status,result);
+      }else{
+          console.log('Retrieving user from server call')
+         $.ajax({
+            url: '/user/getCurrentUser',
+            method: 'GET',
+            success: function (data, r, xhr) {
+              return callback(xhr.status, data)
+            },
+            error: function () {
+              return callback(500, null)
+            }
+         })
+      }
+    }
+});
 }
 
 window.seatfilla.globals.geolocation.getUserLocation = function (callback) {
@@ -323,34 +357,33 @@ window.seatfilla.globals.geolocation.getUserCountryInformation = function (cb) {
     type: 'session',
     useServerStore: false,
     success: function (status, result) {
+      function makeAJAXCountryInfoReq (r) {
+        $.ajax({
+          type: 'POST',
+          url: '/LookupService/getCountryInformation',
+          data: {
+            countryName: r.address.country,
+            countryCode: r.address.countryCode,
+            region: r.address.region
+          },
+          success: function (res, s, xhr) {
+            res = window.seatfilla.globals.tryParseJsonResult(res)
+            console.log('Recieved info from /LookupService/getCountryInformation/:')
+            console.log(res)
+            if (res.currencies && res.currencies.length > 0) {
+              window.seatfilla.globals.cache.put({
+                key: 'CountryInformation',
+                type: 'session',
+                data: res,
+                useServerStore: false,
+                success: cb
+              })
 
-      function makeAJAXCountryInfoReq(r){
-            $.ajax({
-              type: 'POST',
-              url: '/LookupService/getCountryInformation',
-              data: {
-                countryName: r.address.country,
-                countryCode: r.address.countryCode,
-                region: r.address.region
-              },
-              success: function (res, s, xhr) {
-                res = window.seatfilla.globals.tryParseJsonResult(res)
-                console.log('Recieved info from /LookupService/getCountryInformation/:')
-                console.log(res)
-                if (res.currencies && res.currencies.length > 0) {
-                  window.seatfilla.globals.cache.put({
-                    key: 'CountryInformation',
-                    type: 'session',
-                    data: res,
-                    useServerStore: false,
-                    success: cb
-                  })
-
-                  return cb(200, res)
-                } else {
-                  return cb(200, {currencies: ['USD']})
-                }
-              }
+              return cb(200, res)
+            } else {
+              return cb(200, {currencies: ['USD']})
+            }
+          }
         })
       }
 
@@ -363,27 +396,27 @@ window.seatfilla.globals.geolocation.getUserCountryInformation = function (cb) {
           if (s == 200 && r) {
             console.log('Succesfully found user location')
             // Make a call to an external service to determine currency for country
-            makeAJAXCountryInfoReq(r);
+            makeAJAXCountryInfoReq(r)
           } else {
-            const currentTime = new Date().getTime();
-            var madeReq = false;
-            window.seatfilla.globals.cache.on('store',function(key,options,eventObj){
-                    console.log('Global cache on store event : ' + key)
-                    console.log('options were: ' + JSON.stringify(options));
-                    console.log('eventObj was : ' + JSON.stringify(eventObj));
-                if(key == 'CurrentLocation' && new Date().getTime() - currentTime < 10000){
-                    console.log('Making ajax request with options from cache store callback');
-                    madeReq = true;
-                    makeAJAXCountryInfoReq(options.data);
-                }
-            }, 'tempUserLocEvent');
+            const currentTime = new Date().getTime()
+            var madeReq = false
+            window.seatfilla.globals.cache.on('store', function (key, options, eventObj) {
+              console.log('Global cache on store event : ' + key)
+              console.log('options were: ' + JSON.stringify(options))
+              console.log('eventObj was : ' + JSON.stringify(eventObj))
+              if (key == 'CurrentLocation' && new Date().getTime() - currentTime < 10000) {
+                console.log('Making ajax request with options from cache store callback')
+                madeReq = true
+                makeAJAXCountryInfoReq(options.data)
+              }
+            }, 'tempUserLocEvent')
 
-            setTimeout(function(){
-                 if(!madeReq){
-                    window.seatfilla.globals.cache.removeOn('store','tempUserLocEvent');
-                    return cb(200, 'USD');
-                 }
-            }, 10000);
+            setTimeout(function () {
+              if (!madeReq) {
+                window.seatfilla.globals.cache.removeOn('store', 'tempUserLocEvent')
+                return cb(200, 'USD')
+              }
+            }, 10000)
           }
         })
       }
@@ -507,107 +540,153 @@ window.seatfilla.globals.forms.validateAndSerialize = function (form, successEle
 }
 
 window.seatfilla.globals.moveWindowToId = function (id) {
-    window.location = ('' + window.location).replace(/#[A-Za-z0-9_]*$/, '') + id
-  }
+  window.location = ('' + window.location).replace(/#[A-Za-z0-9_]*$/, '') + id
+}
 /*
 window.seatfilla.globals.data.retrieveCityData().forEach(function(item) {
                 $('.cities').append($('<option></option>', { value: item.iataCode, 'data-val-cityname': item.name })
-                .text(item.name + ', ' + item.countryName));
-         });
+                .text(item.name + ', ' + item.countryName))
+         })
 */
-window.seatfilla.globals.response = window.seatfilla.globals.response || {};
-window.seatfilla.globals.response.skyscannerAPI = window.seatfilla.globals.response.skyscannerAPI || {};
+window.seatfilla.globals.response = window.seatfilla.globals.response || {}
+window.seatfilla.globals.response.skyscannerAPI = window.seatfilla.globals.response.skyscannerAPI || {}
+window.seatfilla.globals.request = window.seatfilla.globals.request || {}
+window.seatfilla.globals.request.skyscannerAPI = window.seatfilla.globals.request.skyscannerAPI || {}
+
+window.seatfilla.globals.request.skyscannerAPI.sendFlightInfoAjaxRequest = function (options) {
+  if (options.formValidation) {
+    var $form = $(options.formValidation)
+    if (!$form[0].checkValidity()) {
+      $form.find(':submit').click()
+      return
+    }
+  }
+
+  const departure = options.data.departureDate
+  const arrival = options.data.returnDate
+  const numChildTickets = options.data.numChildTickets
+  const numAdultTickets = options.data.numAdultTickets
+  const numInfantTickets = options.data.numInfantTickets
+
+  const data = {
+    prefferedCabinClass: options.data.prefferedCabinClass,
+    groupPricing: options.data.groupPricing,
+    dates: {departure,arrival},
+    ticketInfo: { numAdultTickets, numChildTickets, numInfantTickets},
+    destination: {iataCode: options.data.destinationCityIata},
+    origin: {iataCode: options.data.departureCityIata},
+    currencyCodePreference: options.data.currencyCodePreference
+  }
+
+
+  $.ajax({
+    type: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo.method,
+    url: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo.url,
+    data: data,
+    success: options.handlers.success,
+    error: options.handers.error
+  })
+}
 
 /*
   Maps a hotel API response, done client side
   to reduce server load and spread computation 
   to client side.
 */
-window.seatfilla.globals.response.skyscannerAPI.mapHotelAPIResponse = function(result, options){
-    if(!result || !result.hotels) throw new Error('Invalid results object in seatfilla-config.js');
+window.seatfilla.globals.response.skyscannerAPI.mapHotelAPIResponse = function (result, options) {
+  if (!result || !result.hotels) throw new Error('Invalid results object in seatfilla-config.js')
 
-    const imageHostUrl = result.image_host_url;
+  const imageHostUrl = result.image_host_url
 
-    result.hotels = result.hotels.map(function(hotel){
-      if(hotel){ 
-
-      hotel.amenities = hotel.amenities.map(function(amId){
-        const amenity = result.amenities.find(function(amen){
-          return amen.id == amId;
+  result.hotels = result.hotels.map(function (hotel) {
+    if (hotel) {
+      hotel.amenities = hotel.amenities.map(function (amId) {
+        const amenity = result.amenities.find(function (amen) {
+          return amen.id == amId
         })
 
-        if(!amenity) throw new Error('Invalid response mapping in seatfilla-config.js/mapHotelApiResponse');
+        if (!amenity) throw new Error('Invalid response mapping in seatfilla-config.js/mapHotelApiResponse')
 
-        return amenity;
-      }) 
+        return amenity
+      })
 
-      if(hotel.images && imageHostUrl){
-        const arr = [];
-        for(var key in hotel.images){
-          const firstPathPart =  imageHostUrl + key;
-           for(var keyTwo in hotel.images[key]){
-             const width = hotel.images[key][keyTwo][0];
-             const height = hotel.images[key][keyTwo][1];
+      if (hotel.images && imageHostUrl) {
+        const arr = []
+        for (var key in hotel.images) {
+          const firstPathPart = imageHostUrl + key
+          for (var keyTwo in hotel.images[key]) {
+            const width = hotel.images[key][keyTwo][0]
+            const height = hotel.images[key][keyTwo][1]
 
-             //We can change this into a callback later, but for now a range is good
-             var greaterThanOrETSmallestWidth = false;
-             var lessThanOrETGreatestWidth = false;
-             var greaterThanOrETSmallestHeight = false;
-             var lessThanOrETGreatestHeight = false;
+            // We can change this into a callback later, but for now a range is good
+            var greaterThanOrETSmallestWidth = false
+            var lessThanOrETGreatestWidth = false
+            var greaterThanOrETSmallestHeight = false
+            var lessThanOrETGreatestHeight = false
 
-            if(keyTwo.endsWith('order') || keyTwo.endsWith('provider'))
-              continue;
-         
-            if(options){
-             if((options.smallestWidth && width >= options.smallestWidth) || !options.smallestWidth)
-                greaterThanOrETSmallestWidth = true;
-              
-             if((options.greatestWidth && width <= options.greatestWidth) || !options.greatestWidth)
-                lessThanOrETGreatestWidth = true;
-              
-             if((options.smallestHeight && height >= options.smallestHeight) || !options.smallestHeight)
-                greaterThanOrETSmallestHeight = true;
-              
-             if((options.greatestWidth && height <= options.greatestHeight) || !options.greatestHeight)
-                lessThanOrETGreatestHeight = true;
+            if (keyTwo.endsWith('order') || keyTwo.endsWith('provider'))
+              continue
 
-              if(greaterThanOrETSmallestWidth && lessThanOrETGreatestWidth && 
+            if (options) {
+              if ((options.smallestWidth && width >= options.smallestWidth) || !options.smallestWidth)
+                greaterThanOrETSmallestWidth = true
+
+              if ((options.greatestWidth && width <= options.greatestWidth) || !options.greatestWidth)
+                lessThanOrETGreatestWidth = true
+
+              if ((options.smallestHeight && height >= options.smallestHeight) || !options.smallestHeight)
+                greaterThanOrETSmallestHeight = true
+
+              if ((options.greatestWidth && height <= options.greatestHeight) || !options.greatestHeight)
+                lessThanOrETGreatestHeight = true
+
+              if (greaterThanOrETSmallestWidth && lessThanOrETGreatestWidth &&
                 greaterThanOrETSmallestHeight && lessThanOrETGreatestHeight)
-                    arr.push({imagePath: firstPathPart + keyTwo, width, height});
-            }else{
-               arr.push({imagePath: firstPathPart + keyTwo, width, height});
+                arr.push({imagePath: firstPathPart + keyTwo, width, height})
+            }else {
+              arr.push({imagePath: firstPathPart + keyTwo, width, height})
             }
-           }
+          }
         }
-        hotel.images = arr;
+        hotel.images = arr
       }
 
-      return hotel;
-      }else{
-        return null;
-      }
-    }).filter(function(hotel){
-      return hotel != null;
-    })
-
-    if('hotels_prices' in result){
-        result['hotels_prices'].map(function(hotelPrice){
-            if('agent_prices' in hotelPrice){
-              hotelPrice['agent_prices'] = hotelPrice['agent_prices'].map(function(agentPrice){
-
-                const agent = result.agents.find(function(result){
-                  console.log('result: ' + result);
-                  console.log('agent price: ' + agentPrice);
-                  return result.id == agentPrice.id
-                })
-
-                
-                agentPrice.id = agent;
-                return agentPrice;
-              })
-            }
-            return hotelPrice;
-        })
+      return hotel
+    }else {
+      return null
     }
-    return result;
+  }).filter(function (hotel) {
+    return hotel != null
+  })
+
+  if ('hotels_prices' in result) {
+    result['hotels_prices'].map(function (hotelPrice) {
+      if ('agent_prices' in hotelPrice) {
+        hotelPrice['agent_prices'] = hotelPrice['agent_prices'].map(function (agentPrice) {
+          const agent = result.agents.find(function (result) {
+            console.log('result: ' + result)
+            console.log('agent price: ' + agentPrice)
+            return result.id == agentPrice.id
+          })
+
+          agentPrice.id = agent
+          return agentPrice
+        })
+      }
+      return hotelPrice
+    })
   }
+  return result
+}
+
+
+window.seatfilla.globals.userprofile = window.seatfilla.globals.userprofile || {}
+window.seatfilla.globals.userprofile.getCurrentUserProfileUser = function (location) {
+  if (!location) return
+  var parts = location.split('/')
+  if (parts.length && !parts[0]) parts = parts.slice(1, parts.length)
+  if (parts.length < 2 || parts[0].toLowerCase() != 'userprofile') return null
+  return (parts[1]).toLowerCase()
+}
+
+

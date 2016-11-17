@@ -32,5 +32,6 @@ describe('Auth Controller Tests',function(){
             name: 'TOBI'
         }, done);
     });
-    });*/
+    });
+    done();*/
 });

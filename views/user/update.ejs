@@ -1,7 +1,18 @@
 
 <script>
  $(document).ready(function(){
-    $.toaster({ priority : 'info',  message : 'Change your account details'})
+      $('.panel-tabs li a').on('click',function(){
+          $('#wrapper').find('.errors').html('').text('')
+          $($(this).attr('href')).find('div.errors').html($('#errorTemplate').html())
+      })
+
+      var indx;
+      if(window.location.hash){
+        $('.panel-tabs li').removeClass('active');
+        $('.panel-tabs li a[href="'+ window.location.hash+'"]').trigger('click')
+      }
+
+      $.toaster({ priority : 'info',  message : 'Account settings'})
 
       $('.sf-account-menu li').removeAttr('class');
       $('#ChangeDetails').attr('class','active');
@@ -10,239 +21,406 @@
            $('input[type="text"]').removeAttr('disabled');
            $('input[type="password"]').removeAttr('disabled');
            $('select').removeAttr('disabled');
+           $('button').removeAttr('disabled');
       });
-
-       window.seatfilla.globals.forms.validateAndSerialize('#registrationForm', '.success', '.errors', {
-        successMessage:'Your account details have been succesfully changed!',
-        success(responseStatus, response, responseMessage) {
-             
-        },
-        error(responseStatus, response, responseError) {
-            window.seatfilla.globals.moveWindowToId('#stepOne');
-        }
-    });
   });
-
-
+  
 </script>
 <style>
-#account-details-form .control-label{
+form .control-label{
   font-weight:normal;
+  font-size:13px;
 }
+/*Panel tabs*/
+.panel-tabs {
+    position: relative;
+    clear:both;
+    border-bottom: 1px solid transparent;
+    color:black;
+    bottom:20px;
+}
+
+.panel-tabs > li {
+    float: left;
+    margin-bottom: -1px;
+}
+
+.panel-tabs > li > a {
+    margin-right: 2px;
+    margin-top: 20px;
+    line-height: .85;
+    border: 1px solid transparent;
+    border-radius: 4px 4px 0 0;
+    color: black;
+    font-weight:normal;
+    font-size:12px;
+    text-transform:uppercase;
+}
+
+.panel-tabs > li > a:hover {
+    border-color: transparent;
+    color: royalblue;
+    background-color: transparent;
+}
+
+.panel-tabs > li.active > a,
+.panel-tabs > li.active > a:hover,
+.panel-tabs > li.active > a:focus {
+    color: black;
+    cursor: default;
+    font-weight:normal;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    background-color: rgba(255,255,255, .23);
+    border-bottom-color: transparent;
+}
+
+.tab-pane{
+  width:100%;
+  margin:auto;
+}
+.tab-pane form{
+    display: inline-block;
+    text-align: center;
+    width:100%;
+}
+.tab-pane input{
+  margin:auto;
+}
+
+.panel.material .panel-heading{
+  background-image:none;
+  background-color:white;
+  padding:34px;
+}
+.panel.material .panel-body{
+  background-color:#fff;
+}
+.panel.material .panel-heading.border{
+    
+}
+.help-block{
+  color:black;
+  font-size:12px;
+}
+
 </style>
-<div class="container80">
-<div class="row">
-<div class="col-md-10 ">
-<form id="account-details-form" class="form-horizontal">
-<fieldset>
-<p>My Account Details <input type="button" id="update-details" value="Update Details" class="btn btn-info pull-right">Update Details</button></p> 
-<div class="errors"></div>
-<div class="success"></div>
-<hr>
-<br>
-	
-        <!-- Text input-->
-        <div class="form-group">
-          <label class="col-md-4 control-label" for="name">First Name</label>  
-          <div class="col-md-8">
-          <input id="name" name="firstName" type="text" value="<%=req.user.firstName%>" placeholder="First Name" class="form-control input-md" required="" disabled>
-          <span class="help-block">Your first name</span>  
-          </div>
-        </div>
 
-        <div class="form-group">
-          <label class="col-md-4 control-label" for="name">Middle Name</label>  
-          <div class="col-md-8">
-          <input id="name" name="middleName" type="text" value="<%=req.user.middleName%>" placeholder="Middle Name" class="form-control input-md" required="" disabled>
-          <span class="help-block">Your first name</span>  
-          </div>
-        </div>
+<script type="text/html" id="errorTemplate">
+   <% req.flash('info').forEach(function (message) { %>
+                    <div class="alert alert-info">
+                    <%=message%>
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                      </button>
+                      </div>
+                    <% }) %>
+  <% req.flash('warning').forEach(function (message) { %>
+                    <div class="alert alert-warning">
+                    <%=message%>
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                      </button>
+                      </div>
+                    <% }) %>
+                    <% req.flash('danger').forEach(function (message) { %>
+                    <div class="alert alert-danger">
+                    <%=message%>
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                      </button>
+                      </div>
+    <% }) %>
+</script>
+<div id="wrapper" class="wrapper">
 
-         <div class="form-group">
-          <label class="col-md-4 control-label" for="name">Last Name</label>  
-          <div class="col-md-8">
-          <input id="name" name="lastName" type="text" value="<%=req.user.lastName%>" placeholder="Last Name" class="form-control input-md" required="" disabled>
-          <span class="help-block">Your Last Name</span>  
-          </div>
-        </div>
+	<div class="row">
+		<div class="col-xs-12">
+            <div class="panel panel-deault material">
+                <div class="panel-heading border">
+                    <h4 class="panel-title" style="padding-left:5px;">Account settings</h4>
+                    <span class="pull-right">
+                        <!-- Tabs -->
+                        <ul class="nav panel-tabs">
+                            <li class="active"><a href="#updatedetails" data-toggle="tab">Update details</a></li>
+                            <li><a href="#updatepaymentinfo" data-toggle="tab">Update payment info</a></li>
+                        </ul>
+                    </span>
+                </div>
+              
+                <div class="panel-body">
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="updatedetails">
+                        <div class="row">
+                        <div class="col-md-10 ">
+                        <input type="button" id="update-details" value="Click to modify" class="btn btn-info pull-right"/>
+                        <form action="/userprofile/<%=req.user.username%>/update" method="POST" id="account-details-form" class="form-horizontal">
+                        <div class="errors"></div>
+                        <fieldset>
 
-        <div class="form-group">
-          <label class="col-md-4 control-label" for="Upload photo">Upload photo</label>
-          <div class="col-md-8">
-            <input id="Upload photo" name="Upload photo" class="input-file" type="file" disabled>
-              <span class="help-block">Upload an image to be used for your profile</span> 
-          </div>
-        </div>
+                        <br/>
+                    
+                          <!-- Text input-->
+                          <div class="form-group">
+                            <label class="col-md-3 control-label" for="name">First Name</label>  
+                            <div class="col-md-8">
+                            <input id="name" name="firstName" type="text" value="<%=data.user.firstName%>" placeholder="First Name" class="form-control input-md" required="" disabled>
+                            <span class="help-block">First name</span>  
+                            </div>
+                          </div>
 
-        <!-- Text input-->
-        <div class="form-group">
-          <label class="col-md-4 control-label" for="phone">Home Phone</label>  
-          <div class="col-md-8">
-          <input id="phone" name="home" type="text" value="<%=req.user.home%>" placeholder="Home Phone Number" class="form-control input-md" required="" disabled>
-          <span class="help-block">Your home phone</span>  
-          </div>
-        </div>
+                          <div class="form-group">
+                            <label class="col-md-3 control-label" for="name">Middle Name</label>  
+                            <div class="col-md-8">
+                            <input id="name" name="middleName" type="text" value="<%=data.user.middleName%>" placeholder="Middle Name" class="form-control input-md" required="" disabled>
+                            <span class="help-block">Middle name</span>  
+                            </div>
+                          </div>
 
-        <div class="form-group">
-          <label class="col-md-4 control-label" for="phone">Mobile No.</label>  
-          <div class="col-md-8">
-          <input id="phone" name="home" type="text" value="<%=req.user.mobile%>" placeholder="Mobile Phone Number" class="form-control input-md" required="" disabled>
-          <span class="help-block">Mobile</span>  
-          </div>
-        </div>
-
-        <!-- Text input-->
-        <div class="form-group">
-          <label class="col-md-4 control-label" for="email">Email</label>  
-          <div class="col-md-6">
-          <input id="email" name="email" type="text" value="<%=req.user.email%>" placeholder="Email address" class="form-control input-md" required="" disabled>
-          <span class="help-block">Email will be used for notication messages</span>  
-          </div>
-          <label class="col-md-1 control-label" for="email">Email verified? </label> 
-          <div class="col-md-1">
-              <%if(req.user.isEmailVerified){%>
-                  <input type="checkbox" class="form-control" checked="" disabled/>
-              <%}else{%>
-                  <input type="checkbox" class="form-control" disabled/>
-              <%}%>
-          </div>
-        </div>
-
-        <!-- Password input-->
-        <div class="form-group">
-          <label class="col-md-4 control-label" for="password">Password </label>
-          <div class="col-md-8">
-            <input id="password" name="password" type="password" placeholder="Password " class="form-control input-md" required="" disabled>
-            <span class="help-block">Password </span>
-          </div>
-        </div>
-
-        <!-- Password input-->
-        <div class="form-group">
-          <label class="col-md-4 control-label" for="rpassword">Confirm password</label>
-          <div class="col-md-8">
-            <input id="rpassword" name="rpassword" type="password" placeholder="Password" class="form-control input-md" required="" disabled>
-            <span class="help-block">Retype password</span>
-          </div>
-        </div>
-
-        <!-- Text input-->
-        <div class="form-group">
-          <label class="col-md-4 control-label" for="address1">Address line one</label>  
-          <div class="col-md-8">
-          <input id="address1" name="addressLine" value="<%=req.user.addressLine%>" type="text" placeholder="Address " class="form-control input-md" required="" disabled>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="col-md-4 control-label" for="address1">Address line two</label>  
-          <div class="col-md-8">
-          <input id="address1" name="addressLineTwo" type="text" value="<%=req.user.addressLineTwo%>" placeholder="Address " class="form-control input-md" required="" disabled>
-    
-          </div>
-        </div>
-
-         <div class="form-group">
-          <label class="col-md-4 control-label" for="address1">Address line three</label>  
-          <div class="col-md-8">
-          <input id="address1" name="addressLineThree" type="text" value="<%=req.user.addressLineThree%>" placeholder="Address " class="form-control input-md" required="" disabled>
-    
-          </div>
-        </div>
+                          <div class="form-group">
+                            <label class="col-md-3 control-label" for="name">Last Name</label>  
+                            <div class="col-md-8">
+                            <input id="name" name="lastName" type="text" value="<%=data.user.lastName%>" placeholder="Last Name" class="form-control input-md" required="" disabled>
+                            <span class="help-block">Last name</span>  
+                            </div>
+                          </div>
 
 
-        <!-- Text input-->
-        <div class="form-group">
-          <label class="col-md-8 control-label" for="city">City</label>  
-          <div class="col-md-4">
-          <input id="city" name="city" value="<%=req.user.city%>" type="text" placeholder="City" class="form-control input-md" required="" disabled>
-          </div>
-        </div>
+                          <!-- Text input-->
+                          <div class="form-group">
+                            <label class="col-md-3 control-label" for="phone">Home Phone</label>  
+                            <div class="col-md-8">
+                            <input id="phone" name="home" type="text" value="<%=data.user.home%>" placeholder="Home Phone Number" class="form-control input-md" required="" disabled>
+                            <span class="help-block">Your home phone</span>  
+                            </div>
+                          </div>
 
-        <!-- Text input-->
-        <div class="form-group">
-          <label class="col-md-8 control-label" value="<%=req.user.mobile%>" for="selectbasic">State</label>
-          <div class="col-md-4">
-            <select id="selectbasic" name="selectbasic" class="form-control" disabled>
-		        <option value="">Choose State:</option>
-		        <option value="AL">Alabama</option>
-		        <option value="AK">Alaska</option>
-		        <option value="AZ">Arizona</option>
-		        <option value="AR">Arkansas</option>
-		        <option value="CA">California</option>
-		        <option value="CO">Colorado</option>
-		        <option value="CT">Connecticut</option>
-		        <option value="DE">Delaware</option>
-		        <option value="FL">Florida</option>
-		        <option value="GA">Georgia</option>
-		        <option value="HI">Hawaii</option>
-		        <option value="ID">Idaho</option>
-		        <option value="IL">Illinois</option>
-		        <option value="IN">Indiana</option>
-		        <option value="IA">Iowa</option>
-		        <option value="KS">Kansas</option>
-		        <option value="KY">Kentucky</option>
-		        <option value="LA">Louisiana</option>
-		        <option value="ME">Maine</option>
-		        <option value="MD">Maryland</option>
-		        <option value="MA">Massachusetts</option>
-		        <option value="MI">Michigan</option>
-		        <option value="MN">Minnesota</option>
-		        <option value="MS">Mississippi</option>
-		        <option value="MO">Missouri</option>
-		        <option value="MT">Montana</option>
-		        <option value="NE">Nebraska</option>
-		        <option value="NV">Nevada</option>
-		        <option value="NH">New Hampshire</option>
-		        <option value="NJ">New Jersey</option>
-		        <option value="NM">New Mexico</option>
-		        <option value="NY">New York</option>
-		        <option value="NC">North Carolina</option>
-		        <option value="ND">North Dakota</option>
-		        <option value="OH">Ohio</option>
-		        <option value="OK">Oklahoma</option>
-		        <option value="OR">Oregon</option>
-		        <option value="PA">Pennsylvania</option>
-		        <option value="RI">Rhode Island</option>
-		        <option value="SC">South Carolina</option>
-		        <option value="SD">South Dakota</option>
-		        <option value="TN">Tennessee</option>
-		        <option value="TX">Texas</option>
-		        <option value="UT">Utah</option>
-		        <option value="VT">Vermont</option>
-		        <option value="VA">Virginia</option>
-		        <option value="WA">Washington</option>
-		        <option value="WV">West Virginia</option>
-		        <option value="WI">Wisconsin</option>
-		        <option value="WY">Wyoming</option>
-            </select>
-          </div>
-        </div>
+                          <div class="form-group">
+                            <label class="col-md-3 control-label" for="phone">Mobile No.</label>  
+                            <div class="col-md-8">
+                            <input id="phone" name="mobile" type="text" value="<%=data.user.mobile%>" placeholder="Mobile Phone Number" class="form-control input-md" required="" disabled>
+                            <span class="help-block">Mobile</span>  
+                            </div>
+                          </div>
 
-        <!-- Text input-->
-        <div class="form-group">
-          <label class="col-md-4 control-label" for="zip">Post Code</label>  
-          <div class="col-md-4">
-          <input id="zip" name="zip" type="text" value="<%=req.user.postcode%>" placeholder="Zip Code" class="form-control input-md" required="" disabled>
-    
-          </div>
-        </div>
+                          <!-- Text input-->
+                          <div class="form-group">
+                            <label class="col-md-3 control-label" for="email">Email</label>  
+                            <div class="col-md-6">
+                            <input id="email" name="email" type="text" value="<%=data.user.email%>" placeholder="Email address" class="form-control input-md" required="" disabled>
+                            <span class="help-block">Email will be used for notication messages</span>  
+                            </div>
+                            <label class="col-md-1 control-label" for="email">Email verified? </label> 
+                            <div class="col-md-1">
+                                <%if(data.user.isEmailVerified){%>
+                                    <input type="checkbox" class="form-control" checked="" disabled/>
+                                <%}else{%>
+                                    <input type="checkbox" class="form-control" disabled/>
+                                <%}%>
+                            </div>
+                          </div>
 
-        <!-- Button (Double) -->
-        <div class="form-group">
-          <label class="col-md-4 control-label" for="save"></label>
-          <div class="col-md-8">
-            <button id="save" name="save" class="btn btn-success" disabled>Update</button>
-            <button id="cancel" name="cancel" class="btn btn-danger">Cancel</button>
+                          <!-- Text input-->
+                          <div class="form-group">
+                            <label class="col-md-3 control-label" for="address1">Address line one</label>  
+                            <div class="col-md-8">
+                            <input id="address1" name="addressLine" value="<%=data.user.addressLine%>" type="text" placeholder="Address " class="form-control input-md" required="" disabled>
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                            <label class="col-md-3 control-label" for="address1">Address line two</label>  
+                            <div class="col-md-8">
+                            <input id="address1" name="addressLineTwo" type="text" value="<%=data.user.addressLineTwo%>" placeholder="Address " class="form-control input-md" required="" disabled>
+                      
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                            <label class="col-md-3 control-label" for="address1">Address line three</label>  
+                            <div class="col-md-8">
+                            <input id="address1" name="addressLineThree" type="text" value="<%=data.user.addressLineThree%>" placeholder="Address " class="form-control input-md" required="" disabled>
+                      
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                            <label class="col-md-8 control-label" for="country">Country</label>  
+                            <div class="col-md-4">
+                            <select id="country" name="country" data-attr-cityLink="#city" type="text" class="form-control input-md country" required disabled>
+                            </select>
+                            </div>
+                          </div>
+
+                          <!-- Text input-->
+                          <div class="form-group">
+                            <label class="col-md-8 control-label" for="city">City</label>  
+                            <div class="col-md-4">
+                            <select id="city" name="city" value="<%=data.user.city%>" type="text" class="form-control input-md city" required disabled>
+                            </select>
+                            </div>
+                          </div>
+
+
+                          <!-- Text input-->
+                          <div class="form-group">
+                            <label class="col-md-3 control-label" for="zip">Post Code</label>  
+                            <div class="col-md-4">
+                            <input id="zip" name="zip" type="text" value="<%=data.user.postcode%>" placeholder="Zip Code" class="form-control input-md" required="" disabled>
+                      
+                            </div>
+                          </div>
+
+
+                            <!-- Password input-->
+                          <div class="form-group">
+                            <label class="col-md-3 control-label" for="password">Password </label>
+                            <div class="col-md-8">
+                              <input id="password" name="password" type="password" placeholder="Password " class="form-control input-md" required="" disabled>
+                              <span class="help-block">Please confirm your password before updating information.</span>
+                            </div>
+                          </div>
+
+                          <!-- Button (Double) -->
+                          <div class="form-group">
+                            <label class="col-md-3 control-label" for="save"></label>
+                            <div class="col-md-8">
+                              <button id="save" name="save" class="btn btn-info btn-block" disabled>Update my details</button>
+                            </div>
+                          </div>
+                  </form>
+                  </div>
+                  <div class="col-md-2 hidden-xs">
+                  <img src="/images/Logo.png" class="img-responsive img-thumbnail ">
+                    </div>
+                  </div>
+                  </div>
+                        <div class="tab-pane" id="updatepaymentinfo">
+
+          <div class="row">          
+      <div class="col-xs-8">
+             <div class="panel-heading" style="margin:0px;padding:0px;padding-left:20px;"><p> Enter new payment details </p></div>
+      <form action="/paypal/storeCreditCard" method="POST" class="form-horizontal">
+          <div class="errors"></div>
+          <div class="form-group">
+                            <label class="col-md-3 control-label" for="zip">First name</label>  
+                            <div class="col-md-6">
+                             <input type="text" name="first_name" placeholder="Dale" class="form-control input input-sm" pattern="[a-zA-Z]+" required>
+                                <span class="help-block">Your first name</span>
+                            </div>
+                          </div>
+          <div class="form-group">
+                            <label class="col-md-3 control-label" for="lastName">Last name</label>  
+                            <div class="col-md-6">
+                             <input type="text" minlength="2" name="last_name" placeholder="Appleby" class="form-control input input-sm" pattern="[a-zA-Z]+" title="Fill your first and last name" required>
+                                <span class="help-block">Your last name</span>
+                            </div>
+                          </div>
+       
+          <div class="form-group">
+            <label class="col-md-3 control-label">Card Number</label>
+              <div class="row">
+                <div class="col-xs-2">
+                  <input type="password" name="ccPartOne" placeholder="4801" class="form-control input input-sm" autocomplete="off" maxlength="4" pattern="\d{4}" title="First four digits" required>
+                </div>
+                <div class="col-xs-2">
+                  <input type="text" name="ccPartTwo" placeholder="0100" class="form-control input input-sm" autocomplete="off" maxlength="4" pattern="\d{4}" title="Second four digits" required>
+                </div>
+                <div class="col-xs-2">
+                  <input type="text" name="ccPartThree" placeholder="5766" class="form-control input input-sm" autocomplete="off" maxlength="4" pattern="\d{4}" title="Third four digits"  required>
+                </div>
+                <div class="col-xs-2">
+                  <input type="password" name="ccPartFour"  placeholder="7661" class="form-control input input-sm" autocomplete="off" maxlength="4" pattern="\d{4}" title="Fourth four digits" required>
+                </div>
+            
+            </div>
+               <span class="help-block"> Sixteen digit card no. The first and last four digits will not be visible for safety.</span>
           </div>
+       
+          <div class="form-group">
+            <label class="col-md-3 control-label">Expiry</label>
+            
+                <div class="col-md-4">
+                
+                  <select name="expire_month" class="form-control noselect" required>
+                  <% for(var i = 1;i <= 12;i++){%>
+                        <option value="<%=i%>" ><%=i%><option>
+                    <%}%>
+                  </select>
+                  <span class="help-block">Expiry month e.g (12)</span>
+                </div>
+                <div class="col-md-3">
+                  <select name="expire_year" class="form-control noselect" required>
+                    <% for(var i = new Date().getFullYear();i <= new Date().getFullYear() + 10;i++){%>
+                        <option ><%=i%><option>
+                    <%}%>
+                  </select>
+                      <span class="help-block">Expiry year e.g (2021)</span>
+                </div>
+          </div>
+       
+          <div class="form-group">
+            <label class="col-md-3 control-label">Card CVV</label>
+               <div class="row">
+                  <div class="col-md-4">
+                    <input name="CVV" type="password" class="form-control" autocomplete="off" maxlength="3" pattern="\d{3}" title="Three digits at back of your card" required>
+                         <span class="help-block">3 digit number on back of card.</span>
+                  </div>
+                  <div class="col-md-4">
+                  <select name="type" class="form-control noselect" required>
+                    <option value="visa">Visa</option>
+                  </select>
+                      <span class="help-block">Card type</span>
+                  </div>
+
+                </div>
+            </div>
+          <br/>
+          <input type="hidden" name="redirectSuccess" value="/userprofile/<%=req.user.username%>/update#updatepaymentinfo"/>
+          <input type="hidden" name="redirectFailiure" value="/userprofile/<%=req.user.username%>/update#updatepaymentinfo"/>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-info btn-block">Save payment details</button>
+          </div>
+      </form>
+      </div>
+      <div class="col-xs-4">
+      <div class="panel panel-default material">
+          <div class="panel-heading">
+            Current payment methods
+          </div>
+          <div class="panel-body container-fluid">
+            <table class="table table-stripped table-highlight">
+             <thead>
+              <tr>
+                <th>Card</th>
+                <th>Delete</th>
+              <tr>
+              <thead>
+              <tbody>
+                <% data.cards.forEach(function(card){ %>
+                  <tr> 
+                    <td>
+                    <%= card.number %>
+                    </td>
+                    <td>
+                      <button class="button btn-info"> delete </button>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+              </table>
+            </div>
+          </div>
+      </div>
+      </div>
+      </div>
+                        
+                        </div>
+                      
+                    </div>
+                </div>
+            </div>
         </div>
-</form>
+	</div>
 </div>
-<div class="col-md-2 hidden-xs">
-<img src="/images/Logo.png" class="img-responsive img-thumbnail ">
-  </div>
-</div>
-</div>
-
-
-

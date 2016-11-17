@@ -7,7 +7,7 @@ describe('User tests',function(){
 
     //This is our second level of nesting for descibe functions, it descibes what our tests do
     //in more detail.
-    describe('Create users',function(){
+    /*describe('Create users',function(){
         //Remember to call the done function always.
         it('Creates a user', function(done){
 
@@ -45,5 +45,5 @@ describe('User tests',function(){
         it('creates user method 2', function(done){
             return done();
         });
-    })
+    })*/
 });

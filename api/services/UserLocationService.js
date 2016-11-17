@@ -61,16 +61,13 @@ module.exports = {
       if (!countryInfo) {
         sails.log.debug('Country info before error:')
         sails.log.debug(countryInfo)
-        return Promise.reject({ error: new Error('Invalid response'),
-          message: 'Country info did not exist'
-          + 'when retrieving from rest countries in UserLocationService.js/findOrCreateCountry.js'})
+        return Promise.reject(new Error('Invalid response'))
       }
 
       if (!Array.isArray(countryInfo) || countryInfo.length < 1) {
         sails.log.debug('Country info before error:')
         sails.log.debug(countryInfo)
-        return Promise.reject({ error: new Error('Invalid response in UserLocationService.js/findOrCreatCountry.js'),
-        message: 'Country info was not an array or was empty in UserLocationService.js/findOrCreateCountry.js'})
+        return Promise.reject(new Error('Invalid response in UserLocationService.js/findOrCreatCountry.js'))
       }
 
       countryInfo = countryInfo[0]
@@ -164,6 +161,9 @@ module.exports = {
           }
         })
       })
+    }).catch(function(err){
+      sails.log.error(err);
+      return Promise.reject(err);
     })
   }
 }

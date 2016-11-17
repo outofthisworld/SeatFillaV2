@@ -32,152 +32,168 @@ module.exports.routes = {
      *                                                                          *
      ***************************************************************************/
 
-    'get /': 'HomeController.index',
-    'get /login': 'HomeController.login',
+    /*
+        Home controller routes
+    */
+    'get /': {
+        controller:'HomeController',
+        action:'index',
+        locals:{
+            layout:'layout'
+        }
+    },
+    'get /login': {
+        controller:'HomeController',
+        action:'login',
+        locals:{
+            layout:'layout'
+        }
+    },
+    'get /verification/email':{
+        controller:'HomeController',
+        action:'resendVerificationEmail',
+        locals:{
+            layout:'layout'
+        }
+    },
+    'get /password/reset':{
+        controller:'HomeController',
+        action:'resetPassword',
+        locals:{
+            layout:'layout'
+        }
+    },
+    /* End home controller routes */
 
- 
-    'get /Provider/*':{
+    /* Provider routes */
+    'get /Provider/':{
+        controller:'ProviderController',
+        action:'index',
         locals:{
             layout: 'layouts/provider-layout.ejs'
         }
     },
-    
-
-    'get /UserProfile/:username':{
-        controller:'UserProfileController',
-        action:'findOneByUser',
-        policy:'viewProfilePolicy',
+    'get /Provider/webhook/create':{
+        controller:'WebhookController',
+        action:'create',
+        locals:{
+            layout: 'layouts/provider-layout.ejs'
+        }
+    },
+    'post /Provider/webhook/create':{
+        controller:'WebhookController',
+        action:'create',
         locals:{
             layout:'layouts/profile-layout'
+        },
+        redirectSuccess:'/provider/webhook/createSuccess',
+        redirectFailiure:'/provider/webhook/create'
+    },
+    'get /Provider/webhook/createSuccess':{
+        policy:'hasSuccess',
+        locals:{
+            layout: 'layouts/provider-layout.ejs'
+        },
+        view:'webhook/createSuccess',
+        successExpiredRedirect:'/Provider/'
+    },
+    'get /Provider/FlightRequests':{
+        controller:'FlightRequestController',
+        action:'find',
+        locals:{
+            layout: 'layouts/provider-layout.ejs'
+        },
+    },
+    'get Provider/FlightOffers':{
+        controller:'FlightOfferController',
+        action:'findByApiUser',
+        locals:{
+            layout: 'layouts/provider-layout.ejs'
+        }
+    },
+    'get Provider/FlightBids':{
+        controller:'BidController',
+        action:'findByApiUser,',
+        locals:{
+            layout: 'layouts/provider-layout.ejs'
+        }
+    },
+    'get /Provider/webhook/sendWebhookVerification':{
+        controller:'WebhookController',
+        action:'sendWebhookVerification',
+        locals:{
+            layout: 'layouts/provider-layout.ejs'
+        }
+    },
+    'get /Provider/webhook/verifyWebhook':{
+        controller:'WebhookController',
+        action:'verifyWebhook',
+        locals:{
+            layout: 'layouts/provider-layout.ejs'
         }
     },
     /**********/
-
-    /****** FLIGHT GROUP PATHS ******/
-
-    /*
-        Is own profile policy
-        -create,destroy,update
-    */
-
-    'get /ajax/templates/*.html':{
-        policy:'acceptPolicy'
-    },
-
-    'get /UserProfile/:username/FlightGroup/Create':{
-        controller:'FlightGroupController',
-        action:'create',
-        policy:'viewProfilePolicy',
+    'get /UserProfile/:username':{
+        controller:'UserProfileController',
+        action:'findOneByUser',
         locals:{
             layout:'layouts/profile-layout'
         }
     },
-    'get /UserProfile/:username/FlightGroup/:id/Destroy':{
-        controller:'FlightGroupController',
-        action:'destroy',
-        policy:'viewProfilePolicy',
-        locals:{
-            layout:'layouts/profile-layout'
-        }
-    },
-    'get /UserProfile/:username/FlightGroup/:id/Update':{
-        controller:'FlightGroupController',
-        action:'update',
-        policy:'viewProfilePolicy',
-        locals:{
-            layout:'layouts/profile-layout'
-        }
-    },
-    'get /UserProfile/:username/FlightGroup/:id':{
-        controller:'FlightGroupController',
-        action:'findOne',
-        policy:'viewProfilePolicy',
-        locals:{
-            layout:'layouts/profile-layout'
-        }
-    },
-    'get /UserProfile/:username/FlightGroups/':{
-        controller:'FlightGroupController',
-        action:'findByUser',
-        policy:'viewProfilePolicy',
-        locals:{
-            layout:'layouts/profile-layout'
-        }
-    },
-    /* ********************* */
-
-    /* FLIGHT REQUEST PATHS */
-    'get /UserProfile/FlightRequest/Create/':{
-        controller:'FlightRequestController',
-        action:'create',
-        policy:'viewProfilePolicy',
-        locals:{
-            layout:'layouts/profile-layout'
-        }
-    },
-    'get /UserProfile/:username/FlightRequest/Create/':{
-        controller:'FlightRequestController',
-        action:'create',
-        policy:'viewProfilePolicy',
-        locals:{
-            layout:'layouts/profile-layout'
-        }
-    },
-    'get /UserProfile/FlightReqest/:id/Destroy':{
-        controller:'FlightRequestController',
-        action:'destroy',
-        policy:'viewProfilePolicy',
-        locals:{
-            layout:'layouts/profile-layout'
-        }
-    },
-    'get /UserProfile/FlightRequest/:id/Update':{
-        controller:'FlightRequestController',
-        action:'update',
-        policy:'viewProfilePolicy',
-        locals:{
-            layout:'layouts/profile-layout'
-        }
-    },
-    'get /UserProfile/:username/FlightRequest/:id':{
-        controller:'FlightRequestController',
-        action:'findOne',
-        policy:'viewProfilePolicy',
-        locals:{
-            layout:'layouts/profile-layout'
-        }
-    },
-    'get /UserProfile/:username/FlightRequest/':{
-        controller:'FlightRequestController',
-        action:'findByUser',
-        policy:'viewProfilePolicy',
-        locals:{
-            layout:'layouts/profile-layout'
-        }
-    },
-    /* ********************* */
     'get /UserProfile/:username/update':{
         controller:'UserController',
         action:'update', 
-        policy:'viewProfilePolicy',
         locals:{
             layout:'layouts/profile-layout'
         }
     },
-
+    'post /UserProfile/:username/update':{
+        controller:'UserController',
+        action:'update', 
+        locals:{
+            layout:'layouts/profile-layout'
+        },
+        redirectFailiure:'/userprofile/:username/update',
+        redirectSuccess:'/userprofile/:username/update'
+    },
     'get /UserProfile/:username/uploadProfileImage':{
         controller:'UserProfileController',
         action:'uploadProfileImage',
-        policy:'viewProfilePolicy',
         locals:{
             layout:'layouts/profile-layout'
         }
     },
-
     'get /UserProfile/:username/UpdateSettings':{
         controller:'UserSettingsController',
         action:'update', //isOwnProfile
-        policy:'viewProfilePolicy',
+        locals:{
+            layout:'layouts/profile-layout'
+        }
+    },
+    '/UserProfile/:username/feed':{
+        controller:'FeedController',
+        action:'index',
+        locals:{
+            layout:'layouts/profile-layout'
+        }
+    },
+    'get /UserProfile/:username/api':{
+        controller:'UserProfileController',
+        action:'api', //isOwnProfile
+        locals:{
+            layout:'layouts/profile-layout'
+        }
+    },
+    'get /UserProfile/:username/notifications':{
+        controller:'NotificationsController',
+        action:'findByUser',
+        locals:{
+            layout:'layouts/profile-layout'
+        }
+    },
+    'get /UserProfile/:username/flightScheduling':{
+        controller:'UserProfileController',
+        action:'flightScheduling',
         locals:{
             layout:'layouts/profile-layout'
         }
@@ -185,22 +201,13 @@ module.exports.routes = {
     'get /UserProfile/:username/provider':{
         controller:'UserProfileController',
         action:'providerSection', //isOwnProfile
-        policy:'viewProfilePolicy',
         locals:{
             layout:'layouts/profile-layout'
         }
     },
-
-    /*** MISC ****/
-    'get /User/create':{
-        controller:'HomeController',
-        action:'register'
-    },
-
     'get /UserProfile/:username/Hotel/Create':{
         controller:'HotelController',
         action:'create',
-        policy:'viewProfilePolicy',
         locals:{
             layout:'layouts/profile-layout'
         }
@@ -208,10 +215,105 @@ module.exports.routes = {
     'post /UserProfile/:username/Hotel/Create':{
         controller:'HotelController',
         action:'create',
-    }
+    },
+     /****** FLIGHT GROUP PATHS ******/
 
+    /*
+        Is own profile policy
+        -create,destroy,update
+    */
+
+    'get /UserProfile/:username/FlightGroup/Create':{
+        controller:'FlightGroupController',
+        action:'create',
+        locals:{
+            layout:'layouts/profile-layout'
+        }
+    },
+    'get /UserProfile/:username/FlightGroup/:id/Destroy':{
+        controller:'FlightGroupController',
+        action:'destroy',
+        locals:{
+            layout:'layouts/profile-layout'
+        }
+    },
+    'get /UserProfile/:username/FlightGroup/:id/Update':{
+        controller:'FlightGroupController',
+        action:'update',
+        locals:{
+            layout:'layouts/profile-layout'
+        }
+    },
+    'get /UserProfile/:username/FlightGroup/:id':{
+        controller:'FlightGroupController',
+        action:'findOne',
+        locals:{
+            layout:'layouts/profile-layout'
+        }
+    },
+    'get /UserProfile/:username/FlightGroups':{
+        controller:'FlightGroupController',
+        action:'findByUser',
+        locals:{
+            layout:'layouts/profile-layout'
+        }
+    },
+    /* ********************* */
 
     
+    'get /UserProfile/:username/FlightRequest/Create':{
+        controller:'FlightRequest',
+        action:'create',
+        locals:{
+            layout:'layouts/profile-layout'
+        }
+    },
+    'get /UserProfile/:username/FlightReqest/:id/Destroy*':{
+        controller:'FlightRequestController',
+        action:'destroy',
+        locals:{
+            layout:'layouts/profile-layout'
+        }
+    },
+    'get /UserProfile/:username/FlightRequest/:id/Update':{
+        controller:'FlightRequestController',
+        action:'update',
+        locals:{
+            layout:'layouts/profile-layout'
+        }
+    },
+    'get /UserProfile/:username/FlightRequest/:id':{
+        controller:'FlightRequestController',
+        action:'findOne',
+        locals:{
+            layout:'layouts/profile-layout'
+        }
+    },
+    'get /UserProfile/:username/FlightRequest':{
+        controller:'FlightRequestController',
+        action:'findByUser',
+        locals:{
+            layout:'layouts/profile-layout'
+        }
+    },
+    /* ********************* */
+
+    /*** MISC ****/
+
+    /*Home controller*/
+    'get /User/create':{
+        controller:'HomeController',
+        action:'register'
+    },
+
+    
+
+
+
+    'get /ajax/templates/*.html':{
+        policy:'acceptPolicy'
+    },
+   
     /***************************************************************************
      *                                                                          *
      * Custom routes here...                                                    *

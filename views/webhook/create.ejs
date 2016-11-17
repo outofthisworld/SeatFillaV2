@@ -1,0 +1,251 @@
+    <div class="row">
+        <hr class="hr-danger" />
+        <ol class="breadcrumb bread-danger">
+              <li><a href="#">provider panel</a></li>
+              <li><a href="#">create</a></li>
+              <li class="active">webhook</li>
+          </ol>
+    </div> 
+
+
+<h3 style="margin-left:20px;">Create a webhook
+<div class="dropdown">
+<a href="" class="dropbtn"><i class="fa fa-question what-is-this"></i></a>
+  <div class="dropdown-content">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            Webhook info
+        </div>
+
+        <div class="panel-body">
+            <p>A webhook is an event that is sent from Seatfilla (or another website)
+            to the provided URL endpoint upon an event occuring. Web hooks
+            are a great way to reduce the need to poll the server and track/check
+            if there were any changes in data.</p>
+            
+            <p>
+            To make sure that you know it was us that sent the request, Seatfilla
+            will generate and encode a message with the key and algorithm of your choosing and store it
+            within our databases. We will then provide you with the automatically generated message.
+            When you recieve a request at the endpoint URL supplied, a parameter will be available within the headers of the request with the encrypted message, you will have to decrypt this using the secret key you have provided within the form using the algorithm you have specified. If the decrypted message is equal to the decoded message that we 
+            provide you with after filling out this form, the request was from us.
+            </p>
+
+            <p>
+                For added security, please check the host parameters of the request to make sure 
+                it came from us.
+            </p>
+        </div>
+    </div>
+  </div>
+</div>
+ </h3>
+
+	<div class="row">
+		<form action="/webhook/create" method="POST" class="form-horizontal">
+        <% req.flash('info').forEach(function (message) { %>
+                    <div class="alert alert-info">
+                    <%=message%>
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                      </button>
+                      </div>
+                    <% }) %>
+                    <% req.flash('warning').forEach(function (message) { %>
+                    <div class="alert alert-warning">
+                    <%=message%>
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                      </button>
+                      </div>
+                    <% }) %>
+                    <% req.flash('danger').forEach(function (message) { %>
+                    <div class="alert alert-danger">
+                    <%=message%>
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                      </button>
+                      </div>
+        <% }) %>
+<fieldset>
+<hr/>
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-2 control-label" for="url">Web hook URL</label>  
+  <div class="col-md-4">
+  <input id="url" name="url" placeholder="Webhook endpoint URL" class="form-control input-md" type="url">
+  </div>
+</div>
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-2 control-label" for="key">Secret key</label>  
+  <div class="col-md-4">
+  <input id="key" name="key" placeholder="Web hook secret key" class="form-control input-md" required="" type="text">
+  <small>*Seatfilla will use this key to encrypt an automatically generated id, which will then be sent within the headers
+  of any webhook events. We will provide you with the unencrypted message so that you can decrypt and verify the encrypted message sent with the webhook event.</small>
+  </div>
+</div>
+
+
+<!-- Select Basic -->
+<div class="form-group">
+  <label class="col-md-2 control-label" for="declineType">Algorithm</label>
+  <div class="col-md-6">
+    <select id="algo" name="algorithm" class="form-control" required>
+  <option value="CAST-cbc">CAST-cbc</option>
+  <option value="aes-128-cbc">aes-128-cbc</option>
+  <option value="aes-128-cbc-hmac-sha1">aes-128-cbc-hmac-sha1</option>
+  <option value="aes-128-cfb">aes-128-cfb</option>
+  <option value="aes-128-cfb1">aes-128-cfb1</option>
+  <option value="aes-128-cfb8">aes-128-cfb8</option>
+  <option value="aes-128-ctr">aes-128-ctr</option>
+  <option value="aes-128-ecb">aes-128-ecb</option>
+  <option value="aes-128-gcm">aes-128-gcm</option>
+  <option value="aes-128-ofb">aes-128-ofb</option>
+  <option value="aes-128-xts">aes-128-xts</option>
+  <option value="aes-192-cbc">aes-192-cbc</option>
+  <option value="aes-192-cfb">aes-192-cfb</option>
+  <option value="aes-192-cfb1">aes-192-cfb1</option>
+  <option value="aes-192-cfb8">aes-192-cfb8</option>
+  <option value="aes-192-ctr">aes-192-ctr</option>
+  <option value="aes-192-ecb">aes-192-ecb</option>
+  <option value="aes-192-gcm">aes-192-gcm</option>
+  <option value="aes-192-ofb">aes-192-ofb</option>
+  <option value="aes-256-cbc">aes-256-cbc</option>
+  <option value="aes-256-cbc-hmac-sha1">aes-256-cbc-hmac-sha1</option>
+  <option value="aes-256-cfb">aes-256-cfb</option>
+  <option value="aes-256-cfb1">aes-256-cfb1</option>
+  <option value="aes-256-cfb8">aes-256-cfb8</option>
+  <option value="aes-256-ctr">aes-256-ctr</option>
+  <option value="aes-256-ecb">aes-256-ecb</option>
+  <option value="aes-256-gcm">aes-256-gcm</option>
+  <option value="aes-256-ofb">aes-256-ofb</option>
+  <option value="aes-256-xts">aes-256-xts</option>
+  <option value="aes128">aes128</option>
+  <option value="aes192">aes192</option>
+  <option value="aes256">aes256</option>
+  <option value="bf">bf</option>
+  <option value="bf-cbc">bf-cbc</option>
+  <option value="bf-cfb">bf-cfb</option>
+  <option value="bf-ecb">bf-ecb</option>
+  <option value="bf-ofb">bf-ofb</option>
+  <option value="blowfish">blowfish</option>
+  <option value="camellia-128-cbc">camellia-128-cbc</option>
+  <option value="camellia-128-cfb">camellia-128-cfb</option>
+  <option value="camellia-128-cfb1">camellia-128-cfb1</option>
+  <option value="camellia-128-cfb8">camellia-128-cfb8</option>
+  <option value="camellia-128-ecb">camellia-128-ecb</option>
+  <option value="camellia-128-ofb">camellia-128-ofb</option>
+  <option value="camellia-192-cbc">camellia-192-cbc</option>
+  <option value="camellia-192-cfb">camellia-192-cfb</option>
+  <option value="camellia-192-cfb1">camellia-192-cfb1</option>
+  <option value="camellia-192-cfb8">camellia-192-cfb8</option>
+  <option value="camellia-192-ecb">camellia-192-ecb</option>
+  <option value="camellia-192-ofb">camellia-192-ofb</option>
+  <option value="camellia-256-cbc">camellia-256-cbc</option>
+  <option value="camellia-256-cfb">camellia-256-cfb</option>
+  <option value="camellia-256-cfb1">camellia-256-cfb1</option>
+  <option value="camellia-256-cfb8">camellia-256-cfb8</option>
+  <option value="camellia-256-ecb">camellia-256-ecb</option>
+  <option value="camellia-256-ofb">camellia-256-ofb</option>
+  <option value="camellia128">camellia128</option>
+  <option value="camellia192">camellia192</option>
+  <option value="camellia256">camellia256</option>
+  <option value="cast">cast</option>
+  <option value="cast-cbc">cast-cbc</option>
+  <option value="cast5-cbc">cast5-cbc</option>
+  <option value="cast5-cfb">cast5-cfb</option>
+  <option value="cast5-ecb">cast5-ecb</option>
+  <option value="cast5-ofb">cast5-ofb</option>
+  <option value="des">des</option>
+  <option value="des-cbc">des-cbc</option>
+  <option value="des-cfb">des-cfb</option>
+  <option value="des-cfb1">des-cfb1</option>
+  <option value="des-cfb8">des-cfb8</option>
+  <option value="des-ecb">des-ecb</option>
+  <option value="des-ede">des-ede</option>
+  <option value="des-ede-cbc">des-ede-cbc</option>
+  <option value="des-ede-cfb">des-ede-cfb</option>
+  <option value="des-ede-ofb">des-ede-ofb</option>
+  <option value="des-ede3">des-ede3</option>
+  <option value="des-ede3-cbc">des-ede3-cbc</option>
+  <option value="des-ede3-cfb">des-ede3-cfb</option>
+  <option value="des-ede3-cfb1">des-ede3-cfb1</option>
+  <option value="des-ede3-cfb8">des-ede3-cfb8</option>
+  <option value="des-ede3-ofb">des-ede3-ofb</option>
+  <option value="des-ofb">des-ofb</option>
+  <option value="des3">des3</option>
+  <option value="desx">desx</option>
+  <option value="desx-cbc">desx-cbc</option>
+  <option value="id-aes128-GCM">id-aes128-GCM</option>
+  <option value="id-aes192-GCM">id-aes192-GCM</option>
+  <option value="id-aes256-GCM">id-aes256-GCM</option>
+  <option value="idea">idea</option>
+  <option value="idea-cbc">idea-cbc</option>
+  <option value="idea-cfb">idea-cfb</option>
+  <option value="idea-ecb">idea-ecb</option>
+  <option value="idea-ofb">idea-ofb</option>
+  <option value="rc2">rc2</option>
+  <option value="rc2-40-cbc">rc2-40-cbc</option>
+  <option value="rc2-64-cbc">rc2-64-cbc</option>
+  <option value="rc2-cbc">rc2-cbc</option>
+  <option value="rc2-cfb">rc2-cfb</option>
+  <option value="rc2-ecb">rc2-ecb</option>
+  <option value="rc2-ofb">rc2-ofb</option>
+  <option value="rc4">rc4</option>
+  <option value="rc4-40">rc4-40</option>
+  <option value="rc4-hmac-md5">rc4-hmac-md5</option>
+  <option value="seed">seed</option>
+  <option value="seed-cbc">seed-cbc</option>
+  <option value="seed-cfb">seed-cfb</option>
+  <option value="seed-ecb">seed-ecb</option>
+  <option value="seed-ofb">seed-ofb</option>
+    </select>
+  </div>
+</div>
+
+
+
+<label class="col-md-2 control-label" for="types">Webhook events</label>  
+<small> The provided URL will be notified when these requests occur: </small>
+<div id="types" class="form-group">
+  <div class="col-md-6" style="overflow:scroll;max-height:200px;border-width:2px;border-color:#f3f3f3;border-style:solid;">
+    <div class="funkyradio">
+        <div class="funkyradio-info">
+            <input type="checkbox" name="FlightRequestCreate" id="checkbox1"/>
+            <label for="checkbox1">Send a request when Seatfilla recieves a flight request</label>
+        </div>
+        <div class="funkyradio-info">
+            <input type="checkbox" name="FlightRequestUpdate" id="checkbox2"/>
+            <label for="checkbox2">Send a request when Seatfilla a flight request is updated</label>
+        </div>
+        <div class="funkyradio-info">
+            <input type="checkbox" name="FlightRequestDestroy" id="checkbox3"/>
+            <label for="checkbox3">Send a request when a flight request is destroyed</label>
+        </div>
+        <div class="funkyradio-info">
+            <input type="checkbox" name="FlightOfferCreate" id="checkbox4"/>
+            <label for="checkbox4">Send a request when Seatfilla receives a flight offer</label>
+        </div>
+        <div class="funkyradio-info">
+            <input type="checkbox" name="FlightOfferUpdate" id="checkbox5"/>
+            <label for="checkbox5">Send a request when a flight offer is updated</label>
+        </div>
+        <div class="funkyradio-info">
+            <input type="checkbox" name="FlightOfferDestroy" id="checkbox6"/>
+            <label for="checkbox6">Send a request when a flight request is destroyed</label>
+        </div>
+    </div>
+    </div>
+    </div>
+    <br/>
+    <div class="col-xs-offset-1">
+    <button type="submit" class="btn btn-info btn-lg">Create webhook</button>
+    </div>
+    <br/>
+</fieldset>
+</form>
+</div>
+</div>

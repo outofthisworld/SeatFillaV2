@@ -65,7 +65,12 @@ module.exports = function notFound (data, options) {
   // Otherwise try to guess an appropriate view, or if that doesn't
   // work, just send JSON.
   if (options.view) {
-    return res.view(options.view, { data: viewData, title: 'Not Found' });
+    const final = { data: viewData, title: 'Not Found'};
+    if(options.layout){ final.layout = options.layout;
+    req.options.layout = options.layout;
+    res.locals.layout = options.layout;
+    }
+    return res.view(options.view, final );
   }
 
   // If no second argument provided, try to serve the default view,

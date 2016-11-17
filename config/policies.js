@@ -44,11 +44,11 @@
 module.exports.policies = {
     UserController: {
         '*':true,
-       // 'find': ['getPolicy', 'adminPolicy', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
+        // 'find': ['getPolicy', 'adminPolicy', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
         //'findOne': ['getPolicy', 'adminPolicy', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
         'create': ['postPolicy', 'createAccountPolicy', 'notLoggedInPolicy'],
         'index': ['getPolicy','passportAuth'],
-        'update':['passportAuth','isOwnProfilePolicy']
+        'update':['passportAuth','viewProfilePolicy','isOwnProfilePolicy']//Return user profile
     },
     AuthController: {
         '*': false,
@@ -83,11 +83,11 @@ module.exports.policies = {
         'create': ['apiPolicy'],
         'delete': ['apiPolicy'],
         'update': ['apiPolicy'],
-        'find':true
+        'find':true,
+        'index':true
     },
-    //The following need updating, but are all access for now.
-    RequestController: {
-        '*': true
+    FlightRequestController: {
+        'create':['passportAuth','viewProfilePolicy','isOwnProfilePolicy']
     },
     BidController: {
         '*': true
@@ -104,16 +104,30 @@ module.exports.policies = {
     },
     HotelController:{
         '*':true,
-        'create':['passportAuth','isOwnProfilePolicy']
+        'create':['passportAuth', 'viewProfilePolicy','isOwnProfilePolicy']
     },
     ListingsController:{
         '*':true
     },
+    NotificationsController:{
+        '*':true,
+        'findByUser':['viewProfilePolicy']
+    },
+    FeedController:{
+        index:'viewProfilePolicy'
+    },
+    UserProfileController:{
+        '*':'viewProfilePolicy',
+        'api':['passportAuth','viewProfilePolicy','isOwnProfilePolicy'],
+        'providerSection':['passportAuth','viewProfilePolicy','isOwnProfilePolicy'],
+        'findOneByUser':['viewProfilePolicy'],
+        'flightScheduling':['passportAuth','viewProfilePolicy']
+    },
     UserProfileComment:{
-        '*':true
+        '*':true,
     },
     UserSettings:{
         '*':false,
-        'update':['isOwnProfilePolicy']
+        'update':['viewProfilePolicy','isOwnProfilePolicy']
     }
 };

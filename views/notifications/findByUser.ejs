@@ -1,0 +1,134 @@
+
+
+
+<style>
+ul.list-group.notifications li{
+    min-height:80px;
+}
+
+.panel.panel-default.notification-panel .panel-heading,
+.panel.panel-default.notification-panel .panel-heading p{
+    background-image:none;
+    background-color:#EC407A;
+    color:white;
+}
+
+ 
+
+</style>
+
+<script type="text/html" id="notificationTemplate">
+   	<li>
+						<time datetime="{{:date}}">
+							<span class="day"> {{:day}} </span>
+							<span class="month"> {{:month}} </span>
+							<span class="year"> {{:year}} </span>
+							<span class="time"> At: {{:hour}}:{{:minutes}}:{{:seconds}} {{:AMPM}}</span>
+						</time>
+						<div class="info">
+							<p class="title"> {{:title}}</p>
+							<p class="desc">{{:message}}</p>
+						</div>
+						<div class="socialside">
+							<ul>
+								<li class="facebook" style="width:33%;"><a href="#facebook"> <span class="fa fa-facebook"></span></a></li>
+								<li class="twitter" style="width:34%;"><a href="#twitter"> <span class="fa fa-twitter"></span></a></li>
+								<li class="google-plus" style="width:33%;"><a href="#google-plus"> <span class="fa fa-google-plus"></span></a></li>
+							</ul>
+						</div>
+					</li>
+</script>
+<script>
+$(document).ready(function(){
+    var limit = 10;
+    var skip = 0;
+    const user = window.seatfilla.globals.userprofile.getCurrentUserProfileUser(window.location.pathname);
+
+    function displayNotification(notification,type){
+          if(!notification) return;
+          if(notification.data) notification = notification.data;
+          console.log(notification)
+          if(!$('.list-group.notifications li#'+notification.id).length){
+             const template = $.templates('#notificationTemplate');
+             notification.date = moment(notification.createdAt).format('YYYY-MM-DD');
+             notification.day =  moment(notification.createdAt).format('DD');
+             notification.month = moment(notification.createdAt).format('MM');
+             notification.year = moment(notification.createdAt).format('YY');
+             notification.hour = moment(notification.createdAt).format('HH');
+             notification.minutes = moment(notification.createdAt).format('MM');
+             notification.seconds = moment(notification.createdAt).format('SS');
+             notification.AMPM = moment(notification.createdAt).format('A');
+             $('.event-list.notifications')[type](null,template.render(notification))        
+          }
+    }
+
+ 
+  
+    io.socket.get('/user?username='+user,function(){});
+    io.socket.on('user',function(data){
+        console.log(data);
+        if(data.verb == 'addedTo' && data.attribute == 'notifications'){
+            displayNotification(data.added,'prepend')
+        }
+    })
+
+    function loadNotifications(){
+        const $button = $('#loadNotifications');
+         $.ajax({
+            url:'/userprofile/'+user+'/notifications/',
+            method:'GET',
+            data:{
+                limit,
+                skip,
+                sort:'createdAt DESC'
+            },
+            success:function(data,r,xhr){
+                if(xhr.status == 200){
+                    data.Notifications.forEach(function(notification){
+                      displayNotification(notification,'append')
+                    })
+                  skip+=data.Notifications.length;
+                  if(skip >= data.TotalNotifications){
+                      $button.addClass('hide');
+                  }else{
+                      $button.removeClass('hide');
+                  }
+                }else{
+                    alert('error loading more notifications')
+                }
+                  $button.removeClass('m-progress')
+            },
+            error:function(){
+                  alert('error loading more notifications')
+                  $button.removeClass('m-progress')
+            }
+              
+        })
+    }loadNotifications();
+
+    $('#loadNotifications').on('click',function(){
+        const $button = $(this)
+        $button.addClass('m-progress')
+        loadNotifications();
+    })
+})
+   
+</script>
+
+
+<div class="container-fluid">
+         <h2 class="text-center">
+         Your latest notifications
+         </h2><hr/><br/>
+   
+
+		<div class="container-fluid">
+			<div class="col-sm-12">
+				<ul class="event-list notifications">
+				
+				</ul>
+			</div>
+		</div>
+    	<button id="loadNotifications" class="btn btn-lg btn-info btn-block m-progress">More notifications</button>
+</div>
+    

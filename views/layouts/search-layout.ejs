@@ -11,18 +11,23 @@
     <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="/bower_components/select2/dist/js/select2.full.min.js"></script>
     <script src="/bower_components/jsRender/jsrender.min.js"></script>
+    <script src="/bower_components/moment/min/moment-with-locales.min.js"></script>
+    <script src="/js/dependencies/airport-data2.js"></script>
     <script src="/js/dependencies/chat.js"></script>
     <script src="/js/dependencies/device.min.js"></script>
     <script src="/js/dependencies/facebook.js"></script>
     <script src="/js/dependencies/geo-location.js"></script>
     <script src="/js/dependencies/geolocator.min.js"></script>
     <script src="/js/dependencies/index.js"></script>
+    <script src="/js/dependencies/input-hook.js"></script>
     <script src="/js/dependencies/jquery.easing.min.js"></script>
     <script src="/js/dependencies/jquery.mb.YTPlayer.js"></script>
     <script src="/js/dependencies/jquery.toaster.js"></script>
     <script src="/js/dependencies/jquery.validate.js"></script>
     <script src="/js/dependencies/jqueryFormReset.js"></script>
+    <script src="/js/dependencies/jqueryWaitingDialog.js"></script>
     <script src="/js/dependencies/jsRenderViewExtensions.js"></script>
+    <script src="/js/dependencies/lazy-script-loader.js"></script>
     <script src="/js/dependencies/login.js"></script>
     <script src="/js/dependencies/nav-toggle.js"></script>
     <script src="/js/dependencies/notification-service.js"></script>
@@ -31,6 +36,7 @@
     <script src="/js/dependencies/sidebar.js"></script>
     <script src="/js/dependencies/socket-handler.js"></script>
     <script src="/js/dependencies/supported-currencies.js"></script>
+    <script src="/js/dependencies/user.js"></script>
     <script src="/js/dependencies/wow.min.js"></script>
     <!--SCRIPTS END-->
     <link rel="import" href="/bower_components/paper-button/paper-button.html">
@@ -48,14 +54,6 @@
 
 
  	<script>
-  $(document).ready(function(){
-    $.toaster({ priority : 'info',  message : 'Search deals'});
-    
-    $('#flight-search-details').load('/ajax/flight-search-nav.ejs',function finished(){
-        
-    });
-  });
-
     $(document).on('click', '.panel-heading span.clickable', function(e){
       var $this = $(this);
       if(!$this.hasClass('panel-collapsed')) {
@@ -73,20 +71,30 @@
   
 
   #flight-search-details{
-      background-color:white;border-style:solid;border-color:lightblue;border-width:3px;border-width:1px;
+      background-color:#263238;
+      border-style:solid;
+      border-color:lightblue;
+      border-width:3px;
+      border-width:1px;
+      color:white;
+      border-color:orange;
+      border-width:3px;
   }
 
-  .panel{
-    border-style:solid;border-color:lightblue;border-width:3px;border-width:1px;
-  }
 
-  #flight-search-details label,h2{
-    color:black;
+
+  #flight-search-details label,
+  #flight-search-details h1,
+  #flight-search-details h2,
+  #flight-search-details h3, 
+  #flight-search-details h4,
+  #flight-search-details h5{
+    color:white;
   }
   </style>
 
 </head>
-       <body>
+       <body style="">
 
        <%- partial ('../partials/nav.ejs') %>
      
@@ -97,6 +105,7 @@
   
     </div>
   <br/>
+  <div class="flightSearchWrapper">
     <div class="row">
     <div class="col-sm-3 col-md-3">
     <nav class="navbar navbar-default sidebar" role="navigation">
@@ -117,7 +126,10 @@
 				</div>
 				<div class="panel-body">Panel content</div>
 	  </div>
-
+<div class="panel">
+  <div class="panel-heading">
+    Navigation
+  </div>
     <div class="collapse navbar-collapse" id="bs-sidebar-navbar-collapse-1">
       <ul class="nav navbar-nav">
         <li class="active"><a href="#">Search Flights<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-search"></span></a></li>
@@ -131,11 +143,11 @@
           </ul>
         </li>       
         <li ><a href="#">Search hotels<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-th-list"></span></a></li> 
-        <li ><a href="#">Search cars<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-th-list"></span></a></li> 
-        <li ><a href="#">Make a flight request<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-th-list"></span></a></li>        
+        <li ><a href="#">Search cars<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-th-list"></span></a></li>       
         <li ><a href="#">Tags<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-tags"></span></a></li>
       </ul>
     </div>
+   </div> 
   </div>
 </nav>
                   	<button class="btn btn-lg btn-info btn-block m-progress">Search</button>
@@ -148,16 +160,15 @@
                 </div>
                 <div class="panel-body">
                  
-                    <div class="pull-right">
-                        <a href="#" class="btn-lg btn-info text-white">
-                        <span class="glyphicon glyphicon-plus"></span> Create flight request</a>
-                    </div> 
+                  
                         
          
                     <%- body %>  
                 </div>
             </div>
         </div>
+    </div>
+
     </div>
 </div>
       

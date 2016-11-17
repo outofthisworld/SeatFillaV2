@@ -78,20 +78,13 @@
           <li>
 	    <ul class="nav navbar-nav navbar-right">
           
-				<li class="dropdown" style="position:relative;bottom:6px;right:10px;">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown"  role="button" aria-expanded="false"><i class="fa fa-fw fa-bell-o"></i> Notifications <span class="badge">2</span></a>
-					<ul class="dropdown-menu" role="menu">
-            <li> Notifications</li>
-						<li><a href="#"><i class="fa fa-fw fa-tag"></i> <span class="badge">Notification</span> Welcome to Seatfilla</a></li>
-						<li><a href="#"><i class="fa fa-fw fa-thumbs-o-up"></i> <span class="badge">Congratulations</span> You just visited SeatFilla</a></li>
-		
-                        <li>
-                        <div class="well well-sm">
-                            View all
-                         </div>
-                        </li>
-                    </ul>
-                    
+				<li class="dropdown" id="notificationDropdown" style="position:relative;bottom:6px;right:10px;">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown"  role="button" aria-expanded="false">
+          <i class="fa fa-fw fa-bell-o"></i> Notifications <span class="badge"><span id="unread_notifications">0</span></span></a>
+					<ul class="dropdown-menu" id="notifications" style="max-height:300px;overflow:scroll;" role="menu">
+            <div class="panel-heading" style="background-color:#f3f3f3;"> Notifications</div>
+  
+            </ul>         
 				</li>
 
         <li>  <form class="navbar-form nav-search-form" role="search">

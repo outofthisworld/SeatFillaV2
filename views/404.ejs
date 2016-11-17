@@ -1,22 +1,268 @@
-<!--
+	<script>
+ (function(e){function h(e){return Math.min.apply({},e)}function p(e){return Math.max.apply({},e)}function d(){return window.DeviceMotionEvent!=undefined}function v(t){if((new Date).getTime()<r+n)return;if(d()){var i=t.accelerationIncludingGravity,s=i.x,o=i.y;c.xArray.length>=5&&c.xArray.shift(),c.yArray.length>=5&&c.yArray.shift(),c.xArray.push(s),c.yArray.push(o),c.xMotion=Math.round((p(c.xArray)-h(c.xArray))*1e3)/1e3,c.yMotion=Math.round((p(c.yArray)-h(c.yArray))*1e3)/1e3,(c.xMotion>1.5||c.yMotion>1.5)&&a!=10&&(a=10),c.xMotion>f||c.yMotion>f?l++:l=0,l>=5?(u=!0,e(document).unbind("mousemove.plax"),e(window).bind("devicemotion",m(t))):(u=!1,e(window).unbind("devicemotion"),e(document).bind("mousemove.plax",function(e){m(e)}))}}function m(e){if((new Date).getTime()<r+n)return;r=(new Date).getTime();var t=e.pageX,f=e.pageY;if(u==1){var l=window.orientation?(window.orientation+180)%360/90:2,c=e.accelerationIncludingGravity,h=l%2==0?-c.x:c.y,p=l%2==0?c.y:c.x;t=l>=2?h:-h,f=l>=2?p:-p,t=(t+a)/2,f=(f+a)/2,t<0?t=0:t>a&&(t=a),f<0?f=0:f>a&&(f=a)}var d=t/(u==1?a:s),v=f/(u==1?a:o),m,l;for(l=i.length;l--;)m=i[l],m.invert!=1?m.obj.css("left",m.startX+m.xRange*d).css("top",m.startY+m.yRange*v):m.obj.css("left",m.startX-m.xRange*d).css("top",m.startY-m.yRange*v)}var t=25,n=1/t*1e3,r=(new Date).getTime(),i=[],s=e(window).width(),o=e(window).height(),u=!1,a=1,f=.05,l=0,c={xArray:[0,0,0,0,0],yArray:[0,0,0,0,0],xMotion:0,yMotion:0};e(window).resize(function(){s=e(window).width(),o=e(window).height()}),e.fn.plaxify=function(t){return this.each(function(){var n={xRange:0,yRange:0,invert:!1};for(var r in t)n[r]==0&&(n[r]=t[r]);n.obj=e(this),n.startX=this.offsetLeft,n.startY=this.offsetTop,n.invert==0?(n.startX-=Math.floor(n.xRange/2),n.startY-=Math.floor(n.yRange/2)):(n.startX+=Math.floor(n.xRange/2),n.startY+=Math.floor(n.yRange/2)),i.push(n)})},e.plax={enable:function(){e(document).bind("mousemove.plax",function(e){m(e)}),d()&&(window.ondevicemotion=function(e){v(e)})},disable:function(){e(document).unbind("mousemove.plax"),window.ondevicemotion=undefined}},typeof ender!="undefined"&&e.ender(e.fn,!0)})(function(){return typeof jQuery!="undefined"?jQuery:ender}());
 
-  You can  trigger this response from one of your controllers or policies with:
-  `return res.notFound();`
--->
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,600' rel='stylesheet' type='text/css'>
-    
-    <body>
-    <div style="background-color:red;height:85vh;">
-      <h1 class="text-center" style="color:white;">
-          Uh oh. <small> This resource doesn't exist!</small><br> <a href="/">Return Home</a>
-      </h1>
-      
-      <div class="text-center" style="color:white">
-      <div>
-        <img class="image img-responsive" width="500" height="600" src="./images/404.png">
+$(function(e){
+	var x=document.documentElement.clientHeight;
+	var y=e(".header").outerHeight();
+	e("#parallax_wrapper").css("height",x-y+"px");
+	e("#parallax_wrapper").css("left",50+"%");
+	e(".scene_1").plaxify({"xRange":0,"yRange":0,"invert":true}),
+	e(".scene_2").plaxify({"xRange":70,"yRange":20,"invert":true}),
+	e(".scene_3").plaxify({"xRange":0,"yRange":40,"invert":true}),
+	e.plax.enable();
+	e(document).ready(function(){});
+	window.setInterval(function(){
+  $('.duck-animation').delay(100).css('background-position-x','-1000px').animate({'background-position-x':'2000px'},50000,'linear');
+}, 100);
+});
+
+
+</script>
+<style>
+@font-face{font-family:'MuseoSans-700';src:url("../fonts/museo.eot");
+src:url("../fonts/museo.eot") format("embedded-opentype"),
+	url("../fonts/museo.woff") format("woff"),
+	url("../fonts/museo.ttf") format("truetype")}
+	
+body{font-family:'Helvetica Neue',Arial,Helvetica, Verdana, sans-serif;margin:0;padding:0;}
+ol,ul,li{list-style:none;margin:0;padding:0;border:0}
+a{text-decoration:none;}
+::-moz-selection{background-color:#adcdea;color:#333;text-shadow:none}
+::selection{background-color:#adcdea;color:#333;text-shadow:none}
+textarea, input { outline: none; }
+
+#pagewrap{min-height:100%}
+.container{margin:0 auto;width:960px}
+#wrapper .container{margin:25px auto}
+
+.button{
+	background:#fff;
+	display:inline-block;
+	background-color:#f0f0f0;
+	color:#3987cc;
+	vertical-align:middle;
+	text-align:center;
+	text-shadow:0 1px white;
+	font-weight:500;
+	line-height:18px;
+	-webkit-box-shadow:inset 0 1px 0 rgba(255,255,255,0.15),0 1px 3px rgba(0,0,0,0.5);
+	-moz-box-shadow:inset 0 1px 0 rgba(255,255,255,0.15),0 1px 3px rgba(0,0,0,0.5);
+	box-shadow:inset 0 1px 0 rgba(255,255,255,0.15),0 1px 3px rgba(0,0,0,0.5);
+	border:none;
+	padding:13px 30px;
+	-webkit-border-radius: 40px;
+	-moz-border-radius: 40px;
+	border-radius: 40px;
+	font-size:18px;
+}
+.button:hover{opacity:0.9 !important;color:black}
+
+#header{height:52px;position:fixed;width:100%;position:relative;z-index:999;background:#fff;border-bottom:1px solid #e5e5e5}
+#header .container .logo{height:42px;margin:5px 0; vertical-align:middle;border:0}
+#header .container .link{font-weight:700; font-size:18px; line-height:18px; color: #222; font-family: "MuseoSans-700",Helvetica,Arial,Verdana,sans-serif; vertical-align:middle;}
+
+#footer{font-size:11px;line-height:11px;color:#666666;overflow:hidden;clear:both;position:relative;text-shadow:rgba(255,255,255,0.3) 0px 1px;padding:0px;}
+#footer .container{padding:0 0 10px}
+#footer .container .copyright_info{float:left;width:450px}
+#footer .container .copyright_info li{float:left;margin-right:10px}
+#footer .container .links{float:right;width:450px}
+#footer .container .links li{float:right;margin-left:10px}
+
+#main-content{position:relative;margin-bottom:-100px}
+.sky {
+  height: 100vh;
+  background: #007fd5;
+  position: relative;
+  overflow: hidden;
+  -webkit-animation: sky_background 50s ease-out infinite;
+  -moz-animation: sky_background 50s ease-out infinite;
+  -o-animation: sky_background 50s ease-out infinite;
+  -webkit-transform: translate3d(0, 0, 0);
+  -moz-transform: translate3d(0, 0, 0);
+  -o-transform: translate3d(0, 0, 0)
+}
+
+.clouds_one {
+  background: url("http://montanaflynn.me/lab/css-clouds/images/cloud_one.png");
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 300%;
+  -webkit-animation: cloud_one 50s linear infinite;
+  -moz-animation: cloud_one 50s linear infinite;
+  -o-animation: cloud_one 50s linear infinite;
+  -webkit-transform: translate3d(0, 0, 0);
+  -moz-transform: translate3d(0, 0, 0);
+  -o-transform: translate3d(0, 0, 0)
+}
+
+.clouds_two {
+  background: url("http://montanaflynn.me/lab/css-clouds/images/cloud_two.png");
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 300%;
+  -webkit-animation: cloud_two 75s linear infinite;
+  -moz-animation: cloud_two 75s linear infinite;
+  -o-animation: cloud_two 75s linear infinite;
+  -webkit-transform: translate3d(0, 0, 0);
+  -moz-transform: translate3d(0, 0, 0);
+  -o-transform: translate3d(0, 0, 0)
+}
+
+
+
+@-webkit-keyframes sky_background {
+  0% {
+    background: #007fd5;
+    color: #007fd5
+  }
+  20% {
+    background: lightblue;
+  },
+  40% {
+    background: orange;
+  },
+  60% {
+     background: yellow;
+  },
+  100% {
+    background: navyblue;
+  }
+}
+
+@-webkit-keyframes cloud_one {
+  0% {
+    left: 0
+  }
+  100% {
+    left: -200%
+  }
+}
+
+@-webkit-keyframes cloud_two {
+  0% {
+    left: 0
+  }
+  100% {
+    left: -200%
+  }
+}
+
+@-webkit-keyframes cloud_three {
+  0% {
+    left: 0
+  }
+  100% {
+    left: -200%
+  }
+}
+
+@-moz-keyframes sky_background {
+  0% {
+    background: #007fd5;
+    color: #007fd5
+  }
+  50% {
+    background: #000;
+    color: #a3d9ff
+  }
+  100% {
+    background: #007fd5;
+    color: #007fd5
+  }
+}
+
+@-moz-keyframes moon {
+  0% {
+    opacity: 0;
+    left: -200% -moz-transform: scale(0.5);
+    -webkit-transform: scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    -moz-transform: scale(1);
+    left: 0% bottom: 250px;
+    -webkit-transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    bottom: 500px;
+    -moz-transform: scale(0.5);
+    -webkit-transform: scale(0.5);
+  }
+}
+
+@-moz-keyframes cloud_one {
+  0% {
+    left: 0
+  }
+  100% {
+    left: -200%
+  }
+}
+
+@-moz-keyframes cloud_two {
+  0% {
+    left: 0
+  }
+  100% {
+    left: -200%
+  }
+}
+
+@-moz-keyframes cloud_three {
+  0% {
+    left: 0
+  }
+  100% {
+    left: -200%
+  }
+}
+</style>
+</head>
+<body id="errorpage" class="error404">
+        <div id="pagewrap">
+            <div id="header" class="header">
+                <div class="container80">
+                    <div class="row ">
+                    <div class="col-xs-1">
+                    <img class="logo" src="/images/logo.png" alt=""/> 
+                    </div>
+                    <div class="col-xs-1">
+                      <p style="padding-top:12px;">Seatfilla</p>
+                    </div>
+                    <div class="col-xs-10">
+                    </div>
+                    </div>
+                </div>
+            </div><!--Header End-->
+			<div id="main-content">
+	
+<body>
+<div class="panel panel-default" style="z-index:1000;position:absolute;margin:auto;left:50%;top:10%;background:transparent;outline:0px;border-style:none;border-width:0px;border-radius:5px;">
+      <div class="container" style="position: relative; left:-50%;width:40vw;background:transparent;">
+      <div class="panel-heading" style="">
+       <h2 style="color:white"> It looks like you are lost! (404)</h2>
+            <h2 class="text-white"> Cause: </h2>
+      <p class="text-center text-white"><%= (data.error && data.error.message) || data.error %></p>
+       <br/>
       </div>
-    </div>
-    </div>
-        <h1 class="text-center">SeatFilla <small>404</small></h1>
-    </body>
+      <div class="panel-body">
+            <p class="text-white text-center"> Maybe this button can help you get back to civilization!</p>
+        <a href="/"><button class="button btn-sm btn-block"/><i class="fa fa-plane"></i><p class="">Fly me home!</p></button></a>
+      </div>
+      </div>
+</div>
+  <div class="sky">
+    <div class="moon"></div>
+    <div class="clouds_one"></div>
+    <div class="clouds_two"></div>
+    <div class="clouds_three"></div>
+  </div>
+</body>
+      </div><!-- end pagewrap -->
 
+</body>

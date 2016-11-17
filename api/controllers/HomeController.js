@@ -14,21 +14,18 @@ module.exports = {
         })
     },
     login(req,res){
-        return res.ok({}, {
+        return res.ok({redirectSuccess:req.param('redirectSuccess')}, {
             view: 'home/login',
         });
     },
-    resend_verification_email(req, res) {
+    resendVerificationEmail(req, res) {
         return res.ok({ user: req.user }, {
             view: 'home/resend-verfication-email',
         });
     },
-    reset_password(req, res) {
+    resetPassword(req, res) {
         return res.ok({ user: req.user },
          { view: 'home/reset-password.ejs', layout: 'layout' });
-    },
-    invalid_details(req, res) {
-        return res.ok({ user: req.user });
     },
     register(req,res){
         return res.ok({ user: req.user });

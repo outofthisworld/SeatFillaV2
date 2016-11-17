@@ -16,8 +16,8 @@ module.exports = {
       notNull:true,
       required:true
     },
-    apiKey:{
-      type:'string',
+    apiUser:{
+      type:'ApiUsers',
       notNull:true,
       required:true   
     },

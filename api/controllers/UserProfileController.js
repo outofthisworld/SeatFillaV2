@@ -21,6 +21,13 @@ module.exports = {
          title: req.options.userprofile.user.username + ' ' + req.__('UserProfile')
     })
   },
+  flightScheduling(req,res){
+   return res.ok({
+          UserProfile: req.options.userprofile
+        }, {
+          title: req.options.userprofile.user.username + ' ' + req.__('UserProfile')
+      })
+  },
   flight_group(req, res) {
     return res.ok({
       user: req.user
@@ -55,11 +62,21 @@ module.exports = {
       title: req.__('RecentlySearched')
     })
   },
+
+  /*
+  is own profile policy.
+  passportAuthPolicy
+  */
   api(req, res) {
     ApiService.findApiTokensForUser({ id: req.user.id }).then(function (tokens) {
-      return res.ok({ user: req.user, tokens: tokens }, {
-        view: 'user-account-panel/api',
-      })
+      return res.ok({
+        UserProfile: req.options.userprofile,
+        user: req.user, 
+        tokens: tokens 
+      },{view:'userprofile/api',
+      renderHtml:true})
+    }).catch(function(err){
+      return res.notFound(err);
     })
   }
 }

@@ -14,12 +14,27 @@ module.exports = {
             notNull:true,
             required:true
         },
-        user:{
-            model:'User'
+        sfVerificationParam:{
+            type:'string',
+            notNull:true,
+            required:true
+        },
+        apiUser:{
+            model:'ApiUsers',
+            notNull:true,
+            required:true
+        },
+        verificationToken:{
+            type:'string',
+            defaultTo:null
+        },
+        isVerified:{
+            type:'boolean',
+            defaultsTo:false
         },
         routes:{
             collection:'ApiRoutes',
-            via:'id'
+            via:'route'
         }
     }
 }

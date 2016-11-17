@@ -9,7 +9,7 @@ module.exports = function (req, res, next) {
   req.options = req.options || {}
 
   function isOwnProfile () {
-    return (req.user && req.user.username) == req.param('username')
+    return req.user && (req.user.username.toLowerCase() == req.param('username').toLowerCase());
   }
 
   async.auto({
@@ -53,7 +53,7 @@ module.exports = function (req, res, next) {
       })
     }],
     isOwnProfile: ['findUserProfile', function (callback, results) {
-      if ((req.user && req.user.username) == req.param('username')) {
+      if (isOwnProfile()) {
         return callback(null, true)
       }else {
         return callback(null, false)
@@ -118,7 +118,7 @@ module.exports = function (req, res, next) {
   }, function (err, results) {
     if (err) {
       sails.log.error(err)
-      return res.redirect('/404');
+      return res.notFound({error:'User profile doesn\'t exist'},{view:'404',layout:'layout'});
     }else{
       req.options.userprofile = Object.assign({}, results.findUserProfile)
       req.options.userprofile.user = results.findUser

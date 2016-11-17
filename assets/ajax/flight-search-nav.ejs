@@ -1,24 +1,45 @@
 
 
-        <h2 class="">Flight details</h2>
-        <hr/><br/>
-    <form name="form-test" action="" method="get" >
+   
+<form name="form-test" action="" method="get" >
     <div class="col-xs-8">
         <div class="row">
-            <div class="col-xs-6 form-group">
-                <label for="departure_cities">
-                    Departure City
-                </label>
-                <select id="departure_cities" name="name" class="form-control cities"></select>
+            <h4 style="font-size:20px;padding:10px;"> Departure Information </h4>
+
+            <div class="form-group">
+            <label class="col-md-1 control-label" for="departureCountry">Country</label>  
+            <div class="col-md-3">
+                    <select id="departureCountry" class="country form-control" data-attr-cityLink="#departureCity" data-attr-airportLink="#departureAirport"></select>
             </div>
-            <div class="col-xs-6 form-group">
-                <label for="arrival_cities" >
-                    Arrival City
-                </label>
-                <select id="arrival_cities" name="surname" class="form-control cities"></select>
+            <label class="col-md-1 control-label" for="departureCity">City</label>  
+            <div class="col-md-3">
+                    <select class="city form-control" id="departureCity"></select>
+            </div>
+            <label class="col-md-1 control-label" for="departureAirport">Airport</label>  
+            <div class="col-md-3">
+                    <select class="airport form-control" id="departureAirport"/></select>
+            </div>
             </div>
         </div>
          <div class="row">
+            <h4 style="font-size:20px;padding:10px;"> Destination Information </h4>
+            <div class="form-group">
+            <label class="col-md-1 control-label" for="departureCountry">Country</label>  
+            <div class="col-md-3">
+                    <select id="departureCountry" class="country form-control" data-attr-cityLink="#destinationCity" data-attr-airportLink="#destinationAirport"></select>
+            </div>
+            <label class="col-md-1 control-label" for="destinationCity">City</label>  
+            <div class="col-md-3">
+                    <select class="city form-control" id="destinationCity"></select>
+            </div>
+            <label class="col-md-1 control-label" for="destinationAirport">Airport</label>  
+            <div class="col-md-3">
+                    <select class="airport form-control" id="destinationAirport"/></select>
+            </div>
+            </div>
+        </div>
+        <br/></hr>
+         <div class="row panel panel-body" style="background-color:#42a5f5 ;">
            <div class="col-xs-2 form-group has-warning">
                 <label for="street">
                     Adults
@@ -55,9 +76,7 @@
         </div>
 
         <div class="col-xs-4">
-    <button class="btn btn-lg btn-info btn-block pull-right"><i class="fa fa-search" style="font-size:105px"></i></button>
-
+             <button class="btn btn-lg " style="position:absolute;right:-15px;background-color:#42a5f5;">
+             <i class="fa fa-search" style="font-size:275px"></i></button>
         </div>
-      	
-  
     </form>

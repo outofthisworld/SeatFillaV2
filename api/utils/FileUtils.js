@@ -113,5 +113,39 @@ module.exports = {
     })
     wstream.write(data)
     wstream.end()
+  },
+   /* Convenience method to read a JSON file, parse the JSON as a javascript object,
+  *  pass it to a callback, allow the object to be modified by the callee
+  *  and passed back via a callback. The passed back json file then gets stringified
+  *  and written to disk. Should an error occur when writing to disk an error callback is triggered,
+  *  otherwise the operation completes succesfully.
+
+    Example...
+    require('../../FileUtils').modJson('/File', function(err, jsonObject, done) {
+        if (err) { //Error logging to file
+            sails.log.error(err);
+        } else {
+            jsonObj.something.append(errorDetails);
+            return done(jsonObject, function done(err){
+
+            })
+        }
+    })
+  */
+  modJson(path, callback) {
+      const _this = this;
+      function triggerCallback(func,args){if(func && typeof func=='function')func.apply(null,args)}
+      _this.readJsonFileAsync(path)
+      .then(function (jsonObject) {
+        return triggerCallback(callback,[null, jsonObject, function done (object, done) {
+          _this.writeJsonFileAsync(path, object).then(function (result) {
+            return triggerCallback(done,[null,result]);
+          }).catch(function (err) {
+            return triggerCallback(done,[err,null]);
+          })
+        }])
+      }).catch(function (err) {
+        return triggerCallback(callback,[err,null,function(){}])
+    })
   }
 }

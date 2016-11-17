@@ -1,0 +1,26 @@
+<div class="row">
+        <hr class="hr-danger" />
+        <ol class="breadcrumb bread-danger">
+              <li><a href="/provider/">provider panel</a></li>
+              <li><a href="/provider/create/">create</a></li>
+              <li><a href="/provider/create/webhook">create webook</a></li>
+              <li class="active">create webhook success</li>
+          </ol>
+</div> 
+
+<h3>Your web hook has been succefully created.</h3><br/><hr/>
+
+    <div class="panel panel-info">
+        <div class="panel-heading">Web hook info</div>
+        <div class="panel-body">
+        <ul>
+            <li>Sent in request header as 'x-seatfilla-web-hook-key': <%= req.flash('sfVerificationParam')%></li>
+            <li>Decrypt 'x-seatfilla-web-hook-key' value with key: <%= req.flash('key')%></li>
+            <li>Algorithm to use when decrypting: <%= req.flash('algorithm')%></li>
+            <li>Decrypted message value should equal: <%= req.flash('message')%></li>
+        </ul>
+        <small>This is the last time Seatfilla can display the decrypted message value. Please store this somewhere and remember it.</small>
+        </div>
+    </div>
+
+

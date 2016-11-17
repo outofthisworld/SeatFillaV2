@@ -10,7 +10,7 @@
  */
 const passport = require('passport')
 var flash = require('connect-flash')
-
+const xmlparser = require('express-xml-bodyparser')
 module.exports.http = {
   middleware: {
     passportInit: passport.initialize(),
@@ -31,7 +31,6 @@ module.exports.http = {
           .populate('userSettings')
           .populate('userLocations')
           .populate('notifications')
-          .populate('systemNotificationUsers')
           .populate('addresses')
           .populate('flightRequests')
           .populate('bids')
@@ -68,7 +67,6 @@ module.exports.http = {
                 sails.log.error(err)
                 return Promise.reject(err)
               } else {
-                sails.log.debug('Found user settings ' + JSON.stringify(userSettings))
                 // Handle nested associations that waterline doesn't currently have support for.
                 if (userSettings && userSettings.currentLocation &&
                   Number.isInteger(userSettings.currentLocation)) {
@@ -129,10 +127,11 @@ module.exports.http = {
       'reqModifer',
       'resModifer',
       'bodyParser',
+      'xmlParser',
       'handleBodyParserError',
       'compress',
       'methodOverride',
-      'poweredBy',
+      'poweredBySeatfilla',
       '$custom',
       'router',
       'www',
@@ -145,56 +144,59 @@ module.exports.http = {
       req.isPOST = function () {
         return req.method === 'POST'
       }
+
       req.isGET = function () {
         return req.method === 'GET'
       }
+
       req.isPUT = function () {
         return req.method === 'PUT'
       }
+
       req.isDELETE = function () {
         return req.method === 'DELETE'
       }
+
+      req.wantsXML = req.headers['accept'] == 'application/xml' || req.headers['accept'] == 'text/xml';
+
       req.setParam = function(paramName,paramValue){
           req.body[paramName] = paramValue;
           req.query[paramName] = paramValue
-          req.path[paramName] = paramValue;
+          req.params[paramName] = paramValue;
       }
-      next()
+
+      req.deleteParam = function(paramName){
+         if(req.allParams()[paramName]){
+          delete req.body[paramName];
+          delete req.query[paramName];
+          delete req.params[paramName];
+         }
+      }
+     return  next()
     },
     resModifer: function (req, res, next) {
-      next()
+      return next()
+    },
+    poweredBySeatfilla:function(req,res,next){
+      res.set({'X-Powered-By':'Seatfilla <seatfilla.com>'})
+      return next();
+    },
+    xmlParser:function(req,res,next){
+      if (req.headers && (req.headers['content-type'] == 'text/xml' || req.headers['content-type'] == 'application/xml')) {
+        return xmlparser(req, res, next);
+      }
+      return next();
     },
     localePreference: function (req, res, next) {
       UserSettingsService.setUserLocalePreference(req, req.headers['Accept-Language'])
     },
 
-    /****************************************************************************
-     *                                                                           *
-     * Example custom middleware; logs each request to the console.              *
-     *                                                                           *
-     ****************************************************************************/
-
     requestLogger: function (req, res, next) {
-      console.log('Requested :: ', req.method, req.url)
-      console.log('Headers: ' + JSON.stringify(req.headers))
+     // console.log('Requested :: ', req.method, req.url)
+      //console.log('Headers: ' + JSON.stringify(req.headers))
 
       return next()
     }
-
-    /***************************************************************************
-     *                                                                          *
-     * The body parser that will handle incoming multipart HTTP requests. By    *
-     * default as of v0.10, Sails uses                                          *
-     * [skipper](http://github.com/balderdashy/skipper). See                    *
-     * http://www.senchalabs.org/connect/multipart.html for other options.      *
-     *                                                                          *
-     * Note that Sails uses an internal instance of Skipper by default; to      *
-     * override it and specify more options, make sure to "npm install skipper" *
-     * in your project first.  You can also specify a different body parser or  *
-     * a custom function with req, res and next parameters (just like any other *
-     * middleware function).                                                    *
-     *                                                                          *
-     ***************************************************************************/
 
     // bodyParser: require('skipper')({strict: true})
 

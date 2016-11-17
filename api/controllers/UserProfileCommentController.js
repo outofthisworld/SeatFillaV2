@@ -9,18 +9,6 @@ module.exports = {
           status: ResponseStatus.OK,
           userProfileComments: []
         })
-        return UserProfileComment.create({
-          user: '9f8054f0-a96e-4c4a-b0cb-de928bd1a1bb',
-          message: 'I just signed up to Seatfilla!',
-          userProfile: 1,
-          isReply: false
-        }).then(function (comment) {
-          sails.log.debug('Created comment')
-          sails.log.debug(comment)
-          UserProfileComment.publishCreate(comment)
-        }).catch(function (err) {
-          sails.log.error(err)
-        })
       }
 
       async.auto({

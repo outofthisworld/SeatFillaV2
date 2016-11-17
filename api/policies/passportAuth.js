@@ -15,5 +15,5 @@ module.exports = function(req, res, next) {
 
 
   sails.log.debug('Error authenticating passport policy in passportAuth.js');
-  return res.forbidden('Must be authenticated to perform this action');
+  return res.redirect('/login?redirectSuccess='+req.path);
 };

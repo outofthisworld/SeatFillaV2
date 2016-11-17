@@ -9,7 +9,7 @@ describe('EmailService tests',function(){
 
 
 
-    describe('Send Email',function(){
+    /*describe('Send Email',function(){
         it('Sends an email',function(done){
               var email = {
                 to: ['dale@farpoint.co.nz'],
@@ -25,6 +25,6 @@ describe('EmailService tests',function(){
                 done(err);
             });
         });
-    });
+    });*/
 
 });

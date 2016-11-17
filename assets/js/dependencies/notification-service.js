@@ -6,43 +6,61 @@
 
 $(document).ready(function() {
 
+     $('#notificationDropdown').on('click',function(){
+        $('#unread_notifications').text("0")
+    })
+
     //Subscribe to notifications 
     io.socket.get('/Notifications/subscribe', function(body, response) {
         console.log('Subscribing to notifications service, status code: ' + response.statusCode);
     });
 
-    //Listen to notifications
-    io.socket.on('NotificationService', function(data) {
-        console.log(data);
+    function notificationListener(data){
         addNotification(data);
-    });
-
-    //Listen for system notifications
-    io.socket.on('SystemNotification', function(data) {
-        console.log(data);
-        addNotification(data);
-    });
-
-    //Retrieve our latest notifications
-    $.get("/notifications/latestNotifications", function(data) {
-        console.log(data);
-        //addNotification(data);
-    });
-
-
-    /*
-    
-            <li>
-            <span class = "item"style = "background-color:lightblue;" >
-            <span class = "item-info" >
-            <span class = "lead" > Message name < /span> <p > This is a message < /p>
-             </span> </span> </span> </li>
-    */
-    function addNotification(data) {
-        $('#notifications-menu').append($('<li>').append(
-            $('<span>').attr('class', 'item')
-            .append($('<span>').attr('class', 'item-info').append($('<iron-icon>').attr('icon', 'social:notifications').css('color', 'black'))
-                .append($('<span>').attr('class', 'lead').text(data.title))
-                .append($('<p>').text(data.message)))));
     }
-});
+
+    window.seatfilla.globals.getUser(function(status,result){
+        console.log('Find user: status : ' + status)
+        if(status == 200){
+            const user = result.username;
+            console.log(user)
+            io.socket.get('/user?username='+user,function(){
+                io.socket.on('notifications',function(notification){
+                    console.log('gottttt')
+                    if(notification.verb == 'addedTo'){
+                        addNotification(notification.added);
+                }
+                })
+            })
+        }else{
+            //Listen for system notifications
+            io.socket.on('systemnotifications', notificationListener);
+            io.socket.on('NotificationService',notificationListener);
+        }
+    })
+   
+    //Retrieve our latest notifications
+    $.get("/notifications/latestnotifications", function(data,r,p) {
+        data.forEach(function(notification){
+            addNotification(notification);
+        })
+    });
+
+    function addNotification(data) {
+        if(!data || !data.verb == 'created') return;
+
+        const message = data.data || data;
+        const id = data.id;
+
+        console.log('adding notification: ' + JSON.stringify(data));
+        const html = '<li><a href="' + (message.link || '/') + '"><span class="fa fa-fw fa-tag"></span><span>'+message.message+'</span></a></li>'
+
+
+      
+        $('#notifications').append(html);
+
+        if(!data.read){
+            $('#unread_notifications').text(parseInt($('#unread_notifications').text()) + 1)
+        }
+    }	
+});        

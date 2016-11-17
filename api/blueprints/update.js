@@ -18,7 +18,8 @@ var _ = require('lodash');
  *
  */
 module.exports = function updateOneRecord (req, res) {
-
+  sails.log.debug('in update.js');
+  sails.log.debug(JSON.stringify(req.options))
   // Look up the model
   var Model = actionUtil.parseModel(req);
 

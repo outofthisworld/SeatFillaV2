@@ -1,0 +1,190 @@
+
+<div class="container-fluid">
+<div class="row">
+<div class="col-md-6">
+<div class="panel">
+<div class="panel-heading"><p><%=data.UserProfile.user.displayName%>'s latest bids</p></div>
+<div class="table-responsive" style="padding:20px">
+                    <table class="table table-hover table-email">
+                        <tbody>
+                        <tr class="">      
+                            <td>
+                                <div class="media">
+                                    <a href="#" class="pull-left">
+                                        <img alt="..." src="http://bootdey.com/img/Content/avatar/avatar1.png" width="50" height="50" class="media-object">
+                                    </a>
+                                    <div class="media-body">
+                                        <p class="email-summary"><strong>Commits pushed</strong> Lorem ipsum dolor sit amet, consectetur adipisicing elit... <span class="label label-success">New</span> </p>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        
+                        </tbody>
+                    </table>
+                </div><!-- /.table-responsive -->
+</div><!--panel-->
+
+  <div class="col-xs-12">
+                <div class="panel panel-default" style="padding:40px">
+        <div class="panel-body">
+        <div class="row">
+            <div class="col-lg-6">
+        		<div class="panel no-image material-blue-6 text-white">
+        			<div class="panel-heading">
+        				<div class="row">
+        					<div class="col-xs-6">
+        						<i class="fa fa-envelope-o fa-5x"></i>
+        					</div>
+        					<div class="col-xs-6 text-right">
+        						<p class="announcement-heading text-white">1</p>
+        					<!--	<p class="announcement-text">Users</p> -->
+        					</div>
+        				</div>
+        			</div>
+        			<a href="#">
+        				<div class="panel-footer announcement-bottom">
+        					<div class="row">
+        						<div class="col-xs-6">
+        							Notifications
+        						</div>
+        						<div class="col-xs-6 text-right">
+        							<i class="fa fa-arrow-circle-right"></i>
+        						</div>
+        					</div>
+        				</div>
+        			</a>
+        		</div>
+        	</div>
+        	<div class="col-lg-6">
+        		<div class="panel  material-pink-6 text-white">
+        			<div class="panel-heading">
+        				<div class="row">
+        					<div class="col-xs-6">
+        						<i class="fa fa-comment-o fa-5x"></i>
+        					</div>
+        					<div class="col-xs-6 text-right">
+        						<p class="announcement-heading text-white">12</p>
+        						<!-- <p class="announcement-text"> Items</p> -->
+        					</div>
+        				</div>
+        			</div>
+        			<a href="#">
+        				<div class="panel-footer announcement-bottom" style="border-color:white;border-width:2px;border-style:solid;">
+        					<div class="row">
+        						<div class="col-xs-6">
+        							Chat
+        						</div>
+        						<div class="col-xs-6 text-right">
+        							<i class="fa fa-arrow-circle-right"></i>
+        						</div>
+        					</div>
+        				</div>
+        			</a>
+        		</div>
+        	</div>
+        	<div class="col-lg-6">
+        		<div class="panel material-pink-6 text-white">
+        			<div class="panel-heading">
+        				<div class="row">
+        					<div class="col-xs-6">
+        						<i class="fa fa-bell-o fa-5x"></i>
+        					</div>
+        					<div class="col-xs-6 text-right">
+        						<p class="announcement-heading ">18</p>
+        			
+        					</div>
+        				</div>
+        			</div>
+        			<a href="#">
+        				<div class="panel-footer announcement-bottom">
+        					<div class="row">
+        						<div class="col-xs-6">
+        							Requests
+        						</div>
+        						<div class="col-xs-6 text-right">
+        							<i class="fa fa-arrow-circle-right"></i>
+        						</div>
+        					</div>
+        				</div>
+        			</a>
+        		</div>
+        	</div>
+        	<div class="col-lg-6">
+        		<div class="panel  material-blue-6 text-white">
+        			<div class="panel-heading">
+        				<div class="row">
+        					<div class="col-xs-6">
+        						<i class="fa fa-comments fa-5x"></i>
+        					</div>
+        					<div class="col-xs-6 text-right">
+        						<p class="announcement-heading">56</p>
+        	
+        					</div>
+        				</div>
+        			</div>
+        			<a href="#">
+        				<div class="panel-footer announcement-bottom">
+        					<div class="row">
+        						<div class="col-xs-6">
+        							Complete 
+        						</div>
+        						<div class="col-xs-6 text-right">
+        							<i class="fa fa-arrow-circle-right"></i>
+        						</div>
+        					</div>
+        				</div>
+        			</a>
+        		</div>
+        	</div>
+
+        
+
+
+        </div><!-- /.row -->  
+        
+        </div> 
+
+        
+        </div>
+
+
+
+        </div> <!--col-->
+    
+
+</div><!--col6-->
+
+
+
+</div>
+
+
+        <!--  statitics -->
+
+
+<!--COMMENTS-->
+          
+                <div class="col-xs-12">
+                  <div class="">
+                    <p><small class="pull-right">45 comments</small> Comments </p>
+                  </div> 
+
+                   <div class="comments-list" id="commentsList">
+
+
+                   </div>       
+                    <form>
+                     <div class="form-group">
+                            <label for="comment">Your Comment</label>
+                            <textarea name="comment" id="top-level-comment-message" class="form-control" rows="3"></textarea>
+                          </div>
+                          <input id="top-level-comment-btn" value="Post comment" class="btn btn-default"/>
+                </form>  
+        </div>
+</div>
+
+
+<!--Lazily loaded script-->
+<div style="display:hidden;" data-attr-lazyload-sync="" data-attr-src="/scripts/user-profile.findOneByUser.js"></div>      

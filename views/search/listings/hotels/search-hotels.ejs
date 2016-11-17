@@ -2,6 +2,110 @@
     hide {
         display:none;
     }
+.product-item {
+    padding: 15px;
+    background: #fff;
+    margin-top: 20px;
+    position: relative;
+}
+.product-item:hover {
+    box-shadow: 5px 5px rgba(234, 234, 234, 0.9);
+}
+.product-item:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+    font-size: 0;
+    line-height:0;
+}
+.sticker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 63px;
+    height: 63px;
+}
+.sticker-new {
+    background: url() no-repeat;
+    left: auto;
+    right: 0;
+}
+.pi-img-wrapper {
+    position: relative;
+    max-width:350px;
+    max-height:350px;
+    width:350px;
+    height:350px;
+}
+.pi-img-wrapper img{
+    max-width:350px;
+    max-height:350px;
+    width:350px;
+    height:350px;
+}
+.pi-img-wrapper div {
+    background: rgba(0,0,0,0.3);
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: none;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+.product-item:hover>.pi-img-wrapper>div {
+    display: block;
+}
+.pi-img-wrapper div .btn {
+    padding: 3px 10px;
+    color: #fff;
+    border: 1px #fff solid;
+    margin: -13px 5px 0;
+    background: transparent;
+    text-transform: uppercase;
+    position: relative;
+    top: 50%;
+    line-height: 1.4;
+    font-size: 12px;
+}
+.product-item .btn:hover {
+    background: #e84d1c;
+    border-color: #c8c8c8;
+}
+
+.product-item h3 {
+    font-size: 14px;
+    font-weight: 300;
+    padding-bottom: 4px;
+    text-transform: uppercase;
+}
+.product-item h3 a {
+    color: #3e4d5c;
+}
+.product-item h3 a:hover {
+    color: #E02222;
+}
+.pi-price {
+    color: #e84d1c;
+    font-size: 18px;
+    float: left;
+    padding-top: 1px;
+}
+.product-item .add2cart {
+    float: right;
+    color: #a8aeb3;
+    border: 1px #ededed solid;
+    padding: 3px 6px;
+    text-transform: uppercase;
+}
+        .product-item .add2cart:hover {
+            color: #fff;
+            background: #e84d1c;
+            border-color: #e84d1c;
+        }
+
 .list-group {border-radius: 0;}
 .list-group .list-group-item {background-color: transparent;overflow: hidden;border: 0;border-radius: 0;padding: 0 16px;}
 .list-group .list-group-item .row-picture,
@@ -36,257 +140,99 @@
 .explore a {color: green; font-size: 13px;font-weight: 600}
 .twitter a {color:#4099FF}
 .img-box{box-shadow: 0 3px 6px rgba(0,0,0,.16),0 3px 6px rgba(0,0,0,.23);border-radius: 2px;border: 0;}
+
 </style>
-
-
 <!-- JSRender List item template for displaying hotel items -->
 <script type="text/html" id="list-item-template">
-             <div class="row"> 
-                    <div class="col-xs-12 col-sm-3 col-md-3">
-                        <a href="#">
-                            <img src="{{:image}}" class="img-responsive img-box img-thumbnail"/> 
-                        </a>
-                    </div> 
-                    <div class="col-xs-12 col-sm-9 col-md-9">
-                        <div class="list-group">
-                            <div class="list-group-item">
-                                <div class="row-picture">
-                                    <a href="#">
-                                        <img src="{{:image}}" class="circle img-thumbnail img-box"/>
-                                    </a>
-                                </div>
-                                <div class="row-content">
-                                    <div class="panel" style="background-color:white;border-color:white;">
-                                    <div class="panel-heading">
-                                    <div class="list-group-item-heading">
-                                        <a href="#">
-                                            <h4 style="font-size:18px;">{{:name}}</h4>
-                                        </a>
-                                    </div
-                                    </div>
-                                    <div class="panel-body">
-                                             <p>Popularity description:</p>
-                                            </hr>
-                                            <p>{{:popularity_desc}}</p>
-                                            <p><a href="#">{{:name}}</a></p>
-                                            <p>{{:star_rating}}</p>
-                                            <p>{{:longitude}}</p>
-                                            <p>{{:latitude}}</p>
-                                    </div>
-                                    </div>
-                          <!--<ul>
-                                {{for amenities}}
-                                   <li>Name: {{:name}} <img class="{{:~getAmenityIcon(key)}}" width="50" height="50" src="/images/imagetransparent.png"></img/></li>
-                                {{/for}}
-                            </ul>-->
-                                <form action="/hotel/findOne/{{:hotel_id}}" method ="POST">
-                                    <button class="btn btn-info pull-right"> View details </button>
-                                    <input type="hidden" name="hotelData" value="{{>~stringify(~root)}}"/>
-                                </form>
-                                </div>
-                            </div>
-                        </div>
-                      
-                    </div> 
-            </div>
+
+{{for hotels ~len=hotels.length}}
+    {{if #getIndex() == 0 }}
+        <div class="row">  {{:~log('start row')}}
+    {{/if}}
+    {{if ~mulOf(#getIndex(),3) && #getIndex() != 0}}
+         </div> <!-- end row-->{{:~log('end row')}}
+         <br/>
+        <div class="well" style="background-color:white;">
+      <div class="media">
+      	<a class="pull-left" href="#">
+    		<img class="media-object" src="{{:image}}" width="150" height="150">
+  		</a>
+  		<div class="media-body">
+    		<p class="media-heading">Hotel</p>
+          <p class="text-right">By Francisco</p>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pharetra varius quam sit amet vulputate. 
+                Quisque mauris augue, molestie tincidunt condimentum vitae, gravida a libero. Aenean sit amet felis 
+                dolor, in sagittis nisi. Sed ac orci quis tortor imperdiet venenatis. Duis elementum auctor accumsan. 
+                Aliquam in felis sit amet augue.</p>
+          <ul class="list-inline list-unstyled">
+  			<li><span><i class="glyphicon glyphicon-calendar"></i> 2 days, 8 hours </span></li>
+            <li>|</li>
+            <span><i class="glyphicon glyphicon-comment"></i> 2 comments</span>
+            <li>|</li>
+            <li>
+               <span class="glyphicon glyphicon-star"></span>
+                        <span class="glyphicon glyphicon-star"></span>
+                        <span class="glyphicon glyphicon-star"></span>
+                        <span class="glyphicon glyphicon-star"></span>
+                        <span class="glyphicon glyphicon-star-empty"></span>
+            </li>
+            <li>|</li>
+            <li>
+            <!-- Use Font Awesome http://fortawesome.github.io/Font-Awesome/ -->
+              <span><i class="fa fa-facebook-square"></i></span>
+              <span><i class="fa fa-twitter-square"></i></span>
+              <span><i class="fa fa-google-plus-square"></i></span>
+            </li>
+			</ul>
+       </div>
+    </div>
+  </div>{{:~log('big')}}
+                <div class="row"> {{:~log('start row')}}
+            {{/if}} 
+            {{if !(~mulOf(#getIndex(),3) && #getIndex() != 0) || (~len < 4 || ~len==1)}}
+                 <div class="col-md-6">
+                <div class="product-item">
+                <div class="pi-img-wrapper">
+                    <img src="{{:image}}" class="img-responsive">
+                    <div>
+                    <a href="#" class="btn">Zoom</a>
+                    <a href="#" class="btn">View</a>
+                    </div>
+                </div>
+                <h3><a href="shop-item.html">Berry Lace Dress</a></h3>
+                <div class="pi-price">$29.00</div>
+                   <form action="/hotel/findOne/{{:hotel_id}}" method ="POST">
+                        <button class="btn btn-info pull-right"> View details </button>
+                        <input type="hidden" name="hotelData" value="{{>~stringify(~root.hotels[#getIndex()])}}"/>
+                  </form>
+                <!--<div class="sticker sticker-new"></div>-->
+                </div>
+                </div> 
+                {{:~log('col 4')}}
+                {{if ~len==1 || #getIndex()==~sub(~len,1)}}
+                    </div> {{:~log('end row')}}
+                {{/if}}
+            {{/if}}
+{{/for}}
 </script>
+
+
 <script>
-  const amenMapping = {
-      'LAUNDRY': '.icon-laundry',
-      'WIFISERVICE': '.icon-wifi',
-      'FIREPLACE': '.icon-fireplace',
-      'LUGGAGESTORAGE': '.icon-suitcase',
-      'GARDEN': '.icon-garden',
-      'FIREEXTINGUISHER': '.icon-fire-extinguisher',
-      'BED': '.icon-bed',
-      'TAXI': '.icon-taxi',
-      'BALCONY': '.icon-terrace',
-      'TOILETPAPER': '.icon-toilet-paper',
-      'TOOTHPASTE': '.icon-toothbrush-toothpaste',
-      'TOOTHBURSH': '.icon-toothbrush-toothpaste',
-      'GYMNASIUM': '.icon-gym-equipment',
-      'PS4': '.icon-game-console',
-      'PS3': '.icon-game-console',
-      'PS2': '.icon-game-console',
-      'XBOX': '.icon-game-console',
-      'PHONE': '.icon-phone',
-      'BABYSITTINGSERVICE': '.icon-child-care',
-      'CHILDREN': '.icon-child-care',
-      'KIDS': '.icon-child-care',
-      'ADOLESCENTS': '.icon-child-care',
-      'PHONESERVICE': '.icon-phone',
-      'ROOMSERVICE': '.icon-phone-service',
-      'XBOX 360': '.icon-game-console',
-      'XBOX-360': '.icon-game-console',
-      'GAMECONSOLE': '.icon-game-console',
-      'NINTENDO': '.icon-game-console',
-      'NINTENDO WII': '.icon-game-console',
-      'WII': '.icon-game-console',
-      'PRIVATEBEACH': '.icon-beach',
-      'MEETINGROOM': '.icon-meeting-table',
-      'BATH': '.icon-bath',
-      'BUNKBED': '.icon-bunk-beds',
-      'BUNKBEDS': '.icon-bunk-beds',
-      'SHOWER': '.icon-shower',
-      'LAMP': '.icon-lamp',
-      'LIGHTING': '.icon-lamp',
-      'BICYCLE': '.icon-bicycle',
-      'ATM': '.icon-atm',
-      'BLENDER': '.icon-blender',
-      'CLOCK': '.icon-clock',
-      'WALLCLOCK': '.icon-clock',
-      'ALARMCLOCK': '.icon-clock',
-      'STORE': '.icon-store',
-      'ANIMAL': '.icon-animal',
-      'ANIMALS': '.icon-animal',
-      'PETSALLOWEDSERVICE': '.icon-animals',
-      'FITNESSCENTER': '.icon-dumbbell',
-      'CAMERA': '.icon-camera',
-      'YOGA': '.flaticon-yoga-mat',
-      'DISABLED': '.icon-wheel-chair',
-      'WHEELCHAIR': '.icon-wheel-chair',
-      'BUSINESSCENTER': '.icon-meeting',
-      'FRONTDESK24HSERVICE': '.icon-reception',
-      'GYMNASIUM': '.icon-gym-equipment',
-      'DISABLEDFACILITY': '.icon-wheel-chair',
-      'LIMOUSINESERVICE': '.icon-taxi',
-      'FIRSTAID': '.icon-first-aid',
-      'HEATING': '.icon-heater',
-      'HORSE': '.icon-horse',
-      'TOWEL': '.icon-towel',
-      'OVEN': '.icon-oven',
-      'SCALES': 'icon-scales',
-      'LOCK': '.icon-lock',
-      'PADLOCK': '.icon-lock',
-      'COOKTOP': '.icon-oven',
-      'BICYCLE': '.icon-bicycle',
-      'COOKING': '.icon-oven',
-      'MASSAGE': '.icon-massage',
-      'MINIBAR': '.icon-bar-fridge',
-      'MINI-BAR': '.icon-bar-fridge',
-      'MINIBARSERVICE': '.icon-bar-fridge',
-      'DESK': '.icon-desk',
-      'LIFT': '.icon-lift',
-      'ELEVATOR': '.icon-lift',
-      'SHAMPOO': '.icon-shampoo',
-      'MIRROR': '.icon-mirror',
-      'AIRCONDITIONER': '.icon-air-conditioner',
-      'AIRCONDITIONING': '.icon-air-conditioner',
-      'HEATER': '.icon-heater',
-      'FRIDGE': '.icon-refrigerator',
-      'REFRIGERATOR': '.icon-refrigerator',
-      'MICROWAVE': '.icon-microwave',
-      'NEWSPAPER': '.icon-newspaper',
-      'HAIRDRYER': '.icon-hairdryer',
-      'IRON': '.icon-iron',
-      'LAPTOP': '.icon-computer',
-      'COMPUTER': '.icon-computer',
-      'COFEEMAKER': '.icon-coffee-machine',
-      'COFEE': '.icon-coffee',
-      'INDOORSWIMMINGPOOL': '.icon-outdoor-pool',
-      'INDOORPOOL': '.icon-outdoor-pool',
-      'CHILDRENPOOL': '.icon-outdoor-pool-sunumbrella',
-      'CHILDRENSWIMMINGPOOL': '.icon-outdoor-pool-subumbrella',
-      'BUSINESSCENTER': '.icon-meeting',
-      'CONFERENCEFACILITIES': 'icon-meeting',
-      'CONFERENCEFACILITY': 'icon-meeting',
-      'BREAKFAST': '.icon-eating-utensils',
-      'RESTAURANT': '.icon-restaurant',
-      'TENNISCOURT': '.icon-tennis-court',
-      'RADIO': '',
-      'STEAMROOM': '',
-      'FAX': '',
-      'PHOTOCOPIER': '',
-      'PHOTOCOPYINGSERVICE': '',
-      'BEAUTYSALON': '',
-      'RADIOSERVICE': '',
-      'RADIO': '',
-      'CURRENCYEXCHANGE': '',
-      'CURRENCYEXCHANGESERVICE': '',
-      'WAKEUPCALL': '',
-      'WAKEUPCALLSERVICE': '',
-      'LOUNGE': '.icon-couch',
-      'BIN': '.icon-bin',
-      'BARFRIDGE': '.icon-bar-fridge',
-      'BARREFRIDGERATOR': '.icon-bar-fridge',
-      'TV': '.icon-television-flatscreen',
-      'DVD': '.icon-dvd',
-      'TELEPHONE': '.icon-phone',
-      'EXPRESSCHECKOUT': '.icon-credit-card',
-      'EXPRESSCHECKOUTSERVICE': '.icon-credit-card',
-      'CONFERENCEFACILITIES': '.icon-meeting',
-      'MULTILINGUALSTAFFSERVICE': '.icon-doorman',
-      'MULTILINGUALSTAFF': '.icon-doorman',
-      'RECEPTIONAREA': '.icon-reception',
-      'TELEVISION': '.icon-television-flatscreen',
-      'DAILYNEWSPAPERSERVICE': '.icon-newspaper',
-      'PINGPONG': '.icon-ping-pong',
-      'PING-PONG': '.icon-ping-pong',
-      'PING PONG': '.icon-ping-pong',
-      'FITNESSCENTRE': '.icon-dumbbell',
-      'SMOKINGAREA': '.icon-smoking',
-      'BABYSITTINGSERVICE': '.icon-child-care',
-      'SUNUMBRELLA': '.icon-sun-umbrella',
-      'NONSMOKINGSERVICE': '.icon-no-smoking',
-      'BAR': '.icon-beer',
-      'GOLF': '.icon-golf-club',
-      'GOLFCOURSE': '.icon-golf-club',
-      'GOLF-COURSE': '.icon-golf-club',
-      'SATTELITETV': '.icon-television-antenna',
-      'DOORMAN': '.icon-door-man',
-      'SAUNA': '',
-      'PARKING': '.icon-parking',
-      'MARINA': '.icon-marina',
-      'SHOP': '.icon-shop',
-      'EXPRESSCHECKINSERVICE': '.icon-credit-card',
-      'CONCIERGESERVICE': '.icon-doorman',
-      'DOORMAN': '.icon-doorman',
-      'OUTDOORSWIMMINGPOOL': '.icon-outdoor-swimming-pool',
-      'SPA': '.icon-spa',
-      'ROOMSERVICE': '.icon-room-service',
-      'MASSAGE': '.icon-massage',
-      'MASSAGESERVICE': '.icon-massage',
-      'INTERNETACCESSSERVICE': '.icon-wifi',
-      'SAFEDEPOSITBOX': '.icon-safe',
-      'FIRSTAID': '.icon-first-aid',
-      'FIRSTAIDKIT': '.icon-first-aid',
-      'LUGGAGECART': '.icon-luggage-trolley',
-      'LUGGAGETROLLEY': '.icon-luggage-troller',
-      'LIFEGUARD': '.icon-life-guard',
-      'CONSIERGE': '.icon-reception',
-      'CONSIERGESERVICE': '.icon-reception',
-      'BEACH': '.icon-beach',
-      'SMOKINGAREA': '.icon-smoking'
-  }
-
-
-
   function loadScript() {
       var pageIndex = 0;
       var nextUrlToPoll = null;
+      var pageSize = 15;
+      var imageLimit = 10;
+      var availableResults = 0;
 
-      //Polls the sky scanner session
-      function pollSession(nextPollUrl) {
-          $.ajax({
-              method: 'GET',
-              url: '/hotel/pollSkyScannerSession',
-              data: {
-                  nextPollUrl,
-                  pageIndex,
-                  pageSize: 15,
-                  imageLimit: 10
-              },
-              success: function(result, s, xhr) {
-                  if (xhr.status == 200 && result && result.body) {
-                      $('.progressNotification').removeClass('hide').slideDown(2000, function() {
-                    
-                          $('.progressNotification').addClass('active');
-                          $('#loadMoreResults').addClass('progress');
-                          
-                          console.log('Now do stuff with data');
+
+      function displayHotels(result){
+          if(result.status != "COMPLETE") return;
+                        
+                          $('#loadMoreResults').removeClass('hide');
 
                           const hotelListings = window.seatfilla.globals.response
-                              .skyscannerAPI.mapHotelAPIResponse(result.body, {
+                              .skyscannerAPI.mapHotelAPIResponse(result, {
                                   smallestWidth: 600,
                                   smallestHeight: 600
                               });
@@ -300,47 +246,80 @@
                               hotelListings.urls['hotel_details']
                           ) {
                               var tmpl = $.templates("#list-item-template");
-                              hotelListings.hotels.forEach(function(hotel) {
 
-                                  //Only display if we definitely have an image
-                                  if (!hotel.images || !hotel.images || !Array.isArray(hotel.images) 
-                                      || !(hotel.images.length)){
-                                      return;
-                                  }
+                             const displayableHotels = hotelListings.hotels.filter(function(hotel) {
 
-                                  hotel.image = 'http://' + hotel.images[0].imagePath;
-                                  hotel.detailsUrl = hotelListings.urls['hotel_details'];
-
-                                  const html = tmpl.render(hotel, {
-                                      getAmenityIcon(string) {
-                                          const icon = amenMapping[string];
-                                          return (icon && icon.substring(1, icon.length)) || '';
-                                      },
-                                      stringify(obj) {
-                                          return JSON.stringify(obj);
+                                      //Only display if we definitely have an image
+                                      if (!Array.isArray(hotel.images) || (hotel.images.length == 0)) {
+                                          return false;
                                       }
-                                  });
-                                  $('#hotelListings').html(html);
-                              })
-                          } else {
-                   
-                              $('#loadMoreResults').remove();
-                              $.toaster({priority:'warning', message:'No results to display'})
-                          }
-                      });
 
+                                      hotel.image = 'http://' + hotel.images[0].imagePath;
+                                      hotel.detailsUrl = hotelListings.urls['hotel_details'];
+
+                                      return true;
+                             })
+
+                             if(displayableHotels.length){
+                                const html = tmpl.render({
+                                    hotels: displayableHotels
+                                }, {
+                                    stringify(obj) {
+                                        return JSON.stringify(obj);
+                                    }
+                                });
+                                availableResults = result.total_hotels;
+                                $('#hotelListings').append(html);   
+                            
+                             }else{
+                                 console.log('Hiding load more results , !displayableHotels.length')
+                                $('#loadMoreResults').addClass('hide')
+                             }
+             
+                          } else if(availableResults <= 0){
+                              console.log('no results;')
+                              console.log(hotelListings)
+                              $('#loadMoreResults').addClass('hide')
+                              
+                          }
+
+                     $.waitingDialog.hide();
+      }
+
+      //Polls the sky scanner session
+      function pollSession(nextPollUrl, pageIndex) {
+          $('#loadMoreResults').removeClass('hide');
+          
+          console.log('Polling ' + nextPollUrl + ', page: ' + pageIndex);
+          $.ajax({
+              method: 'GET',
+              url: '/hotel/pollSkyScannerSession',
+              data: {
+                  nextPollUrl,
+                  pageIndex,
+                  pageSize: pageSize,
+                  imageLimit: imageLimit
+              },
+              success: function(result, s, xhr) {
+
+            
+                  if (xhr.status == 200 && result && result.body) {
                       if (result.body.status != "COMPLETE") {
-                          pollSession(result.nextPollUrl);
+                          console.log('Not complete: ')
+                          console.log(result);
+                          pollSession(result.nextPollUrl,pageIndex);
                       } else {
-                          $('.progressNotification').removeClass('active');
-                          $('.progressNotification').addClass('hide');
-                          $('#loadMoreResults').removeClass('hide');
-                          $('#loadMoreResults').removeClass('progress');
-                          pageIndex += 1;
-                          nextUrlToPoll = nextPollUrl || result.nextPollUrl;
+                          console.log('Complete:')
+                          console.log(result);
+                          displayHotels(result.body);
                       }
+                      nextUrlToPoll = result.nextPollUrl || nextPollUrl;
+
                   } else {
-                      $.toaster({priority:'danger',message:'Error making request to server.'});
+                      $.toaster({
+                          priority: 'danger',
+                          message: 'Error making request to server.'
+                      });
                       console.log('Status: ' + xhr.status);
                       console.log('Result: ' + JSON.stringify(result));
                   }
@@ -351,8 +330,8 @@
       function attachDomEventListeners() {
           function attach() {
               $('#loadMoreResults').on('click', function() {
-                  console.log('polling ' + nextUrlToPoll);
-                  pollSession(nextUrlToPoll)
+                  availableResults -= pageSize;
+                  pollSession(nextUrlToPoll, pageIndex++)
               })
           }
 
@@ -361,75 +340,122 @@
           } else {
               $(document).ready(attach);
           }
-     }
+      }
 
       //Makes the intial request
       function initiateSession() {
-          function makeRequest(results){
+          $('#hotelListings').html("");
+
+          const city = $('#city').val() || "<%= data.params.city || '' %>";
+          const country = $('#country').val() || "<%= data.params.country || '' %>";
+
+          var message;
+          if(city || country){
+              message = 'Finding hotels relating to ' + (city || country);
+          }else{
+              message = 'Loading results based on your location';
+          }
+
+          $.waitingDialog.show(message);
+
+          function makeRequest(results) {
               const data = {}
 
-              if(results[0])
-                data.userLocation = results[0];
+              if (results[0]) data.userLocation = results[0];
+              if (results[1]) data.prefferedCurrency = results[1];
+              if(city) data.city = city;
+              if(country) data.country = country;       
+              if($('#hotelPlaceSuggestions').val()) data.entityId = $('#hotelPlaceSuggestions').val();
 
-             if(results[1])
-                data.prefferedCurrency = results[1];
-
+              console.log('Sending: ');
+              console.log(data);
               $.ajax({
-                method: 'POST',
-                url: '/hotel/retrieveSkyScannerListings',
-                data,
-                success: function(result, s, xhr) {
-                    if (xhr.status == 200 && result) { 
-                        console.log(result);
-                        console.log(result.initiateSession.nextPollUrl);
-                        pollSession(result.initiateSession.nextPollUrl)
-                        attachDomEventListeners();
-                    } else {
-                        console.log(result);
-                        alert('Error creating session')
-                    }
-                }
-            })
+                  method: 'POST',
+                  url: '/hotel/retrieveSkyScannerListings',
+                  data,
+                  success: function(result, s, xhr) {
+                      if (xhr.status == 200 && result) {
+                          console.log(result);
+                          console.log(result.initiateSession.nextPollUrl);
+                           if(result.retrieveMostReleventHotel &&
+                            Array.isArray(result.retrieveMostReleventHotel.suggestions)){
+
+                            $('#hotelPlaceSuggestions').html("");
+                            result.retrieveMostReleventHotel.suggestions.forEach(function(suggestion){
+                                $('#hotelPlaceSuggestions').append($('<option></option>',
+                                {value:suggestion['individual_id'],
+                                text:suggestion['display_name']}))
+                            })
+                            $('hotelPlaceSuggestions').val(result.retrieveMostReleventHotel.mostRelevent);
+                          }
+
+                          if(result.initiateSession.body.status != 'COMPLETE'){
+                                pollSession(result.initiateSession.nextPollUrl,pageIndex++)
+                          }else{
+                                nextUrlToPoll = result.initiateSession.nextPollUrl;
+                                displayHotels(result.initiateSession.body);
+                          }
+                          attachDomEventListeners();
+                      } else {
+                          console.log(result);
+                          alert('Error creating session')
+                      }
+                  }
+              })
           }
           Promise.all([
-          new Promise(function(resolve,reject){
-              window.seatfilla.globals.geolocation.getUserLocation(function(status,userLocation){
-                  if(status == 200 && userLocation){
-                        return resolve(userLocation);
-                  }else{
-                      return resolve(null);
-                  } 
-              })
-          }),
-          new Promise(function(resolve,reject){
-            window.seatfilla.globals.locale.getPrefferedCurrency(function(status,currency){
-                if(status == 200 && currency){
-                    return resolve(currency);
-                }else{
-                    return reject(null);
-                }
-            })
-          })
-          ]).then(makeRequest).catch(function(err){
+              new Promise(function(resolve, reject) {
+                  window.seatfilla.globals.geolocation.getUserLocation(function(status, userLocation) {
+                      if (status == 200 && userLocation) {
+                          return resolve(userLocation);
+                      } else {
+                          return resolve(null);
+                      }
+                  })
+              }),
+              new Promise(function(resolve, reject) {
+                  window.seatfilla.globals.locale.getPrefferedCurrency(function(status, currency) {
+                      if (status == 200 && currency) {
+                          return resolve(currency);
+                      } else {
+                          return reject(null);
+                      }
+                  })
+              }),
+          ]).then(makeRequest).catch(function(err) {
               console.log(err);
-          })      
+          })
       }
       initiateSession();
   }
 
-  $(window).ready(loadScript);
+
+  $('#flight-search-details').load('/ajax/hotel-search-nav.ejs', function finished() {
+         
+             loadScript();
+
+            $('#searchHotels').on('click',function(){
+                loadScript();
+            })
+
+            $('#country').on('change',function(){
+                 $('#hotelPlaceSuggestions').html("");
+            })
+            
+      });
 </script>
 <div class="container-fluid">
-        <div class="progressNotification">
-		<p>We're fetching some results based on what we can decipher, please wait</p>
+        <!--<div class="progressNotification">
+		<p>Fetching some results based on what we can decipher, please wait</p>
    
         <div class="progress progress-striped active page-progress-bar">
             <div class="progress-bar" style="width: 100%;"></div>
         </div>
-        </div>
+        </div>-->
 <div class="main-container">
 	<div class="row" id="hotelListings">
 	</div>
+    <br/>
     <button id="loadMoreResults" class="btn btn-info btn-block hide">More</button>
 </div>
 </div>

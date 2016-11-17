@@ -86,6 +86,7 @@
                                     </label><br>
                                     <small style="color:red;">* Warning do not use this option on public computers</small>
                                 </div>
+                                <input type="hidden" name="redirectSuccess" value="<%= (data && data.redirectSuccess) || '/'%>"/>
                                 <input type="hidden" id="redirectFailiure" name="redirectFailiure"/>
                                 <!-- Change this to a button or input when using this as a form -->
                                 <button type="submit" id="login" class="btn btn-lg btn-success btn-block">Login</button>

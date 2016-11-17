@@ -95,7 +95,7 @@ module.exports = {
               sails.log.debug('Error retrieving country info from endpoint ' + countryInfoEndpoint)
               sails.log.debug('Reponse code was' + res.statusCode)
               sails.log.debug('Body content: ' + body)
-              sails.log.error(err)
+              sails.log.error(err || new Error('Invalid response from LookupService.js/rest_countries_get_info_by_c_code'))
               return reject(err)
             } else {
               try {
@@ -148,7 +148,10 @@ module.exports = {
               sails.log.debug('Reponse code was' + res.statusCode)
               sails.log.debug('Body content: ' + body)
               sails.log.error(err)
-              return reject(err)
+              GlobalCache.cache({
+                    GlobalCache: 'rest_countries_cache'
+              }).removeData(countryName)
+              return reject(err || new Error('Invalid response in LookupService.js/rest_countries_get_country_info_by_c_name'))
             } else {
               try {
                 const obj = JSON.parse(body)
@@ -234,7 +237,7 @@ module.exports = {
               sails.log.debug('Reponse code was' + res.statusCode)
               sails.log.debug('Body content: ' + body)
               sails.log.error(err)
-              return reject(err)
+              return reject(err || new Error('Invalid response from fixer_io_get_exchange_rates'))
             } else {
               try {
                 const obj = JSON.parse(body)

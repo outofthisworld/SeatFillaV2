@@ -5,7 +5,6 @@
 
 const _find = require('../../out/find');
 module.exports = {
-
     find(req,res){
       _find(req,res).then(function(){
         return res.ok();

@@ -68,7 +68,20 @@ const exportObject = {
 const localStrategy = function(req, email, password, done) {
     sails.log.debug('Logging in via local strat, email: ' + email);
     sails.log.debug('Logging in via local strat, password: ' + password);
-    User.findOne().where({ or: [{ email: email }, { username: email }] })
+
+    if(!email){
+        const emailError = new Error()
+        emailError.message = 'No email supplied';
+        emailError.status = exportObject.errorCodes().InvalidUsername
+        return done(emailError,null)
+    }else if(!password){
+        const passwordError = new Error()
+        passwordError.message = 'No password supplied';
+        passwordError.status = exportObject.errorCodes().InvalidPassword
+        return done(passwordError,null)
+    }
+
+    User.findOne().where({ or: [{ email: email.toLowerCase() }, { username: email.toLowerCase() }] })
         .populate('roles').exec(function(err, user) {
             sails.log.debug('Error finding user? :' + err);
             sails.log.debug('Found user?:  ' + JSON.stringify(user));

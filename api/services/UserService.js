@@ -4,6 +4,9 @@ module.exports = {
   createUser: function (req) {
     const _self = this
 
+    const user = Object.assign({},req.allParams());
+    user.displayName = user.username;
+    
     //Create user
     return User.create(req.allParams()).then(function create (user) {
       sails.log.debug('Creating user')
@@ -11,7 +14,7 @@ module.exports = {
       // Well ofc..
       if (!user) {
         sails.log.debug('Error creating user')
-        sails.log.error(err)
+    
         // Debug something
         return Promise.reject(err)
       }
@@ -27,6 +30,7 @@ module.exports = {
       return _self.findOrCreateUserAddress(user.id, user).then(function (val) {
         return Promise.resolve({ user, address: val.address, countryInfo: val.countryInfo })
       }).catch(function (err) {
+        err = err || new Error('Unknown error')
         err.modelErrors = err.modelErrors || []
         err.modelErrors.push({ model: 'User', id: user.id })
         return Promise.reject(err)
@@ -87,6 +91,7 @@ module.exports = {
         return Promise.reject(err)
       })
     }).then(function (user_partial) {
+  
       const message = sails.config.email.messageTemplates.registration(user_partial.user)
       sails.log.debug('Created email template ' + JSON.stringify(message))
 
@@ -122,8 +127,9 @@ module.exports = {
         sails.log.debug('Correcting any model errors')
         try {
           err.modelErrors.forEach(function (modelError) {
-            if (!modelError.model || !modelError.id)
-              throw new Error('Invalid model error, no model or id attribute')
+            if (!modelError.model || !modelError.id){
+              return Promise.reject(new Error('Invalid model error, no model or id attribute'))
+            }
 
             if (modelError.model in sails.models && '_attributes' in sails.model[modelError.model]) {
               for (var key in sails.models[modelError.model]._attributes) {
@@ -149,10 +155,10 @@ module.exports = {
           sails.log.error(error)
           return Promise.reject(err)
         }
-        sails.log.error(error)
+        sails.log.error(err)
         return Promise.reject(err)
       } else {
-        sails.log.error(error)
+        sails.log.error(err)
         return Promise.reject(err)
       }
     })
@@ -189,6 +195,9 @@ module.exports = {
           }
         })
       })
+    }).catch(function(err){
+      sails.log.error(err);
+      return Promise.reject(err);
     })
   },
   // Creates an external passport user.

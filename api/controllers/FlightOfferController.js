@@ -8,5 +8,14 @@ module.exports = {
       }).catch(function(err){
         return res.badRequest(err);
       })
-    }
+    },
+   index(req, res) {
+      return res.ok({
+        user: req.user,
+        params: req.allParams()
+      }, {
+        view: 'flightoffer/find.ejs',
+        layout: 'layouts/search-layout'
+      })
+  },
 }

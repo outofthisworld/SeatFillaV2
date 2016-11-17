@@ -1,0 +1,281 @@
+
+<style>
+
+
+#apiKeysTBody td{
+  overflow:scroll;
+  font-size:12px;
+}
+
+.funkyradio div {
+  clear: both;
+  overflow: hidden;
+}
+
+.funkyradio label {
+  width: 100%;
+  border-radius: 3px;
+  border: 1px solid #D1D3D4;
+  font-weight: normal;
+}
+
+.funkyradio input[type="radio"]:empty,
+.funkyradio input[type="checkbox"]:empty {
+  display: none;
+}
+
+.funkyradio input[type="radio"]:empty ~ label,
+.funkyradio input[type="checkbox"]:empty ~ label {
+  position: relative;
+  line-height: 2.5em;
+  text-indent: 3.25em;
+  margin-top: 2em;
+  cursor: pointer;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+
+.funkyradio input[type="radio"]:empty ~ label:before,
+.funkyradio input[type="checkbox"]:empty ~ label:before {
+  position: absolute;
+  display: block;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  content: '';
+  width: 2.5em;
+  background: #D1D3D4;
+  border-radius: 3px 0 0 3px;
+}
+
+.funkyradio input[type="radio"]:hover:not(:checked) ~ label,
+.funkyradio input[type="checkbox"]:hover:not(:checked) ~ label {
+  color: #888;
+}
+
+.funkyradio input[type="radio"]:hover:not(:checked) ~ label:before,
+.funkyradio input[type="checkbox"]:hover:not(:checked) ~ label:before {
+  content: '\2714';
+  text-indent: .9em;
+  color: #C2C2C2;
+}
+
+.funkyradio input[type="radio"]:checked ~ label,
+.funkyradio input[type="checkbox"]:checked ~ label {
+  color: #777;
+}
+
+.funkyradio input[type="radio"]:checked ~ label:before,
+.funkyradio input[type="checkbox"]:checked ~ label:before {
+  content: '\2714';
+  text-indent: .9em;
+  color: #333;
+  background-color: #ccc;
+}
+
+.funkyradio input[type="radio"]:focus ~ label:before,
+.funkyradio input[type="checkbox"]:focus ~ label:before {
+  box-shadow: 0 0 0 3px #999;
+}
+
+.funkyradio-default input[type="radio"]:checked ~ label:before,
+.funkyradio-default input[type="checkbox"]:checked ~ label:before {
+  color: #333;
+  background-color: #ccc;
+}
+
+.funkyradio-primary input[type="radio"]:checked ~ label:before,
+.funkyradio-primary input[type="checkbox"]:checked ~ label:before {
+  color: #fff;
+  background-color: #337ab7;
+}
+
+.funkyradio-success input[type="radio"]:checked ~ label:before,
+.funkyradio-success input[type="checkbox"]:checked ~ label:before {
+  color: #fff;
+  background-color: #5cb85c;
+}
+
+.funkyradio-danger input[type="radio"]:checked ~ label:before,
+.funkyradio-danger input[type="checkbox"]:checked ~ label:before {
+  color: #fff;
+  background-color: #d9534f;
+}
+
+.funkyradio-warning input[type="radio"]:checked ~ label:before,
+.funkyradio-warning input[type="checkbox"]:checked ~ label:before {
+  color: #fff;
+  background-color: #f0ad4e;
+}
+
+.funkyradio-info input[type="radio"]:checked ~ label:before,
+.funkyradio-info input[type="checkbox"]:checked ~ label:before {
+  color: #fff;
+  background-color: #5bc0de;
+}
+</style>
+<script>
+  $(window).ready(function(){
+      $('#generateApiKey').on('click',function(){
+          const url = '/auth/generateApiToken/';
+          const type = 'POST';
+          const $form = $('#apiKeyForm');
+
+          if (!$form[0].checkValidity()) {
+            $form.find(':submit').click()
+            return;
+          }
+
+          $.ajax({
+                type,
+                url,
+                data: $form.serialize(),
+                success: function(response) {
+                   console.log(response);
+                   if(response.status == 200){
+                    $('#apiKeysTBody').append('<tr>'
+                    + '<td style="max-width:260px;">' + response.token + '</td>'+
+                    '<td style="max-width:20px;">' + response.isVerified + '</td>'+
+                    '<td style="max-width:20px;"> <a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span>Del</a></td>'+
+                    '</tr>');
+                  }else{
+                    $('.errors').html('').append(
+                      window.seatfilla.globals.forms.validationWarningDiv.clone().append(
+                        $('<p></p>').text(response.errorMessage)));
+                  }
+                }
+          });
+      });
+
+      $('.deleteToken').on('click',function(){
+            const url = '/auth/removeApiToken';
+            const type= 'POST';
+            const btn = $(this);
+            const token = btn.attr('data-attr-id');
+            $.ajax({
+                type,
+                url,
+                data: {
+                  token
+                },
+                success: function(response) {
+                  console.log(response);
+                  if(response.status == 200){
+                     $('#apiKeysTBody tr[data-attr-id="' + token + '"]').remove();
+
+                     $('.success').html('').append(
+                      window.seatfilla.globals.forms.validationSuccessDiv.clone().append(
+                        $('<p></p>').text(response.message)));
+                  }else{
+                    $('.errors').html('').append(
+                      window.seatfilla.globals.forms.validationWarningDiv.clone().append(
+                        $('<p></p>').text(response.errorMessage)));
+                  }
+                }
+          });
+      })
+  });
+</script>
+    <div id="main">
+
+<div class="container-fluid">
+
+<h2> Create an API key </h2>
+<div class="errors"></div>
+<div class="success"></div>
+<hr/>
+
+ <!-- Text input-->
+ <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-6">
+        <form id="apiKeyForm">
+          <div class="form-group">
+            <label class="control-label" for="sfKey">Your secret key:</label>  
+            <div class="col-md-12">
+            <input id="sfKey" name="sfKey" type="text"  placeholder="Secret Key" class="form-control input-md" minlength="3" maxlength="20" required="">
+            <span class="help-block">Please keep your secret key safe. Once your key has been generated using this secret, we dont keep track of it. (Min:3, max:20)</span>  
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label" for="requestURL">Requesting domain</label>  
+            <div class="col-md-12">
+            <input id="requestURL" name="requestURL" type="url" min="11" pattern="https?://.+" placeholder="Request URL" class="form-control input-md" required="">
+            <span class="help-block">Please enter the domain in which requests will be arriving from in the format [http(s?)://.+] Note that this should
+            be a live website and will not work if the request is not made from the specified domain.</span>  
+            </div>
+          </div>
+       <div class="row">
+        <br/><hr/><br/><hr/>
+        <p>Choose your API key permissions: </p>
+        <small> * Please note that the advertisements and flight offer API keys require approval by Seatfilla.</small>
+              <div class="funkyradio">
+                  <div class="funkyradio-info">
+                      <input type="checkbox" name="request_permission" id="checkbox1" checked/>
+                      <label for="checkbox1">Flight Request API</label>
+                    <span class="help-block">Grants access to the flight request API. View flight requests made at Seatfilla.</span>  
+                  </div>
+                    <div class="funkyradio-info">
+                      <input type="checkbox" name="accept_request_permission" id="checkbox2"/>
+                      <label for="checkbox2">Flight Request API Extended.</label>
+                    <span class="help-block">Grants extended access to the flight request API allowing acceptance of flight requests made by Seatfilla
+                    users.</span>  
+                  </div>
+                  <div class="funkyradio-info">
+                      <input type="checkbox" name="flightoffer_permission" id="checkbox3"/>
+                      <label for="checkbox3">Flight Offer API</label>
+                      <span class="help-block">Grants access to the flight offer API (Offer flights to Seatfilla)</span>  
+                  </div>
+                    <div class="funkyradio-info">
+                      <input type="checkbox" name="advertisements_permission" id="checkbox4"/>
+                      <label for="checkbox4">Advertisements API</label>
+                      <span class="help-block">Grants access to the advertisements API. (Create advertisments to be displayed on Seatfilla)</span>  
+                  </div>
+              </div><!--checkboxes-->
+        </div><!-- row-->
+          <br/>
+          <button type="submit" style="display:hidden;"></button>
+          <input type="button" class="btn btn-success btn-block" id="generateApiKey" value="Generate my API key"/>
+      </form>
+    </div><!--col-->
+    <div class="col-md-6">
+      <p class="text-center">Your Active API keys</p>
+      <div class="well well-sm">
+      <small style="color:red;"> *Remember to include this key along with the secret used when generating the key in every HTTP request you make to Seatfilla</small>
+   
+  
+    <table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Token</th>
+            <th>Is verified</th>
+            <th class="text-center">Action</th>
+        </tr>
+    </thead>
+    <tbody id="apiKeysTBody">
+            <%data.tokens.forEach(function(token){%>
+                <tr class="" data-attr-id="<%=token.apiToken%>">
+                    <td style="max-width:260px;"><%=token.apiToken%></td>
+                    <td style="max-width:20px;"><%=token.isVerified%></td>
+                    <td style="max-width:20px;"> <a class="btn btn-danger btn-xs deleteToken" data-attr-id="<%=token.apiToken%>"><span class="glyphicon glyphicon-remove"></span> Del</a></td>
+                </tr>
+            <%});%>
+    </tbody>
+  
+    </table>
+   
+      
+    </div><!--col-->
+
+ </div><!--row-->
+
+</div><!--container-->
+
+</div>
+
+</div>
+
+</div>
+</div>

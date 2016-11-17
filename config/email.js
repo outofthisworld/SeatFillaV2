@@ -28,8 +28,51 @@ module.exports.email = {
                 from: 'SeatFilla.registration.com',
                 to: object.email,
                 subject: 'Welcome to SeatFilla, please verify your email!',
-                type: 'registration',
+                type: 'flightnotification',
                 html: ''
+            }
+        },
+        //{ flightRequest, acceptedFlightRequest }
+        flightRequestAccepted: function(object) {
+            return {
+                from: 'SeatFilla.com',
+                to: object.flightRequest.user.email,
+                subject: 'Your flight request has been accepted!',
+                type: 'flightrequestaccept',
+                html: 'Hello <em>' + object.flightRequest.user + ' <em><br/><br/>' +
+                    'Your flight request has been accepted please visit ' 
+            }
+        },
+        userPaymentStatusFailiure: function(flightRequest,credit_card,err) {
+            return {
+                to: ['dale@farpoint.co.nz'],
+                from: 'admin@seatfilla.com',
+                subject: 'SeatFilla update user payment status failiure',
+                html: 'Hello admin, <br/> An error has been encountered ' 
+                + ' trying to update a users payment status for flight request ('
+                + flightRequest.id + '). Payment has been recieved, however failed to be ' 
+                + 'updated correctly within the database. This issue will require manual resolution.'
+                + '<br> The user involved in this issue : ' + flightRequest.user.id
+                + '<br> Error details: ' + JSON.stringify(err) 
+                + '<br> Error message: ' + err.message
+            }
+        },
+        updateProviderPaymentStatusFailiure:function(flightRequest,err){
+            return {
+                to: ['dale@farpoint.co.nz'],
+                from: 'admin@seatfilla.com',
+                subject: 'SeatFilla update provider payment status failiure',
+                html: 'Flight request concerned : ' + JSON.stringify(flightRequest) + '<br/>'
+                + '<br/> Error ' + JSON.stringify(err) + '<br/> Error message: ' +  err.message
+            }
+        },
+        sendProviderPaymentFailiure:function(flightRequest,err){
+            return {
+                to: ['dale@farpoint.co.nz'],
+                from: 'admin@seatfilla.com',
+                subject: 'SeatFilla send provider payment failiure',
+                html: 'Flight request concerned : ' + JSON.stringify(flightRequest) + '<br/>'
+                + '<br/> Error ' + JSON.stringify(err) + '<br/> Error message: ' +  err.message
             }
         }
     }

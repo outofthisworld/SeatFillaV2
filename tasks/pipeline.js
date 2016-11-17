@@ -16,6 +16,7 @@ var jsFilesToInject = [
     'bower_components/bootstrap/dist/js/bootstrap.min.js',
     'bower_components/select2/dist/js/select2.full.min.js',
     'bower_components/jsRender/jsrender.min.js',
+    'bower_components/moment/min/moment-with-locales.min.js',
     // Dependencies like jQuery, or Angular are brought in here
     'js/dependencies/**/*.js',
 

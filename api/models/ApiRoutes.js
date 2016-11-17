@@ -1,24 +1,23 @@
 
 
-const uuid = require('node-uuid');
 
 module.exports = {
     autoPK:false,
     attributes:{
-        id:{
-            type:'string',
-            primaryKey:true,
-            defaultsTo: function(){ return uuid.v4(); }
-        },
         //e.g FlightOffer/create
         route:{
             type:'String',
+            primaryKey:true,
             required:true,
             notNull:true
         },
         apiRequests:{
            collection:'ApiRequest',
            via:'apiRoute'
+        },
+        webHooks:{
+            collection:'Webhook',
+            via:'routes'
         }
     }
 }

@@ -1,7 +1,7 @@
 module.exports = {
   index(req, res) {
     return Promise.all([
-      ApiRequests.find(
+      ApiRequest.find(
         {
           apiUser: ProviderService.getApiKey(req)
         }
@@ -9,6 +9,7 @@ module.exports = {
     ]).then(function (apiRequests) {
       return res.ok({ user: req.user, apiRequests}, {
         view: 'provider-dashboard/index',
+        layout:'layouts/provider-layout'
       })
     }).catch(function (err) {
       return res.badRequest(err)
@@ -17,26 +18,30 @@ module.exports = {
   view_flight_requests(req,res){
       return res.ok({ user: req.user}, {
         view: 'flightrequest/find',
+        layout:'layouts/provider-layout'
       })
   },
   create_flight_offers(req,res){
     return res.ok({ user: req.user }, {
         view: 'flightoffer/create',
+        layout:'layouts/provider-layout'
     })
   },
   view_flight_offers(req,res){
     return res.ok({ user: req.user}, {
         view: 'flightoffer/find',
+        layout:'layouts/provider-layout'
     })
   },
   create_advertisement(req,res){
      return res.ok({ user: req.user}, {
         view: 'advertisments/create',
+        layout:'layouts/provider-layout'
     })
   },
   login(req, res) {
     return res.ok({}, {
-      view: 'provider-dashboard/login'
+      view: 'home/login'
     })
   },
   authenticate(req, res) {
@@ -46,16 +51,14 @@ module.exports = {
       .then(function (result) {
         if (result.status == sails.config.passport.errorCodes().Success) {
           sails.log.debug('Attempting to login as provider')
-          return new Promise(function (resolve, reject) {
-            ProviderService.login(req, req.param('apiKey'), req.param('apiSecret')).then(function (result) {
+            return ProviderService.login(req, req.param('apiKey'), req.param('apiSecret')).then(function (result) {
               sails.log.debug('Result logging in via provider was : ' + result)
-              return resolve(result)
+              return Promise.resolve(result)
             }).catch(function (err) {
               sails.log.debug('Error logging in via provider')
               sails.log.error(err)
-              return reject(err)
+              return Promise.reject(err)
             })
-          })
         }else {
           return Promise.reject(result)
         }
@@ -72,12 +75,11 @@ module.exports = {
       }
     }).catch(function (err) {
       sails.log.debug('Error in ProviderController.js/authenticate')
-      sails.log.debug('Error was ' + err)
+      sails.log.debug('Error was ' + JSON.stringify(err))
       sails.log.error(err)
 
-      req.flash('toaster-warning', 'Error logging in : ' + err.message)
-      req.flash('info', 'Error logging in : ' + err.message)
-
+      req.flash('toaster-warning', 'Error logging in: invalid credentials' )
+      req.flash('info', 'Error logging in : invalid credentials'); 
       if (req.wantsJSON) {
         return res.json(200, err)
       }else {

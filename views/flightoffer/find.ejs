@@ -1,6 +1,6 @@
 <style>
-.glyphicon { margin-right:5px; }
-.thumbnail
+.item .glyphicon { margin-right:5px; }
+.item .thumbnail
 {
     margin-bottom: 20px;
     padding: 0px;
@@ -23,10 +23,6 @@
     float:right;
 }
 
-.item.list-group-item:nth-of-type(odd):hover,.item.list-group-item:hover
-{
-    background: #428bca;
-}
 
 .item.list-group-item .list-group-image
 {
@@ -40,10 +36,7 @@
 {
     padding: 9px 9px 0px 9px;
 }
-.item.list-group-item:nth-of-type(odd)
-{
-    background: #eeeeee;
-}
+
 
 .item.list-group-item:before, .item.list-group-item:after
 {
@@ -63,15 +56,13 @@
 {
     margin: 0 0 11px;
 }
-
+label{
+    font-weight:normal;
+}
 
 </style>
-<script>
-$(document).ready(function() {
-    $('#list').click(function(event){event.preventDefault();$('#products .item').addClass('list-group-item');});
-    $('#grid').click(function(event){event.preventDefault();$('#products .item').removeClass('list-group-item');$('#products .item').addClass('grid-group-item');});
-
-    setInterval(function(){
+<!--
+}    /*setInterval(function(){
         const $itemDiv = $('<div></div>',{class:'item col-xs-4 col-lg-4'});
         const $thumbNail = $('<div></div>',{class:'thumbnail'});
         const $itemImage = $('<img/>',{src:'http://placehold.it/400x250/000/fff'});
@@ -98,11 +89,115 @@ $(document).ready(function() {
         );
         $itemDiv.fadeOut(0);
         $('#products').append($itemDiv.fadeIn(1000));
-    },3000);
-});
-</script>
+    },3000);*/
+-->
+<script>
+(function(){
+    var pageIndex = 0;
+    var numPolls = 0;
 
-<div class="container80" style="margin-top:50px">
+    function renderView(response,r,xhr){
+        if ((response.errors || response.error) && response.errorType != 'gettyImageServiceRequest') {
+                console.log(response)
+                window.alert(JSON.stringify(response.errors))
+        } else {
+            //Map and render
+            (function pollSession(pageIndex,nextPollUrl){
+                $.ajax({
+                    type: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo.method,
+                    url: '/maps/pollSkyScannerFlightLivePricingApi',
+                    data: {
+                    urlEndPoint: nextPollUrl,
+                    destinationName: $('#arrivalCountry').val(),
+                    newskyscannerpageindex: index,
+                    newgettyimagespageindex: ((numPolls * parseInt(response.itinerary.pagesize))) %
+                    parseInt(response.gettyimagespagesize) == 0 ? parseInt(response.gettyimagespageindex) + 1 : response.gettyimagespageindex,
+                    gettyimagespagesize: response.gettyimagespagesize,
+                    skyscannerpagesize: response.itinerary.pagesize
+                    },
+                    success: function(response,r,xhr){
+                        if(response.status != 'COMPLETE'){
+                            numPolls+=1;
+                            pollSession(pageIndex,response.result.urlEndPoint.url);
+                        }
+
+                        const template = $.templates('#myTemplate');
+                        const html = template.render(response);
+                        $('#container').append(html);
+                    }
+                })
+           })(pageIndex,response.result.urlEndPoint.url)
+        }
+    }
+
+    function handleAjaxError(err){
+        console.log(err);
+        $.toaster({priority:'error',message:'Error with request to server'});
+    }
+
+    (function(){
+        function attach(){
+
+            $('#list').click(function(event){
+                event.preventDefault();$('#products .item').addClass('list-group-item');
+                $('#products .item .switch').removeClass('thumbnail')
+            });
+        
+            $('#grid').click(function(event){
+                event.preventDefault();
+                $('#products .item').removeClass('list-group-item');
+                $('#products .item').addClass('grid-group-item');
+                $('#products .item .switch').addClass('thumbnail')
+            });
+
+            $('#searchFlight').on('click',function(){
+                const departureCity =  $('#departureCity').val();
+                const departureCityIataCode = $('#departureCity').attr('data-attr-iataCode');
+                const departureCountry = $('#departureCountry').val();
+                const departureAirport = $('#departureAirport').val();
+
+                const arrivalCity =  $('#arrivalCity').val();
+                const arrivalCityIataCode = $('#arrivalCity').attr('data-attr-iataCode');
+                const arrivalCountry = $('#arrivalCountry').val();
+                const arrivalAirport = $('#arrivalAirport').val();
+
+                const numAdultTickets = $('#numAdultTickets').val();
+                const numChildTickets = $('#numChildTickets').val();
+                const numInfantTickets = $('#numInfantTickets').val();
+
+                const prefferedCabinClass = $('prefferedCabinClass').val();
+
+                window.seatfilla.globals.request.skyscannerAPI.sendFlightInfoAjaxRequest({
+                    formValidation:'#ID',
+                    data:{
+                        dates:{departure,arrival},
+                        ticketInfo:{numAdultTickets,numChildTickets,numInfantTickets},
+                        prefferedCabinClass,
+                        groupPricing,
+                        destination:{iataCode:arrivalCityIataCode},
+                        origin:{iataCode:departureCityIataCode},
+                        currencyCodePreference
+                    },
+                    handlers:{
+                        success:renderView,
+                        error:handleAjaxError
+                    }
+                })
+            })
+        }
+
+        if(document.readyState != 'loading'){
+            attach();
+        }else{
+            $(document).ready(attach);
+        }
+
+    })();
+    $('#flight-search-details').load('/ajax/flight-search-nav.ejs', function finished() {});
+})();
+</script>
+<div class="container-fluid">
+         
     <div class="well row" style="background-color:transparent;background-image:none;">
         <div class="button-group pull-right">
             <a href="#" id="list" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-th-list">
@@ -111,9 +206,71 @@ $(document).ready(function() {
         </div>
     </div>
     <div id="products" class="row list-group">
-
-        <div class="item  col-xs-4 col-lg-4">
-            <div class="thumbnail">
+        <div class="item col-xs-4 col-lg-4">
+            <div class="thumbnail switch">
+                <img class="group list-group-image" src="http://placehold.it/400x250/000/fff" alt="" />
+                <div class="caption">
+                    <h4 class="group inner list-group-item-heading">
+                        Product title</h4>
+                    <p class="group inner list-group-item-text">
+                        Product description... Lorem ipsum dolor sit amet, consectetuer adipiscing elit,
+                        sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+                    <div class="row">
+                        <div class="col-xs-12 col-md-6">
+                            <p class="lead">
+                                $21.000</p>
+                        </div>
+                        <div class="col-xs-12 col-md-6">
+                            <a class="btn btn-info" href="">Add to cart</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+         <div class="item  col-xs-4 col-lg-4">
+            <div class="thumbnail switch">
+                <img class="group list-group-image" src="http://placehold.it/400x250/000/fff" alt="" />
+                <div class="caption">
+                    <h4 class="group inner list-group-item-heading">
+                        Product title</h4>
+                    <p class="group inner list-group-item-text">
+                        Product description... Lorem ipsum dolor sit amet, consectetuer adipiscing elit,
+                        sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+                    <div class="row">
+                        <div class="col-xs-12 col-md-6">
+                            <p class="lead">
+                                $21.000</p>
+                        </div>
+                        <div class="col-xs-12 col-md-6">
+                            <a class="btn btn-info" href="">Add to cart</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+         <div class="item  col-xs-4 col-lg-4">
+            <div class="thumbnail switch">
+                <img class="group list-group-image" src="http://placehold.it/400x250/000/fff" alt="" />
+                <div class="caption">
+                    <h4 class="group inner list-group-item-heading">
+                        Product title</h4>
+                    <p class="group inner list-group-item-text">
+                        Product description... Lorem ipsum dolor sit amet, consectetuer adipiscing elit,
+                        sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+                    <div class="row">
+                        <div class="col-xs-12 col-md-6">
+                            <p class="lead">
+                                $21.000</p>
+                        </div>
+                        <div class="col-xs-12 col-md-6">
+                            <a class="btn btn-info" href="">Add to cart</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+         <div class="item  col-xs-4 col-lg-4">
+            <div class="thumbnail switch">
                 <img class="group list-group-image" src="http://placehold.it/400x250/000/fff" alt="" />
                 <div class="caption">
                     <h4 class="group inner list-group-item-heading">

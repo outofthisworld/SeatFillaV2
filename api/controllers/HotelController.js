@@ -43,17 +43,25 @@ module.exports = {
         })
       },
       retrieveMostReleventHotel: ['getPrefferedCurrency', 'getUserLocation', 'getUserLocalePreference', function (callback, results) {
-        if(results.getUserLocation && results.getUserLocation.coords)
-          return callback(null,null);
+  
+         if(req.param('entityId'))
+            return callback(null,{mostRelevent:{'individual_id':req.param('entityId')}})
 
-        SkyScannerLookupService.getHotelAutoSuggestResults({
+         sails.log.debug('Getting hotel auto suggest results');
+         sails.log.debug(req.allParams())
+
+         const queryObj = {
           countryCode: (results.getUserLocation && results.getUserLocation.countryCode) || 'NZ',
           currencyCode:  results.getPrefferedCurrency,
           locale:  results.getUserLocalePreference,
-          query: req.param('hotelQuery') || results.getUserLocation && results.getUserLocation.region ||
+          query: req.param('city') || req.param('country') || results.getUserLocation && results.getUserLocation.region ||
             results.getUserLocation && results.getUserLocation.city || 
             results.getUserLocation && results.getUserLocation.country || 'Auckland'
-        }).then(function (result) {
+        }
+
+        sails.log.debug('Querying hotel auto suggest with ' + JSON.stringify(queryObj))
+
+        SkyScannerLookupService.getHotelAutoSuggestResults(queryObj).then(function (result) {
           sails.log.debug('Results from getHotel auto suggestions: ' + JSON.stringify(result))
           const hotelSuggestions = result.results
 
@@ -74,42 +82,12 @@ module.exports = {
             return suggestion
           })
 
-          // Find the most relevent suggestion for this user
-          const mostRelSuggestion = mappedSuggestions.filter(function (suggestion) {
-            sails.log.debug('Checking hotel suggestion: ' + JSON.stringify(suggestion))
+  
+          sails.log.debug('Found ' + mappedSuggestions.length + ' suggestions for query');
 
-            if (!suggestion['parent_place_id'] || !suggestion['parent_place_id']['city_name'] || !suggestion['parent_place_id']['country_name'])
-              return false
-
-            sails.log.debug('User location is:')
-            sails.log.debug(results.getUserLocation);
-
-            const cityContainsQuery = suggestion['parent_place_id']['city_name'].includes(req.param('hotelQuery') && req.param('hotelQuery').toLowerCase() || '')
-            const countryContainsQuery = suggestion['parent_place_id']['country_name'].toLowerCase().includes(req.param('hotelQuery') && req.param('hotelQuery').toLowerCase() || '')
-            const cityContainsUserCity = suggestion['parent_place_id']['city_name'].toLowerCase().includes(results.getUserLocation && results.getUserLocation.address && results.getUserLocation.address.city.toLowerCase() || '')
-            const countryContainsUserCountry = suggestion['parent_place_id']['country_name'].toLowerCase().includes(results.getUserLocation && results.getUserLocation.address && results.getUserLocation.address.country.toLowerCase() || '')
-   
-         
-            sails.log.debug('City contains query ' + cityContainsQuery)
-            sails.log.debug('Country contains query: ' + countryContainsQuery)
-            sails.log.debug('City contains user city ' + cityContainsUserCity)
-            sails.log.debug('Country contains user country ' + countryContainsUserCountry)
-    
-
-            if((suggestion['geo_type'] == 'City' || suggestion['geo_type'] == 'Nation') &&
-              (
-              // Any of these
-              cityContainsQuery || countryContainsQuery ||
-              cityContainsUserCity || countryContainsUserCountry
-              )
-              ){
-              return true;
-            }else{
-              return false;
-            }
-          })
-
-          return callback(null, mostRelSuggestion[(Math.floor(Math.random() * (mostRelSuggestion.length-1)))] || null)
+          return callback(null, {suggestions:(mappedSuggestions.length && mappedSuggestions) 
+            || null,mostRelevent:(mappedSuggestions.length && 
+            mappedSuggestions[(Math.floor(Math.random() * (mappedSuggestions.length-1)))]['individual_id']) || null})
         }).catch(function (err) {
           sails.log.error(err)
           return callback(err, null)
@@ -127,7 +105,7 @@ module.exports = {
         sessionObject.locale = req.headers['accept-language'] || results.getUserLocalePreference
 
         // Where the hotel is (Here we will check countryInfo for long lat to a country if we can't get it from users location)
-        sessionObject.entityId = (results.retrieveMostReleventHotel && results.retrieveMostReleventHotel['individual_id']) ||
+        sessionObject.entityId = (results.retrieveMostReleventHotel && results.retrieveMostReleventHotel.mostRelevent['individual_id']) ||
           (((results.getUserLocation &&  results.getUserLocation.coords && parseFloat(results.getUserLocation.coords.latitude)) || 36.8485) +
           ',' + ((results.getUserLocation && results.getUserLocation.coords && parseFloat(results.getUserLocation.coords.longitude)) || 174.7633)) + '-latlong'
 
@@ -295,7 +273,7 @@ module.exports = {
 
           sails.log.debug('Saving file to ' + sails.config.appPath +  require('util')
             .format('/assets/images/hotels/%s/%s', req.user.id, results.createHotelTuple.id))
-
+          
           //Start file upload from incoming request
           req.file('file[' + index + ']').upload({
             dirname: sails.config.appPath +  require('util')
@@ -393,7 +371,8 @@ module.exports = {
   },
   index(req, res) {
     return res.ok({
-      user: req.user
+      user: req.user,
+      params: req.allParams()
     }, {
       view: 'search/listings/hotels/search-hotels',
       layout: 'layouts/search-layout'

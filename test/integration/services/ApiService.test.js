@@ -6,7 +6,7 @@ describe('AuthController tests', function () {
 
   // Note it is really hard to make these independent tests.. so if generate API token fails
   // it is likely that verifying the token will fail too.
-  describe('generate and verify API token', function () {
+  /*describe('generate and verify API token', function () {
 
     // Shared among both tests.
     var apiToken = ''
@@ -52,5 +52,5 @@ describe('AuthController tests', function () {
         return done()
       })
     })
-  })
+  })*/
 })

@@ -23,6 +23,7 @@ module.exports = {
           req.session.providerlogin = {
             isAuthenticated: true,
             apiKey: apiKey,
+            apiUser:apiUser,
             authenticationTime: new Date()
           }
           resolve(true)
@@ -40,22 +41,26 @@ module.exports = {
     return req.session.providerlogin &&
       req.session.providerlogin.isAuthenticated
   },
+  getApiUser(req){
+    if(!req || !req.session) throw new Error('Invalid params to ProviderService.js/isAutenticated');
+
+    if(!this.isAuthenticated(req)) throw new Error('Invalid params to ProviderService.js/getApiUser, user must be authenticated');
+
+    return req.session.providerlogin.apiUser;
+  },
   getApiKey(req) {
     if (!req || !req.session) throw new Error('Invalid params to ProviderService.js/getApiKey')
 
-    if (!this.isAuthenticated(req)) {
-      return null
-    }
+    if (!this.isAuthenticated(req)) throw new Error('Invalid params to ProviderService.js/getApiKey, user must be authenticated');
+
     return req.session.providerlogin.apiKey
   },
   getAuthenticationTime(req) {
     if (!req || !req.session) throw new Error('Invalid params to ProviderService.js/getAuthenticationTime')
 
-    if (!this.isAuthenticated(req)) {
-      return null
-    }
+    if (!this.isAuthenticated(req)) throw new Error('Invalid params to ProviderService.js/getAuthenticatedTime, user must be authenticated.')
 
-    return new Date().getTime() - new Date(req.session.providerlogin.authenticationTime)
+    return new Date().getTime() - new Date(req.session.providerlogin.authenticationTime).getTime()
   },
   logout(req) {
     if (!req || !req.session)
@@ -71,7 +76,7 @@ module.exports = {
     sails.log.debug(JSON.stringify(req.session.providerlogin))
 
     if (!this.isAuthenticated(req) ||
-      timeUtils.millisecondsToMinutes(this.getAuthenticationTime(req).getTime()) >= 30) {
+      timeUtils.millisecondsToMinutes(this.getAuthenticationTime(req)) >= 30) {
       return true
     }else {
       return false

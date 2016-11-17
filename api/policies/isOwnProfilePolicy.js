@@ -8,6 +8,5 @@ module.exports = function(req, res, next) {
         return next();
     }
 
-    sails.log.debug('Failed is own profile policy.. retruning forbidden');
-    return res.forbidden();
+    return res.redirect(req.path.replace(':username',req.user.username));
 }

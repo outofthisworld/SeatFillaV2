@@ -1,6 +1,6 @@
 module.exports = {
   airports(req, res) {
-    return res.ok()
+    return res.ok({})
   },
   retrieveFlightInfo(req, res) {
     async.auto({

@@ -35,6 +35,7 @@ module.exports = function(req, res, next) {
         ApiUsers.findOne({ token: token }).exec(function(err, apiUser) {
             if (!err && apiUser.isVerified && !apiUser.isBlocked) {
                 sails.log.debug('Succesfully authenticated API token in policies/apiPolicy.js');
+                req.options.apiUser = apiUser;
                 return next();
             }
             return res.json({ status: 500, error: err, errorMessage: "Unauthorized access, your API key has not been validated yet " + err.message });

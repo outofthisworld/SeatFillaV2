@@ -57,11 +57,13 @@ module.exports = {
         },
         home: {
             type: 'string',
-            required: true
+            required: true,
+            notNull:true
         },
         mobile: {
             type: 'string',
-            required: true
+            required: true,
+            notNull:true
         },
         email: {
             type: 'string',
@@ -71,6 +73,11 @@ module.exports = {
         },
         username: {
             type: 'string',
+            minLength: 3,
+            maxLength: 20
+        },
+        displayName:{
+            type:'string',
             minLength: 3,
             maxLength: 20
         },
@@ -137,10 +144,6 @@ module.exports = {
             via: 'user',
             dominant: true
         },
-        systemNotificationUsers: {
-            collection: 'SystemNotificationUsers',
-            via: 'systemNotification'
-        },
         notifications: {
             collection: 'Notifications',
             via: 'user'
@@ -192,11 +195,15 @@ module.exports = {
         },
         toJSON: function() {
             var obj = this.toObject();
+            delete obj.password;
+            delete obj.passwordConfirmation;
             return obj;
         }
     },
     //Here we will hash the pass before it enters the db..
     beforeCreate: function(attrs, cb) {
+        if(attrs.username) attrs.username.toLowerCase();
+
         if (attrs.provider === 'local') {
             bcrypt.hash(attrs.password, SALT_WORK_FACTOR, function(err, hash) {
                 if (err) return cb(err);
@@ -208,6 +215,8 @@ module.exports = {
         }
     },
     beforeUpdate: function(attrs, cb) {
+        delete attrs.username;
+        delete attrs.id;
         if (attrs.newPassword) {
             bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
                 if (err) return cb(err);

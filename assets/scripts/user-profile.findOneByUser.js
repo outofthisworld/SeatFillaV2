@@ -112,11 +112,13 @@ $(document).ready(function () {
         renderCollection(userprofile.comments,addProfileComment);
     }
 
-    function socketEventHandler (user,userprofile) {
-    
-      if(!user || !userprofile) {
-          window.location.href= '/'
-      }
+    function socketEventHandler () {
+
+      const user = ,
+            userprofile,
+            userprofilecomments,
+            userprofileimages,
+
 
       console.log('Current user:')
       console.log(user)
@@ -130,10 +132,19 @@ $(document).ready(function () {
       displayLatestBids(user,userprofile);
       displayLatestNotifications(user,userprofile);
 
-      addCommentEventListener(userprofile)
+
+      /*
+
+      */
+
+
+      /*
+        Listen for user interface interactions
+      */
+      bindDomCommentEventListener(userprofile)
     }
 
-    function addCommentEventListener (userprofile) {
+    function bindDomCommentEventListener (userprofile) {
       window.seatfilla.globals.getUser(function (status, user) {
         $(options.commentsForm).submit(function () {
           if (status == 200 && user && user.status == 200) {
@@ -179,14 +190,55 @@ $(document).ready(function () {
             alert('Invalid response from server');
             window.location.href = '/';
         }
-       io.socket.get('/userprofile/' + user.username, function(userprofile,jwRes){
-           if(jwRes.statusCode != 200){
-               alert('Invalid response form server')
-               window.location.href= '/'
-           }
-           if(!options) return;
-           socketEventHandler(user, userprofile);
-       })
+
+        const responseHandler = function(data,jwRes){
+            const resolve = this.resolve;
+            const reject = this.reject;
+
+            if(jwRes.statusCode != 200)
+                    return reject(new Error(''));
+
+            return resolve(userprofile)
+        }
+
+        Promise.all([
+            new Promise(function(resolve,reject){
+                io.socket.get('/userprofile/' + user.username, responseHandler.bind({resolve,reject}))
+            }),
+            new Promise(function(resolve,reject){
+                 io.socket.get('/userprofilecomment?user=' + user.id, responseHandler.bind({resolve,reject}))
+            }),
+            new Promise(function(resolve,reject){
+                io.socket.get('/userprofileimage?user='+user.id, responseHandler.bind({resolve,reject}))
+            }),
+             new Promise(function(resolve,reject){
+                io.socket.get('/userprofilelink?user='+user.id, responseHandler.bind({resolve,reject}))
+            }),
+            new Promise(function(resolve,reject){
+                 io.socket.get('/bids?user='+user.id, responseHandler.bind({resolve,reject}))
+            }),
+            new Promise(function(resolve,reject){
+                 io.socket.get('/flightRequest?user='+user.id, responseHandler.bind({resolve,reject}))
+            }),
+            new Promise(function(resolve,reject){
+                io.socket.get('/flightGroup?user='+user.id, responseHandler.bind({resolve,reject}))
+            }),
+            new Promise(function(resolve,reject){
+                io.socket.get('/hotel?user='+user.id, responseHandler.bind({resolve,reject}))
+            })
+        ]).then(function(results){
+
+            socketEventHandler.apply({
+                userprofile:results[0],
+                userprofilecomments:results[1],
+                userprofileimages:results[2],
+                userprofilelinks:results[3],
+                bids:results[4]
+            })
+
+        }).catch(function(err){
+
+        })
     })
 
 
@@ -194,41 +246,193 @@ $(document).ready(function () {
         Handle changes to a user profile
     */
     const userprofileEventHandlers = {
-        created: function (data) {},
-        updated: function (data) {},
-        addedTo: function (data) {},
-        removedFrom: function () {}
-    }
-    
-    /*
-        Handle changes to the user associated with this profile
-    */
-    const profileuserEventHandlers = {
-        destroyed: function () {},
-        updated: function () {},
-        addedTo: function () {
+        created: function (data) {
+
         },
-        removedFrom: function () {}
+        updated: function (data) {
+
+        },
+        addedTo: function (data) {
+
+        },
+        removedFrom: function () {
+
+        }
+    }
+
+    /*
+        Handle changes to the user profile links associated with this profile
+    */
+    const userprofilelinkEventHandlers = {
+        destroyed: function () {
+
+        },
+        updated: function () {
+
+        },
+        addedTo: function () {
+
+        },
+        removedFrom: function () {
+
+        }
+    }
+
+    /*
+        Handle changes to the user profile links associated with this profile
+    */
+    const userprofileimageEventListeners = {
+        destroyed: function () {
+
+        },
+        updated: function () {
+
+        },
+        addedTo: function () {
+
+        },
+        removedFrom: function () {
+
+        }
+    }
+
+    /*
+        Handle changes to the user profile comments associated with this profile
+    */
+    const userprofilecommentEventListeners = {
+        destroyed: function () {
+
+        },
+        updated: function () {
+
+        },
+        addedTo: function () {
+
+        },
+        removedFrom: function () {
+            
+        }
+    }
+
+        /*
+        Handle changes to the user profile comments associated with this profile
+    */
+    const userprofilelinkEventListeners = {
+        destroyed: function () {
+
+        },
+        updated: function () {
+
+        },
+        addedTo: function () {
+
+        },
+        removedFrom: function () {
+            
+        }
+    }
+
+    /*
+        Handle changes to the user profile comments associated with this profile
+    */
+    const flightRequestEventListeners = {
+        destroyed: function () {
+
+        },
+        updated: function () {
+
+        },
+        addedTo: function () {
+
+        },
+        removedFrom: function () {
+            
+        }
+    }
+
+      /*
+        Handle changes to the user profile comments associated with this profile
+    */
+    const flightGroupEventListeners = {
+        destroyed: function () {
+
+        },
+        updated: function () {
+
+        },
+        addedTo: function () {
+
+        },
+        removedFrom: function () {
+            
+        }
+    }
+
+          /*
+        Handle changes to the user profile comments associated with this profile
+    */
+    const hotelEventListeners = {
+        destroyed: function () {
+
+        },
+        updated: function () {
+
+        },
+        addedTo: function () {
+
+        },
+        removedFrom: function () {
+            
+        }
+    }
+
+    /*
+        Handle changes to the user profile comments associated with this profile
+    */
+    const userEventListeners = {
+        destroyed: function () {
+
+        },
+        updated: function () {
+
+        },
+        addedTo: function () {
+
+        },
+        removedFrom: function () {
+            
+        }
     }
 
     const _this = this;
-    const handleEvent = function(eventType,data){
-        if(!eventType) return;
-        if(_this[eventType+'EventHandlers'])
-            _this[eventType+'EventHandlers'].call(null,data);
-    }
 
-    io.socket.on('userprofile', function (response) {
-      console.log('in user profile userprofile listener: ' + JSON.stringify(response))
-      if (!response.verb) return;
-      handleEvent('userprofile',response);
-    })
+    
 
-    io.socket.on('user', function (response) {
-      console.log('in user profile user listener: ' + JSON.stringify(response))
-      if (!response.verb) return;
-      handleEvent('profileuser',response);
-    })
+    (function attachWebSocketListeners(){
+
+        const handleEvent = function(data){
+            const eventType = this.eventType;
+            if(!eventType || !data || !data.verb || !(_this[eventType+'EventHandlers']) || !(_this[eventType+'EventHandlers'][data.verb])) return;
+            _this[eventType+'EventHandlers'][data.verb].call(null,data);
+        }
+
+        io.socket.on('userprofile',socketOnHandler.bind({eventType:'userprofile'}))
+
+        io.socket.on('userprofileimage', socketOnHandler.bind({eventType:'userprofileimage'}))
+
+        io.socket.on('userprofilelink', socketOnHandler.bind({eventType:'userprofilelink'}))
+
+        io.socket.on('userprofilecomment', socketOnHandler.bind({eventType:'userprofilecomment'}))
+
+        io.socket.on('flightrequest', socketOnHandler.bind({eventType:'flightRequest'}))
+
+        io.socket.on('flightgroup', socketOnHandler.bind({eventType:'flightgroup'}))
+
+        io.socket.on('hotel', socketOnHandler.bind({eventType:'hotel'}))
+
+        io.socket.on('user', socketOnHandler.bind({eventType:'user'}))
+
+    })();
   })($,window.io, {
 
   })

@@ -1,6 +1,6 @@
 $(window).ready(function(){
     (function(io){
-        window.seatfilla.window.seatfilla.globals.getUser(function(status,user){
+        window.seatfilla.globals.getUser(function(status,user){
             if(status == 200 && user && user.status == 200){
 
                 const socketEventHandlers = {
@@ -17,19 +17,23 @@ $(window).ready(function(){
                 function userEventDelegater(data){
                     const user = this;
                     console.log(data);
-                    if(eventHandlers[data]){
-                        eventHandlers[data].call(user,data);
+                    if(socketEventHandlers[data]){
+                        socketEventHandlers[data].call(user,data);
                     }
                 }
 
                 io.socket.get('/user?id='+user.id,function data(data){
                     data.status = 200;
-                    window.seatfilla.globals.setUser(data);
-                    console.log('Set current user to ' + JSON.stringify(data))
-                    io.socket.on('user',userEventDelegator.bind(data));
+                    window.seatfilla.globals.setUser(data,function(status,cacheData){
+                        console.log('Status setting user :' + status);
+                        console.log('Cache return data : ' + JSON.stringify(cacheData));
+                        console.log('Set current user to:')
+                        console.log(data);
+                        io.socket.on('user',userEventDelegater.bind(data));
+                    });
                 })
             }else{
-              console.log('User not currently logged in');
+              console.log('User not currently logged in '  + JSON.stringify(user));
             }
         })
     })(window.io)

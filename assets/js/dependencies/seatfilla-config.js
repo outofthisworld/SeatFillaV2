@@ -304,7 +304,7 @@ window.seatfilla.globals.geolocation.setUserLocation = function (location, callb
   })
 }
 
-window.seatfilla.globals.setUser = function(user){
+window.seatfilla.globals.setUser = function(user,callback){
     window.seatfilla.globals.cache.put({
     key: 'user',
     data: user,

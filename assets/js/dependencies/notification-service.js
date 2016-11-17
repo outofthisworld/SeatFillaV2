@@ -20,19 +20,19 @@ $(document).ready(function() {
     }
 
     window.seatfilla.globals.getUser(function(status,result){
-        console.log('Find user: status : ' + status)
-        if(status == 200){
+        if(status == 200 && result && result.status == 200){
+            console.log('Find user: status : ' + status)
             const user = result.username;
             console.log(user)
-            io.socket.get('/user?username='+user,function(){
-                io.socket.on('notifications',function(notification){
-                    console.log('gottttt')
+
+                io.socket.on('user',function(notification){
+                    console.log('recieved : ' + JSON.stringify(notification))
                     if(notification.verb == 'addedTo'){
                         addNotification(notification.added);
                 }
-                })
             })
         }else{
+            console.log('user not logged in listening for system notifications');
             //Listen for system notifications
             io.socket.on('systemnotifications', notificationListener);
             io.socket.on('NotificationService',notificationListener);

@@ -61,7 +61,11 @@
     <!--STYLES END-->
            
 <script>
+
 $(document).ready(function(){
+            $.lazyLoadScripts({},function(err){
+                if(err) alert('Error loading scripts')
+            })
   $('.nav-tabs a[data-page]').on('click',function(){
       const target = $(this).attr('data-page')
       if(!target) return;

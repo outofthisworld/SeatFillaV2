@@ -31,7 +31,7 @@ $(window).ready(function () {
 
         renderData.forEach(function (renderObject) {
           const templateid = renderObject.template
-          const container = renderObject.container || renderObject.find
+          const container = renderObject.addTo || renderObject.container
 
           if (!templateid || !container) {
             console.log('Invalid render data options, no template or container id specified :' + JSON.stringify(renderObject))

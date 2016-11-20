@@ -1,12 +1,20 @@
 $(window).ready(function () {
   (function ($, io) {
+    if (!io || !io) throw new Error('Invalid params')
+
     $.seatfilla = $.seatfilla || {}
     $.seatfilla.userprofile = $.seatfilla.userprofile || {}
     const userProfileProto = {
-      events: [],
+      events: {},
       on: function (attr, func) {
         if (!attr) return false
-        this.events[attr] = (this.events[attr] || []).push(func)
+        console.log('Setting on :')
+        console.log(attr);
+        console.log('To data: ')
+        console.log(func)
+        this.events[attr] = this.events[attr] || [];
+        this.events[attr].push(func)
+        console.log(this.events);
         return true
       },
       remove(attr, func) {
@@ -19,32 +27,40 @@ $(window).ready(function () {
         })
       },
       trigger: function (attr, thisArg, paramArgs) {
+        console.log('triggering event ' + JSON.stringify(attr));
+        ['Userprofile','created']
         if (Array.isArray(attr) && attr.length) {
+          console.log('Attr is array');
           var obj = this.events[attr[0]]
+          var _this = thisArg || obj;
+          console.log('Searching : ')
+          console.log(obj)
           for (var i = 1; i < attr.length; i++) {
             if (!obj) return
             obj = obj[attr[i]]
           }
-          if (typeof obj == 'function') obj.apply(thisArg, paramArgs)
+          console.log('found: ')
+          console.log(obj);
+          if (typeof obj == 'function') obj.apply(_this, paramArgs)
           if (Array.isArray(obj)) {
             obj.forEach(function (c) {
-              if (typeof c == 'function') c.apply(thisArg, paramArgs)
+              if (typeof c == 'function') c.apply(_this, paramArgs)
             })
           }
           return
         }
-
-        (this.events[attr]).forEach(function (f) {
-          if (typeof f === 'function')
-            f.apply(thisArg, paramArgs)
-        })
+        if(this.events[attr]){
+          console.log(this.events[attr])
+          this.events[attr].forEach(function (f) {
+            if (typeof f === 'function')
+              f.apply(thisArg, paramArgs)
+          })
+        }
       }
     }
 
     $.seatfilla.userprofile = Object.create(userProfileProto)
     $.seatfilla.userprofile.loadprofile = function () {
-      if (!io || !io || !options) throw new Error('Invalid params')
-
       const currentUserProfileUser = window.seatfilla.globals.userprofile.getCurrentUserProfileUser(window.location.pathname)
 
       if (!currentUserProfileUser) return
@@ -221,11 +237,7 @@ $(window).ready(function () {
               console.log('Invalid params passed to trigger')
               return
             }
-            if (attribute) {
-              $.seatfilla.userprofile.socket.trigger([eventName, verb, attribute], responseData, data)
-            } else {
-              $.seatfilla.userprofile.socket.trigger([eventName, verb], responseData, data)
-            }
+            $.seatfilla.userprofile.socket.trigger([eventName, verb], null, [data, eventName, verb, attribute || null])
           }
 
           // Listen for socket events from each of these models
@@ -262,7 +274,13 @@ $(window).ready(function () {
           })
 
           for (var key in responseData) {
-            $.seatfilla.userprofile.socket.trigger([key, 'loadedFromSocket'], responseData, data)
+            if(Array.isArray(responseData[key])){
+              responseData[key].forEach(function(dataObj){
+                $.seatfilla.userprofile.trigger([key,'loadedFromSocket'],null, [dataObj]);
+              })
+            }else{
+              $.seatfilla.userprofile.socket.trigger([key, 'loadedFromSocket'], null, [responseData[key]])
+            }
           }
         }).catch(function (err) {
           console.log(err)
@@ -270,346 +288,4 @@ $(window).ready(function () {
       })
     }
   })(jQuery, window.io)
-})
-
-$.seatfilla.userprofile.loadprofile(jQuery, window.io)
-
-$.seatfilla.userprofile.on('load', function () {
-  const socketHandlerProto = {
-    validateProfileData: function (data, validators) {
-      var _validData = true
-      const collectionValidators = validators
-
-      function triggerValidator (func, thisArg, args) {
-        if (!typeof func === 'function') {
-          console.log('Invalid function passed to trigger validator')
-          return
-        }
-        return func.apply(thisArg, args)
-      }
-
-      if (collectionValidators && typeof collectionValidators[Symbol.iterator] === 'function') {
-        for (var i in Object.getOwnPropertyNames(collectionValidators)) {
-          const validator = collectionValidators[i]
-          triggerValidator(validator, null, [data])
-        }
-      } else if (Array.isArray(collectionValidators)) {
-        for (var i = 0; i < collectionValidators.length; i++) {
-          const validator = collectionValidators[i]
-          if (typeof validator === 'function') {
-            _validData = triggerValidator(validator, null, [data])
-          }
-          // Early return 
-          if (!_validData) break
-        }
-      } else {
-        console.log('Invalid validators type passed to validate profile data ')
-      }
-      return _validData
-    }
-  }
-
-  $.seatfilla.userprofile.socket.on('userprofilecomment', Object.create(socketHandlerProto, {
-    validators: {
-      created: [],
-      destroyed: [],
-      loadedFromSocket: [],
-      updated: [],
-      addedto: {
-        xx: []
-      },
-      removedfrom: {
-
-      }
-    },
-    created: function (data) {
-      if (this.validateProfileData(data, validators.created)) {} else {}
-    },
-    destroyed: function (data) {},
-    updated: function (data) {},
-    loadedFromSocket: function (data) {
-      console.log('Loaded from socket ')
-      console.log(data)
-    }
-  }))
-
-  $.seatfilla.userprofile.socket.on('userprofileimage', Object.create(socketHandlerProto, {
-    validators: {
-      created: [],
-      destroyed: [],
-      loadedFromSocket: [],
-      updated: [],
-      addedto: {
-        xx: []
-      },
-      removedfrom: {
-
-      }
-    },
-    created: function (data) {
-      if (this.validateProfileData(data, validators.created)) {} else {}
-    },
-    destroyed: function (data) {},
-    updated: function (data) {},
-    loadedFromSocket: function (data) {
-      console.log('Loaded from socket ')
-      console.log(data)
-    }
-  }))
-
-  $.seatfilla.userprofile.socket.on('userprofilelink', Object.create(socketHandlerProto, {
-    validators: {
-      created: [],
-      destroyed: [],
-      loadedFromSocket: [],
-      updated: [],
-      addedto: {
-        xx: []
-      },
-      removedfrom: {
-
-      }
-    },
-    created: function (data) {
-      if (this.validateProfileData(data, validators.created)) {} else {}
-    },
-    destroyed: function (data) {},
-    updated: function (data) {},
-    loadedFromSocket: function (data) {
-      console.log('Loaded from socket ')
-      console.log(data)
-    }
-  }))
-
-  $.seatfilla.userprofile.socket.on('bid', Object.create(socketHandlerProto, {
-    validators: {
-      created: [],
-      destroyed: [],
-      loadedFromSocket: [],
-      updated: [],
-      addedto: {
-        xx: []
-      },
-      removedfrom: {
-
-      }
-    },
-    created: function (data) {
-      if (this.validateProfileData(data, validators.created)) {} else {}
-    },
-    destroyed: function (data) {},
-    updated: function (data) {},
-    loadedFromSocket: function (data) {
-      console.log('Loaded from socket ')
-      console.log(data)
-    }
-  }))
-
-  $.seatfilla.userprofile.socket.on('flightrequest', Object.create(socketHandlerProto, {
-    validators: {
-      created: [],
-      destroyed: [],
-      loadedFromSocket: [],
-      updated: [],
-      addedto: {
-        xx: []
-      },
-      removedfrom: {
-
-      }
-    },
-    created: function (data) {
-      if (this.validateProfileData(data, validators.created)) {} else {}
-    },
-    destroyed: function (data) {},
-    updated: function (data) {},
-    loadedFromSocket: function (data) {
-      console.log('Loaded from socket ')
-      console.log(data)
-    }
-  }))
-
-  $.seatfilla.userprofile.socket.on('flightgroup', Object.create(socketHandlerProto, {
-    validators: {
-      created: [],
-      destroyed: [],
-      loadedFromSocket: [],
-      updated: [],
-      addedto: {
-        xx: []
-      },
-      removedfrom: {
-
-      }
-    },
-    created: function (data) {
-      if (this.validateProfileData(data, validators.created)) {} else {}
-    },
-    destroyed: function (data) {},
-    updated: function (data) {},
-    loadedFromSocket: function (data) {
-      console.log('Loaded from socket ')
-      console.log(data)
-    }
-  }))
-
-  $.seatfilla.userprofile.socket.on('userprofile', Object.create(socketHandlerProto, {
-    validators: {
-      created: [],
-      destroyed: [],
-      loadedFromSocket: [],
-      updated: [],
-      addedto: {
-        xx: []
-      },
-      removedfrom: {
-
-      }
-    },
-    created: function (data) {
-      if (this.validateProfileData(data, validators.created)) {} else {}
-    },
-    destroyed: function (data) {},
-    updated: function (data) {},
-    loadedFromSocket: function (data) {
-      console.log('Loaded from socket ')
-      console.log(data)
-    }
-  }))
-
-  $.seatfilla.userprofile.socket.on('userprofilecomment', Object.create(socketHandlerProto, {
-    validators: {
-      created: [],
-      destroyed: [],
-      loadedFromSocket: [],
-      updated: [],
-      addedto: {
-        xx: []
-      },
-      removedfrom: {
-
-      }
-    },
-    created: function (data) {
-      if (this.validateProfileData(data, validators.created)) {} else {}
-    },
-    destroyed: function (data) {},
-    updated: function (data) {},
-    loadedFromSocket: function (data) {
-      console.log('Loaded from socket ')
-      console.log(data)
-    }
-  }))
-
-  $.seatfilla.userprofile.socket.on('notifications', Object.create(socketHandlerProto, {
-    validators: {
-      created: [],
-      destroyed: [],
-      loadedFromSocket: [],
-      updated: [],
-      addedto: {
-        xx: []
-      },
-      removedfrom: {
-
-      }
-    },
-    created: function (data) {
-      if (this.validateProfileData(data, validators.created)) {} else {}
-    },
-    destroyed: function (data) {},
-    updated: function (data) {},
-    loadedFromSocket: function (data) {}
-  }))
-
-  $.seatfilla.userprofile.socket.on('hotel', {
-    validators: {
-      created: [],
-      destroyed: [],
-      loadedFromSocket: [],
-      updated: [],
-      addedto: {
-        xx: []
-      },
-      removedfrom: {
-
-      }
-    },
-    addedto: {
-      hotelusercomments: function (data) {
-        console.log('(Hotel user comments): action: ' + action + ' data: ' + JSON.stringify(data))
-      },
-      hoteluserrating: function (data) {
-        console.log('(Hotel user comments): action: ' + action + ' data: ' + JSON.stringify(data))
-      }
-    },
-    removedfrom: {
-      hotelusercomments: function (data) {
-        console.log('(Hotel user comments): action: ' + action + ' data: ' + JSON.stringify(data))
-      },
-      hoteluserrating: function (data) {
-        console.log('(Hotel user comments): action: ' + action + ' data: ' + JSON.stringify(data))
-      }
-    },
-    created: function (data) {
-      console.log('(Hotel event listener: ) action: created' + JSON.stringify(data))
-    },
-    destroyed: function (data) {
-      console.log('(Hotel event listener: ) action: destroyed' + JSON.stringify(data))
-    },
-    updated: function (data) {
-      console.log('(Hotel event listener: ) action: updated' + JSON.stringify(data))
-    },
-    loadedFromSocket: function (data) {}
-  })
-
-  $.seatfilla.userprofile.socket.on('user', {
-    validators: {
-      created: [],
-      destroyed: [],
-      loadedFromSocket: [],
-      updated: [],
-      addedto: {
-        xx: []
-      },
-      removedfrom: {
-
-      }
-    },
-    addedto: {
-      hotels: function (data) {},
-      images: function (data) {},
-      bids: function (data) {},
-      flightrequests: function (data) {},
-      flightgroups: function (data) {},
-      notifications: function (data) {}
-    },
-    removedfrom: {
-      hotels: function (data) {},
-      images: function (data) {},
-      bids: function (data) {},
-      flightrequests: function (data) {},
-      flightgroups: function (data) {},
-      notifications: function (data) {}
-    },
-    // Ignored, triggered when a user is created
-    created: function (data) {},
-    // Ignored, triggered when a user is destroyed
-    destroyed: function (data) {
-      $.toaster({
-        priority: 'info',
-        message: 'This profile is not longer active'
-      })
-    },
-    updated: function (data) {
-      $.toaster({
-        priority: 'info',
-        message: 'This profile users info has been updated'
-      })
-    },
-    loadedFromSocket: function (data) {
-      console.log('Loaded from socket ')
-      console.log(data)
-    }
-  })
 })

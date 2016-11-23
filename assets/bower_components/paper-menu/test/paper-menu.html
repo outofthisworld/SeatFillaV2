@@ -9,7 +9,8 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 <html>
-  <head>
+
+<head>
 
     <title>paper-menu tests</title>
 
@@ -22,11 +23,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <script src="../../web-component-tester/browser.js"></script>
     <link rel="import" href="../paper-menu.html">
 
-  </head>
-  <body>
+</head>
+
+<body>
 
     <test-fixture id="basic">
-      <template>
+        <template>
         <paper-menu>
           <div>item 1</div>
           <div>item 2</div>
@@ -36,29 +38,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </test-fixture>
 
     <script>
+        suite('<paper-menu>', function() {
+            var menu;
 
-      suite('<paper-menu>', function() {
-        var menu;
+            setup(function() {
+                menu = fixture('basic');
+            });
 
-        setup(function() {
-          menu = fixture('basic');
+            test('selected item is styled', function() {
+
+                var boldDiv = document.createElement('div');
+                boldDiv.style.fontWeight = 'bold';
+                document.body.appendChild(boldDiv);
+
+                menu.selected = 1;
+
+                assert.equal(getComputedStyle(menu.selectedItem).fontWeight,
+                    getComputedStyle(boldDiv).fontWeight, 'selected item is bold');
+            });
+
         });
-
-        test('selected item is styled', function() {
-
-          var boldDiv = document.createElement('div');
-          boldDiv.style.fontWeight = 'bold';
-          document.body.appendChild(boldDiv);
-
-          menu.selected = 1;
-
-          assert.equal(getComputedStyle(menu.selectedItem).fontWeight,
-              getComputedStyle(boldDiv).fontWeight, 'selected item is bold');
-        });
-
-      });
-
     </script>
 
-  </body>
+</body>
+
 </html>

@@ -12,34 +12,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <head>
 
-  <title>simple-overlay demo</title>
+    <title>simple-overlay demo</title>
 
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
 
-  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
-  <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
-  <link rel="import" href="simple-overlay.html">
-  <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
-  <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+    <link rel="import" href="simple-overlay.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
 
-  <style is="custom-style" include="demo-pages-shared-styles">
-    demo-snippet {
-      --demo-snippet-code: {
-        max-height: 250px;
-      }
-    }
-  </style>
+    <style is="custom-style" include="demo-pages-shared-styles">
+        demo-snippet {
+            --demo-snippet-code: {
+                max-height: 250px;
+            }
+        }
+    </style>
 
 </head>
 
 <body unresolved class="centered">
 
-  <h3>An element with <code>IronOverlayBehavior</code> can be opened, closed, toggled.</h3>
-  <demo-snippet>
-    <template>
+    <h3>An element with <code>IronOverlayBehavior</code> can be opened, closed, toggled.</h3>
+    <demo-snippet>
+        <template>
       <button onclick="plain.open()">Plain overlay</button>
       <simple-overlay id="plain" tabindex=-1>
         <h2>Hello world!</h2>
@@ -47,11 +47,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <button onclick="plain.close()">Close</button>
       </simple-overlay>
     </template>
-  </demo-snippet>
+    </demo-snippet>
 
-  <h3>Use <code>with-backdrop</code> to add a backdrop to your overlay. Tabbing will be trapped within the overlay.</h3>
-  <demo-snippet>
-    <template>
+    <h3>Use <code>with-backdrop</code> to add a backdrop to your overlay. Tabbing will be trapped within the overlay.</h3>
+    <demo-snippet>
+        <template>
       <button onclick="backdrop.open()">Overlay with backdrop</button>
       <simple-overlay id="backdrop" with-backdrop>
         <p>Hello world!</p>
@@ -59,22 +59,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <button onclick="backdrop.close()">Close</button>
       </simple-overlay>
     </template>
-  </demo-snippet>
+    </demo-snippet>
 
-  <h3>Use <code>restore-focus-on-close</code> to return the focus to the element that opened the overlay when it gets closed.</h3>
-  <demo-snippet>
-    <template>
+    <h3>Use <code>restore-focus-on-close</code> to return the focus to the element that opened the overlay when it gets closed.</h3>
+    <demo-snippet>
+        <template>
       <button onclick="returnFocus.open()">Overlay that restores focus</button>
       <simple-overlay id="returnFocus" restore-focus-on-close>
         <p>Hello world!</p>
         <button onclick="returnFocus.close()">Close</button>
       </simple-overlay>
     </template>
-  </demo-snippet>
+    </demo-snippet>
 
-  <h3>The child with <code>autofocus</code> gets focused when opening the overlay.</h3>
-  <demo-snippet>
-    <template>
+    <h3>The child with <code>autofocus</code> gets focused when opening the overlay.</h3>
+    <demo-snippet>
+        <template>
       <button onclick="withAutofocus.open()">Overlay with autofocus child</button>
       <simple-overlay id="withAutofocus">
         <p>Hello world!</p>
@@ -82,11 +82,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <button onclick="withAutofocus.close()">Close</button>
       </simple-overlay>
     </template>
-  </demo-snippet>
+    </demo-snippet>
 
-  <h3>Multiple overlays can be opened.</h3>
-  <demo-snippet>
-    <template>
+    <h3>Multiple overlays can be opened.</h3>
+    <demo-snippet>
+        <template>
       <button onclick="multiple.open()">Open first overlay</button>
       <simple-overlay id="multiple" tabindex=-1>
         <p>click to open another overlay</p>
@@ -98,11 +98,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <button onclick="multiple2.close()">Close</button>
       </simple-overlay>
     </template>
-  </demo-snippet>
+    </demo-snippet>
 
-  <h3>Use <code>always-on-top</code> to keep the overlay on top of others.</h3>
-  <demo-snippet>
-    <template>
+    <h3>Use <code>always-on-top</code> to keep the overlay on top of others.</h3>
+    <demo-snippet>
+        <template>
       <button onclick="onTop.open()">Open always-on-top</button>
       <simple-overlay id="onTop" always-on-top tabindex=-1>
         <h2>Always on top</h2>
@@ -115,11 +115,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <button onclick="backdrop2.close()">Close</button>
       </simple-overlay>
     </template>
-  </demo-snippet>
+    </demo-snippet>
 
-  <h3>An element with <code>IronOverlayBehavior</code> can be scrollable or contain scrollable content.</h3>
-  <demo-snippet>
-    <template>
+    <h3>An element with <code>IronOverlayBehavior</code> can be scrollable or contain scrollable content.</h3>
+    <demo-snippet>
+        <template>
       <style is="custom-style">
         .with-margin {
           margin: 24px 40px;
@@ -181,7 +181,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         scrolling2.sizingTarget = Polymer.dom(scrolling2).querySelector('.scrollable');
       </script>
     </template>
-  </demo-snippet>
+    </demo-snippet>
 
 </body>
 

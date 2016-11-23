@@ -1,4 +1,3 @@
-
 var actionUtil = require('../blueprints/actionUtil')
 
 /**
@@ -16,22 +15,22 @@ var actionUtil = require('../blueprints/actionUtil')
  * @param {String} callback - default jsonp callback param (i.e. the name of the js function returned)
  */
 
-module.exports = function findOneRecord (req, res) {
+module.exports = function findOneRecord(req, res) {
 
-  var Model = actionUtil.parseModel(req);
-  var pk = actionUtil.requirePk(req);
+    var Model = actionUtil.parseModel(req);
+    var pk = actionUtil.requirePk(req);
 
-  var query = Model.findOne(pk);
-  query = actionUtil.populateRequest(query, req);
-  return query.then(function found( matchingRecord) {
-    if(!matchingRecord) return Promise.reject('No record found with the specified `id`.');
+    var query = Model.findOne(pk);
+    query = actionUtil.populateRequest(query, req);
+    return query.then(function found(matchingRecord) {
+        if (!matchingRecord) return Promise.reject('No record found with the specified `id`.');
 
-    if (req._sails.hooks.pubsub && req.isSocket) {
-      Model.subscribe(req, matchingRecord);
-      actionUtil.subscribeDeep(req, matchingRecord);
-    }
+        if (req._sails.hooks.pubsub && req.isSocket) {
+            Model.subscribe(req, matchingRecord);
+            actionUtil.subscribeDeep(req, matchingRecord);
+        }
 
-    return Promise.resolve(matchingRecord);
-  });
+        return Promise.resolve(matchingRecord);
+    });
 
 };

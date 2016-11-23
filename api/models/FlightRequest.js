@@ -138,14 +138,14 @@ module.exports = {
         },
         currency: {
             type: 'string',
-            notNull:true,
-            required:true
+            notNull: true,
+            required: true
         },
         cabinClass: {
             type: 'string',
             enum: ['Economy', 'PremiumEconomy', 'First', 'Business'],
-            notNull:true,
-            required:true
+            notNull: true,
+            required: true
         },
         maximumPayment: {
             type: 'float',
@@ -153,21 +153,21 @@ module.exports = {
             min: 0,
             max: 20001
         },
-        timeZoneOffset:{
-            type:'integer',
-            notNull:true,
-            required:true
+        timeZoneOffset: {
+            type: 'integer',
+            notNull: true,
+            required: true
         },
         notifySeatfillaFlights: {
             type: 'boolean',
-            defaultsTo:true
+            defaultsTo: true
         },
         //One to many (User can have many requests,
         //request can have one user.)
         user: {
             model: 'user',
-            notNull:true,
-            required:true
+            notNull: true,
+            required: true
         }
     },
     beforeCreate: function(record, cb) {

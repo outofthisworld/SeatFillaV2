@@ -10,7 +10,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <html>
-  <head>
+
+<head>
 
     <title>iron-collapse-a11y</title>
     <meta charset="utf-8">
@@ -23,11 +24,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <link rel="import" href="../../test-fixture/test-fixture.html">
     <link rel="import" href="../iron-collapse.html">
 
-  </head>
-  <body>
+</head>
+
+<body>
 
     <test-fixture id="trivialCollapse">
-      <template>
+        <template>
         <iron-collapse id="collapse" tabindex="0">
           <div>
             Forma temperiemque cornua sidera dissociata cornua recessit innabilis ligavit: solidumque coeptis nullus caelum sponte phoebe di regat mentisque tanta austro capacius amphitrite sui quin postquam semina fossae liquidum umor galeae coeptis caligine liberioris quin liquidum matutinis invasit posset: flexi glomeravit radiis certis invasit oppida postquam onerosior inclusum dominari opifex terris pace finxit quam aquae nunc sine altae auroram quam habentem homo totidemque scythiam in pondus ensis tegit caecoque poena lapidosos humanas coeperunt poena aetas totidem nec natura aethera locavit caelumque distinxit animalibus phoebe cingebant moderantum porrexerat terrae possedit sua sole diu summaque obliquis melioris orbem
@@ -37,38 +39,36 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </test-fixture>
 
     <script>
+        suite('a11y', function() {
+            var collapse;
 
-      suite('a11y', function() {
-        var collapse;
+            setup(function() {
+                collapse = fixture('trivialCollapse');
+            });
 
-        setup(function () {
-          collapse = fixture('trivialCollapse');
+            test('aria attributes', function() {
+                assert.equal(collapse.getAttribute('role'), 'group');
+                assert.equal(collapse.getAttribute('aria-expanded'), 'false');
+                assert.equal(collapse.getAttribute('aria-hidden'), 'true');
+            });
+
+            test('set opened to true', function() {
+                collapse.opened = true;
+                assert.equal(collapse.getAttribute('aria-expanded'), 'true');
+                assert.equal(collapse.getAttribute('aria-hidden'), 'false');
+            });
+
+            test('focus the collapse when opened', function() {
+                assert.notEqual(document.activeElement, collapse);
+                collapse.opened = true;
+                assert.equal(document.activeElement, collapse);
+            });
+
+            a11ySuite('trivialCollapse');
+
         });
-
-        test('aria attributes', function() {
-          assert.equal(collapse.getAttribute('role'), 'group');
-          assert.equal(collapse.getAttribute('aria-expanded'), 'false');
-          assert.equal(collapse.getAttribute('aria-hidden'), 'true');
-        });
-
-        test('set opened to true', function() {
-          collapse.opened = true;
-          assert.equal(collapse.getAttribute('aria-expanded'), 'true');
-          assert.equal(collapse.getAttribute('aria-hidden'), 'false');
-        });
-
-        test('focus the collapse when opened', function() {
-          assert.notEqual(document.activeElement, collapse);
-          collapse.opened = true;
-          assert.equal(document.activeElement, collapse);
-        });
-
-        a11ySuite('trivialCollapse');
-
-      });
-
     </script>
 
-  </body>
-</html>
+</body>
 
+</html>

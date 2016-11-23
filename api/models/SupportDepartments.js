@@ -1,15 +1,13 @@
-
-
 //Lookup table
 module.exports = {
-    attributes:{
-        departmentName:{
-            required:true,
-            notNull:true,
-            type:'String'
+    attributes: {
+        departmentName: {
+            required: true,
+            notNull: true,
+            type: 'String'
         },
-        supportTickets:{
-            collection:'SupportTicket',
+        supportTickets: {
+            collection: 'SupportTicket',
             via: 'topic'
         }
     }

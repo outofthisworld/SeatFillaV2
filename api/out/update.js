@@ -17,79 +17,81 @@ var _ = require('lodash');
  * @param *                    - values to set on the record
  *
  */
-module.exports = function updateOneRecord (req) {
+module.exports = function updateOneRecord(req) {
 
-  // Look up the model
-  var Model = actionUtil.parseModel(req);
+    // Look up the model
+    var Model = actionUtil.parseModel(req);
 
-  // Locate and validate the required `id` parameter.
-  var pk = actionUtil.requirePk(req);
+    // Locate and validate the required `id` parameter.
+    var pk = actionUtil.requirePk(req);
 
-  // Default the value blacklist to just "id", so that models that have an
-  // "id" field that is _not_ the primary key don't have the id field
-  // updated mistakenly.  See https://github.com/balderdashy/sails/issues/3625
-  req.options.values = req.options.values || {};
-  req.options.values.blacklist = req.options.values.blacklist || ['id'];
+    // Default the value blacklist to just "id", so that models that have an
+    // "id" field that is _not_ the primary key don't have the id field
+    // updated mistakenly.  See https://github.com/balderdashy/sails/issues/3625
+    req.options.values = req.options.values || {};
+    req.options.values.blacklist = req.options.values.blacklist || ['id'];
 
-  // Create `values` object (monolithic combination of all parameters)
-  // But omit the blacklisted params (like JSONP callback param, etc.)
-  var values = actionUtil.parseValues(req);
+    // Create `values` object (monolithic combination of all parameters)
+    // But omit the blacklisted params (like JSONP callback param, etc.)
+    var values = actionUtil.parseValues(req);
 
-  // No matter what, don't allow changing the PK via the update blueprint
-  // (you should just drop and re-add the record if that's what you really want)
-  if (typeof values[Model.primaryKey] !== 'undefined' && values[Model.primaryKey] != pk) {
-    req._sails.log.warn('Cannot change primary key via update blueprint; ignoring value sent for `' + Model.primaryKey + '`');
-  }
-  // Make sure the primary key is unchanged
-  values[Model.primaryKey] = pk;
+    // No matter what, don't allow changing the PK via the update blueprint
+    // (you should just drop and re-add the record if that's what you really want)
+    if (typeof values[Model.primaryKey] !== 'undefined' && values[Model.primaryKey] != pk) {
+        req._sails.log.warn('Cannot change primary key via update blueprint; ignoring value sent for `' + Model.primaryKey + '`');
+    }
+    // Make sure the primary key is unchanged
+    values[Model.primaryKey] = pk;
 
-  // Find and update the targeted record.
-  //
-  // (Note: this could be achieved in a single query, but a separate `findOne`
-  //  is used first to provide a better experience for front-end developers
-  //  integrating with the blueprint API.)
-  var query = Model.findOne(pk);
-  // Populate the record according to the current "populate" settings
-  query = actionUtil.populateRequest(query, req);
+    // Find and update the targeted record.
+    //
+    // (Note: this could be achieved in a single query, but a separate `findOne`
+    //  is used first to provide a better experience for front-end developers
+    //  integrating with the blueprint API.)
+    var query = Model.findOne(pk);
+    // Populate the record according to the current "populate" settings
+    query = actionUtil.populateRequest(query, req);
 
-  query.exec(function found(err, matchingRecord) {
+    query.exec(function found(err, matchingRecord) {
 
-    if (err) return res.serverError(err);
-    if (!matchingRecord) return res.notFound();
+        if (err) return res.serverError(err);
+        if (!matchingRecord) return res.notFound();
 
-     return Model.update(pk, values).then(function updated(records) {
+        return Model.update(pk, values).then(function updated(records) {
 
-      // Because this should only update a single record and update
-      // returns an array, just use the first item.  If more than one
-      // record was returned, something is amiss.
-      if (!records || !records.length || records.length > 1) {
-        req._sails.log.warn(
-        util.format('Unexpected output from `%s.update`.', Model.globalId)
-        );
-      }
+            // Because this should only update a single record and update
+            // returns an array, just use the first item.  If more than one
+            // record was returned, something is amiss.
+            if (!records || !records.length || records.length > 1) {
+                req._sails.log.warn(
+                    util.format('Unexpected output from `%s.update`.', Model.globalId)
+                );
+            }
 
-      var updatedRecord = records[0];
+            var updatedRecord = records[0];
 
-      // If we have the pubsub hook, use the Model's publish method
-      // to notify all subscribers about the update.
-      if (req._sails.hooks.pubsub) {
-        if (req.isSocket) { Model.subscribe(req, records); }
-        Model._publishUpdate(pk, _.cloneDeep(values), !req.options.mirror && req, {
-          previous: _.cloneDeep(matchingRecord.toJSON())
-        });
-      }
+            // If we have the pubsub hook, use the Model's publish method
+            // to notify all subscribers about the update.
+            if (req._sails.hooks.pubsub) {
+                if (req.isSocket) {
+                    Model.subscribe(req, records);
+                }
+                Model._publishUpdate(pk, _.cloneDeep(values), !req.options.mirror && req, {
+                    previous: _.cloneDeep(matchingRecord.toJSON())
+                });
+            }
 
-      // Do a final query to populate the associations of the record.
-      //
-      // (Note: again, this extra query could be eliminated, but it is
-      //  included by default to provide a better interface for integrating
-      //  front-end developers.)
-      var Q = Model.findOne(updatedRecord[Model.primaryKey]);
-      Q = actionUtil.populateRequest(Q, req);
-      return Q.then(function foundAgain(populatedRecord) {
-        if (!populatedRecord) return Promise.reject(new Error('Invalid req'))
-        else return Promise.resolve(populatedRecord);
-      }); // </foundAgain>
-    });// </updated>
-  }); // </found>
+            // Do a final query to populate the associations of the record.
+            //
+            // (Note: again, this extra query could be eliminated, but it is
+            //  included by default to provide a better interface for integrating
+            //  front-end developers.)
+            var Q = Model.findOne(updatedRecord[Model.primaryKey]);
+            Q = actionUtil.populateRequest(Q, req);
+            return Q.then(function foundAgain(populatedRecord) {
+                if (!populatedRecord) return Promise.reject(new Error('Invalid req'))
+                else return Promise.resolve(populatedRecord);
+            }); // </foundAgain>
+        }); // </updated>
+    }); // </found>
 };

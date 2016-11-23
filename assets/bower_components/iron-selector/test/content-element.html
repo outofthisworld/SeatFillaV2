@@ -12,7 +12,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <dom-module id="test-content-element">
 
-  <template>
+    <template>
 
     <iron-selector id="selector" selected="{{selected}}" selectable="[[selectable]]" attr-for-selected="id">
       <content></content>
@@ -23,22 +23,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </dom-module>
 
 <script>
+    Polymer({
 
-  Polymer({
+        is: 'test-content-element',
 
-    is: 'test-content-element',
+        properties: {
 
-    properties: {
+            selectable: String,
 
-      selectable: String,
+            selected: {
+                type: String,
+                notify: true
+            }
 
-      selected: {
-        type: String,
-        notify: true
-      }
+        }
 
-    }
-
-  });
-
+    });
 </script>

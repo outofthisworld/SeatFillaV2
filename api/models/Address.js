@@ -35,10 +35,10 @@ module.exports = {
             notNull: true,
             required: true
         },
-        countryInfo:{
-            type:'string',
-            model:'Country',
-            notNull:true
+        countryInfo: {
+            type: 'string',
+            model: 'Country',
+            notNull: true
         },
         state: {
             type: 'string',

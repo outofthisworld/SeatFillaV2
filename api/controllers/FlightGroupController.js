@@ -1,5 +1,5 @@
 module.exports = {
-    findByUser(req,res){
-        
+    findByUser(req, res) {
+
     }
 }

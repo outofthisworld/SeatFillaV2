@@ -12,7 +12,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../neon-animation-runner-behavior.html">
 
 <dom-module id="animated-dropdown">
-  <template>
+    <template>
     <style>
       :host {
         display: none;
@@ -28,63 +28,60 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </dom-module>
 
 <script>
+    Polymer({
 
-  Polymer({
+        is: 'animated-dropdown',
 
-    is: 'animated-dropdown',
+        behaviors: [
+            Polymer.NeonAnimationRunnerBehavior
+        ],
 
-    behaviors: [
-      Polymer.NeonAnimationRunnerBehavior
-    ],
+        properties: {
 
-    properties: {
+            animationConfig: {
+                type: Object,
+                value: function() {
+                    return {
+                        'entry': [{
+                            name: 'scale-up-animation',
+                            node: this,
+                            transformOrigin: '0 0'
+                        }],
+                        'exit': [{
+                            name: 'fade-out-animation',
+                            node: this
+                        }]
+                    }
+                }
+            },
 
-      animationConfig: {
-        type: Object,
-        value: function() {
-          return {
-            'entry': [{
-              name: 'scale-up-animation',
-              node: this,
-              transformOrigin: '0 0'
-            }],
-            'exit': [{
-              name: 'fade-out-animation',
-              node: this
-            }]
-          }
+            _showing: {
+                type: Boolean,
+                value: false
+            }
+
+        },
+
+        listeners: {
+            'neon-animation-finish': '_onAnimationFinish'
+        },
+
+        _onAnimationFinish: function() {
+            if (this._showing) {} else {
+                this.style.display = '';
+            }
+        },
+
+        show: function() {
+            this.style.display = 'inline-block';
+            this._showing = true;
+            this.playAnimation('entry');
+        },
+
+        hide: function() {
+            this._showing = false;
+            this.playAnimation('exit');
         }
-      },
 
-      _showing: {
-        type: Boolean,
-        value: false
-      }
-
-    },
-
-    listeners: {
-      'neon-animation-finish': '_onAnimationFinish'
-    },
-
-    _onAnimationFinish: function() {
-      if (this._showing) {
-      } else {
-        this.style.display = '';
-      }
-    },
-
-    show: function() {
-      this.style.display = 'inline-block';
-      this._showing = true;
-      this.playAnimation('entry');
-    },
-
-    hide: function() {
-      this._showing = false;
-      this.playAnimation('exit');
-    }
-
-  });
-
+    });
 </script>

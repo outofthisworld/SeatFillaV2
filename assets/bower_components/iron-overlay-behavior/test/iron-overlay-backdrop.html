@@ -32,6 +32,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             height: 100%;
             min-width: 0;
         }
+        
         .sizer {
             width: 4000px;
             height: 5000px;
@@ -42,43 +43,43 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <body>
 
-<div class="sizer"></div>
+    <div class="sizer"></div>
 
-<test-fixture id="backdrop">
-    <template>
+    <test-fixture id="backdrop">
+        <template>
         <test-overlay with-backdrop>
             Overlay with backdrop
         </test-overlay>
     </template>
-</test-fixture>
+    </test-fixture>
 
-<script>
-    function runAfterOpen(overlay, callback) {
-        overlay.addEventListener('iron-overlay-opened', callback);
-        overlay.open();
-    }
+    <script>
+        function runAfterOpen(overlay, callback) {
+            overlay.addEventListener('iron-overlay-opened', callback);
+            overlay.open();
+        }
 
-    suite('overlay with backdrop', function() {
-        var overlay;
+        suite('overlay with backdrop', function() {
+            var overlay;
 
-        setup(function() {
-            overlay = fixture('backdrop');
-        });
-
-        test('backdrop size matches parent size', function(done) {
-            runAfterOpen(overlay, function() {
-                // Flush so we are sure backdrop is added in the DOM.
-                Polymer.dom.flush();
-                var backdrop = overlay.backdropElement;
-                var parent = backdrop.parentElement;
-                assert.strictEqual(backdrop.offsetWidth, parent.clientWidth, 'backdrop width matches parent width');
-                assert.strictEqual(backdrop.offsetHeight, parent.clientHeight, 'backdrop height matches parent height');
-                done();
+            setup(function() {
+                overlay = fixture('backdrop');
             });
-        });
 
-    });
-</script>
+            test('backdrop size matches parent size', function(done) {
+                runAfterOpen(overlay, function() {
+                    // Flush so we are sure backdrop is added in the DOM.
+                    Polymer.dom.flush();
+                    var backdrop = overlay.backdropElement;
+                    var parent = backdrop.parentElement;
+                    assert.strictEqual(backdrop.offsetWidth, parent.clientWidth, 'backdrop width matches parent width');
+                    assert.strictEqual(backdrop.offsetHeight, parent.clientHeight, 'backdrop height matches parent height');
+                    done();
+                });
+            });
+
+        });
+    </script>
 
 </body>
 

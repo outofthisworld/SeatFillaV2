@@ -16,7 +16,7 @@ const convert = data2xml({});
 
 module.exports = function sendOK(data, options) {
 
-   
+
 
     // Get access to `req`, `res`, & `sails`
     var req = this.req;
@@ -30,19 +30,23 @@ module.exports = function sendOK(data, options) {
     res.status(200);
 
     //Send json repsonse if req.wantsXML
-    if(req.wantsXML){
+    if (req.wantsXML) {
         sails.log.debug('wants xml');
         sails.log.debug(JSON.stringify(data))
-        sails.log.debug(convert( 'root', data))
-        res.set({'Content-Type':'application/xml'})
-        return res.send(200,convert((options && options.xmlRoot) 
-        || req.options.controller || req.options.model || 'root',data).replace("\ufeff", ""));
+        sails.log.debug(convert('root', data))
+        res.set({
+            'Content-Type': 'application/xml'
+        })
+        return res.send(200, convert((options && options.xmlRoot) ||
+            req.options.controller || req.options.model || 'root', data).replace("\ufeff", ""));
     }
 
-    
+
     // If second argument is a string, we take that to mean it refers to a view.
     // If it was omitted, use an empty object (`{}`)
-    options = (typeof options === 'string') ? { view: options } : options || {};
+    options = (typeof options === 'string') ? {
+        view: options
+    } : options || {};
 
     // If appropriate, serve data as JSON(P)
     // If views are disabled, revert to json
@@ -50,14 +54,17 @@ module.exports = function sendOK(data, options) {
         return res.jsonx(data);
     }
 
-    if(options.renderHtml){
+    if (options.renderHtml) {
         req.options.layout = null;
         res.locals.layout = null;
     }
 
-    const final = { data:data, options: options };
-    
-  
+    const final = {
+        data: data,
+        options: options
+    };
+
+
     if (final.options.layout) final.layout = final.options.layout;
     if (final.options.title) final.title = final.options.title;
 

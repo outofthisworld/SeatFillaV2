@@ -14,24 +14,26 @@
 const uuid = require('node-uuid');
 
 module.exports = {
-  autoPK: false,
-  attributes: {
-    id:{
-      type:'string',
-      primaryKey:true,
-      defaultsTo: function(){ return uuid.v4(); }
-    },
-    ip: {
-       type:'string',
-       required:true,
-    },
-    user_agent: {
-       type:'string',
-       required:true
-    },
-    user:{
-      model:'user',
-      unique: true
+    autoPK: false,
+    attributes: {
+        id: {
+            type: 'string',
+            primaryKey: true,
+            defaultsTo: function() {
+                return uuid.v4();
+            }
+        },
+        ip: {
+            type: 'string',
+            required: true,
+        },
+        user_agent: {
+            type: 'string',
+            required: true
+        },
+        user: {
+            model: 'user',
+            unique: true
+        }
     }
-  }
 };

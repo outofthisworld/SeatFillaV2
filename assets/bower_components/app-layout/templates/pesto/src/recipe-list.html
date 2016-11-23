@@ -19,7 +19,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
 <dom-module id="recipe-list">
-  <template>
+    <template>
 
     <style>
 
@@ -167,24 +167,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </paper-card>
           </a><!-- No empty text node
         --></template>
-      </div>
+    </div>
 
     </app-header-layout>
 
     <paper-fab icon="app:create"></paper-fab>
-  </template>
+    </template>
 
-  <script>
+    <script>
+        Polymer({
 
-  Polymer({
+            is: 'recipe-list',
 
-    is: 'recipe-list',
+            properties: {
+                recipes: Object
+            }
 
-    properties: {
-      recipes: Object
-    }
-
-  });
-
-  </script>
+        });
+    </script>
 </dom-module>

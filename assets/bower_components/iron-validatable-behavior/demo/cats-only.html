@@ -12,35 +12,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../iron-validator-behavior/iron-validator-behavior.html">
 
 <script>
+    Polymer({
 
-  Polymer({
+        is: 'cats-only',
 
-    is: 'cats-only',
+        behaviors: [
+            Polymer.IronValidatorBehavior
+        ],
 
-    behaviors: [
-      Polymer.IronValidatorBehavior
-    ],
+        validateObject: function(obj) {
+            var valid = true;
+            for (key in obj) {
+                if (obj[key] !== 'cats') {
+                    valid = false;
+                    break;
+                }
+            }
+            return valid;
+        },
 
-    validateObject: function(obj) {
-      var valid = true;
-      for (key in obj) {
-        if (obj[key] !== 'cats') {
-          valid = false;
-          break;
+        validate: function(values) {
+            if (typeof values === 'object') {
+                return this.validateObject(values);
+            } else {
+                var value = Array.isArray(values) ? values.join('') : values;
+                return value.match(/^(c|ca|cat|cats)?$/) !== null;
+            }
         }
-      }
-      return valid;
-    },
 
-    validate: function(values) {
-      if (typeof values === 'object') {
-        return this.validateObject(values);
-      } else {
-        var value = Array.isArray(values) ? values.join('') : values;
-        return value.match(/^(c|ca|cat|cats)?$/) !== null;
-      }
-    }
-
-  });
-
+    });
 </script>

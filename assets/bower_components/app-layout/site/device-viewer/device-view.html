@@ -18,7 +18,7 @@ Displays a page on a device layout.
 -->
 <dom-module id="device-view">
 
-  <template>
+    <template>
 
     <style>
 
@@ -147,48 +147,46 @@ Displays a page on a device layout.
 
   </template>
 
-  <script>
+    <script>
+        Polymer({
 
-    Polymer({
+            is: 'device-view',
 
-      is: 'device-view',
+            properties: {
 
-      properties: {
+                /**
+                 * The url of the page to display.
+                 */
+                src: String,
 
-        /**
-         * The url of the page to display.
-         */
-        src: String,
+                /**
+                 * The device layout to show.  Possible values are `phone`, `tablet` and `laptop`.
+                 */
+                device: {
+                    type: String,
+                    value: 'phone',
+                    reflectToAttribute: true
+                },
 
-        /**
-         * The device layout to show.  Possible values are `phone`, `tablet` and `laptop`.
-         */
-        device: {
-          type: String,
-          value: 'phone',
-          reflectToAttribute: true
-        },
+                /**
+                 * Use landscape orientaion if this is true.
+                 */
+                landscape: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
+                }
 
-        /**
-         * Use landscape orientaion if this is true.
-         */
-        landscape: {
-          type: Boolean,
-          value: false,
-          reflectToAttribute: true
-        }
+            },
 
-      },
+            /**
+             * Toggles the landscape orientation.
+             */
+            toggleLandscape: function() {
+                this.landscape = !this.landscape;
+            }
 
-      /**
-       * Toggles the landscape orientation.
-       */
-      toggleLandscape: function() {
-        this.landscape = !this.landscape;
-      }
-
-    });
-
-  </script>
+        });
+    </script>
 
 </dom-module>

@@ -13,7 +13,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../iron-list.html">
 
 <dom-module id="x-list">
-  <template>
+    <template>
     <style>
       :host {
         @apply(--layout-fit);
@@ -47,64 +47,64 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </div>
       </template>
     </iron-list>
-  </template>
+    </template>
 
 </dom-module>
 
 <script>
-  Polymer({
-    is: 'x-list',
+    Polymer({
+        is: 'x-list',
 
-    properties: {
-      data: {
-        type: Array
-      },
+        properties: {
+            data: {
+                type: Array
+            },
 
-      itemHeight: {
-        type: Number,
-        value: 100
-      },
+            itemHeight: {
+                type: Number,
+                value: 100
+            },
 
-      listHeight: {
-        type: Number,
-        value: 300
-      },
+            listHeight: {
+                type: Number,
+                value: 300
+            },
 
-      pre: {
-        type: Boolean
-      },
+            pre: {
+                type: Boolean
+            },
 
-      primitive: {
-        value: false,
-        type: Boolean
-      },
+            primitive: {
+                value: false,
+                type: Boolean
+            },
 
-      useTabIndex: {
-        value: true,
-        type: Boolean
-      }
-    },
+            useTabIndex: {
+                value: true,
+                type: Boolean
+            }
+        },
 
-    get list() {
-      return this.$.list;
-    },
+        get list() {
+            return this.$.list;
+        },
 
-    _computedItemHeight: function(item) {
-      var css = this.pre ? 'white-space:pre;' : '';
-      if (item.height) {
-        css += this.itemHeight === 0 ? '' : 'height: ' + (item.height) + 'px;';
-      } else if (this.itemHeight) {
-        css += 'height: ' + (this.itemHeight) + 'px;';
-      }
-      return css;
-    },
+        _computedItemHeight: function(item) {
+            var css = this.pre ? 'white-space:pre;' : '';
+            if (item.height) {
+                css += this.itemHeight === 0 ? '' : 'height: ' + (item.height) + 'px;';
+            } else if (this.itemHeight) {
+                css += 'height: ' + (this.itemHeight) + 'px;';
+            }
+            return css;
+        },
 
-    _computedListHeight: function(listHeight) {
-      return 'height: ' + (listHeight) + 'px; overflow: hidden;';
-    },
+        _computedListHeight: function(listHeight) {
+            return 'height: ' + (listHeight) + 'px; overflow: hidden;';
+        },
 
-    _computedTabIndex: function(tabIndex, useTabIndex) {
-      return useTabIndex ? tabIndex : undefined;
-    }
-  });
+        _computedTabIndex: function(tabIndex, useTabIndex) {
+            return useTabIndex ? tabIndex : undefined;
+        }
+    });
 </script>

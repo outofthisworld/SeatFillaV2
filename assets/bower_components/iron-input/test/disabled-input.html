@@ -11,22 +11,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../polymer/polymer.html">
 
 <dom-module id="disabled-input">
-  <template>
+    <template>
     <input is="iron-input" bind-value="{{myValue}}" invalid="{{myInvalid}}" disabled id="input">
   </template>
 </dom-module>
 
 <script>
-  Polymer({
-    is: 'disabled-input',
-    properties: {
-      myValue: {
-        value: 'foo'
-      },
+    Polymer({
+        is: 'disabled-input',
+        properties: {
+            myValue: {
+                value: 'foo'
+            },
 
-      myInvalid: {
-        value: false
-      }
-    }
-  });
+            myInvalid: {
+                value: false
+            }
+        }
+    });
 </script>

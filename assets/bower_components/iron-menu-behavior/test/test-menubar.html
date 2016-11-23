@@ -13,7 +13,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <dom-module id="test-menubar">
 
-  <template>
+    <template>
 
     <content></content>
 
@@ -24,23 +24,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </dom-module>
 
 <script>
+    (function() {
 
-(function() {
+        Polymer({
 
-  Polymer({
+            is: 'test-menubar',
 
-    is: 'test-menubar',
+            behaviors: [
+                Polymer.IronMenubarBehavior
+            ],
 
-    behaviors: [
-      Polymer.IronMenubarBehavior
-    ],
+            get extraContent() {
+                return this.$.extraContent;
+            }
 
-    get extraContent() {
-      return this.$.extraContent;
-    }
+        });
 
-  });
-
-})();
-
+    })();
 </script>

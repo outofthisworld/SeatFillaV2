@@ -9,29 +9,32 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 <html>
+
 <head>
 
-  <title>iron-ajax</title>
+    <title>iron-ajax</title>
 
-  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-  <link rel="import" href="../iron-ajax.html">
-  <link rel="import" href="../../iron-image/iron-image.html">
-  <link rel="import" href="../../paper-styles/demo-pages.html">
-  <style>
-    iron-image {
-      background-color: lightgray;
-      margin: 1em;
-    }
-    .horizontal-section {
-      max-width: 300px;
-      margin-bottom: 24px;
-    }
-  </style>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../iron-ajax.html">
+    <link rel="import" href="../../iron-image/iron-image.html">
+    <link rel="import" href="../../paper-styles/demo-pages.html">
+    <style>
+        iron-image {
+            background-color: lightgray;
+            margin: 1em;
+        }
+        
+        .horizontal-section {
+            max-width: 300px;
+            margin-bottom: 24px;
+        }
+    </style>
 </head>
+
 <body unresolved>
-  <h1>Video Feed</h1>
-  <div class="horizontal-section-container">
-    <template is="dom-bind" id="app">
+    <h1>Video Feed</h1>
+    <div class="horizontal-section-container">
+        <template is="dom-bind" id="app">
       <iron-ajax auto
           url="https://www.googleapis.com/youtube/v3/search"
           params='{"part":"snippet", "q":"polymer", "key": "AIzaSyAuecFZ9xJXbGDkQYWBmYrtzOGJD-iDIgI", "type": "video"}'
@@ -46,15 +49,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </div>
         </template>
 
-    </template>
-  </div>
+        </template>
+    </div>
 
-  <script>
-    var app = document.querySelector('#app');
+    <script>
+        var app = document.querySelector('#app');
 
-    app.url = function (videoId) {
-      return 'https://www.youtube.com/watch?v=' + videoId;
-    };
-  </script>
+        app.url = function(videoId) {
+            return 'https://www.youtube.com/watch?v=' + videoId;
+        };
+    </script>
 </body>
+
 </html>

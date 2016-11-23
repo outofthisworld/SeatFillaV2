@@ -13,7 +13,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="grow-height-animation.html">
 
 <dom-module id="x-select">
-  <template>
+    <template>
     <style>
       :host {
         display: inline-block;
@@ -32,49 +32,49 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <content select=".dropdown-content"></content>
     </iron-dropdown>
   </template>
-  <script>
-    Polymer({
-      is: 'x-select',
+    <script>
+        Polymer({
+            is: 'x-select',
 
-      properties: {
-        verticalAlign: String,
-        horizontalAlign: String,
-        disabled: Boolean,
-        openAnimationConfig: {
-          type: Array,
-          value: function() {
-            return [{
-              name: 'fade-in-animation',
-              timing: {
-                delay: 150,
-                duration: 50
-              }
-            }, {
-              name: 'expand-animation',
-              timing: {
-                delay: 150,
-                duration: 200
-              }
-            }];
-          }
-        },
+            properties: {
+                verticalAlign: String,
+                horizontalAlign: String,
+                disabled: Boolean,
+                openAnimationConfig: {
+                    type: Array,
+                    value: function() {
+                        return [{
+                            name: 'fade-in-animation',
+                            timing: {
+                                delay: 150,
+                                duration: 50
+                            }
+                        }, {
+                            name: 'expand-animation',
+                            timing: {
+                                delay: 150,
+                                duration: 200
+                            }
+                        }];
+                    }
+                },
 
-        closeAnimationConfig: {
-          type: Array,
-          value: function() {
-            return [{
-              name: 'fade-out-animation',
-              timing: {
-                duration: 200
-              }
-            }];
-          }
-        }
-      },
+                closeAnimationConfig: {
+                    type: Array,
+                    value: function() {
+                        return [{
+                            name: 'fade-out-animation',
+                            timing: {
+                                duration: 200
+                            }
+                        }];
+                    }
+                }
+            },
 
-      open: function() {
-        this.$.dropdown.open();
-      }
-    });
-  </script>
+            open: function() {
+                this.$.dropdown.open();
+            }
+        });
+    </script>
 </dom-module>

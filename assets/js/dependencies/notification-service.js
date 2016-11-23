@@ -6,7 +6,7 @@
 
 $(document).ready(function() {
 
-     $('#notificationDropdown').on('click',function(){
+    $('#notificationDropdown').on('click', function() {
         $('#unread_notifications').text("0")
     })
 
@@ -15,52 +15,52 @@ $(document).ready(function() {
         console.log('Subscribing to notifications service, status code: ' + response.statusCode);
     });
 
-    function notificationListener(data){
+    function notificationListener(data) {
         addNotification(data);
     }
 
-    window.seatfilla.globals.getUser(function(status,result){
-        if(status == 200 && result && result.status == 200){
+    window.seatfilla.globals.getUser(function(status, result) {
+        if (status == 200 && result && result.status == 200) {
             console.log('Find user: status : ' + status)
             const user = result.username;
             console.log(user)
 
-                io.socket.on('user',function(notification){
-                    console.log('recieved : ' + JSON.stringify(notification))
-                    if(notification.verb == 'addedTo'){
-                        addNotification(notification.added);
+            io.socket.on('user', function(notification) {
+                console.log('recieved : ' + JSON.stringify(notification))
+                if (notification.verb == 'addedTo') {
+                    addNotification(notification.added);
                 }
             })
-        }else{
+        } else {
             console.log('user not logged in listening for system notifications');
             //Listen for system notifications
             io.socket.on('systemnotifications', notificationListener);
-            io.socket.on('NotificationService',notificationListener);
+            io.socket.on('NotificationService', notificationListener);
         }
     })
-   
+
     //Retrieve our latest notifications
-    $.get("/notifications/latestnotifications", function(data,r,p) {
-        data.forEach(function(notification){
+    $.get("/notifications/latestnotifications", function(data, r, p) {
+        data.forEach(function(notification) {
             addNotification(notification);
         })
     });
 
     function addNotification(data) {
-        if(!data || !data.verb == 'created') return;
+        if (!data || !data.verb == 'created') return;
 
         const message = data.data || data;
         const id = data.id;
 
         console.log('adding notification: ' + JSON.stringify(data));
-        const html = '<li><a href="' + (message.link || '/') + '"><span class="fa fa-fw fa-tag"></span><span>'+message.message+'</span></a></li>'
+        const html = '<li><a href="' + (message.link || '/') + '"><span class="fa fa-fw fa-tag"></span><span>' + message.message + '</span></a></li>'
 
 
-      
+
         $('#notifications').append(html);
 
-        if(!data.read){
+        if (!data.read) {
             $('#unread_notifications').text(parseInt($('#unread_notifications').text()) + 1)
         }
-    }	
-});        
+    }
+});

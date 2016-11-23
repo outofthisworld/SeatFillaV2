@@ -1,14 +1,14 @@
 module.exports = {
-    attributes:{
+    attributes: {
         countryCode: {
-            type:'string',
-            model:'country',
-            via:'alpha3code'
+            type: 'string',
+            model: 'country',
+            via: 'alpha3code'
         },
-        currencyCode:{
-            type:'string',
-            notNull:true,
-            required:true
+        currencyCode: {
+            type: 'string',
+            notNull: true,
+            required: true
         }
     }
 }

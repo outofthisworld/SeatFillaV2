@@ -52,56 +52,59 @@ Example:
 -->
 
 <dom-module id="app-scrollpos-control">
-  <script>
-    Polymer({
-      is: 'app-scrollpos-control',
+    <script>
+        Polymer({
+            is: 'app-scrollpos-control',
 
-      behaviors: [
-        Polymer.IronScrollTargetBehavior
-      ],
+            behaviors: [
+                Polymer.IronScrollTargetBehavior
+            ],
 
-      properties: {
-        /**
-         * The selected page.
-         */
-        selected: {
-          type: String,
-          observer: '_selectedChanged'
-        },
+            properties: {
+                /**
+                 * The selected page.
+                 */
+                selected: {
+                    type: String,
+                    observer: '_selectedChanged'
+                },
 
-        /**
-         * Reset the scroll position to 0.
-         */
-        reset: {
-          type: Boolean,
-          value: false
-        }
-      },
+                /**
+                 * Reset the scroll position to 0.
+                 */
+                reset: {
+                    type: Boolean,
+                    value: false
+                }
+            },
 
-      observers: [
-        '_updateScrollPos(selected, reset)'
-      ],
+            observers: [
+                '_updateScrollPos(selected, reset)'
+            ],
 
-      created: function() {
-        this._scrollposMap = {};
-      },
+            created: function() {
+                this._scrollposMap = {};
+            },
 
-      _selectedChanged: function(selected, old) {
-        if (old != null) {
-          this._scrollposMap[old] = {x: this._scrollLeft, y: this._scrollTop};
-        }
-      },
+            _selectedChanged: function(selected, old) {
+                if (old != null) {
+                    this._scrollposMap[old] = {
+                        x: this._scrollLeft,
+                        y: this._scrollTop
+                    };
+                }
+            },
 
-      _updateScrollPos: function(selected, reset) {
-        this.debounce('_updateScrollPos', function() {
-          var pos = this._scrollposMap[this.selected];
-          if (pos != null && !this.reset) {
-            this.scroll(pos.x, pos.y);
-          } else {
-            this.scroll(0, 0);
-          }
+            _updateScrollPos: function(selected, reset) {
+                this.debounce('_updateScrollPos', function() {
+                    var pos = this._scrollposMap[this.selected];
+                    if (pos != null && !this.reset) {
+                        this.scroll(pos.x, pos.y);
+                    } else {
+                        this.scroll(0, 0);
+                    }
+                });
+            }
         });
-      }
-    });
-  </script>
+    </script>
 </dom-module>

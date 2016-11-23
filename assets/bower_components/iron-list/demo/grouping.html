@@ -10,44 +10,46 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <!doctype html>
 <html>
+
 <head>
 
-  <title>Grouping items using iron-list</title>
+    <title>Grouping items using iron-list</title>
 
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=no">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
 
-  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
-  <link rel="import" href="../../polymer/polymer.html">
-  <link rel="import" href="../../app-layout/app-toolbar/app-toolbar.html">
-  <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
-  <link rel="import" href="../../iron-icons/iron-icons.html">
-  <link rel="import" href="../../paper-item/paper-item.html">
-  <link rel="import" href="../../paper-menu-button/paper-menu-button.html">
-  <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
-  <link rel="import" href="../../paper-styles/color.html">
-  <link rel="import" href="../../paper-styles/typography.html">
+    <link rel="import" href="../../polymer/polymer.html">
+    <link rel="import" href="../../app-layout/app-toolbar/app-toolbar.html">
+    <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+    <link rel="import" href="../../iron-icons/iron-icons.html">
+    <link rel="import" href="../../paper-item/paper-item.html">
+    <link rel="import" href="../../paper-menu-button/paper-menu-button.html">
+    <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
+    <link rel="import" href="../../paper-styles/color.html">
+    <link rel="import" href="../../paper-styles/typography.html">
 
 
-  <link rel="import" href="../../iron-ajax/iron-ajax.html">
-  <link rel="import" href="../../iron-image/iron-image.html">
-  <link rel="import" href="../iron-list.html">
+    <link rel="import" href="../../iron-ajax/iron-ajax.html">
+    <link rel="import" href="../../iron-image/iron-image.html">
+    <link rel="import" href="../iron-list.html">
 
-  <style>
-    body {
-      background-color: #eee;
-      margin: 0;
-      padding: 0;
-    }
-  </style>
+    <style>
+        body {
+            background-color: #eee;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
 </head>
+
 <body>
 
-<dom-module id="x-group">
-  <template>
+    <dom-module id="x-group">
+        <template>
     <style>
       :host {
         display: block;
@@ -147,11 +149,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <paper-item on-click="_onStateClick">[[item.state]]</paper-item>
           </template>
         </iron-list>
-      </paper-menu-button>
-    </app-toolbar>
+        </paper-menu-button>
+        </app-toolbar>
 
-    <iron-list id="list" items="[[_generateGroupsFor(items)]]" scroll-target="document">
-      <template>
+        <iron-list id="list" items="[[_generateGroupsFor(items)]]" scroll-target="document">
+            <template>
         <div>
           <div class="group-header" hidden$="[[!_hasGroup(index)]]">[[item.state]]</div>
           <div class="group-item">
@@ -162,66 +164,68 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </div>
         </div>
       </template>
-    </iron-list>
+        </iron-list>
 
-  </template>
+        </template>
 
-  <script>
+        <script>
+            HTMLImports.whenReady(function() {
 
-    HTMLImports.whenReady(function() {
+                Polymer({
+                    is: 'x-group',
 
-      Polymer({
-        is: 'x-group',
+                    properties: {
 
-        properties: {
+                        items: Array,
 
-          items: Array,
+                        states: Array
 
-          states: Array
+                    },
 
-        },
+                    attached: function() {
+                        this._groupIdxMap = {};
+                    },
 
-        attached: function() {
-          this._groupIdxMap = {};
-        },
+                    _generateGroupsFor: function(items) {
+                        // Sort by state name
+                        var items = items.slice().sort(function(a, b) {
+                            return a.state.localeCompare(b.state);
+                        });
+                        var states = [];
+                        // Group by state where _groupIdxMap[index] = true means that items[index] starts a new group
+                        this._groupIdxMap = items.reduce(function(map, item, idx, arr) {
+                            if (idx == 0 || item.state != arr[idx - 1].state) {
+                                map[idx] = true;
+                                states.push({
+                                    state: item.state,
+                                    index: idx
+                                });
+                            }
+                            return map;
+                        }, {});
 
-        _generateGroupsFor: function(items) {
-          // Sort by state name
-          var items = items.slice().sort(function(a, b) {
-            return a.state.localeCompare(b.state);
-          });
-          var states = [];
-          // Group by state where _groupIdxMap[index] = true means that items[index] starts a new group
-          this._groupIdxMap = items.reduce(function(map, item, idx, arr) {
-            if (idx == 0 || item.state != arr[idx-1].state) {
-              map[idx] = true;
-              states.push({ state: item.state, index: idx });
-            }
-            return map;
-          }, {});
+                        this.states = states;
+                        return items;
+                    },
 
-          this.states = states;
-          return items;
-        },
+                    _hasGroup: function(idx) {
+                        return this._groupIdxMap[idx] == true;
+                    },
 
-        _hasGroup: function(idx) {
-          return this._groupIdxMap[idx] == true;
-        },
+                    _onStateClick: function(e) {
+                        // scroll on the main list
+                        this.$.menu.close();
+                        this.$.list.scrollToIndex(e.model.item.index);
+                    }
 
-        _onStateClick: function(e) {
-          // scroll on the main list
-          this.$.menu.close();
-          this.$.list.scrollToIndex(e.model.item.index);
-        }
+                });
 
-      });
+            });
+        </script>
+    </dom-module>
 
-    });
-
-  </script>
-</dom-module>
-
-<x-group></x-group>
+    <x-group></x-group>
 
 </body>
+
 </html>

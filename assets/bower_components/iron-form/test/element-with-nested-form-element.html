@@ -12,22 +12,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="simple-element.html">
 
 <dom-module id="element-with-nested-form-element">
-  <template>
+    <template>
     <simple-element name$="[[name]]"></simple-element>
     <content></content>
   </template>
 </dom-module>
 
 <script>
+    Polymer({
 
-  Polymer({
+        is: 'element-with-nested-form-element',
 
-    is: 'element-with-nested-form-element',
+        behaviors: [
+            Polymer.IronFormElementBehavior
+        ]
 
-    behaviors: [
-      Polymer.IronFormElementBehavior
-    ]
-
-  });
-
+    });
 </script>

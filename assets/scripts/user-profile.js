@@ -25,6 +25,7 @@ $(window).ready(function () {
     $.seatfilla = $.seatfilla || {}
     $.seatfilla.userprofile = $.seatfilla.userprofile || {}
 
+
     /*
         Constructs a new SocketDataLoaderObject, which loads
         data intially from the socket and then, if set, uses
@@ -44,11 +45,16 @@ $(window).ready(function () {
           Max number of user profile comments to be displayed before triggering a removal 
         */
         maxDomElements: 5,
+
+        childRemovalMethod:'first',
+        renderMethod:'append',
         template: '#userprofilecommentreplytemplate',
         /*
           Finds the container for this comment
         */
         container: function(data){
+          console.log(data)
+          console.log('finding container')
           const parentCommentId = data.id;
           const container = $('#userprofilecommentcontainer')
           .find('li[data-attr-id="'+parentCommentId+'"] .userprofilecommentreplies')
@@ -58,7 +64,10 @@ $(window).ready(function () {
      },
      {
       eventName: 'userprofilecomment',
-      path: '/userprofilecomment?userProfile='+(1).toString()+'&isReply=false&sort=createdAt DESC',
+      path: '/userprofilecomment',
+      where:{userProfile:1,isReply:false},
+      subcriteria:{limit:5, sort:'created ASC'},
+      params:{limit:10, sort:'createdAt ASC'},
       shouldListen:true,
       /*
         Handles associations,

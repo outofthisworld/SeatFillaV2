@@ -18,35 +18,37 @@ var actionUtil = require('./actionUtil');
  * Optional:
  * @param {String} callback - default jsonp callback param (i.e. the name of the js function returned)
  */
-module.exports = function destroyOneRecord (req, res) {
+module.exports = function destroyOneRecord(req, res) {
 
-  sails.log.debug('Attempting to destory record ');
+    sails.log.debug('Attempting to destory record ');
 
-  var Model = actionUtil.parseModel(req);
-  var pk = actionUtil.requirePk(req);
-  
-  var query = Model.findOne(pk);
-  query = actionUtil.populateRequest(query, req);
-  query.exec(function foundRecord (err, record) {
-    if (err) return res.serverError(err);
-    if(!record) return res.notFound('No record found with the specified `id`.');
+    var Model = actionUtil.parseModel(req);
+    var pk = actionUtil.requirePk(req);
 
-    //If the request is a get request just
-    //display the record without actually deleting it
-    if(req.isGET()) return res.ok(record);
+    var query = Model.findOne(pk);
+    query = actionUtil.populateRequest(query, req);
+    query.exec(function foundRecord(err, record) {
+        if (err) return res.serverError(err);
+        if (!record) return res.notFound('No record found with the specified `id`.');
 
-    Model.destroy(pk).exec(function destroyedRecord (err) {
-      if (err) return res.negotiate(err);
+        //If the request is a get request just
+        //display the record without actually deleting it
+        if (req.isGET()) return res.ok(record);
 
-      if (req._sails.hooks.pubsub) {
-        Model.publishDestroy(pk, !req._sails.config.blueprints.mirror && req, {previous: record});
-        if (req.isSocket) {
-          Model.unsubscribe(req, record);
-          Model.retire(record);
-        }
-      }
+        Model.destroy(pk).exec(function destroyedRecord(err) {
+            if (err) return res.negotiate(err);
 
-      return res.ok(record);
+            if (req._sails.hooks.pubsub) {
+                Model.publishDestroy(pk, !req._sails.config.blueprints.mirror && req, {
+                    previous: record
+                });
+                if (req.isSocket) {
+                    Model.unsubscribe(req, record);
+                    Model.retire(record);
+                }
+            }
+
+            return res.ok(record);
+        });
     });
-  });
 };

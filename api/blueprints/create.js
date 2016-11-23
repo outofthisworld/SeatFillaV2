@@ -17,7 +17,7 @@ var _ = require('lodash');
  * @param {String} callback - default jsonp callback param (i.e. the name of the js function returned)
  * @param {*} * - other params will be used as `values` in the create
  */
-module.exports = function createRecord (req, res) {
+module.exports = function createRecord(req, res) {
 
     var Model = actionUtil.parseModel(req);
     sails.log.debug(Model);
@@ -29,7 +29,7 @@ module.exports = function createRecord (req, res) {
     sails.log.debug(data);
 
     // Create new instance of model using data from params
-    Model.create(data).exec(function created (err, newInstance) {
+    Model.create(data).exec(function created(err, newInstance) {
 
         // Differentiate between waterline-originated validation errors
         // and serious underlying issues. Respond with badRequest if a
@@ -44,9 +44,11 @@ module.exports = function createRecord (req, res) {
                 Model.introduce(newInstance);
             }
             // Make sure data is JSON-serializable before publishing            
-            var publishData = _.isArray(newInstance) ? 
-                                _.map(newInstance, function(instance) {return instance.toJSON();}) : 
-                                newInstance.toJSON();
+            var publishData = _.isArray(newInstance) ?
+                _.map(newInstance, function(instance) {
+                    return instance.toJSON();
+                }) :
+                newInstance.toJSON();
             Model.publishCreate(publishData, !req.options.mirror && req);
         }
 

@@ -17,7 +17,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 @demo demo/paper-icon-button-light.html
 -->
 <dom-module id="paper-icon-button-light">
-  <template strip-whitespace>
+    <template strip-whitespace>
     <style>
       :host {
         vertical-align: middle;
@@ -51,41 +51,41 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
     <content></content>
   </template>
-  <script>
-    Polymer({
-      is: 'paper-icon-button-light',
-      extends: 'button',
+    <script>
+        Polymer({
+            is: 'paper-icon-button-light',
+            extends: 'button',
 
-      behaviors: [
-        Polymer.PaperRippleBehavior
-      ],
+            behaviors: [
+                Polymer.PaperRippleBehavior
+            ],
 
-      listeners: {
-        'down': '_rippleDown',
-        'up': '_rippleUp',
-        'focus': '_rippleDown',
-        'blur': '_rippleUp',
-      },
+            listeners: {
+                'down': '_rippleDown',
+                'up': '_rippleUp',
+                'focus': '_rippleDown',
+                'blur': '_rippleUp',
+            },
 
-      _rippleDown: function() {
-        this.getRipple().downAction();
-      },
+            _rippleDown: function() {
+                this.getRipple().downAction();
+            },
 
-      _rippleUp: function() {
-        this.getRipple().upAction();
-      },
+            _rippleUp: function() {
+                this.getRipple().upAction();
+            },
 
-      /**
-       * @param {...*} var_args
-       */
-      ensureRipple: function(var_args) {
-        var lastRipple = this._ripple;
-        Polymer.PaperRippleBehavior.ensureRipple.apply(this, arguments);
-        if (this._ripple && this._ripple !== lastRipple) {
-          this._ripple.center = true;
-          this._ripple.classList.add('circle');
-        }
-      }
-    });
-  </script>
+            /**
+             * @param {...*} var_args
+             */
+            ensureRipple: function(var_args) {
+                var lastRipple = this._ripple;
+                Polymer.PaperRippleBehavior.ensureRipple.apply(this, arguments);
+                if (this._ripple && this._ripple !== lastRipple) {
+                    this._ripple.center = true;
+                    this._ripple.classList.add('circle');
+                }
+            }
+        });
+    </script>
 </dom-module>

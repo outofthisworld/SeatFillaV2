@@ -8,7 +8,10 @@ module.exports = {
     //Subscribes operators to the live chat channel
     operatorConnect(req, res) {
         sails.sockets.join(req, 'ChatOperators');
-        return res.json({ status: 200, message: 'Succesfully connected to operator channel' });
+        return res.json({
+            status: 200,
+            message: 'Succesfully connected to operator channel'
+        });
     },
     //TODO: create reqIsSocket policy
     //TODO: add ChatOperatorPolicy
@@ -16,7 +19,10 @@ module.exports = {
     //Disconnects operators from the live chat channel
     operatorDisconnect(req, res) {
         sails.sockets.leave(req, 'ChatOperators');
-        return res.json({ status: 200, message: 'Succesfully disconnected from operator channel' });
+        return res.json({
+            status: 200,
+            message: 'Succesfully disconnected from operator channel'
+        });
     },
     //TODO: create reqIsSocket policy
     //TODO: add ChatOperatorPolicy
@@ -26,9 +32,15 @@ module.exports = {
         socketID = req.param('socket');
         LiveChat.destroy(socketID).exec(function(err) {
             if (err) {
-                return res.json({ status: 500, message: 'Error closing conversation, maybe its already closed?' });
+                return res.json({
+                    status: 500,
+                    message: 'Error closing conversation, maybe its already closed?'
+                });
             }
-            return res.json({ status: 200, message: 'Succesfully closed conversation' });
+            return res.json({
+                status: 200,
+                message: 'Succesfully closed conversation'
+            });
         });
         sails.broadcast(socketID, 'ConversationClosed', {
             status: 200,
@@ -51,7 +63,10 @@ module.exports = {
             user: req.user && req.user.id ? req.user.id : null
         }).exec(function(err, liveChatR) {
             if (err) {
-                return res.json({ error: err, errorMessage: err.message });
+                return res.json({
+                    error: err,
+                    errorMessage: err.message
+                });
             } else {
                 //Notify watchers that a new user has connected
                 req.session.livechat = liveChatR;
@@ -63,7 +78,10 @@ module.exports = {
     //Disconnects a user from the live chat
     userDisconnect(req, res) {
         LiveChat.destroy(sails.sockets.getId(req)).exec(function(err) {
-            if (err) return res.json({ status: 500, error: err });
+            if (err) return res.json({
+                status: 500,
+                error: err
+            });
             LiveChat.publishDestroy(sails.sockets.getId(req));
             sails.broadcast(sails.sockets.getId(req), 'LiveChatDisonnect');
             return res.ok();
@@ -96,16 +114,24 @@ module.exports = {
             operator: req.user.id
         }).exec(function(err, updated) {
             if (err) {
-                return res.json({ status: 500, message: 'Error when updating socket to accept in database' });
+                return res.json({
+                    status: 500,
+                    message: 'Error when updating socket to accept in database'
+                });
             }
             sails.sockets.broadcast('ChatOperators', 'OperatorClientAccept',
 
-                { message: " Operator " + req.user.id + " accepted a client" })
+                {
+                    message: " Operator " + req.user.id + " accepted a client"
+                })
             sails.broadcast(socketToAccept, 'LiveChatAccept', {
                 operatorSocket: operatorSocket
             });
 
-            return res.json({ status: 200, message: 'succesfully accepted client' });
+            return res.json({
+                status: 200,
+                message: 'succesfully accepted client'
+            });
 
         });
     },

@@ -4,38 +4,37 @@
  */
 
 module.exports = {
-  autoPK:false,
-  attributes: {
-    apiToken:{
-      type:'string',
-      primaryKey:true,
-      notNull:true,
-      required:true
-    },
-    isVerified:{
-      type:'boolean',
-      defaultsTo:false,
-      notNull:true
-    },
-    isBlocked:{
-      type:'boolean',
-      defaultsTo:false,
-      notNull:true
-    },
-    user: {
-      model:'user',
-      notNull:true,
-      required:true
-    },
-    apiRequests:{
-      collection:'ApiRequest',
-      via:'apiUser'
-    },
-    secret:{
-      type:'string',
-      notNull:true,
-      required:true
+    autoPK: false,
+    attributes: {
+        apiToken: {
+            type: 'string',
+            primaryKey: true,
+            notNull: true,
+            required: true
+        },
+        isVerified: {
+            type: 'boolean',
+            defaultsTo: false,
+            notNull: true
+        },
+        isBlocked: {
+            type: 'boolean',
+            defaultsTo: false,
+            notNull: true
+        },
+        user: {
+            model: 'user',
+            notNull: true,
+            required: true
+        },
+        apiRequests: {
+            collection: 'ApiRequest',
+            via: 'apiUser'
+        },
+        secret: {
+            type: 'string',
+            notNull: true,
+            required: true
+        }
     }
-  }
 };
-

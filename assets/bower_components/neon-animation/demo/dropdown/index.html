@@ -9,7 +9,8 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 <html>
-  <head>
+
+<head>
     <title>neon-animated-pages demo: dropdown</title>
 
     <meta charset="utf-8">
@@ -22,8 +23,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <link rel="import" href="../../neon-animations.html">
     <link rel="import" href="animated-dropdown.html">
 
-  </head>
-  <body>
+</head>
+
+<body>
 
     <template is="dom-bind">
 
@@ -34,21 +36,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
 
     <script>
+        var scope = document.querySelector('template[is="dom-bind"]');
 
-      var scope = document.querySelector('template[is="dom-bind"]');
+        scope._onButtonClick = function(event) {
+            var dropdown = document.querySelector('#' + event.target.getAttribute('dropdown-id'));
+            if (dropdown) {
+                dropdown.show();
+            }
+        };
 
-      scope._onButtonClick = function(event) {
-        var dropdown = document.querySelector('#' + event.target.getAttribute('dropdown-id'));
-        if (dropdown) {
-          dropdown.show();
-        }
-      };
-
-      scope._onDropdownClick = function(event) {
-        event.target.hide();
-      };
-
+        scope._onDropdownClick = function(event) {
+            event.target.hide();
+        };
     </script>
 
-  </body>
+</body>
+
 </html>

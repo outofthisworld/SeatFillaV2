@@ -1,23 +1,22 @@
 <!doctype html>
 <html class="s2-docs-home">
-  <head>
+
+<head>
     {% include head.html %}
-  </head>
-  <body>
-    {% include navigation.html %}
+</head>
 
-    {{ content }}
-
-    {% include footer.html %}
+<body>
+    {% include navigation.html %} {{ content }} {% include footer.html %}
 
     <script>
-      (function () {
-        'use strict';
+        (function() {
+            'use strict';
 
-        prettyPrint();
-      })();
+            prettyPrint();
+        })();
     </script>
 
     {% include ga.html %}
-  </body>
+</body>
+
 </html>

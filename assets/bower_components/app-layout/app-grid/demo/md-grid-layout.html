@@ -10,40 +10,40 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <!doctype html>
 <html>
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
 
-  <title>Material design grid layout using app-grid</title>
+    <title>Material design grid layout using app-grid</title>
 
-  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
 
 
-  <link rel="import" href="../../../polymer/polymer.html">
-  <link rel="import" href="../../../iron-icons/iron-icons.html">
-  <link rel="import" href="../../../paper-styles/shadow.html">
-  <link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
+    <link rel="import" href="../../../polymer/polymer.html">
+    <link rel="import" href="../../../iron-icons/iron-icons.html">
+    <link rel="import" href="../../../paper-styles/shadow.html">
+    <link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
 
-  <link rel="import" href="../../app-header-layout/app-header-layout.html">
-  <link rel="import" href="../../app-scroll-effects/effects/waterfall.html">
-  <link rel="import" href="../../app-header/app-header.html">
-  <link rel="import" href="../../app-toolbar/app-toolbar.html">
-  <link rel="import" href="../app-grid-style.html">
+    <link rel="import" href="../../app-header-layout/app-header-layout.html">
+    <link rel="import" href="../../app-scroll-effects/effects/waterfall.html">
+    <link rel="import" href="../../app-header/app-header.html">
+    <link rel="import" href="../../app-toolbar/app-toolbar.html">
+    <link rel="import" href="../app-grid-style.html">
 
-  <style>
-
-    body {
-      font-family: 'Roboto', 'Noto', sans-serif;
-      background-color: #ddd;
-      margin: 0;
-    }
-
-  </style>
+    <style>
+        body {
+            font-family: 'Roboto', 'Noto', sans-serif;
+            background-color: #ddd;
+            margin: 0;
+        }
+    </style>
 
 </head>
+
 <body>
-  <dom-module id="x-grid">
-    <template>
+    <dom-module id="x-grid">
+        <template>
       <style include="app-grid-style">
 
         :host {
@@ -123,37 +123,36 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <div class="item-title">Nature [[item]]</div>
               </li>
             </template>
-          </ul>
+        </ul>
         </div>
-      </app-header-layout>
+        </app-header-layout>
 
-    </template>
+        </template>
 
-    <script>
+        <script>
+            HTMLImports.whenReady(function() {
 
-      HTMLImports.whenReady(function() {
+                Polymer({
+                    is: 'x-grid',
 
-        Polymer({
-          is: 'x-grid',
+                    attached: function() {
+                        this._updateGridStyles = this._updateGridStyles || function() {
+                            this.updateStyles();
+                        }.bind(this);
+                        window.addEventListener('resize', this._updateGridStyles);
+                    },
 
-          attached: function() {
-            this._updateGridStyles = this._updateGridStyles || function() {
-              this.updateStyles();
-            }.bind(this);
-            window.addEventListener('resize', this._updateGridStyles);
-          },
+                    detached: function() {
+                        window.removeEventListener('resize', this._updateGridStyles);
+                    }
+                });
 
-          detached: function() {
-            window.removeEventListener('resize', this._updateGridStyles);
-          }
-        });
+            });
+        </script>
+    </dom-module>
 
-      });
-
-    </script>
-  </dom-module>
-
-  <x-grid></x-grid>
+    <x-grid></x-grid>
 
 </body>
+
 </html>

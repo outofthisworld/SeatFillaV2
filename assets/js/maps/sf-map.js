@@ -99,7 +99,9 @@ var _seat_filla_map = function(options) {
         _instance.pos = options.pos;
 
         if (options.infowindow) {
-            var infoWindow = new google.maps.InfoWindow({ map: _instance.map });
+            var infoWindow = new google.maps.InfoWindow({
+                map: _instance.map
+            });
             infoWindow.setPosition(options.pos);
             infoWindow.setContent(options.infoWindowContent);
         }
@@ -198,7 +200,11 @@ var _seat_filla_map = function(options) {
                 });
             }
 
-            const obj = { marker: marker, infowindow: infowindow, data: markerOpts.data }
+            const obj = {
+                marker: marker,
+                infowindow: infowindow,
+                data: markerOpts.data
+            }
 
             if (markerOpts.markerClickAnimation) {
                 marker.addListener('click', function(event) {
@@ -280,8 +286,19 @@ var _seat_filla_map = function(options) {
     //Performs geo location
     if (!options || !options.coords) {
         (function init(cb) {
-            geolocator.config({ language: 'en', google: { version: '3', key: 'AIzaSyDDBWrH7DuCZ8wNlOXgINCtI_gT9NkDRq4' } });
-            defaultLoc = { coords: { longitude: 0, latitude: 0 } };
+            geolocator.config({
+                language: 'en',
+                google: {
+                    version: '3',
+                    key: 'AIzaSyDDBWrH7DuCZ8wNlOXgINCtI_gT9NkDRq4'
+                }
+            });
+            defaultLoc = {
+                coords: {
+                    longitude: 0,
+                    latitude: 0
+                }
+            };
             window.seatfilla.globals.geolocation.getUserLocation(function(status, result) {
                 if (status != 200 || !result) {
                     geolocator.locate(options, function(err, location) {

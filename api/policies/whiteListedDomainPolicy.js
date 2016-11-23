@@ -16,7 +16,7 @@ module.exports = function(req, res, next) {
         }
     }
 
-    sails.log.debug('(policy/whiteListedDomainPolicy.js) Invalid request made from'
-     + req.ip + ', originating domain was ' + host  + 'this is not in the acceptable range of white listed domains.');
+    sails.log.debug('(policy/whiteListedDomainPolicy.js) Invalid request made from' +
+        req.ip + ', originating domain was ' + host + 'this is not in the acceptable range of white listed domains.');
     return res.forbidden('Unknown originating domain');
 }

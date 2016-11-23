@@ -9,7 +9,8 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 <html>
-  <head>
+
+<head>
     <title>neon-animated-pages demo: load</title>
 
     <meta charset="utf-8">
@@ -23,26 +24,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <link rel="import" href="full-page.html">
 
     <style is="custom-style">
-      body {
-        overflow: hidden;
-        @apply(--layout-fullbleed);
-      }
-      full-page {
-        @apply(--layout-fit);
-      }
+        body {
+            overflow: hidden;
+            @apply(--layout-fullbleed);
+        }
+        
+        full-page {
+            @apply(--layout-fit);
+        }
     </style>
-  </head>
-  <body>
+</head>
+
+<body>
 
     <full-page></full-page>
 
     <script>
-
-      document.addEventListener('WebComponentsReady', function() {
-        document.querySelector('full-page').show();
-      });
-
+        document.addEventListener('WebComponentsReady', function() {
+            document.querySelector('full-page').show();
+        });
     </script>
 
-  </body>
+</body>
+
 </html>

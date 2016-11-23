@@ -10,7 +10,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <html>
-  <head>
+
+<head>
 
     <title>paper-tabs demo</title>
 
@@ -28,35 +29,37 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <link rel="import" href="../paper-tabs.html">
 
     <style is="custom-style" include="demo-pages-shared-styles">
-      #container {
-        max-width: 600px;
-      }
-
-      paper-tabs, paper-toolbar {
-        background-color: var(--paper-blue-900);
-        color: #fff;
-      }
+        #container {
+            max-width: 600px;
+        }
+        
+        paper-tabs,
+        paper-toolbar {
+            background-color: var(--paper-blue-900);
+            color: #fff;
+        }
     </style>
 
-  </head>
-  <body unresolved>
+</head>
+
+<body unresolved>
 
     <div id="container" class="vertical-section-container centered">
 
-      <h3>Plain <code>paper-tabs</code>.</h3>
-      <demo-snippet>
-        <template>
+        <h3>Plain <code>paper-tabs</code>.</h3>
+        <demo-snippet>
+            <template>
           <paper-tabs selected="0">
             <paper-tab>ITEM ONE</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
             <paper-tab>ITEM THREE</paper-tab>
           </paper-tabs>
         </template>
-      </demo-snippet>
+        </demo-snippet>
 
-      <h3>The <code>no-bar</code> attribute disables the selection bar.</h3>
-      <demo-snippet>
-        <template>
+        <h3>The <code>no-bar</code> attribute disables the selection bar.</h3>
+        <demo-snippet>
+            <template>
           <style is="custom-style">
             paper-tabs[no-bar] paper-tab.iron-selected {
               color: #ffff8d;
@@ -69,43 +72,39 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <paper-tab>ITEM THREE</paper-tab>
           </paper-tabs>
         </template>
-      </demo-snippet>
+        </demo-snippet>
 
-      <h3>
-        The <code>no-slide</code> attribute prevents the selection bar from
-        animating when the selection changes.
-      </h3>
-      <demo-snippet>
-        <template>
+        <h3>
+            The <code>no-slide</code> attribute prevents the selection bar from animating when the selection changes.
+        </h3>
+        <demo-snippet>
+            <template>
           <paper-tabs selected="0" no-slide>
             <paper-tab>ITEM ONE</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
             <paper-tab>ITEM THREE</paper-tab>
           </paper-tabs>
         </template>
-      </demo-snippet>
+        </demo-snippet>
 
-      <h3>
-        The <code>noink</code> attribute disables the ink ripple animation seen
-        when the user activates a tab (by clicking, tapping, etc.).
-      </h3>
-      <demo-snippet>
-        <template>
+        <h3>
+            The <code>noink</code> attribute disables the ink ripple animation seen when the user activates a tab (by clicking, tapping, etc.).
+        </h3>
+        <demo-snippet>
+            <template>
           <paper-tabs selected="0" noink>
             <paper-tab>ITEM ONE</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
             <paper-tab>ITEM THREE</paper-tab>
           </paper-tabs>
         </template>
-      </demo-snippet>
+        </demo-snippet>
 
-      <h3>
-        The <code>scrollable</code> attribute causes the tabs to scroll, rather
-        than compress, when there is not enough space. Arrow buttons appear when
-        any of the tabs are not completely visible.
-      </h3>
-      <demo-snippet>
-        <template>
+        <h3>
+            The <code>scrollable</code> attribute causes the tabs to scroll, rather than compress, when there is not enough space. Arrow buttons appear when any of the tabs are not completely visible.
+        </h3>
+        <demo-snippet>
+            <template>
           <paper-tabs selected="0" scrollable>
             <paper-tab>NUMBER ONE ITEM</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
@@ -121,14 +120,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <paper-tab>TWELFTH ITEM</paper-tab>
           </paper-tabs>
         </template>
-      </demo-snippet>
+        </demo-snippet>
 
-      <h3>
-        The <code>fit-container</code> attribute causes scrollable tabs to
-        stretch to fit their container if the tabs don't need to scroll.
-      </h3>
-      <demo-snippet>
-        <template>
+        <h3>
+            The <code>fit-container</code> attribute causes scrollable tabs to stretch to fit their container if the tabs don't need to scroll.
+        </h3>
+        <demo-snippet>
+            <template>
           <paper-tabs selected="0" scrollable fit-container>
             <paper-tab>NUMBER ONE ITEM</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
@@ -141,13 +139,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <paper-tab>THE THIRD ITEM</paper-tab>
           </paper-tabs>
         </template>
-      </demo-snippet>
+        </demo-snippet>
 
-      <h3>
-        Tab layout is affected by the writing direction of the surrounding area.
-      </h3>
-      <demo-snippet>
-        <template>
+        <h3>
+            Tab layout is affected by the writing direction of the surrounding area.
+        </h3>
+        <demo-snippet>
+            <template>
           <div dir="rtl">
             <paper-tabs selected="0">
               <paper-tab>ITEM ONE</paper-tab>
@@ -171,31 +169,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </paper-tabs>
           </div>
         </template>
-      </demo-snippet>
+        </demo-snippet>
 
-      <h3>
-        Use the <code>align-bottom</code> attribute when your tabs are
-        positioned below the content they control. The selection bar will be
-        shown at the top of the tabs.
-      </h3>
-      <demo-snippet>
-        <template>
+        <h3>
+            Use the <code>align-bottom</code> attribute when your tabs are positioned below the content they control. The selection bar will be shown at the top of the tabs.
+        </h3>
+        <demo-snippet>
+            <template>
           <paper-tabs selected="0" align-bottom>
             <paper-tab>ITEM ONE</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
             <paper-tab>ITEM THREE</paper-tab>
           </paper-tabs>
         </template>
-      </demo-snippet>
+        </demo-snippet>
 
-      <h3>
-        Use the <code>link</code> attribute when a <code>paper-tab</code>
-        contains a link. The link will fill the entire tab. <code>paper-tabs</code>
-        implements its own tabindexing and keyboard focus patterns so an anchor
-        placed inside should set <code>tabindex="-1"</code>.
-      </h3>
-      <demo-snippet>
-        <template>
+        <h3>
+            Use the <code>link</code> attribute when a <code>paper-tab</code> contains a link. The link will fill the entire tab. <code>paper-tabs</code> implements its own tabindexing and keyboard focus patterns so an anchor placed inside should set <code>tabindex="-1"</code>.
+        </h3>
+        <demo-snippet>
+            <template>
           <style is="custom-style">
             paper-tab[link] a {
               /* These mixins (from iron-flex-layout) center the link text. */
@@ -218,13 +211,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </paper-tab>
           </paper-tabs>
         </template>
-      </demo-snippet>
+        </demo-snippet>
 
-      <h3>
-        Tabs can be used in a <code>paper-toolbar</code>.
-      </h3>
-      <demo-snippet>
-        <template>
+        <h3>
+            Tabs can be used in a <code>paper-toolbar</code>.
+        </h3>
+        <demo-snippet>
+            <template>
           <style is="custom-style">
             paper-toolbar {
               --paper-toolbar-background: var(--paper-blue-900);
@@ -244,28 +237,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </paper-tabs>
           </paper-toolbar>
         </template>
-      </demo-snippet>
+        </demo-snippet>
 
-      <h3>
-        Use <code>autoselect</code> to enable automatic tab selection.
-      </h3>
-      <demo-snippet>
-        <template>
+        <h3>
+            Use <code>autoselect</code> to enable automatic tab selection.
+        </h3>
+        <demo-snippet>
+            <template>
           <paper-tabs selected="0" autoselect>
             <paper-tab>ITEM ONE</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
             <paper-tab>ITEM THREE</paper-tab>
           </paper-tabs>
         </template>
-      </demo-snippet>
+        </demo-snippet>
 
-      <h3>
-        Use <code>autoselect-delay</code> to adjust the delay between the last
-        keyup event and when the tab is automatically selected (when
-        <code>autoselect</code> is true).
-      </h3>
-      <demo-snippet>
-        <template>
+        <h3>
+            Use <code>autoselect-delay</code> to adjust the delay between the last keyup event and when the tab is automatically selected (when
+            <code>autoselect</code> is true).
+        </h3>
+        <demo-snippet>
+            <template>
           <h4>
             <code>autoselect-delay="0"</code>
           </h4>
@@ -284,13 +276,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <paper-tab>ITEM THREE</paper-tab>
           </paper-tabs>
         </template>
-      </demo-snippet>
+        </demo-snippet>
 
-      <!--
+        <!--
       Nested templates are not supported in IE, meaning they can't be used in a
       demo-snippet. See Polymer/polymer#2495 for more details.
       -->
-      <!--
+        <!--
       <h3>J. Bound Selection</h3>
       <demo-snippet>
         <template>
@@ -334,5 +326,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     </div>
 
-  </body>
+</body>
+
 </html>

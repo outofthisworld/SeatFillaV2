@@ -1,5 +1,3 @@
-
-
 module.exports = {
 
     /*
@@ -14,12 +12,14 @@ module.exports = {
 
         TODO: add isLoggedInPolicy (assumes the user is logged in)
     */
-    subscribeToUserSocketService(req,res){
+    subscribeToUserSocketService(req, res) {
         const socketId = sails.sockets.getId(req);
 
-        UserSocketService.subscribe(req.user.id, socketId).then(function(){
-            return res.ok({status:ResponseStatus.OK});
-        }).catch(function(err){
+        UserSocketService.subscribe(req.user.id, socketId).then(function() {
+            return res.ok({
+                status: ResponseStatus.OK
+            });
+        }).catch(function(err) {
             return res.badRequest();
         })
     }

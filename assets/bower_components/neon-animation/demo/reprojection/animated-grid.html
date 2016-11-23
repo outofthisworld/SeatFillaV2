@@ -15,7 +15,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../shared-styles.html">
 
 <dom-module id="animated-grid">
-  <template>
+    <template>
     <style include="shared-styles"></style>
     <style>
 
@@ -79,89 +79,106 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </div>
     </template>
 
-  </template>
+    </template>
 
 </dom-module>
 
 <script>
+    Polymer({
 
-  Polymer({
+        is: 'animated-grid',
 
-    is: 'animated-grid',
+        behaviors: [
+            Polymer.NeonSharedElementAnimatableBehavior
+        ],
 
-    behaviors: [
-      Polymer.NeonSharedElementAnimatableBehavior
-    ],
+        properties: {
 
-    properties: {
+            config: {
+                type: Array,
+                value: function() {
+                    return [{
+                        value: 1,
+                        color: 'blue'
+                    }, {
+                        value: 2,
+                        color: 'red'
+                    }, {
+                        value: 3,
+                        color: 'blue'
+                    }, {
+                        value: 4,
+                        color: 'green'
+                    }, {
+                        value: 5,
+                        color: 'yellow'
+                    }, {
+                        value: 6,
+                        color: 'blue'
+                    }, {
+                        value: 7,
+                        color: 'red'
+                    }, {
+                        value: 8,
+                        color: 'green'
+                    }, {
+                        value: 9,
+                        color: 'yellow'
+                    }, {
+                        value: 10,
+                        color: 'red'
+                    }]
+                }
+            },
 
-      config: {
-        type: Array,
-        value: function() {
-          return [
-            {value: 1, color: 'blue'},
-            {value: 2, color: 'red'},
-            {value: 3, color: 'blue'},
-            {value: 4, color: 'green'},
-            {value: 5, color: 'yellow'},
-            {value: 6, color: 'blue'},
-            {value: 7, color: 'red'},
-            {value: 8, color: 'green'},
-            {value: 9, color: 'yellow'},
-            {value: 10, color: 'red'}
-          ]
+            animationConfig: {
+                type: Object,
+                value: function() {
+                    return {
+                        'exit': [{
+                            name: 'ripple-animation',
+                            id: 'ripple',
+                            fromPage: this
+                        }, {
+                            name: 'hero-animation',
+                            id: 'hero',
+                            fromPage: this
+                        }]
+                    }
+                }
+            }
+
+        },
+
+        listeners: {
+            click: '_onClick'
+        },
+
+        _computeTileClass: function(color) {
+            return 'tile ' + color + '-300';
+        },
+
+        _onClick: function(event) {
+            var target = event.target;
+            while (target !== this && !target._templateInstance) {
+                target = target.parentNode;
+            }
+
+            // configure the page animation
+            this.sharedElements = {
+                'hero': target,
+                'ripple': target
+            };
+            this.animationConfig['exit'][0].gesture = {
+                x: event.x,
+                y: event.y
+            };
+
+            this.fire('tile-click', {
+                tile: target,
+                data: target._templateInstance.item
+            });
         }
-      },
 
-      animationConfig: {
-        type: Object,
-        value: function() {
-          return {
-            'exit': [{
-              name: 'ripple-animation',
-              id: 'ripple',
-              fromPage: this
-            }, {
-              name: 'hero-animation',
-              id: 'hero',
-              fromPage: this
-            }]
-          }
-        }
-      }
-
-    },
-
-    listeners: {
-      click: '_onClick'
-    },
-
-    _computeTileClass: function(color) {
-      return 'tile ' + color + '-300';
-    },
-
-    _onClick: function(event) {
-      var target = event.target;
-      while (target !== this && !target._templateInstance) {
-        target = target.parentNode;
-      }
-
-      // configure the page animation
-      this.sharedElements = {
-        'hero': target,
-        'ripple': target
-      };
-      this.animationConfig['exit'][0].gesture = {
-        x: event.x,
-        y: event.y
-      };
-
-      this.fire('tile-click', {
-        tile: target,
-        data: target._templateInstance.item
-      });
-    }
-
-  });
-
+    });
 </script>

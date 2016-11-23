@@ -9,7 +9,8 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 <html>
-  <head>
+
+<head>
     <title>paper-icon-button demo</title>
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
@@ -21,33 +22,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <link rel="import" href="../paper-icon-button.html">
 
     <style is="custom-style" include="demo-pages-shared-styles">
-      paper-icon-button {
-        margin-left: 10px;
-        margin-right: 10px;
-      }
+        paper-icon-button {
+            margin-left: 10px;
+            margin-right: 10px;
+        }
     </style>
-  </head>
-  <body unresolved>
+</head>
+
+<body unresolved>
     <div class="vertical-section-container centered">
-      <h3>Buttons can use iron-icons or external images, and can be disabled</h3>
-      <demo-snippet class="centered-demo">
-        <template>
+        <h3>Buttons can use iron-icons or external images, and can be disabled</h3>
+        <demo-snippet class="centered-demo">
+            <template>
           <paper-icon-button icon="favorite" title="heart"></paper-icon-button>
           <paper-icon-button src="https://assets-cdn.github.com/images/modules/logos_page/Octocat.png" alt="octocat" title="octocat"></paper-icon-button>
           <paper-icon-button disabled icon="reply" title="reply"></paper-icon-button>
         </template>
-      </demo-snippet>
+        </demo-snippet>
 
-      <h3>Buttons can hide the ripple effect using the <i>noink</i> attribute</h3>
-      <demo-snippet class="centered-demo">
-        <template>
+        <h3>Buttons can hide the ripple effect using the <i>noink</i> attribute</h3>
+        <demo-snippet class="centered-demo">
+            <template>
           <paper-icon-button noink icon="find-in-page" title="find"></paper-icon-button>
         </template>
-      </demo-snippet>
+        </demo-snippet>
 
-      <h3>Buttons can be styled using regular CSS and custom properties</h3>
-      <demo-snippet class="centered-demo">
-        <template>
+        <h3>Buttons can be styled using regular CSS and custom properties</h3>
+        <demo-snippet class="centered-demo">
+            <template>
           <style is="custom-style">
             paper-icon-button.pink {
               color: var(--paper-pink-500);
@@ -68,11 +70,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-icon-button icon="favorite" title="heart" class="pink"></paper-icon-button>
           <paper-icon-button icon="flight-takeoff" title="take off" class="blue"></paper-icon-button>
         </template>
-      </demo-snippet>
+        </demo-snippet>
 
-      <h3>Buttons can be resized</h3>
-      <demo-snippet class="centered-demo">
-        <template>
+        <h3>Buttons can be resized</h3>
+        <demo-snippet class="centered-demo">
+            <template>
           <style is="custom-style">
             paper-icon-button.giant {
               width: 100px;
@@ -81,11 +83,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </style>
           <paper-icon-button icon="alarm-on" title="wake up" class="giant"></paper-icon-button>
         </template>
-      </demo-snippet>
+        </demo-snippet>
 
-      <h3>Buttons can be used as a link</h3>
-      <demo-snippet class="centered-demo">
-        <template>
+        <h3>Buttons can be used as a link</h3>
+        <demo-snippet class="centered-demo">
+            <template>
           <a href="https://www.polymer-project.org" tabindex="-1">
             <paper-icon-button icon="polymer"></paper-icon-button>
           </a>
@@ -97,7 +99,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
           </style>
         </template>
-      </demo-snippet>
+        </demo-snippet>
     </div>
-  </body>
+</body>
+
 </html>

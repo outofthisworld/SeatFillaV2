@@ -167,7 +167,7 @@ $(window).ready(function () {
       const collectionValidators = validators
 
       function triggerValidator (func, thisArg, args) {
-        if (!(typeof func == 'function')) {
+        if (typeof func != 'function') {
           console.log('Invalid function passed to trigger validator')
           return true
         } else {
@@ -176,15 +176,17 @@ $(window).ready(function () {
         }
       }
 
+      var validator;
       if (collectionValidators && typeof collectionValidators[Symbol.iterator] === 'function') {
-        for (var i in Object.getOwnPropertyNames(collectionValidators)) {
-          const validator = collectionValidators[i]
+        for (var i in collectionValidators) {
+          validator = collectionValidators[i]
           _validData = triggerValidator(validator, null, [data])
           if (!_validData) break
         }
       } else if (Array.isArray(collectionValidators)) {
         for (var i = 0; i < collectionValidators.length; i++) {
-          const validator = collectionValidators[i]
+          validator = collectionValidators[i]
+          console.log(validator)
           _validData = triggerValidator(validator, null, [data])
           // Early return 
           if (!_validData) break
@@ -646,72 +648,103 @@ $(window).ready(function () {
       addTarget: function (options) {
         const _dataHandler = this
 
+        /* Gather our vars */
         var eventName = options.eventName,
           path = options.path,
-          query = options.query
+          query = options.params,
+          subcriteria = options.subcriteria,
+          where = options.where;
 
-        var fpath
-        if (query) {
+        /*where:{userProfile:1,isReply:false},
+        subcriteria:{limit:5:sort:'created ASC'}
+        params:{limit:10, sort:'createdAt ASC'},*/
+
+        function objectToHttpQueryString (initial, query) {
+          if (!query) return intial
+
           var qString = '?'
           for (var key in query) {
             if (key)
               qString = qString.concat('&' + key + '=' + query[key])
           }
-          fpath = path.concat(qString.trim().replace("/'/g", '').replace('/"/g', ''))
-        } else {
-          fpath = path
+          return (initial || '').toString().concat(qString.trim().replace("/'/g", '').replace('/"/g', ''))
         }
+
+        /*
+            Constructs our final endpoint path.
+        */
+        var fpath = objectToHttpQueryString(path, query)
+
+        console.log(where)
+        console.log(subcriteria)
+        if (where) fpath = fpath.concat('&where='.concat(JSON.stringify(where)))
+        if (subcriteria) fpath = fpath.concat('&subcriteria='.concat(JSON.stringify(subcriteria)))
 
         console.log('Adding target ' + fpath)
 
-        this.endPointTargets.push({
-          eventName,
-          fpath,
-          handlerFn: function (data, jwRes) {
-            function handleSocketEvent (eventName, verb, attribute, data) {
-              console.log(eventName)
-              console.log(verb)
-              console.log(attribute)
-              console.log('Recieved data:')
-              console.log(data)
+        /*
+            Handler function for incoming socket events
+        */
+        function handlerFn(data, jwRes) {
 
-              if (!eventName || !verb || !data) {
-                console.log('Invalid params passed to trigger')
-                return
-              }
+          /*Event trigger*/
+          function handleSocketEvent (eventName, verb, attribute, data) {
+            console.log(eventName)
+            console.log(verb)
+            console.log(attribute)
+            console.log('Recieved data:')
+            console.log(data)
 
-              if (attribute) {
-                _dataHandler.trigger([eventName, verb], null, [data.data || data, eventName, verb, attribute || null])
-              } else {
-                _dataHandler.trigger([eventName, verb], null, [data.data || data, eventName])
-              }
+            if (!eventName || !verb || !data) {
+              console.log('Invalid params passed to trigger')
+              return
             }
 
-            // Get the verb from the data
-            const verb = data.verb.toLowerCase()
-            const attribute = (data.attribute && data.attribute.toLowerCase()) || null
-
-            // Trigger/handle incoming data from the socket stream
-            handleSocketEvent(eventName, verb, attribute, data)
-          },
-          target: function () {
-            const _endPointTarget = this
-            return new Promise(function (resolve, reject) {
-              io.socket.get(fpath, function (data, jwRes) {
-                console.log('Receieved data from path ' + this.path)
-                console.log(data)
-                console.log('Response was:' + jwRes.statusCode)
-                if (jwRes.statusCode != 200)
-                  return reject(new Error('Invalid response code in repsonse handler'))
-
-                // Set the socket listener
-                io.socket.on(eventName, _endPointTarget.handlerFn)
-
-                return resolve(data)
-              })
-            })
+            if (attribute) {
+              _dataHandler.trigger([eventName, verb], null, [data.data || data, eventName, verb, attribute || null])
+            } else {
+              _dataHandler.trigger([eventName, verb], null, [data.data || data, eventName])
+            }
           }
-        })
+
+          // Get the verb from the data
+          const verb = data.verb.toLowerCase()
+          const attribute = (data.attribute && data.attribute.toLowerCase()) || null
+
+          // Trigger/handle incoming data from the socket stream
+          handleSocketEvent(eventName, verb, attribute, data)
+        }
+
+        /*
+            Constructs a new promise to be executed in the future
+            when loadAndListen is called on this data loader.
+        */
+        function target () {
+          const _endPointTarget = this;
+
+          return new Promise(function (resolve, reject) {
+            io.socket.get(fpath, function (data, jwRes) {
+
+              console.log('Receieved data from path ' + this.path)
+              console.log(data)
+              console.log('Response was:' + jwRes.statusCode)
+
+              if (jwRes.statusCode != 200)
+                return reject(new Error('Invalid response code in repsonse handler'))
+
+              // Listen for incoming socket events
+
+              io.socket.on(eventName, _endPointTarget.handlerFn)
+
+              return resolve(data)
+            })
+          })
+        }
+
+        /*
+            Finally add the constructed target to our container
+        */
+        this.endPointTargets.push({eventName,fpath,handlerFn,target})
       },
       loadAndListen: function () {
         const _this = this
@@ -786,10 +819,13 @@ $(window).ready(function () {
       if (options.targets && Array.isArray(options.targets)) {
         options.targets.forEach(function (t) {
           if (t.eventName && t.path) {
-            socketDataLoader.addTarget({
+            socketDataLoader.addTarget(
+            {
               eventName: t.eventName,
               path: t.path,
-              query: t.query || null
+              params: t.params || null,
+              where: t.where || null,
+              subcriteria: t.subcriteria || null
             })
           } else {
             console.log('Did not add ' + t.eventName + ' to loader paths, not path or eventName not specofied')

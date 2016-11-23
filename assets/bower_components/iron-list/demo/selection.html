@@ -10,39 +10,40 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <!doctype html>
 <html>
+
 <head>
 
-  <title>Select contacts</title>
+    <title>Select contacts</title>
 
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
 
-  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
-  <link rel="import" href="../../polymer/polymer.html">
-  <link rel="import" href="../../app-layout/app-drawer/app-drawer.html">
-  <link rel="import" href="../../app-layout/app-drawer-layout/app-drawer-layout.html">
-  <link rel="import" href="../../app-layout/app-toolbar/app-toolbar.html">
-  <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
-  <link rel="import" href="../../iron-ajax/iron-ajax.html">
-  <link rel="import" href="../../iron-icons/iron-icons.html">
-  <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
-  <link rel="import" href="../../iron-icon/iron-icon.html">
-  <link rel="import" href="../../paper-styles/color.html">
-  <link rel="import" href="../../paper-styles/typography.html">
-  <link rel="import" href="../../paper-item/paper-item.html">
-  <link rel="import" href="../../paper-badge/paper-badge.html">
+    <link rel="import" href="../../polymer/polymer.html">
+    <link rel="import" href="../../app-layout/app-drawer/app-drawer.html">
+    <link rel="import" href="../../app-layout/app-drawer-layout/app-drawer-layout.html">
+    <link rel="import" href="../../app-layout/app-toolbar/app-toolbar.html">
+    <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+    <link rel="import" href="../../iron-ajax/iron-ajax.html">
+    <link rel="import" href="../../iron-icons/iron-icons.html">
+    <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
+    <link rel="import" href="../../iron-icon/iron-icon.html">
+    <link rel="import" href="../../paper-styles/color.html">
+    <link rel="import" href="../../paper-styles/typography.html">
+    <link rel="import" href="../../paper-item/paper-item.html">
+    <link rel="import" href="../../paper-badge/paper-badge.html">
 
-  <link rel="import" href="../iron-list.html">
+    <link rel="import" href="../iron-list.html">
 
 </head>
 
 <body unresolved>
 
-  <dom-module id="x-app">
-    <template>
+    <dom-module id="x-app">
+        <template>
       <style>
 
         :host {
@@ -212,69 +213,68 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <div class="border"></div>
               </div>
             </template>
-          </iron-list>
+        </iron-list>
         </div>
         <app-drawer align="right">
-          <div class="content">
-            <app-toolbar class="white-toolbar">
-              <div main-title>[[_getFormattedCount(selectedItems.length)]] Selected contacts</div>
-            </app-toolbar>
-            <template is="dom-if" if="[[!selectedItems.length]]">
+            <div class="content">
+                <app-toolbar class="white-toolbar">
+                    <div main-title>[[_getFormattedCount(selectedItems.length)]] Selected contacts</div>
+                </app-toolbar>
+                <template is="dom-if" if="[[!selectedItems.length]]">
               <div class="no-selection">Select a contact</div>
             </template>
-            <!-- List for the selected items -->
-            <iron-list id="selectedItemsList" items="[[selectedItems]]" hidden$="[[!selectedItems.length]]">
-              <template>
+                <!-- List for the selected items -->
+                <iron-list id="selectedItemsList" items="[[selectedItems]]" hidden$="[[!selectedItems.length]]">
+                    <template>
                 <paper-item tabindex$="[[tabIndex]]" on-tap="_unselect" aria-label$="Deselect [[item.name]]">[[item.name]]</paper-item>
               </template>
-            </iron-list>
-          </div>
+                </iron-list>
+            </div>
         </app-drawer>
-      </app-drawer-layout>
+        </app-drawer-layout>
 
-    </template>
+        </template>
 
-    <script>
+        <script>
+            HTMLImports.whenReady(function() {
 
-      HTMLImports.whenReady(function() {
+                Polymer({
 
-        Polymer({
+                    is: 'x-app',
 
-          is: 'x-app',
+                    properties: {
+                        selectedItems: {
+                            type: Object
+                        }
+                    },
 
-          properties: {
-            selectedItems: {
-              type: Object
-            }
-          },
+                    iconForItem: function(isSelected) {
+                        return isSelected ? 'star' : 'star-border';
+                    },
 
-          iconForItem: function(isSelected) {
-            return isSelected ? 'star' : 'star-border';
-          },
+                    _computedClass: function(isSelected) {
+                        var classes = 'item';
+                        if (isSelected) {
+                            classes += ' selected';
+                        }
+                        return classes;
+                    },
 
-          _computedClass: function(isSelected) {
-            var classes = 'item';
-            if (isSelected) {
-              classes += ' selected';
-            }
-            return classes;
-          },
+                    _unselect: function(e) {
+                        this.$.itemsList.deselectItem(e.model.item);
+                    },
 
-          _unselect: function(e) {
-            this.$.itemsList.deselectItem(e.model.item);
-          },
+                    _getFormattedCount: function(count) {
+                        return count > 0 ? '(' + count + ')' : '';
+                    }
+                });
 
-          _getFormattedCount: function(count) {
-            return count > 0 ? '(' + count + ')' : '';
-          }
-        });
+            });
+        </script>
+    </dom-module>
 
-     });
-
-    </script>
-  </dom-module>
-
-  <x-app></x-app>
+    <x-app></x-app>
 
 </body>
+
 </html>

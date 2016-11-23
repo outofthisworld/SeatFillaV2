@@ -18,7 +18,9 @@ module.exports = {
         id: {
             type: 'string',
             primaryKey: true,
-            defaultsTo: function() { return uuid.v4(); }
+            defaultsTo: function() {
+                return uuid.v4();
+            }
         },
         facebookId: {
             type: 'string',
@@ -58,12 +60,12 @@ module.exports = {
         home: {
             type: 'string',
             required: true,
-            notNull:true
+            notNull: true
         },
         mobile: {
             type: 'string',
             required: true,
-            notNull:true
+            notNull: true
         },
         email: {
             type: 'string',
@@ -76,8 +78,8 @@ module.exports = {
             minLength: 3,
             maxLength: 20
         },
-        displayName:{
-            type:'string',
+        displayName: {
+            type: 'string',
             minLength: 3,
             maxLength: 20
         },
@@ -156,32 +158,34 @@ module.exports = {
             collection: 'UserLocation',
             via: 'user'
         },
-        hotels:{
-            collection:'Hotel',
-            via:'user'
+        hotels: {
+            collection: 'Hotel',
+            via: 'user'
         },
         //A user can have many support tickets.
         supportTickets: {
             collection: 'SupportTicket',
             via: 'user'
         },
-        flightGroups:{
-            collection:'FlightGroup',
-            via:'members'
+        flightGroups: {
+            collection: 'FlightGroup',
+            via: 'members'
         },
-        userProfile:{
-            model:'UserProfile'
+        userProfile: {
+            model: 'UserProfile'
         },
         emailConfirmed: () => {
             return this.isEmailConfirmed;
         },
         hasRole: (role) => {
-            if (this.roles.filter((r) => { r.role === role }).length > 0) {
+            if (this.roles.filter((r) => {
+                    r.role === role
+                }).length > 0) {
                 return true;
             }
             return false;
         },
-        logout(req){
+        logout(req) {
             req.logout();
         },
         verifyPassword: function(password) {
@@ -202,7 +206,7 @@ module.exports = {
     },
     //Here we will hash the pass before it enters the db..
     beforeCreate: function(attrs, cb) {
-        if(attrs.username) attrs.username.toLowerCase();
+        if (attrs.username) attrs.username.toLowerCase();
 
         if (attrs.provider === 'local') {
             bcrypt.hash(attrs.password, SALT_WORK_FACTOR, function(err, hash) {

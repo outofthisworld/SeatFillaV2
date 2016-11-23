@@ -8,15 +8,17 @@
  *
  */
 module.exports = function(req, res, next) {
-  if(req.user){
-      sails.log.debug('Succesfully passed passport polcicy');
-      return next();
-  }
+    if (req.user) {
+        sails.log.debug('Succesfully passed passport polcicy');
+        return next();
+    }
 
-  sails.log.debug('Error authenticating passport policy in passportAuth.js');
-  if(req.wantsJSON){
-    return res.badRequest({error:'User must be logged in'})
-  }else{
-    return res.redirect('/login?redirectSuccess='+req.path);
-  }
+    sails.log.debug('Error authenticating passport policy in passportAuth.js');
+    if (req.wantsJSON) {
+        return res.badRequest({
+            error: 'User must be logged in'
+        })
+    } else {
+        return res.redirect('/login?redirectSuccess=' + req.path);
+    }
 };

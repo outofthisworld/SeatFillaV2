@@ -27,7 +27,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <dom-module id="recipe-detail">
 
-  <template>
+    <template>
 
     <style>
 
@@ -164,61 +164,59 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               </div>
             </template>
 
-            <h4>Steps</h4>
+    <h4>Steps</h4>
 
-            <template is="dom-repeat" items="{{recipe.steps}}">
+    <template is="dom-repeat" items="{{recipe.steps}}">
               <div class="ingredient-item">
                 <div class="ingredient-amount">{{item.duration}}</div>
                 <div class="ingredient-name">{{item.description}}</div>
               </div>
             </template>
 
-          </div>
-        </paper-card>
+    </div>
+    </paper-card>
 
-        <paper-fab icon="{{__computeFavIcon(__favorite)}}" on-tap="__toggleFavorite"></paper-fab>
-      </div>
+    <paper-fab icon="{{__computeFavIcon(__favorite)}}" on-tap="__toggleFavorite"></paper-fab>
+    </div>
 
     </app-header-layout>
 
-  </template>
+    </template>
 
-  <script>
+    <script>
+        Polymer({
 
-  Polymer({
+            is: 'recipe-detail',
 
-    is: 'recipe-detail',
+            properties: {
 
-    properties: {
+                recipe: {
+                    type: Object,
+                    observer: '__recipeChanged'
+                },
 
-      recipe: {
-        type: Object,
-        observer: '__recipeChanged'
-      },
+                __favorite: {
+                    type: Boolean,
+                    value: false
+                }
 
-      __favorite: {
-        type: Boolean,
-        value: false
-      }
+            },
 
-    },
+            __recipeChanged: function(recipe) {
+                if (recipe) {
+                    this.style.backgroundImage = 'url(' + recipe.imageUrl + ')';
+                }
+            },
 
-    __recipeChanged: function(recipe) {
-      if (recipe) {
-        this.style.backgroundImage = 'url(' + recipe.imageUrl + ')';
-      }
-    },
+            __toggleFavorite: function(event, detail) {
+                this.__favorite = !this.__favorite;
+            },
 
-    __toggleFavorite: function(event, detail) {
-      this.__favorite = !this.__favorite;
-    },
+            __computeFavIcon: function(favorite) {
+                return favorite ? 'app:favorite' : 'app:favorite-border';
+            }
 
-    __computeFavIcon: function(favorite) {
-      return favorite ? 'app:favorite' : 'app:favorite-border';
-    }
-
-  });
-
-  </script>
+        });
+    </script>
 
 </dom-module>

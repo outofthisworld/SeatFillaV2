@@ -10,29 +10,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <!doctype html>
 <html>
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
 
-  <title>Responsive grid layout using app-grid-style</title>
+    <title>Responsive grid layout using app-grid-style</title>
 
-  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
 
-  <link rel="import" href="../../../polymer/polymer.html">
-  <link rel="import" href="../app-grid-style.html">
+    <link rel="import" href="../../../polymer/polymer.html">
+    <link rel="import" href="../app-grid-style.html">
 
-  <style>
-
-    body {
-      margin: 0;
-      background-color: #ddd;
-    }
-
-  </style>
+    <style>
+        body {
+            margin: 0;
+            background-color: #ddd;
+        }
+    </style>
 </head>
+
 <body>
-  <dom-module id="x-app">
-    <template>
+    <dom-module id="x-app">
+        <template>
       <style include="app-grid-style">
 
         :host {
@@ -88,37 +88,36 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <template items="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]" is="dom-repeat">
           <li class="item"></li>
         </template>
-      </ul>
+        </ul>
 
-    </template>
+        </template>
 
-    <script>
+        <script>
+            HTMLImports.whenReady(function() {
 
-      HTMLImports.whenReady(function() {
+                Polymer({
 
-        Polymer({
+                    is: 'x-app',
 
-          is: 'x-app',
+                    attached: function() {
+                        this._updateGridStyles = this._updateGridStyles || function() {
+                            this.updateStyles();
+                        }.bind(this);
+                        window.addEventListener('resize', this._updateGridStyles);
+                    },
 
-          attached: function() {
-            this._updateGridStyles = this._updateGridStyles || function() {
-              this.updateStyles();
-            }.bind(this);
-            window.addEventListener('resize', this._updateGridStyles);
-          },
+                    detached: function() {
+                        window.removeEventListener('resize', this._updateGridStyles);
+                    }
 
-          detached: function() {
-            window.removeEventListener('resize', this._updateGridStyles);
-          }
+                });
 
-        });
+            });
+        </script>
+    </dom-module>
 
-      });
-
-    </script>
-  </dom-module>
-
-  <x-app></x-app>
+    <x-app></x-app>
 
 </body>
+
 </html>

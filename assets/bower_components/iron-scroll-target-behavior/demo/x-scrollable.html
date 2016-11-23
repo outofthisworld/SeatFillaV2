@@ -12,7 +12,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../iron-scroll-target-behavior.html">
 
 <dom-module id="x-scrollable">
-  <template>
+    <template>
     <style>
       :host {
         display: block;
@@ -47,55 +47,55 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <div class="item">[[index]]</div>
     </template>
 
-  </template>
+    </template>
 
 </dom-module>
 
 <script>
-  Polymer({
+    Polymer({
 
-    is: 'x-scrollable',
+        is: 'x-scrollable',
 
-    properties: {
+        properties: {
 
-      xScrollTop: {
-        type: Number,
-        readOnly: true,
-        value: 0
-      },
+            xScrollTop: {
+                type: Number,
+                readOnly: true,
+                value: 0
+            },
 
-      xScrollLeft: {
-        type: Number,
-        readOnly: true,
-        value: 0
-      },
+            xScrollLeft: {
+                type: Number,
+                readOnly: true,
+                value: 0
+            },
 
-      itemCount: {
-        type: Number,
-        value: 200
-      }
+            itemCount: {
+                type: Number,
+                value: 200
+            }
 
-    },
+        },
 
-    behaviors: [
-      Polymer.IronScrollTargetBehavior
-    ],
+        behaviors: [
+            Polymer.IronScrollTargetBehavior
+        ],
 
-    attached: function() {
-      this._scrollHandler();
-    },
+        attached: function() {
+            this._scrollHandler();
+        },
 
-    _scrollHandler: function() {
-      this._setXScrollTop(this._scrollTop);
-      this._setXScrollLeft(this._scrollLeft);
-    },
+        _scrollHandler: function() {
+            this._setXScrollTop(this._scrollTop);
+            this._setXScrollLeft(this._scrollLeft);
+        },
 
-    _getItems: function(itemCount) {
-      var items = new Array(itemCount);
-      while (itemCount > 0) {
-        items[--itemCount] = true;
-      }
-      return items;
-    }
-  });
+        _getItems: function(itemCount) {
+            var items = new Array(itemCount);
+            while (itemCount > 0) {
+                items[--itemCount] = true;
+            }
+            return items;
+        }
+    });
 </script>

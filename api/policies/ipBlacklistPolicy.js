@@ -1,5 +1,7 @@
 module.exports = function(req, res, next) {
-    IpBlacklist.find({ ip: req.ip }).then(function(result) {
+    IpBlacklist.find({
+        ip: req.ip
+    }).then(function(result) {
         if (!result) {
             return next();
         } else {

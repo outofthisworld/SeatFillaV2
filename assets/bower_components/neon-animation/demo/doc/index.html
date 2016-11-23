@@ -9,7 +9,8 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 <html>
-  <head>
+
+<head>
     <title>neon-animation demo: basic</title>
 
     <meta charset="utf-8">
@@ -21,13 +22,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <link rel="import" href="my-animatable.html">
     <link rel="import" href="my-dialog.html">
 
-  </head>
-  <style>
+</head>
+<style>
     my-animatable {
-      margin-top: 50px;
+        margin-top: 50px;
     }
-  </style>
-  <body>
+</style>
+
+<body>
 
     <template is="dom-bind">
 
@@ -43,28 +45,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
 
     <script>
+        var scope = document.querySelector('template[is="dom-bind"]');
 
-      var scope = document.querySelector('template[is="dom-bind"]');
+        scope._onCircleButtonClick = function(event) {
+            var node = document.querySelector('my-animatable');
+            if (node) {
+                node.animate();
+            }
+        };
 
-      scope._onCircleButtonClick = function(event) {
-        var node = document.querySelector('my-animatable');
-        if (node) {
-          node.animate();
-        }
-      };
-
-      scope._onDialogButtonClick = function(event) {
-        var node = document.querySelector('my-dialog');
-        if (node) {
-          if (node.opened) {
-            node.hide();
-          } else {
-            node.show();
-          }
-        }
-      };
-
+        scope._onDialogButtonClick = function(event) {
+            var node = document.querySelector('my-dialog');
+            if (node) {
+                if (node.opened) {
+                    node.hide();
+                } else {
+                    node.show();
+                }
+            }
+        };
     </script>
 
-  </body>
+</body>
+
 </html>

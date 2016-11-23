@@ -12,35 +12,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../iron-validatable-behavior.html">
 
 <script>
+    Polymer({
 
-  Polymer({
+        is: 'validatable-input',
 
-    is: 'validatable-input',
+        extends: 'input',
 
-    extends: 'input',
+        properties: {
 
-    properties: {
+            invalid: {
+                notify: true,
+                type: Boolean,
+                value: false
+            }
 
-      invalid: {
-        notify: true,
-        type: Boolean,
-        value: false
-      }
+        },
 
-    },
+        behaviors: [
+            Polymer.IronValidatableBehavior
+        ],
 
-    behaviors: [
-      Polymer.IronValidatableBehavior
-    ],
+        listeners: {
+            'input': '_onInput'
+        },
 
-    listeners: {
-      'input': '_onInput'
-    },
+        _onInput: function(event) {
+            this.invalid = !this.validate(event.target.value);
+        }
 
-    _onInput: function(event) {
-      this.invalid = !this.validate(event.target.value);
-    }
-
-  });
-
+    });
 </script>

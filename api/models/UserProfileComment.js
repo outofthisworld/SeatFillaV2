@@ -1,24 +1,24 @@
 module.exports = {
-    attributes:{
-        message:{
-            type:'string',
-            defaultsTo:''
+    attributes: {
+        message: {
+            type: 'string',
+            defaultsTo: ''
         },
-        userProfile:{
-            model:'UserProfile',
-            notNull:true
+        userProfile: {
+            model: 'UserProfile',
+            notNull: true
         },
-        user:{
-            model:'User',
-            notNull:true,
-            required:true
+        user: {
+            model: 'User',
+            notNull: true,
+            required: true
         },
-        isReply:{
-            type:'boolean',
-            defaultsTo:false,
+        isReply: {
+            type: 'boolean',
+            defaultsTo: false,
         },
-        replies:{
-            collection:'UserProfileComment',
+        replies: {
+            collection: 'UserProfileComment',
             via: 'id'
         }
     }

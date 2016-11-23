@@ -1,5 +1,5 @@
 module.exports = {
-    invite_friends(req,res){
+    invite_friends(req, res) {
 
     }
 }

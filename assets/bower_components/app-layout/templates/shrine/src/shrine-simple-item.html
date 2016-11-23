@@ -12,7 +12,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <dom-module id="shrine-simple-item">
 
-  <template>
+    <template>
 
     <style>
 
@@ -61,22 +61,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   </template>
 
-  <script>
+    <script>
+        Polymer({
 
-  Polymer({
+            is: 'shrine-simple-item',
 
-    is: 'shrine-simple-item',
+            properties: {
 
-    properties: {
+                item: {
+                    type: Object
+                }
 
-      item: {
-        type: Object
-      }
+            }
 
-    }
-
-  });
-
-  </script>
+        });
+    </script>
 
 </dom-module>

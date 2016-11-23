@@ -13,7 +13,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <dom-module id="article-headline">
 
-  <template>
+    <template>
 
     <style>
 
@@ -48,22 +48,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   </template>
 
-  <script>
+    <script>
+        Polymer({
 
-    Polymer({
+            is: 'article-headline',
 
-      is: 'article-headline',
+            extends: 'a',
 
-      extends: 'a',
+            properties: {
 
-      properties: {
+                article: Object
 
-        article: Object
+            }
 
-      }
-
-    });
-
-  </script>
+        });
+    </script>
 
 </dom-module>

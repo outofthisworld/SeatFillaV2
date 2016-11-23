@@ -9,7 +9,8 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 <html>
-  <head>
+
+<head>
 
     <title>iron-media-query demo</title>
 
@@ -20,13 +21,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <link rel="import" href="../../paper-styles/demo-pages.html">
     <link rel="import" href="../iron-media-query.html">
 
-  </head>
-  <body>
+</head>
 
-  <div class="vertical-section vertical-section-container centered">
-    <h1>&lt;iron-media-query&gt;</h1>
+<body>
 
-    <template is="dom-bind">
+    <div class="vertical-section vertical-section-container centered">
+        <h1>&lt;iron-media-query&gt;</h1>
+
+        <template is="dom-bind">
       <style>
         .item {
           margin: 8px;
@@ -67,27 +69,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             The viewport is less than 600px wide, so the items' titles will
             not float.
           </template>
-          <template is="dom-if" if="{{wide}}">
+        <template is="dom-if" if="{{wide}}">
             The viewport is at least 600px, so the items' titles will float
             to the left.
-          </template>
-          Here's another sentence; it's not very long.
-        </div>
-      </div>
-      <div class="item" wide-layout$="{{wide}}">
+          </template> Here's another sentence; it's not very long.
+    </div>
+    </div>
+    <div class="item" wide-layout$="{{wide}}">
         <div class="title"><code>print</code> example</div>
         <div class="description">
-          <a href="http://polymer-project.org">
+            <a href="http://polymer-project.org">
             This link's destination is visible when this page is printed.
           </a>
-          <template is="dom-if" if="{{print}}">
+            <template is="dom-if" if="{{print}}">
             (http://polymer-project.org)
-          </template>
-          This is another sentence which is meant to help fill this box.
+          </template> This is another sentence which is meant to help fill this box.
         </div>
-      </div>
+    </div>
     </template>
-  </div>
+    </div>
 
-  </body>
+</body>
+
 </html>

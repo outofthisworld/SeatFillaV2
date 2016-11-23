@@ -26,7 +26,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <dom-module id="neon-animatable">
-  <template>
+    <template>
     <style>
       :host {
         display: block;
@@ -39,16 +39,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </dom-module>
 
 <script>
+    Polymer({
 
-  Polymer({
+        is: 'neon-animatable',
 
-    is: 'neon-animatable',
+        behaviors: [
+            Polymer.NeonAnimatableBehavior,
+            Polymer.IronResizableBehavior
+        ]
 
-    behaviors: [
-      Polymer.NeonAnimatableBehavior,
-      Polymer.IronResizableBehavior
-    ]
-
-  });
-
+    });
 </script>

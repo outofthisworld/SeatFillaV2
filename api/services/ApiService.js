@@ -53,7 +53,7 @@ const tokenHeaderSecretKey = 'x-seatfilla-key'
 const tokenHeaderToken = 'x-access-token'
 
 const createApiSecret = function(apiKey, sharedSecret) {
-    return  apiKey + sharedSecret
+    return apiKey + sharedSecret
 }
 
 const apiPermissions = {
@@ -104,7 +104,9 @@ module.exports = {
     // Looks up an api route via the ApiRoutes model
     locateApiRoute: function(obj) {
         return new Promise(function(resolve, reject) {
-            ApiRoutes.find({ path: obj }).exec(function(err, route) {
+            ApiRoutes.find({
+                path: obj
+            }).exec(function(err, route) {
                 if (err) {
                     sails.log.debug('An error in apiReqestPolicy.js occurred,most likely the API route is missing from the database.')
                     return reject(err)
@@ -127,7 +129,9 @@ module.exports = {
     locateApiUser: function(obj) {
         return new Promise(function(resolve, reject) {
             if (obj.token || obj.request) {
-                ApiUsers.findOne({ apiToken: obj.token || this.findApiTokenFromRequest(obj.request) })
+                ApiUsers.findOne({
+                        apiToken: obj.token || this.findApiTokenFromRequest(obj.request)
+                    })
                     .exec(function(err, user) {
                         if (err) return reject(err)
                         else return resolve(user)
@@ -173,17 +177,19 @@ module.exports = {
             return cb(new Error('Missing token or key'))
         }
 
-        this.locateApiUser({token}).then(function(apiUser){
-            if(!apiUser){
+        this.locateApiUser({
+            token
+        }).then(function(apiUser) {
+            if (!apiUser) {
                 return cb(new Error('Could not locate token: ' + token + 'in ApiService.js/verifyApiToken'))
-            }else{
+            } else {
                 // Lets verify our token... and return to the callers cb.
                 jwt.verify(token, createApiSecret(apiUser.secret, key), (err, decoded) => {
                     if (err) return cb(err)
                     else return cb(null, decoded, token, apiUser)
                 })
             }
-        }).catch(function(err){
+        }).catch(function(err) {
             return cb(err);
         })
     },
@@ -199,7 +205,7 @@ module.exports = {
                 isVerified: !requiresVerification,
                 isBlocked: false,
                 user: user.id,
-                secret:secret
+                secret: secret
             }).exec(function(err, ApiUser) {
                 if (err) return reject(err)
                 else return resolve(ApiUser)
@@ -213,7 +219,9 @@ module.exports = {
             if (!user) {
                 return Promise.reject(new Error('Could not located user when attempting to remove all API tokens'))
             }
-            ApiUsers.destroy({ user })
+            ApiUsers.destroy({
+                user
+            })
         })
     },
     removeApiUser(options) {
@@ -239,6 +247,8 @@ module.exports = {
         })
     },
     findApiTokensForUser(options) {
-        return ApiUsers.find({ user: options.id || options.req.user.id })
+        return ApiUsers.find({
+            user: options.id || options.req.user.id
+        })
     }
 }

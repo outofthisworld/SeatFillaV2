@@ -68,7 +68,7 @@ style this element.
 -->
 
 <dom-module id="paper-input">
-  <template>
+    <template>
     <style>
       :host {
         display: block;
@@ -150,21 +150,21 @@ style this element.
         <paper-input-error aria-live="assertive">[[errorMessage]]</paper-input-error>
       </template>
 
-      <template is="dom-if" if="[[charCounter]]">
+    <template is="dom-if" if="[[charCounter]]">
         <paper-input-char-counter></paper-input-char-counter>
       </template>
 
     </paper-input-container>
-  </template>
+    </template>
 </dom-module>
 
 <script>
-  Polymer({
-    is: 'paper-input',
+    Polymer({
+        is: 'paper-input',
 
-    behaviors: [
-      Polymer.IronFormElementBehavior,
-      Polymer.PaperInputBehavior
-    ]
-  });
+        behaviors: [
+            Polymer.IronFormElementBehavior,
+            Polymer.PaperInputBehavior
+        ]
+    });
 </script>

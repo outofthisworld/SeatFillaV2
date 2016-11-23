@@ -1,7 +1,7 @@
-$.fn.sfResetForm = function () {
-    return this.filter('form, :input').each(function () {
+$.fn.sfResetForm = function() {
+    return this.filter('form, :input').each(function() {
         var input = $(this);
-        
+
         // Reset the form.
         if (input.is('form')) {
             input[0].reset();
@@ -12,7 +12,7 @@ $.fn.sfResetForm = function () {
         if (input.is(':radio, :checkbox')) {
             input.prop('checked', this.defaultChecked);
         } else if (input.is('select')) {
-            input.find('option').each(function () {
+            input.find('option').each(function() {
                 $(this).prop('selected', this.defaultSelected);
             });
         } else if (this.defaultValue) {

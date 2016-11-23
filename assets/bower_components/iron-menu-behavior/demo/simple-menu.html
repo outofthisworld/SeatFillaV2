@@ -13,7 +13,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../paper-styles/color.html">
 
 <dom-module id="simple-menu">
-  <template>
+    <template>
     <style>
       .content ::content > .iron-selected {
         color: white;
@@ -30,19 +30,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </dom-module>
 
 <script>
+    (function() {
 
-(function() {
+        Polymer({
 
-  Polymer({
+            is: 'simple-menu',
 
-    is: 'simple-menu',
+            behaviors: [
+                Polymer.IronMenuBehavior
+            ]
 
-    behaviors: [
-      Polymer.IronMenuBehavior
-    ]
+        });
 
-  });
-
-})();
-
+    })();
 </script>

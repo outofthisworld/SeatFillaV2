@@ -12,7 +12,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../neon-animated-pages.html">
 
 <dom-module id="reprojected-pages">
-  <template>
+    <template>
     <style>
       neon-animated-pages {
         height: 100%;
@@ -26,20 +26,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </dom-module>
 
 <script>
+    Polymer({
 
-  Polymer({
+        is: 'reprojected-pages',
 
-    is: 'reprojected-pages',
+        properties: {
 
-    properties: {
+            selected: {
+                type: String,
+                notify: true
+            }
 
-      selected: {
-        type: String,
-        notify: true
-      }
+        }
 
-    }
-
-  });
-
+    });
 </script>

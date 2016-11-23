@@ -12,7 +12,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../paper-checked-element-behavior.html">
 
 <dom-module id="paper-radio-button">
-  <template>
+    <template>
     <style>
       :host {
         display: inline-block;
@@ -89,24 +89,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </div>
   </template>
 
-  <script>
-    Polymer({
-      behaviors: [
-        Polymer.PaperCheckedElementBehavior
-      ],
+    <script>
+        Polymer({
+            behaviors: [
+                Polymer.PaperCheckedElementBehavior
+            ],
 
-      hostAttributes: {
-        role: 'radio'
-      },
+            hostAttributes: {
+                role: 'radio'
+            },
 
-      ready: function() {
-        this.toggles = true;
-      },
+            ready: function() {
+                this.toggles = true;
+            },
 
-      _createRipple: function() {
-        this._rippleContainer = this.$.radioContainer;
-        return Polymer.PaperInkyFocusBehaviorImpl._createRipple.call(this);
-      }
-    });
-  </script>
+            _createRipple: function() {
+                this._rippleContainer = this.$.radioContainer;
+                return Polymer.PaperInkyFocusBehaviorImpl._createRipple.call(this);
+            }
+        });
+    </script>
 </dom-module>

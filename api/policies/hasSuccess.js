@@ -1,5 +1,5 @@
-module.exports = function(req,res,next){
-    if(req.session.success){
+module.exports = function(req, res, next) {
+    if (req.session.success) {
         sails.log.debug('has success');
         sails.log.debug(req.flash('success'))
         delete req.session.success;

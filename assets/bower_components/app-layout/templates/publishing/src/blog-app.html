@@ -35,7 +35,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <dom-module id="blog-app">
 
-  <template>
+    <template>
 
     <style>
 
@@ -191,46 +191,41 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <template is="dom-repeat" items="[[articles]]">
               <a name="[[item.name]]" href="#/[[item.name]]/list">{{item.title}}</a>
             </template>
-          </iron-selector>
+    </iron-selector>
 
-        </app-header-layout>
-      </app-drawer>
+    </app-header-layout>
+    </app-drawer>
 
-      <!-- main panel -->
-      <app-header-layout>
+    <!-- main panel -->
+    <app-header-layout>
 
         <app-header fixed effects="waterfall" class="main-header">
 
-          <!-- top toolbar -->
-          <app-toolbar>
-            <!-- menu button -->
-            <paper-icon-button
-                drawer-toggle
-                icon="app:menu"
-                hidden$="[[_equal(pageData.page, 'detail')]]"></paper-icon-button>
+            <!-- top toolbar -->
+            <app-toolbar>
+                <!-- menu button -->
+                <paper-icon-button drawer-toggle icon="app:menu" hidden$="[[_equal(pageData.page, 'detail')]]"></paper-icon-button>
 
-            <!-- back button -->
-            <a
-                href="#/[[categoryData.category]]/list"
-                hidden$="[[_equal(pageData.page, 'list')]]">
-              <paper-icon-button icon="app:arrow-back"></paper-icon-button>
-            </a>
-          </app-toolbar>
+                <!-- back button -->
+                <a href="#/[[categoryData.category]]/list" hidden$="[[_equal(pageData.page, 'list')]]">
+                    <paper-icon-button icon="app:arrow-back"></paper-icon-button>
+                </a>
+            </app-toolbar>
 
-          <!-- bottom toolbar -->
-          <app-toolbar class="title-toolbar main-title-toolbar">
-            <div class="title">ZUPERK&Uuml;LBLOG</div>
-          </app-toolbar>
+            <!-- bottom toolbar -->
+            <app-toolbar class="title-toolbar main-title-toolbar">
+                <div class="title">ZUPERK&Uuml;LBLOG</div>
+            </app-toolbar>
 
         </app-header>
 
         <!-- list/detail pages -->
         <iron-pages selected="[[pageData.page]]" attr-for-selected="name">
 
-          <!-- list page -->
-          <iron-pages name="list" selected="[[categoryData.category]]" attr-for-selected="name">
+            <!-- list page -->
+            <iron-pages name="list" selected="[[categoryData.category]]" attr-for-selected="name">
 
-            <template is="dom-repeat" items="[[articles]]" as="category">
+                <template is="dom-repeat" items="[[articles]]" as="category">
               <!-- category page (lazy-loaded) -->
               <template is="dom-if" if="[[_equal(category, [[categoryData.category.name]])]]">
                 <section class="category-page" name="[[category.name]]">
@@ -243,89 +238,87 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                           href="#/[[category.name]]/detail/[[article.id]]"
                           article="[[article]]"></a>
                     </template>
-                  </two-columns-grid>
-                  
+                </two-columns-grid>
+
                 </section>
-              </template>
-            </template>
+                </template>
+                </template>
 
-          </iron-pages>
+            </iron-pages>
 
-          <!-- detail page (lazy-loaded) -->
-          <template is="dom-if" if="[[_equal(pageData.page, 'detail')]]">
+            <!-- detail page (lazy-loaded) -->
+            <template is="dom-if" if="[[_equal(pageData.page, 'detail')]]">
             <article-detail name="detail" article="[[article]]"></article-detail>
           </template>
 
         </iron-pages>
 
-      </app-header-layout>
+    </app-header-layout>
 
     </app-drawer-layout>
 
-  </template>
+    </template>
 
-  <script>
+    <script>
+        Polymer({
 
-    Polymer({
+            is: 'blog-app',
 
-      is: 'blog-app',
+            properties: {
 
-      properties: {
+                /**
+                 * Articles data.
+                 */
+                articles: Object,
 
-        /**
-         * Articles data.
-         */
-        articles: Object,
+                route: Object,
 
-        route: Object,
+                subRoute: Object,
 
-        subRoute: Object,
+                subsubRoute: Object,
 
-        subsubRoute: Object,
+                categoryData: Object,
 
-        categoryData: Object,
+                pageData: Object,
 
-        pageData: Object,
+                idData: Object
 
-        idData: Object
+            },
 
-      },
+            observers: [
+                '_updateArticle(articles, categoryData.category, idData.id)'
+            ],
 
-      observers: [
-        '_updateArticle(articles, categoryData.category, idData.id)'
-      ],
+            attached: function() {
+                this.async(function() {
+                    if (!this.route.path) {
+                        this.set('route.path', '/art/list');
+                    }
+                });
+            },
 
-      attached: function() {
-        this.async(function() {
-          if (!this.route.path) {
-            this.set('route.path', '/art/list');
-          }
-        });
-      },
+            _equal: function(value1, value2) {
+                return value1 === value2;
+            },
 
-      _equal: function(value1, value2) {
-        return value1 === value2;
-      },
+            _updateArticle: function(articles, category, id) {
+                for (var i = 0, cat; cat = articles[i]; i++) {
+                    if (cat.name === category) {
+                        for (var j = 0, article; article = cat.items[j]; j++) {
+                            if (article.id === id) {
+                                this.article = article;
+                                return;
+                            }
+                        }
+                    }
+                }
+            },
 
-      _updateArticle: function(articles, category, id) {
-        for (var i=0, cat; cat=articles[i]; i++) {
-          if (cat.name === category) {
-            for (var j=0, article; article=cat.items[j]; j++) {
-              if (article.id === id) {
-                this.article = article;
-                return;
-              }
+            _drawerSelected: function() {
+                if (!this.$.drawer.persistent) this.$.drawer.close();
             }
-          }
-        }
-      },
 
-      _drawerSelected: function() {
-        if (!this.$.drawer.persistent) this.$.drawer.close();
-      }
-
-    });
-
-  </script>
+        });
+    </script>
 
 </dom-module>

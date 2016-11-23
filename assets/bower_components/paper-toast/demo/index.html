@@ -11,35 +11,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <html>
 
 <head>
-  <title>paper-toast</title>
+    <title>paper-toast</title>
 
-  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
 
-  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
-  <link rel="import" href="../paper-toast.html">
-  <link rel="import" href="../../paper-button/paper-button.html">
-  <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
-  <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../paper-toast.html">
+    <link rel="import" href="../../paper-button/paper-button.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
 
-  <style is="custom-style" include="demo-pages-shared-styles"></style>
+    <style is="custom-style" include="demo-pages-shared-styles"></style>
 
 </head>
 
 <body unresolved class="centered">
-  <h3>Toast auto-closes after 3 seconds. Only one toast per time will be visible</h3>
-  <demo-snippet class="centered-demo">
-    <template>
+    <h3>Toast auto-closes after 3 seconds. Only one toast per time will be visible</h3>
+    <demo-snippet class="centered-demo">
+        <template>
       <paper-button raised onclick="toast0.open()">Default toast</paper-button>
       <paper-toast id="toast0" text="This toast auto-closes after 3 seconds"></paper-toast>
     </template>
-  </demo-snippet>
+    </demo-snippet>
 
-  <h3>Toast does not auto-close when <code>duration</code> is negative, <code>0</code>, or <code>Infinity</code></h3>
-  <demo-snippet class="centered-demo">
-    <template>
+    <h3>Toast does not auto-close when <code>duration</code> is negative, <code>0</code>, or <code>Infinity</code></h3>
+    <demo-snippet class="centered-demo">
+        <template>
       <style>
         .yellow-button {
           text-transform: none;
@@ -53,11 +53,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-button onclick="toast1.toggle()" class="yellow-button">Close now!</paper-button>
       </paper-toast>
     </template>
-  </demo-snippet>
+    </demo-snippet>
 
-  <h3>Toast can be styled</h3>
-  <demo-snippet class="centered-demo">
-    <template>
+    <h3>Toast can be styled</h3>
+    <demo-snippet class="centered-demo">
+        <template>
       <style is="custom-style">
         #toast2 {
           --paper-toast-background-color: red;
@@ -69,11 +69,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       <paper-toast id="toast2" class="fit-bottom" text="This toast is red and fits bottom!"></paper-toast>
     </template>
-  </demo-snippet>
+    </demo-snippet>
 
-  <h3>Toast can fit into any element</h3>
-  <demo-snippet class="centered-demo">
-    <template>
+    <h3>Toast can fit into any element</h3>
+    <demo-snippet class="centered-demo">
+        <template>
       <style>
         #container {
           padding: 100px;
@@ -90,7 +90,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </script>
 
     </template>
-  </demo-snippet>
+    </demo-snippet>
 </body>
 
 </html>

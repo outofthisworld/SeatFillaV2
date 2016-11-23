@@ -14,7 +14,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <dom-module id="shrine-list">
 
-  <template>
+    <template>
 
     <style>
 
@@ -93,35 +93,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </template>
     </div>
 
-  </template>
+    </template>
 
-  <script>
+    <script>
+        Polymer({
 
-  Polymer({
+            is: 'shrine-list',
 
-    is: 'shrine-list',
+            properties: {
 
-    properties: {
+                items: {
+                    type: Array
+                },
 
-      items: {
-        type: Array
-      },
+                featuredItem: {
+                    type: Object
+                },
 
-      featuredItem: {
-        type: Object
-      },
+                section: {
+                    type: String
+                }
+            },
 
-      section: {
-        type: String
-      }
-    },
+            _sortItems: function() {
+                return Math.round(Math.random() * 3) - 1;
+            }
 
-    _sortItems: function() {
-      return Math.round(Math.random()*3) - 1;
-    }
-
-  });
-
-  </script>
+        });
+    </script>
 
 </dom-module>

@@ -11,20 +11,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../polymer/polymer.html">
 
 <dom-module id="attr-reflector">
-  <template>
+    <template>
     <div>{{someAttr}}</div>
   </template>
-  <script>
-    Polymer({
-      is: 'attr-reflector',
+    <script>
+        Polymer({
+            is: 'attr-reflector',
 
-      properties: {
-        someAttr: {
-          type: String,
-          value: "",
-          reflectToAttribute: true
-        }
-      }
-    });
-  </script>
+            properties: {
+                someAttr: {
+                    type: String,
+                    value: "",
+                    reflectToAttribute: true
+                }
+            }
+        });
+    </script>
 </dom-module>

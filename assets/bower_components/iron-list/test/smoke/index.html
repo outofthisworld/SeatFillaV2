@@ -10,24 +10,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <!doctype html>
 <html>
+
 <head>
 
-  <title>iron-list demo</title>
+    <title>iron-list demo</title>
 
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
 
-  <link rel="import" href="../../../polymer/polymer.html">
-  <link rel="import" href="../../../paper-styles/demo-pages.html">
+    <link rel="import" href="../../../polymer/polymer.html">
+    <link rel="import" href="../../../paper-styles/demo-pages.html">
 
-  <link rel="import" href="../../../iron-flex-layout/iron-flex-layout.html">
-  <link rel="import" href="../../iron-list.html">
-  <link rel="import" href="dummy-data.html">
+    <link rel="import" href="../../../iron-flex-layout/iron-flex-layout.html">
+    <link rel="import" href="../../iron-list.html">
+    <link rel="import" href="dummy-data.html">
 
-  <dom-module id="x-app">
-    <template>
+    <dom-module id="x-app">
+        <template>
       <style>
         :host {
           display: block;
@@ -120,15 +121,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     <span>{{item.name}}</span>
                     <span>{{separator}}</span>
                   </template>
-                </template>
-              </div>
-            </div>
-          </div>
         </template>
-      </iron-list>
+        </div>
+        </div>
+        </div>
+        </template>
+        </iron-list>
 
-      <iron-list id="list2" items="{{data}}">
-        <template>
+        <iron-list id="list2" items="{{data}}">
+            <template>
           <div class="item">
             <div class="picture">
               <img src="{{pictureForItem(item)}}">
@@ -148,57 +149,58 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     <span>{{item.name}}</span>
                     <span>{{separator}}</span>
                   </template>
-                </template>
-              </div>
+            </template>
             </div>
-          </div>
+            </div>
+            </div>
+            </template>
+        </iron-list>
+
         </template>
-      </iron-list>
+    </dom-module>
 
-    </template>
-  </dom-module>
+    <script>
+        HTMLImports.whenReady(function() {
 
-  <script>
+            Polymer({
 
-    HTMLImports.whenReady(function() {
+                is: 'x-app',
 
-      Polymer({
+                properties: {
+                    data: {
+                        value: window.dummyData
+                    },
+                    separator: {
+                        value: '|'
+                    },
+                    showing: {
+                        value: false
+                    }
+                },
+                pictureForItem: function(item) {
+                    return item.picture + '/' + item.guid.slice(0, 6);
+                },
+                iconForItem: function(item) {
+                    return item.gender == 'female' ? 'star' : 'star-outline';
+                }
+            });
 
-        is: 'x-app',
+        });
+    </script>
 
-        properties: {
-          data: {
-            value: window.dummyData
-          },
-          separator: {
-            value: '|'
-          },
-          showing: {
-            value: false
-          }
-        },
-        pictureForItem: function(item) {
-          return item.picture + '/' + item.guid.slice(0,6);
-        },
-        iconForItem: function(item) {
-          return item.gender == 'female' ? 'star' : 'star-outline';
+    <style is="custom-style">
+        body,
+        x-app {
+            @apply(--layout-fit);
         }
-      });
-
-    });
-
-  </script>
-
-  <style is="custom-style">
-    body, x-app {
-      @apply(--layout-fit);
-    }
-  </style>
+    </style>
 
 </head>
+
 <body unresolved>
 
-  <x-app></x-app>
+    <x-app></x-app>
 
 </body>
+
 </html>

@@ -10,48 +10,52 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <html>
+
 <head>
 
-  <title>iron-flex-layout demo</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iron-flex-layout demo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
-  <link rel="import" href="../../paper-styles/demo-pages.html">
-  <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
-  <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
-  <link rel="import" href="../iron-flex-layout.html">
+    <link rel="import" href="../../paper-styles/demo-pages.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../iron-flex-layout.html">
 
-  <style is="custom-style" include="demo-pages-shared-styles">
-    demo-snippet {
-      --demo-snippet-demo: {
-        padding: 0;
-      }
-    }
-    .container {
-      background-color: #ccc;
-      padding: 5px;
-      margin: 0;
-    }
-    .container > div {
-      padding: 15px;
-      margin: 5px;
-      background-color: white;
-      min-height: 20px;
-    }
-
-    .vertical-section-container {
-      max-width: 700px
-    }
-  </style>
+    <style is="custom-style" include="demo-pages-shared-styles">
+        demo-snippet {
+            --demo-snippet-demo: {
+                padding: 0;
+            }
+        }
+        
+        .container {
+            background-color: #ccc;
+            padding: 5px;
+            margin: 0;
+        }
+        
+        .container>div {
+            padding: 15px;
+            margin: 5px;
+            background-color: white;
+            min-height: 20px;
+        }
+        
+        .vertical-section-container {
+            max-width: 700px
+        }
+    </style>
 
 </head>
+
 <body unresolved class="fullbleed">
-  <div class="vertical-section-container centered">
-    <h4>Horizontal and vertical layout</h4>
-    <demo-snippet>
-      <template>
+    <div class="vertical-section-container centered">
+        <h4>Horizontal and vertical layout</h4>
+        <demo-snippet>
+            <template>
         <style is="custom-style">
           .flex {
             @apply(--layout-horizontal);
@@ -63,11 +67,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div>three</div>
         </div>
       </template>
-    </demo-snippet>
+        </demo-snippet>
 
-    <h4>Flexible children</h4>
-    <demo-snippet>
-      <template>
+        <h4>Flexible children</h4>
+        <demo-snippet>
+            <template>
         <style is="custom-style">
           .flex-horizontal {
             @apply(--layout-horizontal);
@@ -83,11 +87,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div>three</div>
         </div>
       </template>
-    </demo-snippet>
+        </demo-snippet>
 
-    <h4>Flexible children in vertical layouts</h4>
-    <demo-snippet>
-      <template>
+        <h4>Flexible children in vertical layouts</h4>
+        <demo-snippet>
+            <template>
         <style is="custom-style">
           .flex-vertical {
             @apply(--layout-vertical);
@@ -104,11 +108,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div>three</div>
         </div>
       </template>
-    </demo-snippet>
+        </demo-snippet>
 
-    <h4>Flex ratios</h4>
-    <demo-snippet>
-      <template>
+        <h4>Flex ratios</h4>
+        <demo-snippet>
+            <template>
         <style is="custom-style">
           .flex-horizontal-with-ratios {
             @apply(--layout-horizontal);
@@ -130,11 +134,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div class="flex2child">three</div>
         </div>
       </template>
-    </demo-snippet>
+        </demo-snippet>
 
-    <h4>Cross-axis stretch alignment (default)</h4>
-    <demo-snippet>
-      <template>
+        <h4>Cross-axis stretch alignment (default)</h4>
+        <demo-snippet>
+            <template>
         <style is="custom-style">
           .flex-stretch-align {
             @apply(--layout-horizontal);
@@ -146,11 +150,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div>stretch</div>
         </div>
       </template>
-    </demo-snippet>
+        </demo-snippet>
 
-    <h4>Cross-axis center alignment</h4>
-    <demo-snippet>
-      <template>
+        <h4>Cross-axis center alignment</h4>
+        <demo-snippet>
+            <template>
         <style is="custom-style">
           .flex-center-align {
             @apply(--layout-horizontal);
@@ -163,11 +167,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div>center</div>
         </div>
       </template>
-    </demo-snippet>
+        </demo-snippet>
 
-    <h4>Cross-axis start alignment</h4>
-    <demo-snippet>
-      <template>
+        <h4>Cross-axis start alignment</h4>
+        <demo-snippet>
+            <template>
         <style is="custom-style">
           .flex-start-align {
             @apply(--layout-horizontal);
@@ -180,11 +184,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div>start</div>
         </div>
       </template>
-    </demo-snippet>
+        </demo-snippet>
 
-    <h4>Cross-axis end alignment</h4>
-    <demo-snippet>
-      <template>
+        <h4>Cross-axis end alignment</h4>
+        <demo-snippet>
+            <template>
         <style is="custom-style">
           .flex-end-align {
             @apply(--layout-horizontal);
@@ -197,11 +201,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div>end</div>
         </div>
       </template>
-    </demo-snippet>
+        </demo-snippet>
 
-    <h4>Justification, start justified</h4>
-    <demo-snippet>
-      <template>
+        <h4>Justification, start justified</h4>
+        <demo-snippet>
+            <template>
         <style is="custom-style">
           .flex-start-justified {
             @apply(--layout-horizontal);
@@ -213,11 +217,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div>start-justified</div>
         </div>
       </template>
-    </demo-snippet>
+        </demo-snippet>
 
-    <h4>Justification, start justified</h4>
-    <demo-snippet>
-      <template>
+        <h4>Justification, start justified</h4>
+        <demo-snippet>
+            <template>
         <style is="custom-style">
           .flex-center-justified {
             @apply(--layout-horizontal);
@@ -229,11 +233,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div>center-justified</div>
         </div>
       </template>
-    </demo-snippet>
+        </demo-snippet>
 
-    <h4>Justification, end justified</h4>
-    <demo-snippet>
-      <template>
+        <h4>Justification, end justified</h4>
+        <demo-snippet>
+            <template>
         <style is="custom-style">
           .flex-end-justified {
             @apply(--layout-horizontal);
@@ -245,11 +249,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div>end-justified</div>
         </div>
       </template>
-    </demo-snippet>
+        </demo-snippet>
 
-    <h4>Justification, equal space between elements</h4>
-    <demo-snippet>
-      <template>
+        <h4>Justification, equal space between elements</h4>
+        <demo-snippet>
+            <template>
         <style is="custom-style">
           .flex-equal-justified {
             @apply(--layout-horizontal);
@@ -263,11 +267,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div>justified</div>
         </div>
       </template>
-    </demo-snippet>
+        </demo-snippet>
 
-    <h4>Justification, equal space around each element</h4>
-    <demo-snippet>
-      <template>
+        <h4>Justification, equal space around each element</h4>
+        <demo-snippet>
+            <template>
         <style is="custom-style">
           .flex-equal-around-justified {
             @apply(--layout-horizontal);
@@ -280,11 +284,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div>around-justified</div>
         </div>
       </template>
-    </demo-snippet>
+        </demo-snippet>
 
-    <h4>Self alignment</h4>
-    <demo-snippet>
-      <template>
+        <h4>Self alignment</h4>
+        <demo-snippet>
+            <template>
         <style is="custom-style">
           .flex-self-align {
             @apply(--layout-horizontal);
@@ -315,11 +319,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div class="child4">four</div>
         </div>
       </template>
-    </demo-snippet>
+        </demo-snippet>
 
-    <h4>Wrapping</h4>
-    <demo-snippet>
-      <template>
+        <h4>Wrapping</h4>
+        <demo-snippet>
+            <template>
         <style is="custom-style">
           .flex-wrap {
             @apply(--layout-horizontal);
@@ -335,11 +339,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div>four</div>
         </div>
       </template>
-    </demo-snippet>
+        </demo-snippet>
 
-    <h4>Reversed layouts</h4>
-    <demo-snippet>
-      <template>
+        <h4>Reversed layouts</h4>
+        <demo-snippet>
+            <template>
         <style is="custom-style">
           .flex-reversed {
             @apply(--layout-horizontal-reverse);
@@ -353,11 +357,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div>four</div>
         </div>
       </template>
-    </demo-snippet>
+        </demo-snippet>
 
-    <h4>General purpose rules</h4>
-    <demo-snippet>
-      <template>
+        <h4>General purpose rules</h4>
+        <demo-snippet>
+            <template>
         <style is="custom-style">
           .general {
             width: 100%;
@@ -390,7 +394,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </div>
         </div>
       </template>
-    </demo-snippet>
-  </div>
+        </demo-snippet>
+    </div>
 </body>
+
 </html>

@@ -13,7 +13,10 @@ module.exports = function(req, res, next) {
       return next();
   }
 
-
   sails.log.debug('Error authenticating passport policy in passportAuth.js');
-  return res.redirect('/login?redirectSuccess='+req.path);
+  if(req.wantsJSON){
+    return res.badRequest({error:'User must be logged in'})
+  }else{
+    return res.redirect('/login?redirectSuccess='+req.path);
+  }
 };

@@ -103,6 +103,11 @@ module.exports = {
 
       and append the string 'Invalid input for field : '
   */
+
+isWaterlineError(err){
+    return err && err.error == 'E_VALIDATION' && err.ValidationError && err.invalidAttributes;
+},
+
 friendlyWaterlineError(validationError) {
     sails.log.debug('error: ' +JSON.stringify(validationError))
     if(!validationError || (!validationError.error == 'E_VALIDATION' && !validationError.ValidationError) || !validationError.invalidAttributes) //Just return a friendly response, we can't format the errors

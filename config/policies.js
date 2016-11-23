@@ -116,15 +116,16 @@ module.exports.policies = {
     FeedController:{
         index:'viewProfilePolicy'
     },
+    UserProfileCommentController:{
+        'create':['passportAuth','setUserPolicy'],
+        'add':['passportAuth','setUserPolicy']
+    },
     UserProfileController:{
         '*':'viewProfilePolicy',
         'api':['passportAuth','viewProfilePolicy','isOwnProfilePolicy'],
         'providerSection':['passportAuth','viewProfilePolicy','isOwnProfilePolicy'],
         'findOneByUser':['viewProfilePolicy'],
         'flightScheduling':['passportAuth','viewProfilePolicy']
-    },
-    UserProfileComment:{
-        '*':true,
     },
     UserSettings:{
         '*':false,

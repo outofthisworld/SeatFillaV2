@@ -33,24 +33,16 @@ module.exports = function createRecord (req, eventObj) {
       sails.log.debug(req.options)
 
       return _find(req).then(function (data) {
-        data = data[0]
+        
+        if(data && Array.isArray(data))
+          data = data[0]
 
         var publishData = data
-
+        sails.log.debug('Data from find:')
+        sails.log.debug(JSON.stringify(publishData))
+     
         const promise = function (data) {
-          // Make sure data is JSON-serializable before publishing            
-          publishData = _.isArray(data) ?
-            _.map(data, function (instance) {
-              return instance.toJSON()
-            }) : data.toJSON()
-
-          sails.log.debug('Publishing create..')
-          sails.log.debug('Sending create event to all members in room : ' + eventName)
-          sails.log.debug('Event name was ' + eventName + '.create')
-
-          sails.sockets.broadcast(eventName, eventName + '.create', publishData)
           Model.publishCreate(publishData, !req.options.mirror && req)
-
           return data;
         }
 

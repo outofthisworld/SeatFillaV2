@@ -21,6 +21,7 @@
     <script src="/bower_components/jsRender/jsrender.min.js"></script>
     <script src="/bower_components/moment/min/moment-with-locales.min.js"></script>
     <script src="/js/dependencies/airport-data2.js"></script>
+    <script src="/js/dependencies/ajax-form.js"></script>
     <script src="/js/dependencies/chat.js"></script>
     <script src="/js/dependencies/device.min.js"></script>
     <script src="/js/dependencies/facebook.js"></script>
@@ -61,11 +62,12 @@
     <!--STYLES END-->
            
 <script>
-
-$(document).ready(function(){
- $.lazyLoadScripts({},function(err){
+$(window).ready(function(){
+  $.lazyLoadScripts({},function(err){
     if(err) alert('Error loading scripts')
- })
+  })
+})
+$(document).ready(function(){
   $('.nav-tabs a[data-page]').on('click',function(){
       const target = $(this).attr('data-page')
       if(!target) return;
@@ -76,7 +78,7 @@ $(document).ready(function(){
       $(this).parent().addClass('active')
       const container = $(this).parent().parent().attr('data-container')
       if(container){
-         $(container).html("")
+        $(container).html("")
         $(container).load(target,function(res,ts,xhr){
             
             if(xhr.status != 200){
@@ -93,7 +95,7 @@ $(document).ready(function(){
 </head>
 
 <body>
-   <%- partial ('../partials/nav.ejs') %>
+<%- partial ('../partials/nav.ejs') %>
    
 <div class="container-fluid profile-cont">
 	<div class="row" style="background-color:#2196F3;color:black;padding:20px;">
@@ -205,11 +207,9 @@ $(document).ready(function(){
     </div>
 
 </div>
-
-		
-			        
-            <!-- FLIGHT CIRCLE FRIENDS -->
-            <div class="panel-heading text-black">Links</div>
+        
+    <!-- FLIGHT CIRCLE FRIENDS -->
+     <div class="panel-heading text-black">Links</div>
             <div class="flight-circle-friends" style="padding:5px;"> 
             <div class="row">
                 <div class="col-xs-2 col-sm-2 col-md-4">
@@ -273,11 +273,8 @@ $(document).ready(function(){
                     </a>
                 </div>
             </div> <!--row-->  
-         </div>
-
-            
+         </div>    
 		</div>
-
     </div>
 </div>
 	</div><!-- /.navbar-collapse -->
@@ -288,16 +285,12 @@ $(document).ready(function(){
           </div>
         </div>
     </div>
+</div>	
 </div>
-
-     
-	
-  	
-
-  	</div>
  
 
  <%- partial ('../partials/toast.ejs') %>
- 
+ <div style="display:hidden;" data-attr-lazyload-sync="" data-attr-src="/scripts/dom-reactor.js"></div>
+ <div style="display:hidden;" data-attr-lazyload-sync="" data-attr-src="/scripts/user-profile.js"></div>
 </body>
 </html>

@@ -26,7 +26,7 @@ var async = require('async');
  * @option {String} alias  - the name of the association attribute (aka "alias")
  */
 
-module.exports = function addToCollection (req, res) {
+module.exports = function addToCollection (req, res, options) {
 
   // Ensure a model and alias can be deduced from the request.
   var Model = actionUtil.parseModel(req);
@@ -161,22 +161,52 @@ module.exports = function addToCollection (req, res) {
       var isDuplicateInsertError = (err && typeof err === 'object' && err.length && err[0] && err[0].type === 'insert');
       if (err && !isDuplicateInsertError) return res.negotiate(err);
 
-      // Only broadcast an update if this isn't a duplicate `add`
-      // (otherwise connected clients will see duplicates)
-      if (!isDuplicateInsertError && req._sails.hooks.pubsub) {
-
-        // Subscribe to the model you're adding to, if this was a socket request
-        if (req.isSocket) { Model.subscribe(req, async_data.parent); }
-          // Publish to subscribed sockets
-        Model.publishAdd(async_data.parent[Model.primaryKey], relation, async_data.actualChildPkValue, !req.options.mirror && req, {noReverse: createdChild});
-      }
-
       // Finally, look up the parent record again and populate the relevant collection.
       // TODO: populateRequest
       Model.findOne(parentPk).populate(relation).exec(function(err, matchingRecord) {
+        sails.log.debug('Matching record: ')
+        sails.log.debug(matchingRecord);
         if (err) return res.serverError(err);
         if (!matchingRecord) return res.serverError();
         if (!matchingRecord[relation]) return res.serverError();
+
+
+        // Only broadcast an update if this isn't a duplicate `add`
+        // (otherwise connected clients will see duplicates)
+        if (!isDuplicateInsertError && req._sails.hooks.pubsub) {
+
+          // Subscribe to the model you're adding to, if this was a socket request
+          if (req.isSocket) { Model.subscribe(req, async_data.parent); }
+            // Publish to subscribed sockets
+
+          matchingRecord[relation].find(function(addedRecord){
+              return addedRecord[childPkAttr] == async_data.actualChildPkValue
+            })
+
+          const finalRec = matchingRecord[relation].find(function(addedRecord){
+              return addedRecord[childPkAttr] == async_data.actualChildPkValue;
+          });
+
+          if(!finalRec) return res.serverError();
+
+          if(options && options.on  && options.on.beforeSendToSocket && typeof options.on.beforeSendToSocket == 'function'){
+              finalRec = options.on.beforeSendToSocket.call(null,finalRec,function(err,data){
+                    if(err){
+                      sails.log.error(err) 
+                      finalRec = null
+                    }else{
+                      finalRec = data;
+                    }
+              });
+          }
+
+          if(finalRec != null){
+            Model.publishAdd(async_data.parent[Model.primaryKey], relation, finalRec, !req.options.mirror && req, {noReverse: createdChild});
+          }
+        }
+
+        matchingRecord.addedRelation = relation;
+        matchingRecord.addedId = async_data.actualChildPkValue;
         return res.ok(matchingRecord);
       });
     });

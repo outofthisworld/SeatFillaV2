@@ -3,12 +3,11 @@ const _create = require('../out/create')
 
 module.exports = {
   find(req, res) {
+    sails.log.debug('Finding all comments ')
+    sails.log.debug(req.allParams())
     return _find(req, res).then(function (userProfileComments) {
       if (!userProfileComments || userProfileComments.length == 0) {
-        res.ok({
-          status: ResponseStatus.OK,
-          userProfileComments: []
-        })
+        res.ok([])
       }
 
       async.auto({
@@ -96,33 +95,22 @@ module.exports = {
       }, function (err, result) {
         if (err) {
           sails.log.error(err)
-          return res.ok({
-            status: ResponseStatus.SERVER_ERROR,
-            userProfileComments: []
-          })
+          return res.serverError();
         } else {
-          res.ok({
-            status: ResponseStatus.OK,
-            userProfileComments: result.findUserProfileCommentReplyUserProfiles
-          })
+          res.ok(result.findUserProfileCommentReplyUserProfiles)
         }
       })
     }).catch(function (err) {
       sails.log.error(err)
-      return res.ok({
-        status: ResponseStatus.SERVER_ERROR,
-        userProfileComments: [],
-        error: err
-      })
+      return res.serverError();
     })
   },
+  /*
+  passportAuthpolicy,
+  setUserPolicy
+  */
   create(req,res){
-    if(!req.user){
-        return res.ok({status:ResponseStatus.CLIENT_BAD_REQUEST,
-         errors:['User must be logged in']})
-    }
-
-    req.setParam('user',req.user.id);
+    req.setParam('user', req.user.id);
     const user = req.user
     return _create(req,{
           on: {
@@ -136,15 +124,31 @@ module.exports = {
     }).then(function(created){
       return res.ok({status:ResponseStatus.OK})
     }).catch(function(err){
-      sails.log.error(err);
-      return res.ok({status:ResponseStatus.SERVER_ERROR, errors:[err]})
+        sails.log.error(err);
+      if(require('../utils/ErrorUtils').isWaterlineError(err)){
+           return res.badRequest({status:ResponseStatus.BAD_REQUEST, 
+             error: require('../utils/ErrorUtils').friendlyWaterlineError(err)})
+      }else{
+           return res.serverError({status:ResponseStatus.SERVER_ERROR, errors:[err]})
+      }
     })
+  },
+  add(req,res){
+    require('../out/add')(req,res,{
+      on:{
+        beforeSendToSocket(data,callback){
+          sails.log.debug(data)
+          data.user = req.user
+          return callback(null,data);
+        }
+      }
+    });
   },
   /*
     Make sure the user is logged in.
     
   */
-  replyToComment(req, res) {
+  /*replyToComment(req, res) {
     if(!req.user){
       return res.ok({status:ResponseStatus.CLIENT_BAD_REQUEST,
          errors:['User must be logged in']})
@@ -202,5 +206,5 @@ module.exports = {
           })
         })
       })
-  }
+  }*/
 }

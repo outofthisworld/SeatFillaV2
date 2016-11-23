@@ -36,10 +36,13 @@ $(window).ready(function () {
     $.seatfilla.userprofile.dataLoader = $.SocketDataLoader({
       domReactor:true,
       targets: [
-        {
+      {
       eventName: 'userprofilecommentreply',
       shouldListen:true,
       renderOpts: {
+        /*
+          Max number of user profile comments to be displayed before triggering a removal 
+        */
         maxDomElements: 5,
         template: '#userprofilecommentreplytemplate',
         /*
@@ -49,7 +52,6 @@ $(window).ready(function () {
           const parentCommentId = data.id;
           const container = $('#userprofilecommentcontainer')
           .find('li[data-attr-id="'+parentCommentId+'"] .userprofilecommentreplies')
-
           return container;
         },
       }
@@ -113,6 +115,13 @@ $(window).ready(function () {
             upon a new element being created and maxDomElements being exceeded.
           */
           childRemovalMethod:'last',
+
+          /*
+            The types of effects to be applied to this DOM element 
+          */
+          removeEffect:['fadeOut',1000],
+          updateEffect:[],
+          createEffect:[],
           /*
             The template and container for this type of event.
           */
@@ -152,6 +161,10 @@ $(window).ready(function () {
     $.seatfilla.userprofile.dataLoader.on('load', function () {
       const responseData = this
      
+
+      /*
+        Sends a user profile link request to the server.
+      */
       $.seatfilla.userprofile.sendUserProfileLinkRequestToServer = function () {
         $.ajax({
           url: '/userprofile/' + responseData.userprofile.id + '/userLinks',
@@ -174,6 +187,11 @@ $(window).ready(function () {
           }
         })
       }
+
+      /*
+        Returns true via a CB if this is the users own profile.
+        callback is required due the getUser being asnychronous.
+      */
       $.seatfilla.userprofile.isOwnProfile = function (cb) {
         window.seatfilla.globals.getUser(function (status, result) {
           if (status == 200 && result && result.username && result.username == currentUserProfileUser) {
@@ -183,13 +201,25 @@ $(window).ready(function () {
           }
         })
       }
+
+      /*
+        Returns all data about a users profile.
+      */
       $.seatfilla.userprofile.getProfileInfo = function () {
         return responseData
       }
+
+      /*
+        Calls back the specified callback in order to extend $.seatfilla.userprofile.
+      */
       $.seatfilla.userprofile.configure = function (callback) {
         if (callback && typeof callback == 'function') callback.call($.seatfilla.userprofile)
       }
     })
+
+     /*
+      Loads and listens for socket events.
+     */
      $.seatfilla.userprofile.dataLoader.loadAndListen()
   })
 })

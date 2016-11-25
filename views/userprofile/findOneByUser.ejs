@@ -225,7 +225,7 @@
     }
     
     .comment-box .comment-name.by-author:after {
-        content: 'autor';
+        content: 'user';
         background: #03658c;
         color: #FFF;
         font-size: 12px;
@@ -405,7 +405,7 @@
         <div class="comment-avatar"><img src="http://i9.photobucket.com/albums/a88/creaticode/avatar_2_zps7de12f8b.jpg" alt=""></div>
         <div class="comment-box">
             <div class="comment-head">
-                <h6 class="comment-name"><a href="http://creaticode.com/blog">Username</a></h6>
+                <h6 class="comment-name"><a href="http://creaticode.com/blog">{{:user.username}}</a></h6>
                 <span>{{:createdAt}}</span>
                 <i class="fa fa-reply"></i>
                 <i class="fa fa-heart"></i>
@@ -422,8 +422,8 @@
             <div class="comment-avatar"><img src="http://i9.photobucket.com/albums/a88/creaticode/avatar_1_zps8e1c80cd.jpg" alt=""></div>
             <div class="comment-box">
                 <div class="comment-head">
-                    <h6 class="comment-name by-author"><a href="http://creaticode.com/blog">{{:user.username}}</a></h6>
-                    <span>{{:createdAt}}</span>
+                    <h6 class="comment-name by-author"><a class="text-black" href="http://creaticode.com/blog">{{:user.username}}</a></h6>
+                    <span>{{:~timeSinceNow(createdAt,'days')}} day(s) ago</span>
                     <i class="fa fa-reply show-reply-panel" data-attr-reply-panel="{{:id}}"></i>
                     <i class="fa fa-heart"></i>
                 </div>
@@ -433,7 +433,7 @@
             </div>
         </div>
 
-        {{if replies.length}}
+        {{if replies && replies.length}}
         <div class="panel-heading">
         Replies
         <div class="pull-right"> Load previous </div>
@@ -447,8 +447,7 @@
                 <div class="comment-box">
                     <div class="comment-head">
                         <h6 class="comment-name"><a href="http://creaticode.com/blog">{{:user.username}}</a></h6>
-                        <span>{{:createdAt}}</span>
-                        <i class="fa fa-reply"></i>
+                        <span>{{:~timeSinceNow(createdAt,'days')}} day(s) ago</span>
                         <i class="fa fa-heart"></i>
                     </div>
                     <div class="comment-content">
@@ -456,7 +455,6 @@
                     </div>
                 </div>
             </li>
-
             {{/for}}
         </ul>
         <div class="panel hide reply-panel" data-attr-panel-id="{{:id}}">

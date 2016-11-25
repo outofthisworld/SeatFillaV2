@@ -93,16 +93,42 @@ $(window).ready(function () {
       */
       $.seatfilla.userprofile.dataLoader = $.domReactor({
         domReactor: true,
-        targets: [{
+        targets: [
+
+        /*
+          Notification target
+        */
+        {
+          /*
+            The event name for this target
+          */
           eventName: 'notifications',
+          /*
+            True if we should listen for incoming socket events under this event name.
+          */
           shouldListen: true,
+          /*
+            The path to load notifications
+          */
           path: '/notifications',
+          /*
+            Find query string
+          */
           where: {
             user: currentProfileUser.id
           },
+          /*
+            Limit,skip,sort,populate params
+          */
           params: { limit: 20, sort: 'createdAt ASC' },
+          /*
+            Handle associations
+          */
           addedto: {},
           removedfrom: {},
+          /*
+            Handle display validators
+          */
           validators: {
             created: [
               function (data) {
@@ -111,10 +137,19 @@ $(window).ready(function () {
               }
             ]
           },
+          /*
+            Render options
+          */
           renderOpts: {
+            //The max dom elements to have within the container
             maxDomElements: 20,
+            //How children elements are remove
             childRemovalMethod: 'first',
+            //How new elements are added to the container
             renderMethod: 'append',
+            /*
+              The template a container for this endpoint target.
+            */
             template: '#notificationstemplate',
             container: '#notificationscontainer',
             /*
@@ -135,17 +170,35 @@ $(window).ready(function () {
             }
           }
         },
-          {
-            eventName: 'userprofilecommentreply',
-            shouldListen: true,
+        /*
+          User profile comment reply target
+        */
+        {
+            /*
+              The event name for this target
+            */
+            eventName: 'userprofilecommentreply',    
+            /*
+               True if we should listen for socket events under this event name.
+            */
+            shouldListen: false,
             renderOpts: {
               /*
                 Max number of user profile comments to be displayed before triggering a removal 
               */
               maxDomElements: 5,
-
+              /*
+                How child elements should be removed when new ones are added
+              */
               childRemovalMethod: 'first',
+              /*
+                How children elements should be added
+              */
               renderMethod: 'append',
+
+              /*
+                The template to use for displaying data.
+              */
               template: '#userprofilecommentreplytemplate',
               /*
                 Finds the container for this comment
@@ -164,8 +217,7 @@ $(window).ready(function () {
             eventName: 'userprofilecomment',
             path: '/userprofilecomment',
             where: { userProfile: currentProfileUser.userProfile.id, isReply: false },
-            subcriteria: { limit: 5, sort: 'created ASC', alias: ['replies'], model: 'userprofilecomment' },
-            params: { limit: 10, sort: 'createdAt ASC' },
+            params: { limit: 10, sort: 'createdAt ASC', populate:'user,userProfile,replies'},
             shouldListen: true,
             /*
               Handles associations,
@@ -289,7 +341,7 @@ $(window).ready(function () {
       $.seatfilla.userprofile.dataLoader.loadAndListen()
     }
 
-    
+
     /*
        Load results asynchronously and wait until all have complete,
        then merge results and load users profile.

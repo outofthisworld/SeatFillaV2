@@ -50,6 +50,8 @@ module.exports = {
                     }, {
                         renderHtml: true
                     });
+                }).catch(function(err){
+                    return res.serverError();
                 })
         } else if (!(req.user.verifyPassword(req.param('password')))) {
             req.flash('danger', 'Invalid password confirmation');

@@ -129,6 +129,9 @@ $(window).ready(function() {
             },
             getvar: function(key) {
                 return vars[key]
+            },
+            timeSinceNow:function(isoDate, type){
+                return moment().diff(moment(isoDate), type);
             }
         })
         $.views.tags({

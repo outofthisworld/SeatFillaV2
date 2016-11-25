@@ -7,7 +7,6 @@
     for intecepting access to object properties in which java
     does not have native support for.
 */
-
 $(window).ready(function () {
   (function ($, io) {
     console.log('WIndow .ready, setting $.SocketHandler')
@@ -279,74 +278,81 @@ $(window).ready(function () {
           return
         }
 
-        // Retrieve our `render options`
-        const renderOpts = mapping.renderOpts
+        function renderData (renderOpts) {
 
-        // Retrieve the template and container for this event
-        var template = renderOpts.template
-        var container = renderOpts.container
+          // Retrieve the template and container for this event
+          var template = renderOpts.template
+          var container = renderOpts.container
 
-        console.log('Finding template : ' + template);
-        console.log('Finding container : ' + container);
+          console.log('Finding template : ' + template)
+          console.log('Finding container : ' + container)
 
-        // If they don't exist, return.
-        if (!template || !container) {
-          console.log('Could not find template or container ')
-          return
-        }
+          // If they don't exist, return.
+          if (!template || !container) {
+            console.log('Could not find template or container ')
+            return
+          }
 
-        // Find our template in the DOM. Atm, this is using JSRender templating engine,
-        // but if it were to work for any templating engine how to find the template within the dom
-        // and call it would be left down to the user letting us know.
-        const $template = $.templates(template)
+          // Find our template in the DOM. Atm, this is using JSRender templating engine,
+          // but if it were to work for any templating engine how to find the template within the dom
+          // and call it would be left down to the user letting us know.
+          const $template = $.templates(template)
 
-        // Check to see if our container is a function or a string.
-        // If its a function, more processing is required to actually find the right container and the function will
-        // be called with the data 
-        // If its a string, it is simply the ID of the container in which the new data should be rendered. 
-        const $container = (typeof container == 'function') ? $(container.call(null, data)) : $(container.toString())
+          // Check to see if our container is a function or a string.
+          // If its a function, more processing is required to actually find the right container and the function will
+          // be called with the data 
+          // If its a string, it is simply the ID of the container in which the new data should be rendered. 
+          const $container = (typeof container == 'function') ? $(container.call(null, data)) : $(container.toString())
 
-        // At this point, we should check to see that we have a valid container and template
-        // thats currently in the DOM. If we don't, then we simply return.
-        // In the future, this might be ammended in order to add support for enqueuing data to be displayed later.
-        // In ajax pages for example, cycling between pages means that certain DOM elements will be
-        // removed from the page (including templates and containers) even though this script will still be running
-        // behind the scenes in the browser, we can take advantage of this for data cannot be displayed at present
-        // and when the container comes back to into the DOM the page can `refreshed` with data awaiting in the queue.
-        if (!($container.length) || !$template) {
-          console.log('Container or template dom element does not exist')
-          return
-        }
+          // At this point, we should check to see that we have a valid container and template
+          // thats currently in the DOM. If we don't, then we simply return.
+          // In the future, this might be ammended in order to add support for enqueuing data to be displayed later.
+          // In ajax pages for example, cycling between pages means that certain DOM elements will be
+          // removed from the page (including templates and containers) even though this script will still be running
+          // behind the scenes in the browser, we can take advantage of this for data cannot be displayed at present
+          // and when the container comes back to into the DOM the page can `refreshed` with data awaiting in the queue.
+          if (!($container.length) || !$template) {
+            console.log('Container or template dom element does not exist')
+            return
+          }
 
-        if (renderOpts.beforeDataRendered && typeof renderOpts.beforeDataRendered == 'function') {
-           data = renderOpts.beforeDataRendered.call(null, data)
-        }
+          if (renderOpts.beforeDataRendered && typeof renderOpts.beforeDataRendered == 'function') {
+            data = renderOpts.beforeDataRendered.call(null, data)
+          }
 
-        // obtain the HTML structure of the data
-        const html = $template.render(data.added || data)
-        const $html = $(html)
+          // obtain the HTML structure of the data
+          const html = $template.render(data.added || data)
+          const $html = $(html)
 
-        // Check to see if we need to remove elements from the DOM according to the spcified options
-        if (renderOpts.maxDomElements && $container.children().length >= renderOpts.maxDomElements) {
-          if (renderOpts.removeFromDom && typeof renderOpts.removeFromDom == 'function') {
-            renderOpts.removeFromDom.call(null, data, $container)
+          // Check to see if we need to remove elements from the DOM according to the spcified options
+          if (renderOpts.maxDomElements && $container.children().length >= renderOpts.maxDomElements) {
+            if (renderOpts.removeFromDom && typeof renderOpts.removeFromDom == 'function') {
+              renderOpts.removeFromDom.call(null, data, $container)
+            } else {
+              this.removeFromDom($container, renderOpts)
+            }
+          }
+
+          // Trigger any callback functions associated with this event
+          if (renderOpts.addToDom && typeof renderOpts.addToDom == 'function') {
+            renderOpts.addToDom.call(null, data, $html, $container)
           } else {
-            this.removeFromDom($container, renderOpts)
+            if (renderOpts.beforeCreate && typeof renderOpts.beforeCreate == 'function') {
+              console.log('Calling before create')
+              renderOpts.beforeCreate.call(null, $html)
+            }
+            console.log('Adding element to container')
+            $html.hide()
+            // Render the data to the container
+            $container[renderOpts.renderMethod || 'append']($html.fadeIn(1000))
           }
         }
 
-        // Trigger any callback functions associated with this event
-        if (renderOpts.addToDom && typeof renderOpts.addToDom == 'function') {
-          renderOpts.addToDom.call(null, data, $html, $container)
+        // For each render option, render it.
+        if (Array.isArray(mapping.renderOpts)) {
+          mapping.renderOpts.forEach(renderData)
         } else {
-          if (renderOpts.beforeCreate && typeof renderOpts.beforeCreate == 'function') {
-            console.log('Calling before create')
-            renderOpts.beforeCreate.call(null, $html)
-          }
-          console.log('Adding element to container')
-          $html.hide()
-          // Render the data to the container
-          $container[renderOpts.renderMethod || 'append']($html.fadeIn(1000))
+          renderData(mapping.renderOpts)
         }
       } else {
         console.log('(Created event) :' + JSON.stringify(data) + ' was not validated')
@@ -451,67 +457,76 @@ $(window).ready(function () {
 
       // Retrieve our mapping
       const mapping = this.mapping[eventName]
+
+      if (!mapping.renderOpts) {
+        console.log('No render opts for ' + eventName)
+        return
+      }
+
       // Retrieve any validators associated with this event
       const validators = mapping.validators && mapping.validators.updated
 
       // Check the render conditions for this data (validates if it should be displayed or not)
       if (this.checkRenderConditions(data, validators)) {
-        if (!mapping.renderOpts) {
-          console.log('No render opts for ' + eventName)
-          rturn
+        function renderData (renderOpts) {
+          // Retrieve our template and container
+          var template = renderOpts.template
+          var container = renderOpts.container
+
+          // Make sure they exist
+          if (!template || !container) {
+            console.log('invlaid template or container for updated event')
+            return
+          }
+
+          // Make sure they exist within the dom
+          const $container = $(container)
+          const $template = $.templates(template)
+
+          // If they don't exist within the DOM, return.
+          if (!$container.length || !$template) {
+            console.log('Could not find dom element ')
+            return
+          }
+
+          // Retrieve our HTML structure
+          const $html = $($template.render(data))
+
+          // Try and find the updated dom element
+          const $updatedDomElement = this.findInDom(data, $container, mapping, eventName)
+
+          // If we cant find it,log and return
+          if (!$updatedDomElement || !($updatedDomElement.length)) {
+            console.log('Unable to find update element in dom for data ' + JSON.stringify(data))
+            return
+          }
+
+          // If updateInDom cb specified, call that and allow instantiator to add the html to the dom,
+          // otherwise do it ourselves with specified options.
+          if (updateInDom) {
+            updateInDom.call(null, data, $html, $container)
+          } else {
+            const updateEffect = (renderOpts.updateEffect &&
+              Array.isArray(renderOpts.updateEffect) && renderOpts.updateEffect.length &&
+              renderOpts.updateEffect.slice(0, 1)) || 'fadeOut'
+
+            const _params = (renderOpts.updateEffect && Array.isArray(renderOpts.updateEffect) &&
+            renderOpts.updateEffect.length &&
+            renderOpts.updateEffect.slice(1, renderOpts.updateEffect.length)) || [1000]
+
+            _params.append(function () {
+              $html.hide()
+              $updatedDomElement.replaceWith($html.fadeIn(1000))
+            })
+
+            $updatedDomElement[updateEffect].call(null, _params)
+          }
         }
 
-        // Retrieve our template and container
-        var template = mapping.renderOpts.template
-        var container = mapping.renderOpts.container
-
-        // Make sure they exist
-        if (!template || !container) {
-          console.log('invlaid template or container for updated event')
-          return
-        }
-
-        // Make sure they exist within the dom
-        const $container = $(container)
-        const $template = $.templates(template)
-
-        // If they don't exist within the DOM, return.
-        if (!$container.length || !$template) {
-          console.log('Could not find dom element ')
-          return
-        }
-
-        // Retrieve our HTML structure
-        const $html = $($template.render(data))
-
-        // Try and find the updated dom element
-        const $updatedDomElement = this.findInDom(data, $container, mapping, eventName)
-
-        // If we cant find it,log and return
-        if (!$updatedDomElement || !($updatedDomElement.length)) {
-          console.log('Unable to find update element in dom for data ' + JSON.stringify(data))
-          return
-        }
-
-        // If updateInDom cb specified, call that and allow instantiator to add the html to the dom,
-        // otherwise do it ourselves with specified options.
-        if (updateInDom) {
-          updateInDom.call(null, data, $html, $container)
+        if (Array.isArray(mapping.renderOpts)) {
+          mapping.renderOpts.forEach(renderData)
         } else {
-          const updateEffect = (mapping.renderOpts.updateEffect &&
-            Array.isArray(mapping.renderOpts.updateEffect) && mapping.renderOpts.updateEffect.length &&
-            mapping.renderOpts.updateEffect.slice(0, 1)) || 'fadeOut'
-
-          const _params = (mapping.renderOpts.updateEffect && Array.isArray(mapping.renderOpts.updateEffect) &&
-          mapping.renderOpts.updateEffect.length &&
-          mapping.renderOpts.updateEffect.slice(1, mapping.renderOpts.updateEffect.length)) || [1000]
-
-          _params.append(function () {
-            $html.hide()
-            $updatedDomElement.replaceWith($html.fadeIn(1000))
-          })
-
-          $updatedDomElement[updateEffect].call(null, _params)
+          renderData(mapping.renderOpts)
         }
       } else {
         console.log('(Updated event) :' + JSON.stringify(data) + ' was not validated')
@@ -529,37 +544,45 @@ $(window).ready(function () {
       }
 
       const mapping = this.mapping[eventName]
+
+      if (!mapping.renderOpts) {
+        console.log('No render opts for,returning ' + eventName)
+        return
+      }
+
       const validators = mapping.validators
-
       if (this.checkRenderConditions(data, validators)) {
-        if (!mapping.renderOpts) {
-          console.log('No render opts for,returning ' + eventName)
-          return
-        }
+        function renderData () {
+          var container = renderOpts.container
 
-        var container = mapping.renderOpts.container
-
-        if (!container) {
-          console.log('Invalid container for remove')
-          return
-        }
-
-        const $container = $(container)
-
-        if (!$container.length) {
-          console.log('could not find container in remove')
-          return
-        }
-
-        const $domEle = this.findInDom(data, $container, mapping)
-        if ($domEle && $domEle.length) {
-          if (destroyInDom) {
-            destroyInDom.call(null, data, $container)
-          } else {
-            this.removeFromDom($container, renderOpts)
+          if (!container) {
+            console.log('Invalid container for remove')
+            return
           }
+
+          const $container = $(container)
+
+          if (!$container.length) {
+            console.log('could not find container in remove')
+            return
+          }
+
+          const $domEle = this.findInDom(data, $container, mapping)
+          if ($domEle && $domEle.length) {
+            if (destroyInDom) {
+              destroyInDom.call(null, data, $container)
+            } else {
+              this.removeFromDom($container, renderOpts)
+            }
+          } else {
+            console.log('Could not find dom element to remove')
+          }
+        }
+
+        if (Array.isArray(mapping.renderOpts)) {
+          mapping.renderOpts.forEach(renderData)
         } else {
-          console.log('Could not find dom element to remove')
+          renderData(mapping.RenderOpts)
         }
       } else {
         console.log('Did not pass validaiton conditions ' + JSON.stringify(data))
@@ -663,7 +686,7 @@ $(window).ready(function () {
         subcriteria:{limit:5:sort:'created ASC'}
         params:{limit:10, sort:'createdAt ASC'},*/
 
-        //Extract this function to a more generic file later
+        // Extract this function to a more generic file later
         function objectToHttpQueryString (initial, query) {
           if (!query) return initial
 
@@ -743,7 +766,11 @@ $(window).ready(function () {
         /*
             Finally add the constructed target to our container
         */
-        this.endPointTargets.push({ eventName, fpath, handlerFn, target})
+        this.endPointTargets.push({
+          eventName,
+          fpath,
+          handlerFn,
+        target})
       },
       loadAndListen: function () {
         const _this = this
@@ -839,106 +866,111 @@ $(window).ready(function () {
             throw new Error('Invalid params to $.SocketDataLoader')
           }
 
-            // Function to hook dom nodes, that is, when they are added to the DOM callback
-            // function is triggered. This is a solution to AJAX pages,
-            // where not all containers may be present on a page at once.
-            // This function should be extracted to a more generic file later.
-            function listenForDomNode (containerSelector, elementSelector, callback) {
-                var onMutationsObserved = function (mutations) {
-                mutations.forEach(function (mutation) {
-                    if (mutation.addedNodes.length) {
-                    var elements = $(mutation.addedNodes).find(elementSelector)
-                    for (var i = 0, len = elements.length; i < len; i++) {
-                        callback(elements[i])
-                    }
-                    }
-                })
+          // Function to hook dom nodes, that is, when they are added to the DOM callback
+          // function is triggered. This is a solution to AJAX pages,
+          // where not all containers may be present on a page at once.
+          // This function should be extracted to a more generic file later.
+          function listenForDomNode (containerSelector, elementSelector, callback) {
+            var onMutationsObserved = function (mutations) {
+              mutations.forEach(function (mutation) {
+                if (mutation.addedNodes.length) {
+                  var elements = $(mutation.addedNodes).find(elementSelector)
+                  for (var i = 0, len = elements.length; i < len; i++) {
+                    callback(elements[i])
+                  }
                 }
-                var target = $(containerSelector)[0]
-                var config = { childList: true, subtree: true }
-                var MutationObserver = window.MutationObserver || window.WebKitMutationObserver
-                var observer = new MutationObserver(onMutationsObserved)
-                observer.observe(target, config)
+              })
             }
+            var target = $(containerSelector)[0]
+            var config = {
+              childList: true,
+              subtree: true
+            }
+            var MutationObserver = window.MutationObserver || window.WebKitMutationObserver
+            var observer = new MutationObserver(onMutationsObserved)
+            observer.observe(target, config)
+          }
 
-            // The current container for this target
-            const container = t.renderOpts.container
+          // The current container for this target
+          const container = t.renderOpts.container
 
-            /*    
-                Listens for a containers entry within the DOM.
-                Should the container appear, we empty the container to make sure 
-                no existing child nodes are within it, and then when reload the data.
-            */
-            listenForDomNode('body', container, function (element) {
-                console.log('Found container :' + container);
+          /*    
+              Listens for a containers entry within the DOM.
+              Should the container appear, we empty the container to make sure 
+              no existing child nodes are within it, and then when reload the data.
+          */
+          listenForDomNode('body', container, function (element) {
+            console.log('Found container :' + container)
 
-                $(container).empty()
+            $(container).empty()
 
-                console.log('Emptying container.')
+            console.log('Emptying container.')
 
-                console.log(socketDataLoader.endPointTargets)
-                console.log(t.eventName)
-                //The target endpoint that needs to be retriggered and data reloaded
-                const targetEndpoint = socketDataLoader.endPointTargets.find(function (targ) {
-                    return targ.eventName == t.eventName
+            console.log(socketDataLoader.endPointTargets)
+            console.log(t.eventName)
+            // The target endpoint that needs to be retriggered and data reloaded
+            const targetEndpoint = socketDataLoader.endPointTargets.find(function (targ) {
+              return targ.eventName == t.eventName
+            })
+
+            // If we didn't find it, something went wrong...
+            if (!targetEndpoint) throw new Error('Something went wrong finding endpoint target')
+
+            console.log('Found target endpoint, path was : ' + targetEndpoint.fpath)
+
+            // Retrieve the promise associated with the target end point, and reload the data.
+            targetEndpoint.target().then(function (data) {
+              console.log('Loaded data: ')
+              console.log(data)
+              if (Array.isArray(data)) {
+                // Fire off multiple events for each data object in the returned array.
+                data.forEach(function (dataObj) {
+                  console.log('Triggering event under name :' + t.eventName)
+                  console.log(dataObj)
+                  console.log(socketDataLoader.events)
+                  socketDataLoader.trigger([t.eventName, 'loadedFromSocket'], null, [dataObj, t.eventName])
                 })
-
-                //If we didn't find it, something went wrong...
-                if (!targetEndpoint) throw new Error('Something went wrong finding endpoint target')
-
-                console.log('Found target endpoint, path was : ' + targetEndpoint.fpath);
-
-                //Retrieve the promise associated with the target end point, and reload the data.
-                targetEndpoint.target().then(function (data) {
-                console.log('Loaded data: ' )
-                console.log(data)
-                if (Array.isArray(data)) {
-                    //Fire off multiple events for each data object in the returned array.
-                    data.forEach(function(dataObj){
-                        console.log('Triggering event under name :' + t.eventName)
-                        console.log(dataObj)
-                        console.log(socketDataLoader.events)
-                        socketDataLoader.trigger([t.eventName, 'loadedFromSocket'], null, [dataObj, t.eventName])
-                    })
-                }else{
-                    //Otherwise, its a simple data object just fire one event.
-                    socketDataLoader.trigger([t.eventName, 'loadedFromSocket'], null, [data, t.eventName])
-                }
-                
-                }).catch(function (err) {
-                    console.log(err)
-                    return;
-                })
+              } else {
+                // Otherwise, its a simple data object just fire one event.
+                socketDataLoader.trigger([t.eventName, 'loadedFromSocket'], null, [data, t.eventName])
+              }
+            }).catch(function (err) {
+              console.log(err)
+              return
+            })
           })
-          
-        });
+        })
       }
 
-   if(options.domReactor){
-      const listenTo = options.targets
-        .filter(function (t) { return t.eventName && t.shouldListen })
-        .map(function (t) { return t.eventName });
+      if (options.domReactor) {
+        const listenTo = options.targets
+          .filter(function (t) {
+            return t.eventName && t.shouldListen
+          })
+          .map(function (t) {
+            return t.eventName
+          })
 
-      var mapping = options.targets.map(
-        function (x) {
-          const obj = {}
-          obj[x.eventName] = x
-          return obj
-        }).reduce(function (prev, cur) {
-        return Object.assign(prev, cur)
-      }, {});
+        var mapping = options.targets.map(
+          function (x) {
+            const obj = {}
+            obj[x.eventName] = x
+            return obj
+          }).reduce(function (prev, cur) {
+          return Object.assign(prev, cur)
+        }, {})
 
-      socketDataLoader.on(listenTo, domSocketHandler(mapping));
+        socketDataLoader.on(listenTo, domSocketHandler(mapping))
+      }
+
+      if (options.autoLoad) {
+        socketDataLoader.loadAndListen().catch(function (err) {
+          if (options.onError && typeof options.onError == 'function')
+            options.onError.call(null, err)
+        })
+      }
+
+      return socketDataLoader
     }
-
-    if (options.autoLoad) {
-      socketDataLoader.loadAndListen().catch(function (err) {
-        if (options.onError && typeof options.onError == 'function')
-          options.onError.call(null, err);
-      })
-    }
-
-    return socketDataLoader;
-  }
   })(jQuery, window.io)
 })

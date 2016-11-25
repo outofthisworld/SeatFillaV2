@@ -1,6 +1,4 @@
 
-
-
 <style>
 ul.list-group.notifications li{
     min-height:80px;
@@ -12,12 +10,9 @@ ul.list-group.notifications li{
     background-color:#EC407A;
     color:white;
 }
-
- 
-
 </style>
 
-<script type="text/html" id="notificationTemplate">
+<script type="text/html" id="notificationstemplate">
    	<li>
 						<time datetime="{{:date}}">
 							<span class="day"> {{:day}} </span>
@@ -43,34 +38,6 @@ $(document).ready(function(){
     var limit = 10;
     var skip = 0;
     const user = window.seatfilla.globals.userprofile.getCurrentUserProfileUser(window.location.pathname);
-
-    function displayNotification(notification,type){
-          if(!notification) return;
-          if(notification.data) notification = notification.data;
-          console.log(notification)
-          if(!$('.list-group.notifications li#'+notification.id).length){
-             const template = $.templates('#notificationTemplate');
-             notification.date = moment(notification.createdAt).format('YYYY-MM-DD');
-             notification.day =  moment(notification.createdAt).format('DD');
-             notification.month = moment(notification.createdAt).format('MM');
-             notification.year = moment(notification.createdAt).format('YY');
-             notification.hour = moment(notification.createdAt).format('HH');
-             notification.minutes = moment(notification.createdAt).format('MM');
-             notification.seconds = moment(notification.createdAt).format('SS');
-             notification.AMPM = moment(notification.createdAt).format('A');
-             $('.event-list.notifications')[type](null,template.render(notification))        
-          }
-    }
-
- 
-  
-    io.socket.get('/user?username='+user,function(){});
-    io.socket.on('user',function(data){
-        console.log(data);
-        if(data.verb == 'addedTo' && data.attribute == 'notifications'){
-            displayNotification(data.added,'prepend')
-        }
-    })
 
     function loadNotifications(){
         const $button = $('#loadNotifications');
@@ -104,7 +71,7 @@ $(document).ready(function(){
             }
               
         })
-    }loadNotifications();
+    }
 
     $('#loadNotifications').on('click',function(){
         const $button = $(this)
@@ -124,7 +91,7 @@ $(document).ready(function(){
 
 		<div class="container-fluid">
 			<div class="col-sm-12">
-				<ul class="event-list notifications">
+				<ul class="event-list notifications" id="notificationscontainer">
 				
 				</ul>
 			</div>

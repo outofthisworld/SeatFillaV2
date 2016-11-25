@@ -12,8 +12,10 @@
 
                         function syncTime(requestSendTime, requestArrivalTime, responseStartTime, responseEndTime) {
                             return {
-                                rtdelay: (responseEndTime - requestSendTime) -
+                                rtripdelay: (responseEndTime - requestSendTime) -
                                     (responseStartTime - requestArrivalTime),
+                                responsedelay:responseEndTime - res.responseStartTime,
+                                requestdelay:requestArrivalTime - requestSendtime,
                                 offset: ((requestArrivalTime - requestSendTime) +
                                     (responseStartTime - responseEndTime)) / 2
                             }

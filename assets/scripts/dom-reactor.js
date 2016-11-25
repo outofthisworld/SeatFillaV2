@@ -112,9 +112,6 @@ $(window).ready(function () {
           propertyMap[prop] = true
         })
 
-        // Set the prototype, or clone all prototype methods (always required if a getter is provided).
-        // TODO(samthor): We don't allow prototype methods to be set. It's (even more) awkward.
-        // An alternative here would be to _just_ clone methods to keep behavior consistent.
         let prototypeOk = true
         if (Object.setPrototypeOf) {
           Object.setPrototypeOf(proxy, Object.getPrototypeOf(target))
@@ -176,7 +173,7 @@ $(window).ready(function () {
         }
       }
 
-      var validator;
+      var validator
       if (collectionValidators && typeof collectionValidators[Symbol.iterator] === 'function') {
         for (var i in collectionValidators) {
           validator = collectionValidators[i]
@@ -289,6 +286,9 @@ $(window).ready(function () {
         var template = renderOpts.template
         var container = renderOpts.container
 
+        console.log('Finding template : ' + template);
+        console.log('Finding container : ' + container);
+
         // If they don't exist, return.
         if (!template || !container) {
           console.log('Could not find template or container ')
@@ -316,6 +316,10 @@ $(window).ready(function () {
         if (!($container.length) || !$template) {
           console.log('Container or template dom element does not exist')
           return
+        }
+
+        if (renderOpts.beforeDataRendered && typeof renderOpts.beforeDataRendered == 'function') {
+           data = renderOpts.beforeDataRendered.call(null, data)
         }
 
         // obtain the HTML structure of the data
@@ -653,14 +657,15 @@ $(window).ready(function () {
           path = options.path,
           query = options.params,
           subcriteria = options.subcriteria,
-          where = options.where;
+          where = options.where
 
         /*where:{userProfile:1,isReply:false},
         subcriteria:{limit:5:sort:'created ASC'}
         params:{limit:10, sort:'createdAt ASC'},*/
 
+        //Extract this function to a more generic file later
         function objectToHttpQueryString (initial, query) {
-          if (!query) return intial
+          if (!query) return initial
 
           var qString = '?'
           for (var key in query) {
@@ -685,16 +690,10 @@ $(window).ready(function () {
         /*
             Handler function for incoming socket events
         */
-        function handlerFn(data, jwRes) {
+        function handlerFn (data, jwRes) {
 
           /*Event trigger*/
           function handleSocketEvent (eventName, verb, attribute, data) {
-            console.log(eventName)
-            console.log(verb)
-            console.log(attribute)
-            console.log('Recieved data:')
-            console.log(data)
-
             if (!eventName || !verb || !data) {
               console.log('Invalid params passed to trigger')
               return
@@ -720,11 +719,10 @@ $(window).ready(function () {
             when loadAndListen is called on this data loader.
         */
         function target () {
-          const _endPointTarget = this;
+          const _endPointTarget = this
 
           return new Promise(function (resolve, reject) {
             io.socket.get(fpath, function (data, jwRes) {
-
               console.log('Receieved data from path ' + this.path)
               console.log(data)
               console.log('Response was:' + jwRes.statusCode)
@@ -732,8 +730,9 @@ $(window).ready(function () {
               if (jwRes.statusCode != 200)
                 return reject(new Error('Invalid response code in repsonse handler'))
 
+              // Make sure nothing existing is under this event name with the same handlerFN
+              io.socket.off(eventName, _endPointTarget.handlerFn)
               // Listen for incoming socket events
-
               io.socket.on(eventName, _endPointTarget.handlerFn)
 
               return resolve(data)
@@ -744,7 +743,7 @@ $(window).ready(function () {
         /*
             Finally add the constructed target to our container
         */
-        this.endPointTargets.push({eventName,fpath,handlerFn,target})
+        this.endPointTargets.push({ eventName, fpath, handlerFn, target})
       },
       loadAndListen: function () {
         const _this = this
@@ -754,7 +753,7 @@ $(window).ready(function () {
             io.socket.off(t.eventName, t.handlerFn)
             if (this.domReactor) {
               if (t.renderOpts && t.renderOpts.container) {
-                $(t.renderOpts.container).clear()
+                $(t.renderOpts.container).empty()
               }
             }
           })
@@ -783,7 +782,7 @@ $(window).ready(function () {
                 console.log('Events: ')
                 console.log(_this.events[key])
                 console.log(JSON.stringify(_this.events[key]))
-                console.log(JSON.stringify(_this.events[key].__proto__))
+
                 fResult[key].forEach(function (dataObj) {
                   console.log('Triggering ' + key + ' loadedFromSocketEvent with ' + JSON.stringify(dataObj))
                   _this.trigger([key, 'loadedFromSocket'], null, [dataObj, key])
@@ -800,11 +799,15 @@ $(window).ready(function () {
       }
     }
 
-    domReactor = function (map) {
+    domSocketHandler = function (map) {
       return new DomSocketHandler(map)
     }
 
-    $.SocketDataLoader = function (options) {
+    $.domReactor = function (options) {
+
+      /*
+        Construct a new socketDataLoader
+      */
       const socketDataLoader = Object.assign(Object.create(DataLoaderProto), {
         events: {},
         endPointTargets: [],
@@ -812,15 +815,14 @@ $(window).ready(function () {
         domReactor: options && options.domReactor || false
       })
 
-      console.log(JSON.stringify(socketDataLoader))
-
+      // If no options are specified, just return a new SocketDataLoader.
       if (!options) return socketDataLoader
 
       if (options.targets && Array.isArray(options.targets)) {
+        // Loop each target, adding it to the socket data loader
         options.targets.forEach(function (t) {
           if (t.eventName && t.path) {
-            socketDataLoader.addTarget(
-            {
+            socketDataLoader.addTarget({
               eventName: t.eventName,
               path: t.path,
               params: t.params || null,
@@ -828,42 +830,115 @@ $(window).ready(function () {
               subcriteria: t.subcriteria || null
             })
           } else {
-            console.log('Did not add ' + t.eventName + ' to loader paths, not path or eventName not specofied')
+            // If theres no event name, just log it.
+            console.log('Did not add ' + t.eventName + ' to loader paths,path or eventName not specofied')
           }
 
+          // Check to make sure that the target has the right options.
           if (options.domReactor && !t.renderOpts || !t.renderOpts.template || !t.renderOpts.container) {
             throw new Error('Invalid params to $.SocketDataLoader')
           }
-        })
+
+            // Function to hook dom nodes, that is, when they are added to the DOM callback
+            // function is triggered. This is a solution to AJAX pages,
+            // where not all containers may be present on a page at once.
+            // This function should be extracted to a more generic file later.
+            function listenForDomNode (containerSelector, elementSelector, callback) {
+                var onMutationsObserved = function (mutations) {
+                mutations.forEach(function (mutation) {
+                    if (mutation.addedNodes.length) {
+                    var elements = $(mutation.addedNodes).find(elementSelector)
+                    for (var i = 0, len = elements.length; i < len; i++) {
+                        callback(elements[i])
+                    }
+                    }
+                })
+                }
+                var target = $(containerSelector)[0]
+                var config = { childList: true, subtree: true }
+                var MutationObserver = window.MutationObserver || window.WebKitMutationObserver
+                var observer = new MutationObserver(onMutationsObserved)
+                observer.observe(target, config)
+            }
+
+            // The current container for this target
+            const container = t.renderOpts.container
+
+            /*    
+                Listens for a containers entry within the DOM.
+                Should the container appear, we empty the container to make sure 
+                no existing child nodes are within it, and then when reload the data.
+            */
+            listenForDomNode('body', container, function (element) {
+                console.log('Found container :' + container);
+
+                $(container).empty()
+
+                console.log('Emptying container.')
+
+                console.log(socketDataLoader.endPointTargets)
+                console.log(t.eventName)
+                //The target endpoint that needs to be retriggered and data reloaded
+                const targetEndpoint = socketDataLoader.endPointTargets.find(function (targ) {
+                    return targ.eventName == t.eventName
+                })
+
+                //If we didn't find it, something went wrong...
+                if (!targetEndpoint) throw new Error('Something went wrong finding endpoint target')
+
+                console.log('Found target endpoint, path was : ' + targetEndpoint.fpath);
+
+                //Retrieve the promise associated with the target end point, and reload the data.
+                targetEndpoint.target().then(function (data) {
+                console.log('Loaded data: ' )
+                console.log(data)
+                if (Array.isArray(data)) {
+                    //Fire off multiple events for each data object in the returned array.
+                    data.forEach(function(dataObj){
+                        console.log('Triggering event under name :' + t.eventName)
+                        console.log(dataObj)
+                        console.log(socketDataLoader.events)
+                        socketDataLoader.trigger([t.eventName, 'loadedFromSocket'], null, [dataObj, t.eventName])
+                    })
+                }else{
+                    //Otherwise, its a simple data object just fire one event.
+                    socketDataLoader.trigger([t.eventName, 'loadedFromSocket'], null, [data, t.eventName])
+                }
+                
+                }).catch(function (err) {
+                    console.log(err)
+                    return;
+                })
+          })
+          
+        });
       }
 
-      if (options.domReactor) {
-        const listenTo = options.targets
-          .filter(function (t) { return t.eventName && t.shouldListen })
-          .map(function (t) { return t.eventName })
+   if(options.domReactor){
+      const listenTo = options.targets
+        .filter(function (t) { return t.eventName && t.shouldListen })
+        .map(function (t) { return t.eventName });
 
-        var mapping = options.targets.map(
-          function (x) {
-            const obj = {}
-            obj[x.eventName] = x
-            return obj
-          }).reduce(function (prev, cur) {
-          return Object.assign(prev, cur)
-        }, {})
+      var mapping = options.targets.map(
+        function (x) {
+          const obj = {}
+          obj[x.eventName] = x
+          return obj
+        }).reduce(function (prev, cur) {
+        return Object.assign(prev, cur)
+      }, {});
 
-        socketDataLoader.on(listenTo,
-          domReactor(mapping)
-        )
-      }
-
-      if (options.autoLoad) {
-        socketDataLoader.loadAndListen().catch(function (err) {
-          if (options.onError && typeof options.onError == 'function')
-            options.onError.call(null, err)
-        })
-      }
-
-      return socketDataLoader
+      socketDataLoader.on(listenTo, domSocketHandler(mapping));
     }
+
+    if (options.autoLoad) {
+      socketDataLoader.loadAndListen().catch(function (err) {
+        if (options.onError && typeof options.onError == 'function')
+          options.onError.call(null, err);
+      })
+    }
+
+    return socketDataLoader;
+  }
   })(jQuery, window.io)
 })

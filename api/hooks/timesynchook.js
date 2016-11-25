@@ -9,7 +9,7 @@ module.exports = function(sails) {
             route: {
                 after: {
                     '/*': function(req, res, next) {
-                        if (req.wantsJSON) {
+                        if (req.wantsJSON || req.isSocket) {
                             res.body.time = res.body.time || {}
                             res.body.time.requestArrivalTime = req._startTime;
                             res.body.time.responseStartTime = new Date().getTime();
@@ -20,5 +20,4 @@ module.exports = function(sails) {
                 }
             }
         }
-    }
 }

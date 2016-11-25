@@ -71,7 +71,13 @@ module.exports = {
             });
         });
     },
-    findByUser(req, res) {
+    findByUser(req,res){
+        return res.ok({}, {
+            view:'notifications/findByUser',
+            renderHtml: true
+        })
+    }
+    /*findByUser(req, res) {
         async.auto({
             findUser(callback) {
                 User.findOne({
@@ -115,8 +121,10 @@ module.exports = {
                 final.UserProfile = req.options.userprofile;
                 return res.ok(final)
             } else {
-                return res.ok(final)
+                return res.ok(final,{
+                    renderHtml: true
+                })
             }
         })
-    }
+    }*/
 }

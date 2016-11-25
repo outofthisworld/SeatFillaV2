@@ -40,7 +40,7 @@ module.exports = function findRecords(req, res) {
         .sort(actionUtil.parseSort(req));
 
 
-    query = actionUtil.populateRequest(query, req);
+    query = actionUtil.populateRequest(query, req, Model);
 
 
     return query.then(function found(matchingRecords) {

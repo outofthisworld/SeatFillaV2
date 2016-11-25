@@ -111,7 +111,6 @@ module.exports.policies = {
     },
     NotificationsController:{
         '*':true,
-        'findByUser':['viewProfilePolicy']
     },
     FeedController:{
         index:'viewProfilePolicy'

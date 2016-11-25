@@ -1,11 +1,19 @@
 module.exports = {
     findOneByUser(req, res) {
         sails.log.debug(res.locals)
+        if(!req.xhr){
         return res.ok({
             UserProfile: req.options.userprofile,
         }, {
             title: req.options.userprofile.user.username + ' ' + req.__('UserProfile'),
         })
+        }else{
+           return res.ok({
+            UserProfile: req.options.userprofile,
+        }, {
+            renderHtml:true,
+        }) 
+        }
     },
     uploadProfileImage(req, res) {
         return res.ok({
@@ -36,8 +44,13 @@ module.exports = {
             title: req.__('FlightGroup')
         })
     },
-    user_notifications(req, res) {},
-    system_notifications(req, res) {},
+    notifications(req,res){
+        return res.ok({
+            user:req.user
+        },{
+
+        })
+    },
     flight_notifications(req, res) {
         return res.ok({
             user: req.user
@@ -62,6 +75,7 @@ module.exports = {
             title: req.__('RecentlySearched')
         })
     },
+
 
     /*
     is own profile policy.

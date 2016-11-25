@@ -48,6 +48,9 @@
     <script src="/js/dependencies/user.js"></script>
     <script src="/js/dependencies/wow.min.js"></script>
     <!--SCRIPTS END-->
+    
+    <script src="/scripts/dom-reactor.js"></script>
+    <script src="/scripts/user-profile.js"></script>
     <link rel="import" href="/bower_components/paper-button/paper-button.html">
     <link rel="import" href="/bower_components/paper-toast/paper-toast.html">
 
@@ -79,9 +82,11 @@ $(document).ready(function(){
       const container = $(this).parent().parent().attr('data-container')
       if(container){
         $(container).html("")
+        console.log('loading: ' + target)
         $(container).load(target,function(res,ts,xhr){
             
             if(xhr.status != 200){
+                console.log('not 200')
                 return;
             };
             $.lazyLoadScripts({},function(err){
@@ -143,11 +148,11 @@ $(document).ready(function(){
 
     <div class="">
         <ul class="nav nav-tabs profile" data-container="#profilePageTemplateContainer">
-          <li class="active"><a href="/userprofile/<%=data.UserProfile.user.username%>/" data-toggle="tab">Profile</a></li>
+          <li class="active"><a data-page="/userprofile/<%=data.UserProfile.user.username%>?asAjax=true" data-toggle="tab">Profile</a></li>
          <li><a data-page="/userprofile/<%=data.UserProfile.user.username%>/feed">Feed</a></li>
          <li><a data-page="/userprofile/<%=data.UserProfile.user.username%>/update">Update settings</a></li>
           <li><a data-page="/userprofile/<%=data.UserProfile.user.username%>/flightscheduling">Flight scheduling</a></li>
-          <li><a data-page="/userprofile/<%=data.UserProfile.user.username%>/notifications">Notifications</a></li>
+          <li><a data-page="/notifications/findByUser">Notifications</a></li>
           <li><a data-page="/userprofile/<%=data.UserProfile.user.username%>/provider">Provider section</a></li>
         </ul>
         <div id="tabContent" class="tab-content">
@@ -290,7 +295,6 @@ $(document).ready(function(){
  
 
  <%- partial ('../partials/toast.ejs') %>
- <div style="display:hidden;" data-attr-lazyload-sync="" data-attr-src="/scripts/dom-reactor.js"></div>
- <div style="display:hidden;" data-attr-lazyload-sync="" data-attr-src="/scripts/user-profile.js"></div>
+
 </body>
 </html>

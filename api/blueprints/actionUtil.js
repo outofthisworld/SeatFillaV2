@@ -38,6 +38,12 @@ var actionUtil = {
         var DEFAULT_POPULATE_LIMIT = req._sails.config.blueprints.defaultLimit || 30;
         var _options = req.options;
         var aliasFilter = req.param('populate');
+
+        //Ammended to add suport for subcriteria in populate
+
+        const subcriteria = req.param('subcriteria');
+
+
         var shouldPopulate = _.isUndefined(_options.populate) ? (req._sails.config.blueprints.populate) : _options.populate;
 
         // Convert the string representation of the filter list to an Array. We
@@ -57,7 +63,7 @@ var actionUtil = {
             if (aliasFilter) {
                 shouldPopulate = _.contains(aliasFilter, association.alias);
             }
-
+           
             // Only populate associations if a population filter has been supplied
             // with the request or if `populate` is set within the blueprint config.
             // Population filters will override any value stored in the config.

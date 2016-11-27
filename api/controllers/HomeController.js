@@ -42,5 +42,15 @@ module.exports = {
         return res.ok({
             user: req.user
         });
+    },
+    aboutus(req,res){
+       return res.ok({
+            user: req.user
+        });
+    },
+    contactus(req,res){
+      return res.ok({
+            user: req.user
+        });
     }
 }

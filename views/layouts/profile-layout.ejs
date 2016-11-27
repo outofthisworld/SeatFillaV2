@@ -48,7 +48,7 @@
     <script src="/js/dependencies/user.js"></script>
     <script src="/js/dependencies/wow.min.js"></script>
     <!--SCRIPTS END-->
-    
+
     <script src="/scripts/dom-reactor.js"></script>
     <script src="/scripts/user-profile.js"></script>
     <link rel="import" href="/bower_components/paper-button/paper-button.html">
@@ -63,7 +63,7 @@
     <link rel="stylesheet" href="/styles/ionicons.css">
     <link rel="stylesheet" href="/styles/main.css">
     <!--STYLES END-->
-           
+
 <script>
 $(window).ready(function(){
   $.lazyLoadScripts({},function(err){
@@ -84,7 +84,7 @@ $(document).ready(function(){
         $(container).html("")
         console.log('loading: ' + target)
         $(container).load(target,function(res,ts,xhr){
-            
+
             if(xhr.status != 200){
                 console.log('not 200')
                 return;
@@ -97,13 +97,55 @@ $(document).ready(function(){
   })
 })
 </script>
+
+<style>
+@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+/* apply a natural box layout model to all elements, but allowing components to change */
+
+.activity-feed {
+  padding: 15px;
+}
+.activity-feed .feed-item {
+  position: relative;
+  padding-bottom: 20px;
+  padding-left: 30px;
+  border-left: 2px solid #e4e8eb;
+}
+.activity-feed .feed-item:last-child {
+  border-color: transparent;
+}
+.activity-feed .feed-item:after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: -6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid #f37167;
+}
+.activity-feed .feed-item .date {
+  position: relative;
+  top: -5px;
+  color: #8c96a3;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+.activity-feed .feed-item .text {
+  position: relative;
+  top: -3px;
+}
+
+</style>
 </head>
 
 <body>
 <%- partial ('../partials/nav.ejs') %>
-   
-<div class="container-fluid profile-cont">
-	<div class="row" style="background-color:#2196F3;color:black;padding:20px;">
+
+<div class="container-fluid profile-cont" style="padding-top:120px;">
+	<div class="row" style="background-color:white;border-style:solid;border-color:#f3f3f3;border-width:2px;color:black;padding:10px;">
 
         <div class="col-xs-12">
             <div class="row">
@@ -115,7 +157,7 @@ $(document).ready(function(){
                 <%if(req.user && data.UserProfile.isOwnProfile){%>
                     <div class="pull-right" style="position:relative;">
                         <div class="row">
-                       
+
                                 <div class="col-xs-4">
                                     <input type="button" class="btn btn-info " value="Update Info"/></div>
                         </div>
@@ -124,13 +166,14 @@ $(document).ready(function(){
             </div>
             </div>
             <div class="header text-center">
-                     
+                      <h4 class="">{{:user.username}}</h4>
+                        <span class="text-white">{{:description}}</span>
                   <script type="text/html">
                         <h4 class="text-white">{{:user.username}}</h4>
                         <span class="text-white">{{:description}}</span>
                   </script>
             </div>
-            <div class="row nav">  
+            <div class="row nav">
             <br>
         <div class="col-md-4">
         </div>
@@ -139,11 +182,11 @@ $(document).ready(function(){
             <div class="col-md-4 col-xs-4 btn btn-sm" style="background-color:#fff;color:black;"><i class="fa fa-heart-o fa-lg"></i> 14</div>
             <div class="col-md-4 col-xs-4 btn btn-sm" style="background-color:#fff;color:black;"><i class="fa fa-thumbs-o-up fa-lg"></i> 26</div>
         </div>
-        
+
     </div>
         </div>
-        
-    </div>   
+
+    </div>
 
     <div class="container-fluid">
 
@@ -179,44 +222,46 @@ $(document).ready(function(){
    <div class="col-md-12">
 
 			<div class="profile-sidebar">
-	
+
 				<!-- SIDEBAR USER TITLE -->
 				<div class="profile-usertitle material-blue-5">
 					<div class=" text-white" style="padding:20px;">
 						<%= data.UserProfile.user.username %>
 					</div>
-					 
+
 				</div>
 
-       
-<div class="">
-    <div class="panel-heading">Latest activity</div>
-    <div class="panel-body" style="overflow-y:scroll;max-height:200px;">
-    <div class="notice notice-success">
-        <strong>Notice</strong> notice-success
-    </div>
-    <div class="notice notice-danger">
-        <strong>Notice</strong> notice-danger
-    </div>
-    <div class="notice notice-info">
-        <strong>Notice</strong> notice-info
-    </div>
-    <div class="notice notice-warning">
-        <strong>Notice</strong> notice-warning
-    </div>
-    <div class="notice notice-lg">
-        <strong>Big notice</strong> notice-lg
-    </div>
-    <div class="notice notice-sm">
-        <strong>Small notice</strong> notice-sm
-    </div>
-    </div>
-
+<div class="panel-heading">Recent activity</div>
+<div class="activity-feed" style="max-height:200px;overflow:scroll;">
+  <div class="feed-item">
+    <div class="date">Sep 25</div>
+    <div class="text">Responded to need <a href="single-need.php">“Volunteer opportunity”</a></div>
+  </div>
+  <div class="feed-item">
+    <div class="date">Sep 24</div>
+    <div class="text">Added an interest “Volunteer Activities”</div>
+  </div>
+  <div class="feed-item">
+    <div class="date">Sep 23</div>
+    <div class="text">Joined the group <a href="single-group.php">“Boardsmanship Forum”</a></div>
+  </div>
+  <div class="feed-item">
+    <div class="date">Sep 21</div>
+    <div class="text">Responded to need <a href="single-need.php">“In-Kind Opportunity”</a></div>
+  </div>
+  <div class="feed-item">
+    <div class="date">Sep 18</div>
+    <div class="text">Created need <a href="single-need.php">“Volunteer Opportunity”</a></div>
+  </div>
+  <div class="feed-item">
+    <div class="date">Sep 17</div>
+    <div class="text">Attending the event <a href="single-event.php">“Some New Event”</a></div>
+  </div>
 </div>
-        
+
     <!-- FLIGHT CIRCLE FRIENDS -->
      <div class="panel-heading text-black">Links</div>
-            <div class="flight-circle-friends" style="padding:5px;"> 
+            <div class="flight-circle-friends" style="padding:5px;">
             <div class="row">
                 <div class="col-xs-2 col-sm-2 col-md-4">
                     <a href="#" class="thumbnail">
@@ -278,8 +323,8 @@ $(document).ready(function(){
                     <img src="http://placehold.it/150x150" class="img img-responsive">
                     </a>
                 </div>
-            </div> <!--row-->  
-         </div>    
+            </div> <!--row-->
+         </div>
 		</div>
     </div>
 </div>
@@ -287,13 +332,13 @@ $(document).ready(function(){
 </nav>
         </div>
 	</div>
-</div>  	
+</div>
           </div>
         </div>
     </div>
-</div>	
 </div>
- 
+</div>
+
 
  <%- partial ('../partials/toast.ejs') %>
 

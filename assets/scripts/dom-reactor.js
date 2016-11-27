@@ -2,7 +2,7 @@
     Script to handle real time.
 
     Created by Dale.
-    
+
     Includes proxy created by google
     for intecepting access to object properties in which java
     does not have native support for.
@@ -184,7 +184,7 @@ $(window).ready(function () {
           validator = collectionValidators[i]
           console.log(validator)
           _validData = triggerValidator(validator, null, [data])
-          // Early return 
+          // Early return
           if (!_validData) break
         }
       }
@@ -254,6 +254,7 @@ $(window).ready(function () {
       and then attempts to render the created data to the specified template and push the data to the specified container.
     */
     DomSocketHandler.prototype.created = function (data, eventName) {
+      const _this = this;
       console.log(data)
       console.log('Triggering created for ' + eventName)
 
@@ -300,8 +301,8 @@ $(window).ready(function () {
 
           // Check to see if our container is a function or a string.
           // If its a function, more processing is required to actually find the right container and the function will
-          // be called with the data 
-          // If its a string, it is simply the ID of the container in which the new data should be rendered. 
+          // be called with the data
+          // If its a string, it is simply the ID of the container in which the new data should be rendered.
           const $container = (typeof container == 'function') ? $(container.call(null, data)) : $(container.toString())
 
           // At this point, we should check to see that we have a valid container and template
@@ -329,7 +330,7 @@ $(window).ready(function () {
             if (renderOpts.removeFromDom && typeof renderOpts.removeFromDom == 'function') {
               renderOpts.removeFromDom.call(null, data, $container)
             } else {
-              this.removeFromDom($container, renderOpts)
+              _this.removeFromDom($container, renderOpts)
             }
           }
 
@@ -364,7 +365,7 @@ $(window).ready(function () {
       However,primarily this function uses the returned socket data's id attribute and searches
       for an element in the dom with the attribute [data-attr-id="data.id"].
       This however needs to be narrowed down should there be multiple container/templates
-      using the domsockethandler on the same page. It could happen that, two elements 
+      using the domsockethandler on the same page. It could happen that, two elements
       from different tables or databases have the same data-attr-id attribute, in which case
       one of the following options have to be used:
 
@@ -444,7 +445,7 @@ $(window).ready(function () {
 
     // Userprofilecomment
     DomSocketHandler.prototype.updated = function (data, eventName) {
-
+      const _this = this;
       // Check to make sure we have a mapping
       if (!this.mapping) {
         console.log('Invalid state in $.DomSocketHandler, mapping does not exist')
@@ -493,7 +494,7 @@ $(window).ready(function () {
           const $html = $($template.render(data))
 
           // Try and find the updated dom element
-          const $updatedDomElement = this.findInDom(data, $container, mapping, eventName)
+          const $updatedDomElement = _this.findInDom(data, $container, mapping, eventName)
 
           // If we cant find it,log and return
           if (!$updatedDomElement || !($updatedDomElement.length)) {
@@ -534,6 +535,8 @@ $(window).ready(function () {
     }
 
     DomSocketHandler.prototype.destroyed = function (data, eventName) {
+      const _this = this;
+
       if (!this.mapping) {
         console.log('Invalid state of $.DomSocketHandler in destroyed')
       }
@@ -567,12 +570,12 @@ $(window).ready(function () {
             return
           }
 
-          const $domEle = this.findInDom(data, $container, mapping)
+          const $domEle = _this.findInDom(data, $container, mapping)
           if ($domEle && $domEle.length) {
             if (destroyInDom) {
               destroyInDom.call(null, data, $container)
             } else {
-              this.removeFromDom($container, renderOpts)
+              _this.removeFromDom($container, renderOpts)
             }
           } else {
             console.log('Could not find dom element to remove')
@@ -746,7 +749,7 @@ $(window).ready(function () {
 
           return new Promise(function (resolve, reject) {
             io.socket.get(fpath, function (data, jwRes) {
-              console.log('Receieved data from path ' + this.path)
+              console.log('Receieved data from path ' + fpath)
               console.log(data)
               console.log('Response was:' + jwRes.statusCode)
 
@@ -862,8 +865,18 @@ $(window).ready(function () {
           }
 
           // Check to make sure that the target has the right options.
-          if (options.domReactor && !t.renderOpts || !t.renderOpts.template || !t.renderOpts.container) {
-            throw new Error('Invalid params to $.SocketDataLoader')
+          if (options.domReactor) {
+            if(!Array.isArray(t.renderOpts) && !t.renderOpts || !t.renderOpts.template || !t.renderOpts.container){
+             throw new Error('Invalid params to $.domReactor')
+            }else if(Array.isArray(t.renderOpts)){
+              t.renderOpts.forEach(function(opt){
+                if(!opt.renderOpts || !opt.renderOpts.template || !opt.renderOpts.container){
+                      throw new Error('Invalid params to $.domReactor')
+                }
+              })
+            }else{
+              throw new Error('Invalid renderOpts in $.domReactor');
+            }
           }
 
           // Function to hook dom nodes, that is, when they are added to the DOM callback
@@ -894,9 +907,9 @@ $(window).ready(function () {
           // The current container for this target
           const container = t.renderOpts.container
 
-          /*    
+          /*
               Listens for a containers entry within the DOM.
-              Should the container appear, we empty the container to make sure 
+              Should the container appear, we empty the container to make sure
               no existing child nodes are within it, and then when reload the data.
           */
           listenForDomNode('body', container, function (element) {

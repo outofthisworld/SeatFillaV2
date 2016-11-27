@@ -63,6 +63,20 @@ module.exports.routes = {
             layout:'layout'
         }
     },
+    'get /contactus':{
+       controller:'HomeController',
+       action:'contactus',
+        locals:{
+            layout:'layout'
+        }
+    },
+    'get /aboutus':{
+      controller:'HomeController',
+      action:'aboutus',
+      locals:{
+          layout:'layout'
+      }
+    },
     /* End home controller routes */
 
     /* Provider routes */
@@ -142,14 +156,14 @@ module.exports.routes = {
     },
     'get /UserProfile/:username/update':{
         controller:'UserController',
-        action:'update', 
+        action:'update',
         locals:{
             layout:'layouts/profile-layout'
         }
     },
     'post /UserProfile/:username/update':{
         controller:'UserController',
-        action:'update', 
+        action:'update',
         locals:{
             layout:'layouts/profile-layout'
         },
@@ -190,6 +204,13 @@ module.exports.routes = {
         locals:{
             layout:'layouts/profile-layout'
         }
+    },
+    'get /UserProfile/:username/findOne':{
+       controller:'UserProfileController',
+       action:'findOne', //isOwnProfile
+       locals:{
+          layout:'layouts/profile-layout'
+       }
     },
     'get /UserProfile/:username/flightScheduling':{
         controller:'UserProfileController',
@@ -260,7 +281,7 @@ module.exports.routes = {
     },
     /* ********************* */
 
-    
+
     'get /UserProfile/:username/FlightRequest/Create':{
         controller:'FlightRequest',
         action:'create',
@@ -306,14 +327,14 @@ module.exports.routes = {
         action:'register'
     },
 
-    
+
 
 
 
     'get /ajax/templates/*.html':{
         policy:'acceptPolicy'
     },
-   
+
     /***************************************************************************
      *                                                                          *
      * Custom routes here...                                                    *

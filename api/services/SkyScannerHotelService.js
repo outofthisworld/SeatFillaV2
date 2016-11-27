@@ -151,9 +151,7 @@ module.exports = {
     createHotelDetails(urlEndPoint, hotelIds) {
         return new Promise((resolve, reject) => {
 
-            if (!urlEndPoint)
-                return Promise.reject(new Error('Invalid params to create hotel details, urlEndPoint was ' + urlEndPoint))
-
+            if (!urlEndPoint) urlEndPoint = 'http://partners.api.skyscanner.net/apiservices/hotels/livedetails/v2/details'
             if (!Array.isArray(hotelIds))
                 return Promise.reject(new Error('Invalid params to create hotel details, hotels ids were: ' + hotelIds));
 

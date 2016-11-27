@@ -1,0 +1,23 @@
+module.exports = {
+  attributes:{
+    key:{
+      type:'string',
+      notNull:true,
+      required:true
+    },
+    name:{
+      type:'string',
+      notNull:true,
+      required:true
+    },
+    id:{
+      type:'string',
+      defaultsTo:require('node-uuid').v4(),
+      primaryKey:true
+    },
+    hotels:{
+      collection:'hotels',
+      via:'hotelAmenities'
+    }
+  }
+}

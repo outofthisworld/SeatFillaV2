@@ -23,9 +23,9 @@ $(document).ready(function(){
                         $.toaster({ priority: priority, message: message})
                 })
             }
-        
+
         }
-     
+
         const info = "<%= req.flash('toaster-info')%>"
         const warning = "<%= req.flash('toaster-warning') %>"
         const success = "<%= req.flash('toaster-success') %>"
@@ -48,7 +48,7 @@ $(document).ready(function(){
                 priority:'danger',
                 messages: (danger && danger.split(',')) || []
             }
-        ])  
+        ])
 
         const notification = "<%= req.flash('toaster-notification')%>"
         function displayAllNotifications(arr){
@@ -69,7 +69,4 @@ $(document).ready(function(){
         displayAllNotifications((notification && notification.split(',')) || []);
     });
 </script>
-<paper-toast id="notification" class="fit-bottom" duration="0">
-<paper-button onclick="notification.toggle()" class="yellow-button" style="pull-right">Close toast</paper-button>
-</paper-toast>
- 
+

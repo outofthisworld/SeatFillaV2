@@ -1,31 +1,42 @@
 <style>
     .comments-container {
-        margin: 60px auto 15px;
-        width: 768px;
+        margin: 15px;
     }
-    
+
     .comments-container h1 {
         font-size: 36px;
         color: #283035;
         font-weight: 400;
     }
-    
+
     .comments-container h1 a {
         font-size: 18px;
         font-weight: 700;
     }
-    
-    .comments-list {
-       
+
+
+
+  .comments-list {
+          width:100%;
+          margin-top: 30px;
+          position: relative;
+  }
+
+
+  @media (min-width:1000px){
+       .comments-list {
+        width:600px;
         margin-top: 30px;
         position: relative;
-    }
-    
+      }
+   }
+
+
     .row.no-gutter {
         margin-left: 0;
         margin-right: 0;
     }
-    
+
     .row.no-gutter [class*='col-']:not(:first-child),
     .row.no-gutter [class*='col-']:not(:last-child) {
         padding-right: 0;
@@ -34,7 +45,7 @@
     /**
   * Lineas / Detalles
   -----------------------*/
-    
+
     .comments-list:before {
 
         width: 2px;
@@ -44,7 +55,7 @@
         left: 32px;
         top: 0;
     }
-    
+
     .comments-list:after {
         content: '';
         position: absolute;
@@ -58,12 +69,12 @@
         -moz-border-radius: 50%;
         border-radius: 50%;
     }
-    
+
     .reply-list:before,
     .reply-list:after {
         display: none;
     }
-    
+
     .reply-list li:before {
         content: '';
         width: 60px;
@@ -73,13 +84,13 @@
         top: 25px;
         left: -55px;
     }
-    
+
     .comments-list li {
         margin-bottom: 15px;
         display: block;
         position: relative;
     }
-    
+
     .comments-list li:after {
         content: '';
         display: block;
@@ -87,14 +98,14 @@
         height: 0;
         width: 0;
     }
-    
+
     .reply-list {
         padding-left: 88px;
         clear: both;
         margin-top: 15px;
     }
 
-    
+
     .comments-list .comment-avatar {
         width: 65px;
         height: 65px;
@@ -110,17 +121,17 @@
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         overflow: hidden;
     }
-    
+
     .comments-list .comment-avatar img {
         width: 100%;
         height: 100%;
     }
-    
+
     .reply-list .comment-avatar {
         width: 50px;
         height: 50px;
     }
-    
+
     .comment-main-level:after {
         content: '';
         width: 0;
@@ -129,16 +140,16 @@
         clear: both;
     }
 
-    
+
     .comments-list .comment-box {
-        width: 680px;
-        float: right;
+        width:100%;
+
         position: relative;
         -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
         -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
         box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
     }
-    
+
     .comments-list .comment-box:before,
     .comments-list .comment-box:after {
         content: '';
@@ -152,17 +163,17 @@
         top: 8px;
         left: -11px;
     }
-    
+
     .comments-list .comment-box:before {
         border-width: 11px 13px 11px 0;
         border-color: transparent rgba(0, 0, 0, 0.05);
         left: -12px;
     }
-    
+
     .reply-list .comment-box {
-        width: 610px;
+        width:100%;
     }
-    
+
     .comment-box .comment-head {
         background: #FCFCFC;
         padding: 10px 12px;
@@ -172,7 +183,7 @@
         -moz-border-radius: 4px 4px 0 0;
         border-radius: 4px 4px 0 0;
     }
-    
+
     .comment-box .comment-head i {
         float: right;
         margin-left: 14px;
@@ -184,11 +195,11 @@
         -o-transition: color 0.3s ease;
         transition: color 0.3s ease;
     }
-    
+
     .comment-box .comment-head i:hover {
         color: #03658c;
     }
-    
+
     .comment-box .comment-name {
         color: #283035;
         font-size: 14px;
@@ -196,11 +207,11 @@
         float: left;
         margin-right: 10px;
     }
-    
+
     .comment-box .comment-name a {
         color: #283035;
     }
-    
+
     .comment-box .comment-head span {
         float: left;
         color: #999;
@@ -208,7 +219,7 @@
         position: relative;
         top: 1px;
     }
-    
+
     .comment-box .comment-content {
         background: #FFF;
         padding: 12px;
@@ -218,12 +229,12 @@
         -moz-border-radius: 0 0 4px 4px;
         border-radius: 0 0 4px 4px;
     }
-    
+
     .comment-box .comment-name.by-author,
     .comment-box .comment-name.by-author a {
         color: #03658c;
     }
-    
+
     .comment-box .comment-name.by-author:after {
         content: 'user';
         background: #03658c;
@@ -237,25 +248,353 @@
         border-radius: 3px;
     }
 
-    
+
     @media only screen and (max-width: 766px) {
-        .comments-container {
-            width: 480px;
-        }
-        .comments-list .comment-box {
-            width: 390px;
-        }
-        .reply-list .comment-box {
-            width: 320px;
-        }
+
     }
+
+
+.rectangle-list ol
+{
+counter-reset:li;
+margin-left:0;
+padding-left:0;
+width:80%;
+margin:auto;
+}
+
+/* item  */
+.rectangle-list ol > li
+{
+position: relative;
+list-style:none;
+}
+
+/* item hover */
+.rectangle-list p
+{
+display: block;
+padding: .4em .4em .4em .8em;
+*padding: .4em;
+margin: .5em 0 .5em 2.5em;
+background: #fff;
+color: #444;
+text-decoration: none;
+-webkit-transition: all .3s ease-out;
+-moz-transition: all .3s ease-out;
+-ms-transition: all .3s ease-out;
+-o-transition: all .3s ease-out;
+transition: all .3s ease-out;
+}
+
+/* item hover */
+.rectangle-list p:hover
+{
+background: lightblue;
+}
+
+/* number  */
+.rectangle-list p:before
+{
+content: counter(li);
+counter-increment: li;
+
+position: absolute;
+left: -2.5em;
+top: 50%;
+margin-top: -1em;
+
+background: lightblue;
+height: 2em;
+width: 2em;
+line-height: 2em;
+text-align: center;
+font-weight: bold;
+}
+
+/* number hover */
+.rectangle-list p:after
+{
+position: absolute;
+left: -1em;
+top: 50%;
+margin-top: -.5em;
+
+content: '';
+border: .5em solid transparent;
+
+-webkit-transition: all .3s ease-out;
+-moz-transition: all .3s ease-out;
+-ms-transition: all .3s ease-out;
+-o-transition: all .3s ease-out;
+transition: all .3s ease-out;
+}
+
+.rectangle-list p:hover:after
+{
+left: -.5em;
+border-left-color: lightblue;
+}
+
+.container{background-color:#f1f1f1;}
+.watch-card{margin-top:50px;margin-bottom:50px;}
+.watch-card > div{max-width:300px;}
+.watch-card:hover .artist-title a, .watch-card:hover .listing-tab .tab-content ul li a{color:#167ac9;}
+.listing-tab .tab-content ul li:hover{cursor:pointer;text-decoration:underline;}
+.artist-title{padding:15px;background:#fff;}
+.artist-title a{test-decoration:none;font-size:21px;font-family:arial, san-serif; color:#555;}
+.artist-title a:hover{color:#16a3de;}
+.artist-collage img{max-width:100%;}
+.artist-collage{position:relative;max-height:150px;overflow:hidden;}
+.artist-collage,.artist-collage div{padding:0;}
+span.play-mix {
+    position: absolute;
+    top: 38%;
+    z-index: 9;
+    left: 30%;
+    border: 3px solid rgba(255,255,255,.25);
+}
+span.btn.play-mix-btn {
+    background-color: #000;
+    padding: 5px 12px;
+    border:none;
+    border-radius: 2px;
+    box-shadow:0 0 70px rgba(255,255,255,.5);
+}
+.collage-rhs img{margin-top:-5px;}
+span.play-mix-btn:hover {
+    box-shadow: 0 0 80px rgba(255,255,255,.9);
+}
+.listing-tab{
+    padding:0;
+}.related-artist .artist-next{padding-left:0;}
+.related-artist .col-md-12{padding-right:0;}
+.play-mix-btn span {
+    color: #1775bc;
+}
+.related-artist img{width:100%;}
+.related-artist h3 {
+    font-size: 17px;
+    margin-left: 15px;
+    margin-top: 9px;
+}.related-artist{overflow:hidden;padding-bottom:10px;}
+.listing-tab .tab-content ul{padding:0;margin:0;}
+.listing-tab .tab-content ul li {
+    list-style-type: none;
+    border-bottom: 1px solid #eee;
+    padding: 8px;
+}.listing-tab .tab-content ul li {
+    list-style-type: none;
+    border-bottom: 1px solid #eee;
+    padding: 8px;
+    padding-left: 20px;
+    font-size: 13px;
+    color: #666;
+}.listing-tab .tab-content ul li a{text-decoration:none; color:#666;}
+.listing-tab .tab-content ul li span{display:inline-block;float:right;padding-right:10px;}
+.listing-tab .nav-tabs>li,.nav-tabs>li a:hover{margin-bottom:0;background:none;}
+.listing-tab .nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus{border:none;background:none;}
+.listing-tab .nav-tabs>li>a:hover{border-color:none;color:red;}
+.listing-tab .nav-tabs>li>a{border:0;padding:17px 0 7px;color:#333;margin-left:15px;}
+.listing-tab .nav-tabs>li.active>a{border-bottom:2px solid #bb0000;color:#000;}
+.listing-tab{background-color:#fff;}
+#catlist{
+    border-bottom:none;
+    font-weight:normal;
+	margin:10px auto;
+}
+#catlist dl{
+
+	margin:0 auto;
+border-style:solid;
+border-color:#f3f3f3;
+border-width:2px;
+	padding:10px;
+	overflow:hidden;
+}
+#catlist dd{overflow:auto}
+#catlist dt strong{
+	float:right;
+	padding:0 0 0 20px;
+}
+#catlist dt img{
+	float:left;
+	margin:0 10px 0 0;
+	border:1px solid #000;
+}
+
+.panel.panel-horizontal {
+    display:table;
+    width:100%;
+}
+.panel.panel-horizontal > .panel-heading, .panel.panel-horizontal > .panel-body, .panel.panel-horizontal > .panel-footer {
+    display:table-cell;
+}
+.panel.panel-horizontal > .panel-heading, .panel.panel-horizontal > .panel-footer {
+    width: 25%;
+    border:0;
+    vertical-align: middle;
+}
+.panel.panel-horizontal > .panel-heading {
+    border-right: 1px solid #ddd;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 4px;
+
+}
+.panel.panel-horizontal > .panel-footer {
+    border-left: 1px solid #ddd;
+    border-top-left-radius: 0;
+    border-bottom-right-radius: 4px;
+}
+
+.email {
+    font-size: 1em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+       .title-header {padding: .75rem 1.25rem; background-color: #f5f5f5; border-bottom: 1px solid rgba(0,0,0,.125);}
+.title-header h3 {font-size: 0.80rem; margin: 0;}
+.img-card {width: 100%; margin-bottom: .40rem;}
+.filmes {margin-bottom: .60rem;}
+.series {margin-bottom: .60rem;}
+.footer {padding: 1rem 0; margin-top: 2rem; font-size: 80%; text-align: left;}
+.footer p {margin: 0;}
+.footer-links {padding-left: 0; margin-bottom: 1rem;}
+.footer-links li {display: inline-block;}
+.footer a {font-weight: 500; color: inherit;}
+.footer-links li + li {margin-left: 1rem;}
+
+.card-style {
+    display: block;
+    background-color: #fff;
+    height: 100px;
+    width: 350px;
+    margin: 20px 0px;
+    box-shadow: 1px 1px 8px #999;
+    cursor: pointer;
+}
+.card-img {
+    height: 100px;
+    width: 100px;
+}
+.media-heading {
+    margin-top: 10px;
+    color: #444;
+}
+
+.members {
+    margin-top: 20px;
+    color: #999;
+    float: left;
+ }
+ .btn-part {
+     display: inline-block;
+     margin: 10px;
+     float: right;
+}
+
 </style>
 <div class="container-fluid">
+
     <div class="row">
         <div class="col-md-6">
+
+        <div class="container-fluid">
+        <div class="row-fluid">
             <div class="panel">
+            <div class="panel-heading text-white">User info</div>
+            <div class="panel-body" id="userprofileinfocontainer">
+
+            </div>
+                <script type="text/html" id="userprofileinfotemplate">
+                  <p>{{:user.displayName}}</p>
+                  <address>
+                      <strong>{{:user.firstName}} {{:user.lastName}}</strong><br>
+                       <strong>{{:user.firstName}} {{:user.lastName}}</strong><br>
+                      <abbr title="Email">Email:</abbr> <i class="icon-globe"></i> {{:user.username}}@seatfilla.com
+                  </address>
+                </script>
+            </div>
+        </div>
+    </div>
+    <section class="filmes" id="filmes">
+	<div class="row-fluid">
+		<div class="col-sm-6">
+			<article class="card">
+				<header class="title-header">
+					<h3>Movie Title</h3>
+				</header>
+				<div class="card-block">
+					<div class="img-card">
+						<img src="https://placehold.it/300x250&text=Movie" alt="" class="img img-responsive" />
+					</div>
+					<p class="tagline card-text text-xs-center">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+					<a href="#" class="btn btn-info btn-block"><i class="fa fa-eye"></i> Watch Now</a>
+				</div>
+			</article>
+		</div>
+		<div class="col-sm-6">
+    		<article class="card">
+				<header class="title-header">
+					<h3>Movie Title</h3>
+				</header>
+				<div class="card-block">
+					<div class="img-card">
+						<img src="https://placehold.it/300x250&text=Movie" alt=""  class="img img-responsive"/>
+					</div>
+					<p class="tagline card-text text-xs-center">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+					<a href="#" class="btn btn-info btn-block"><i class="fa fa-eye"></i> Watch Now</a>
+				</div>
+			</article>
+		</div>
+    	<div class="col-sm-6">
+    		<article class="card">
+				<header class="title-header">
+					<h3>Movie Title</h3>
+				</header>
+				<div class="card-block">
+					<div class="img-card">
+						<img src="https://placehold.it/300x250&text=Movie" alt=""  class="img img-responsive"/>
+					</div>
+					<p class="tagline card-text text-xs-center">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+					<a href="#" class="btn btn-info btn-block"><i class="fa fa-eye"></i> Watch Now</a>
+				</div>
+			</article>
+		</div>
+    	<div class="col-sm-6">
+    		<article class="card">
+				<header class="title-header">
+					<h3>Movie Title</h3>
+				</header>
+				<div class="card-block">
+					<div class="img-card">
+						<img src="https://placehold.it/300x250&text=Movie" alt=""  class="img img-responsive"/>
+					</div>
+					<p class="tagline card-text text-xs-center">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+					<a href="#" class="btn btn-info btn-block"><i class="fa fa-eye"></i> Watch Now</a>
+				</div>
+			</article>
+		</div>
+	</div>
+</section>
+<br/>
+          <section>
+        <div class="container-fluid">
+
+            <div class="clearfix"></div>
+                <div class="tabbable-panel margin-tops4 ">
+                <div class="tabbable-line">
+                    <ul class="nav nav-tabs tabtop  tabsetting">
+                    <li class="active"> <a href="#tab_default_1" data-toggle="tab"> Flight requests </a> </li>
+                    <li> <a href="#tab_default_2" data-toggle="tab"> Accepted flight requests</a> </li>
+
+                    </ul>
+                    <div class="tab-content margin-tops">
+                    <div class="tab-pane active fade in" id="tab_default_1">
+                             <div class="panel">
                 <div class="panel-heading">
-                    <p>
+                    <p class="text-white">
                         <%=data.UserProfile.user.displayName%>'s latest bids</p>
                 </div>
                 <div class="table-responsive" style="padding:20px">
@@ -273,12 +612,100 @@
                                     </div>
                                 </td>
                             </tr>
+                              <tr class="">
+                                <td>
+                                    <div class="media">
+                                        <a href="#" class="pull-left">
+                                            <img alt="..." src="http://bootdey.com/img/Content/avatar/avatar1.png" width="50" height="50" class="media-object">
+                                        </a>
+                                        <div class="media-body">
+                                            <p class="email-summary"><strong>Commits pushed</strong> Lorem ipsum dolor sit amet, consectetur adipisicing elit... <span class="label label-success">New</span> </p>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                              <tr class="">
+                                <td>
+                                    <div class="media">
+                                        <a href="#" class="pull-left">
+                                            <img alt="..." src="http://bootdey.com/img/Content/avatar/avatar1.png" width="50" height="50" class="media-object">
+                                        </a>
+                                        <div class="media-body">
+                                            <p class="email-summary"><strong>Commits pushed</strong> Lorem ipsum dolor sit amet, consectetur adipisicing elit... <span class="label label-success">New</span> </p>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                <!-- /.table-responsive -->
+            </div>
+            <!--panel-->
+                    </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="tab_default_2">
+                    <div class="panel panel-deault">
+                             <div class="panel">
+                <div class="panel-heading ">
+                    <p class="text-white">
+                        <%=data.UserProfile.user.displayName%>'s latest bids</p>
+                </div>
+                <div class="table-responsive" style="padding:20px">
+                    <table class="table table-hover table-email">
+                        <tbody>
+                            <tr class="">
+                                <td>
+                                    <div class="media">
+                                        <a href="#" class="pull-left">
+                                            <img alt="..." src="http://bootdey.com/img/Content/avatar/avatar1.png" width="50" height="50" class="media-object">
+                                        </a>
+                                        <div class="media-body">
+                                            <p class="email-summary"><strong>Commits pushed</strong> Lorem ipsum dolor sit amet, consectetur adipisicing elit... <span class="label label-success">New</span> </p>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                              <tr class="">
+                                <td>
+                                    <div class="media">
+                                        <a href="#" class="pull-left">
+                                            <img alt="..." src="http://bootdey.com/img/Content/avatar/avatar1.png" width="50" height="50" class="media-object">
+                                        </a>
+                                        <div class="media-body">
+                                            <p class="email-summary"><strong>Commits pushed</strong> Lorem ipsum dolor sit amet, consectetur adipisicing elit... <span class="label label-success">New</span> </p>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                              <tr class="">
+                                <td>
+                                    <div class="media">
+                                        <a href="#" class="pull-left">
+                                            <img alt="..." src="http://bootdey.com/img/Content/avatar/avatar1.png" width="50" height="50" class="media-object">
+                                        </a>
+                                        <div class="media-body">
+                                            <p class="email-summary"><strong>Commits pushed</strong> Lorem ipsum dolor sit amet, consectetur adipisicing elit... <span class="label label-success">New</span> </p>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
                 <!-- /.table-responsive -->
             </div>
             <!--panel-->
+                    </div>
+                    </div>
+
+                    </div>
+                </div>
+                </div>
+            </div>
+            </section>
+
             <div class="col-xs-12">
                 <div class="panel panel-default" style="padding:40px">
                     <div class="panel-body">
@@ -391,14 +818,302 @@
                             </div>
                         </div>
                         <!-- /.row -->
+
+
                     </div>
                 </div>
             </div>
             <!--col-->
+
+            <div class="container-fluid">
+            <div class="row">
+
+                <div id="catlist">
+            <dl>
+                <dt><img src="http://placehold.it/300x200" alt="Product image" width="93" height="62" /><strong>Some info text here</strong><a href="#">The Name of the Product Goes here</a></dt>
+                <dd>
+                    <p>The description of whatever the heading is about goes here. The description of whatever the heading is about goes here.The description of whatever the heading is about goes here.</p>
+                </dd>
+            </dl>
+            <dl>
+                <dt><img src="http://placehold.it/300x200" alt="Product image" width="93" height="62" /><strong>Some info text here</strong><a href="#">The Name of the Product Goes here</a></dt>
+                <dd>
+                    <p>The description of whatever the heading is about goes here. The description of whatever the heading is about goes here.The description of whatever the heading is about goes here.</p>
+                    <p>Another line of text to show that it doesn't wrap under the image. Another line of text to show that it doesn't wrap under the image. </p>
+                </dd>
+            </dl>
+            <dl>
+                <dt><img src="http://placehold.it/300x200" alt="Product image" width="93" height="62" /><strong>Some info text here</strong><a href="#">The Name of the Product Goes here but with a longer line so that it wraps to the next line.</a></dt>
+                <dd>
+                    <p>The description of whatever the heading is about goes here. The description of whatever the heading is about goes here.The description of whatever the heading is about goes here.</p>
+                </dd>
+            </dl>
+            <dl>
+                <dt><img src="http://placehold.it/300x200" alt="Product image" width="93" height="62" /><strong>Some info text here</strong><a href="#">The Name of the Product Goes here</a></dt>
+                <dd>
+                    <p>The description of whatever the heading is about goes here. The description of whatever the heading is about goes here.The description of whatever the heading is about goes here.</p>
+                </dd>
+            </dl>
+            <dl>
+                <dt><img src="http://placehold.it/300x200" alt="Product image" width="93" height="62" /><strong>Some info text here</strong><a href="#">The Name of the Product Goes here</a></dt>
+                <dd>
+                    <p>The description of whatever the heading is about goes here. The description of whatever the heading is about goes here.The description of whatever the heading is about goes here.</p>
+                </dd>
+            </dl>
+        </div>
+        </div>
+        </div>
         </div>
         <!--col6-->
+
+        <div class="col-md-6">
+            <div class="row">
+
+
+        <section>
+        <div class="container-fluid">
+
+            <div class="clearfix"></div>
+                <div class="tabbable-panel margin-tops4 ">
+                <div class="tabbable-line">
+                    <ul class="nav nav-tabs tabtop  tabsetting">
+                    <li class="active"> <a href="#tab_default_1" data-toggle="tab"> Flight requests </a> </li>
+                    <li> <a href="#tab_default_2" data-toggle="tab"> Accepted flight requests</a> </li>
+
+                    </ul>
+                    <div class="tab-content margin-tops">
+                    <div class="tab-pane active fade in" id="tab_default_1">
+                        <div class="panel panel-deault">
+                        <div class="panel-heading"><p class="text-white">Flight requests</p></div>
+                        <div class="panel-body" style="overflow-y:scroll;max-height:300px;">
+                        <table border=0 class="rectangle-list">
+                            <tr>
+                                <td>
+                                <ol>
+                                <li><p>There is a 2 drink minimum for all guests with reserved seating tickets</p></li>
+                                <li><p>Dancing is not allowed on the premises. (abc-257 & 253)</p></li>
+                                <li><p>No alcoholic beverages shall be consumed off the premises. (abc-257 & 253)</p></li>
+                                <li><p>Flash photography is not permitted in the lounge.</p></li>
+                                <li><p>Please present tickets upon arrival.</p></li>
+                                </ol>
+                                </td>
+                            </tr>
+                        </table>
+                        </div>
+                    </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="tab_default_2">
+                    <div class="panel panel-deault">
+                        <div class="panel-heading"><p class="text-white">Accepted Flight Requests</p></div>
+                        <div class="panel-body" style="overflow-y:scroll;max-height:300px;">
+                        <table border=0 class="rectangle-list">
+                            <tr>
+                                <td>
+                                <ol>
+                                <li><p>There is a 2 drink minimum for all guests with reserved seating tickets</p></li>
+                                <li><p>Dancing is not allowed on the premises. (abc-257 & 253)</p></li>
+                                <li><p>No alcoholic beverages shall be consumed off the premises. (abc-257 & 253)</p></li>
+                                <li><p>Flash photography is not permitted in the lounge.</p></li>
+                                <li><p>Please present tickets upon arrival.</p></li>
+                                </ol>
+                                </td>
+                            </tr>
+                        </table>
+                        </div>
+                    </div>
+                    </div>
+
+                    </div>
+                </div>
+                </div>
+            </div>
+            </section>
+
+
+          </div>
+
+          <div class="row">
+
+            <div class="artist-title col-md-12">
+                <a href="">Chris Brown</a><br/>
+                <span>Music</span>
+            </div>
+            <div class="artist-collage col-md-12">
+                <span class="play-mix"><span class="btn btn-info play-mix-btn"> <span>►</span> YouTube Mix</span></span>
+                <div class="col-md-6"><img src="http://i.ytimg.com/i/MXDyVR2tclKWhbqNforSyA/mq1.jpg" alt="artist-image" width="150" height="150"></div>
+                <div class="col-md-6 collage-rhs">
+                    <div class="col-md-12"><img src="http://i.ytimg.com/vi/8gyLR4NfMiI/mqdefault.jpg" alt="artist-image" width="150" height="84"></div>
+                    <div class="col-md-12"><img src="http://i.ytimg.com/vi/zKCrSN9oXgQ/mqdefault.jpg" alt="artist-image" width="150" height="84"></div>
+                </div>
+            </div>
+            <div class="listing-tab col-md-12">
+                  <!-- Nav tabs -->
+                  <ul class="nav nav-tabs" id="myTabs" role="tablist">
+                    <li role="presentation" class="active"><a href="#track" aria-controls="track" role="tab" data-toggle="tab">Top tracks</a></li>
+                    <li role="presentation"><a href="#albums" aria-controls="albums" role="tab" data-toggle="tab">Albums</a></li>
+                  </ul>
+
+                  <!-- Tab panes -->
+                  <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="track">
+                        <ul>
+                            <li><a href="#">Loyal</a>    <span>4:31</span></li>
+                            <li><a href="#">Ayo</a> <span>6:01</span></li>
+                            <li><a href="#">Look at Me Now</a>  <span>4:09</span></li>
+                            <li><a href="#">Liquor</a>  <span>3:51</span></li>
+                            <li><a href="#">Love More</a>   <span>4:15</span></li>
+                            <li><a href="#">Bitches N Marijuana</a> <span>4:17</span></li>
+                            <li><a href="#">Don't Judge Me</a>  <span>4:52</span></li>
+                            <li><a href="#">Turn Up the Music</a>   <span>4:18</span></li>
+                            <li><a href="#">With You</a>  <span>4:16</span></li>
+                            <li><a href="#">Next to You</a> <span>6:04</span></li>
+                            <li><a href="#">View all</a></li>
+                        </ul>
+                        <div class="related-artist">
+                            <h3>Related artist</h3>
+                            <div class="col-md-12">
+                                <div class="col-md-4 artist-next"><img src="http://i.ytimg.com/i/vWtix2TtWGe9kffqnwdaMw/mq1.jpg" alt="" >Rihanna</div>
+                                <div class="col-md-4 artist-next"><img src="http://i.ytimg.com/i/U6cE7pdJPc6DU2jSrKEsdQ/mq1.jpg" alt="" >Drake</div>
+                                <div class="col-md-4 artist-next"><img src="http://i.ytimg.com/i/2-zLDHEP2rEkqwgutb2ctA/mq1.jpg" alt="" >Tyga</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="albums">
+                        <ul>
+                            <li><a href="#"><img src="http://i.ytimg.com/p/PL-o37YO_uwcLPmR8QBTegC2BoJ03I3tqe/mqdefault.jpg" alt="" width="50" height="50"> Kiss kiss</a></li>
+
+                        </ul>
+                        <div class="related-artist">
+                            <h3>Related artist</h3>
+                            <div class="col-md-12">
+                                <div class="col-md-4 artist-next"><img src="http://i.ytimg.com/i/vWtix2TtWGe9kffqnwdaMw/mq1.jpg" alt="" >Rihanna</div>
+                                <div class="col-md-4 artist-next"><img src="http://i.ytimg.com/i/U6cE7pdJPc6DU2jSrKEsdQ/mq1.jpg" alt="" >Drake</div>
+                                <div class="col-md-4 artist-next"><img src="http://i.ytimg.com/i/2-zLDHEP2rEkqwgutb2ctA/mq1.jpg" alt="" >Tyga</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+
+        <div class="row">
+          <div class="container-fluid">
+              <div class="row">
+                  <div class="col-md-12">
+                      <div class="panel panel-default">
+                          <div class="panel-heading"><strong><a class="post-title" href="#">Post Title</a></strong></div>
+                              <div class="panel-body">
+                                  <div class="col-md-12">
+                                      <a href="#" class="thumbnail"><img class="img-responsive img-thumbnail" src="http://placehold.it/260x180" alt=""></a>
+                                  </div>
+                                      <p>Lorem ipsum dolor sit amet, id nec conceptam conclusionemque. Et eam tation option. Utinam salutatus ex eum. Ne mea dicit tibique facilisi, ea mei omittam explicari conclusionemque ad nobis propriae quaerendum sea. sum dolor sit amet, id nec conceptam conclusionemque.sum dolor sit amet.
+                                      </p>
+
+                              </div>
+                          <div class="panel-footer">
+                              <span class="glyphicon glyphicon-user" id="start"></span> <label id="started">By</label> <a href="#" id="startedby">Admin</a> |
+                              <span class="glyphicon glyphicon-eye-open" id="visit"></span> <a href="#" id="visited">Visited</a> |
+                              <span class="glyphicon glyphicon-comment" id="comment"></span> <a href="#" id="comments">Comments</a> |
+                              <a href="#"><span class="label label-info">Tutorials</span></a>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+        </div>
+
+
+<div class="container-fluid">
+    <div class="row">
+
+
+
+        <!-- Design Group 'pending request' -->
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-4 col-sm-6">
+                    <div class="card-style">
+                        <div class="media">
+
+                            <div class="media-left">
+                                <img class="media-object img-thumbnail card-img" src="https://goo.gl/Xfk2oe">
+                            </div>
+
+                            <div class="media-body">
+                                <a href="#"><p class="media-heading">Disc. Programação Internet Rica - 2016.2</p></a>
+                                <div class="members"><small>1.235 Members</small></div>
+                                <div class="btn btn-sm btn-primary btn-part">Pending Request</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Design Group with badge activity counter (If you are already a member) -->
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6 col-sm-6">
+                    <div class="card-style">
+                        <div class="media">
+
+                            <div class="media-left">
+                                <img class="media-object img-thumbnail card-img" src="https://goo.gl/T99N2c">
+                            </div>
+
+                            <div class="media-body">
+                                <a href="#"><p class="media-heading">HTML5 + CSS3 Dev's</p></a>
+                                <span class="members"><small>1.235 Members</small></span>
+                                <span class="badge">+99</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+</div>
+        </div>
+
+        </div>
+    </div>
+
+<!--COMMENTS-->
+<div class="container-fluid">
+    <div class="row">
+        <!-- Contenedor Principal -->
+        <div class=" pull-left">
+            <div class="panel-heading material-blue-6 text-white">Comments</div>
+         <div class="">
+            <br/>
+            <form class="commentForm" action="/userprofilecomment/create" method="POST">
+
+                    <label for="message">Your Comment</label>
+                    <br/>
+                    <textarea name="message" id="top-level-comment-message" required="" data-msg="Please enter a message" class="form-control" rows="5"></textarea>
+                    <input type="hidden" name="userProfile" value="<%=data.UserProfile.id%>"/>
+                    <input type="hidden" name="isReply" value="false"/>
+                    <br/>
+                    <button type="submit" class="btn pull-right material-blue-7 text-white">Post comment</button>
+                    <br/><br/>
+
+            </form>
+            </div>
+
+            <ul id="userprofilecommentcontainer" class="comments-list">
+                <!--COMMENTS RENDERED HERE-->
+            </ul>
+            <br/>
+            <button class="btn btn-block material-blue-5 text-white">More comments</button>
+        <!--container--></div>
     </div>
 </div>
+<!--COMMENTS-->
+</div>
+
 <!--  statitics -->
 <script type="text/html" id="userprofilecommentreplytemplate">
     <li data-attr-eventName="userprofilecommentreply" data-attr-id="{{:id}}">
@@ -475,41 +1190,11 @@
                             </button>
                         </div>
                     </div>
-                </div>  
+                </div>
             </form>
         </div>
     </li>
 </script>
-<!--COMMENTS-->
-<div class="container-fluid">
-    <div class="row">
-        <!-- Contenedor Principal -->
-        <div class="comments-container pull-left">
-            <div class="panel-heading material-blue-6 text-white">Comments</div>
-         <div class="container-fluid">
-            <br/>
-            <form class="commentForm" action="/userprofilecomment/create" method="POST">
-                
-                    <label for="message">Your Comment</label>
-                    <br/>
-                    <textarea name="message" id="top-level-comment-message" required="" data-msg="Please enter a message" class="form-control" rows="5"></textarea>
-                    <input type="hidden" name="userProfile" value="<%=data.UserProfile.id%>"/>
-                    <input type="hidden" name="isReply" value="false"/>
-                    <br/>
-                    <button type="submit" class="btn pull-right material-blue-7 text-white">Post comment</button>
-                    <br/><br/>
-              
-            </form>
-            </div>
-      
-            <ul id="userprofilecommentcontainer" class="comments-list">
-                <!--COMMENTS RENDERED HERE-->
-            </ul>
-            <br/>
-            <button class="btn btn-block material-blue-5 text-white">More comments</button>
-        <!--container--></div>
-    </div>
-</div>
-<!--COMMENTS-->
+
 <!--Lazily loaded script-->
 <div style="display:hidden;" data-attr-lazyload-sync="" data-attr-src="/scripts/user-profile.findOneByUser.js"></div>

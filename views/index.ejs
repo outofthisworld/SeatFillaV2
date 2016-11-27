@@ -10,7 +10,7 @@
 }
 
 nav.left-nav {
- 
+
   width: 100%;
   height: 100%;
   position: fixed;
@@ -82,7 +82,7 @@ nav.left-nav ul li:hover {
   top: 7px;
 }
 .openNav.open {
-  
+
 }
 .openNav.open .icon {
   background-color: transparent;
@@ -132,7 +132,7 @@ div.seatfilla-container{
 	border-radius:5px;
 	max-height:306px;
 	overflow:hidden;
-}	
+}
 div.seatfilla-menu{
   padding-right: 0;
   padding-left: 0;
@@ -224,20 +224,20 @@ div.seatfilla div.seatfilla-content:not(.active){
 			position: relative;
 			width: 100%;
 		}
-		
+
 		.bid-list{
 			height: inherit;
 			width: 100%;
 			overflow: hidden;
 		}
-		
+
 		.bid-list a {
 			width: 100%;
 			text-decoration: none;
 			display: block;
 			color: #000;
 		}
-		
+
 		.list-control {
 			position: absolute;
 			width: 100%;
@@ -252,30 +252,30 @@ div.seatfilla div.seatfilla-content:not(.active){
 		}
 		.list .up{
 			top: 0;
-	
+
 		}
-		
+
 		.list .up:hover{
 			top: 0;
-		
+
 		}
 		.list .down{
 			bottom: 0;
 
 		}
-		
+
 		.list .down:hover{
 			bottom: 0;
 		}
-	
+
 		.control-height{
 			height: 45px;
 		}
-		
+
 		.list .list-group{
 			margin-bottom: 0;
 		}
-		
+
 		.arrow{
 			top: 13px;
 		}
@@ -288,7 +288,7 @@ div.seatfilla div.seatfilla-content:not(.active){
 <script>
 $(document).ready(function(){
 	var open = false;
-	
+
 	function toggleNav(){
 		$("body").toggleClass("navOpen");
 		$("nav").toggleClass("open");
@@ -376,7 +376,7 @@ $(".down").bind("click", function(event) {
 				dropdownAutoWidth : true
     });
 })
-	
+
 
 </script>
 </head>
@@ -398,7 +398,7 @@ $(".down").bind("click", function(event) {
 <div class="wrapper">
  	 												<paper-material elevation="5">
 <section id="top" class="site-wrapper" style="height:90vh;">
- 
+
     <div class="site-wrapper-inner">
 
         <div class="masthead clearfix wow fadeIn" data-wow-delay=".9s">
@@ -410,8 +410,8 @@ $(".down").bind("click", function(event) {
 
         <div class="container">
             <div class="">
-          <h4 class="text-white wow fadeInRightBig">get where you need to go</h4>	
-								
+          <h4 class="text-white wow fadeInRightBig">get where you need to go</h4>
+
 <div class="container wow fadeInLeftBig">
     <div class="row">
         <div class="col-lg-5 col-md-12 col-sm-8 col-xs-9 seatfilla-container">
@@ -420,22 +420,22 @@ $(".down").bind("click", function(event) {
 
                 <a href="#" class="list-group-item ">
                   <i class="glyphicon glyphicon-tasks"></i>Schedule
-                </a>  
+                </a>
                 <a href="#" class="list-group-item ">
                <i class="glyphicon glyphicon-transfer"></i>My trips
                 </a>
-								
- 
+
+
               </ul>
             </div>
             <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9 seatfilla">
-               
-              
+
+
                 <div class="seatfilla-content active">
-																
+
 												<div class="row">
 																	<div class="col-xs-8 col-sm-8 col-md-8">
-							
+
 																				<form role="form">
 																					<div class="row">
 																						<div class="col-xs-6 col-sm-6 col-md-6">
@@ -476,32 +476,32 @@ $(".down").bind("click", function(event) {
 																							</div>
 																						</div>
 																					</div>
-																		
+
 																					<input type="submit" value="Register" class="btn btn-default btn-block">
-																		
+
 																				</form>
-																				
+
 																	</div><!--col-8-->
 
 																	<div class="col-xs-4">
 																	     <ul class="list-group" style="height:100%;margin:0px;padding:10px;">
-																		
+
 																				<a href="#" class="list-group-item " style="background-color:orange;color:white;border-radius:0px;border-width:2px;border-color:white;border-style:solid;margin:2px;">
 																					<i class="fa fa-search fa-5x"></i>
-																				</a>  
-																						
+																				</a>
+
 																	<a href="#" class="list-group-item " style="background-color:orange;color:white;border-radius:0px;border-width:2px;border-color:white;border-style:solid;margin:2px;">
 																					<i class="fa fa-map fa-5x"></i>
 																				</a>
 																			</ul>
 																	</div>
-																												
-																
+
+
 											</div>
 
                 </div>
-    
-               
+
+
                 <div class="seatfilla-content">
                     <center>
                       <h1 class="glyphicon glyphicon-transfer" style="font-size:12em;color:#00001a"></h1>
@@ -509,13 +509,13 @@ $(".down").bind("click", function(event) {
                       <h3 style="margin-top: 0;color:#00001a">MY Trips </h3>
                     </center>
                 </div>
-                
-								
-               
+
+
+
             </div>
         </div>
   </div>
-</div> 
+</div>
 </section>
 </paper-material>
 
@@ -549,10 +549,10 @@ $(".down").bind("click", function(event) {
 		<h2 class="">Check out these offers in your area</h2>
 		<div class="container-fluid">
             <div id="flights-2" class="carousel slide wow fadeInRight">
-                
+
                 <!-- Carousel items -->
                 <div class="carousel-inner">
-           
+
 							<% (function loadItems1(){for(var i = 0; i < 12 && data.images.length;i+=4){ %>
 											<%if(i==0){%>
 											 <div class="item active">
@@ -576,7 +576,7 @@ $(".down").bind("click", function(event) {
 											</div>
 								<%}})()%>
 
-					
+
                 </div>
                 		<div class="" style="width:110%;position:absolute;bottom:50%;">
 							 <div class="col-xs-6">
@@ -594,10 +594,10 @@ $(".down").bind("click", function(event) {
 
 				<div class="container-fluid">
             <div id="flights-2" class="carousel slide wow fadeInLeft">
-                
+
                 <!-- Carousel items -->
                 <div class="carousel-inner">
-           
+
 							<% (function loadItems2(){for(var i = 12; i < 24 && i < data.images.length;i+=4){ %>
 											<%if(i==12){%>
 											 <div class="item active">
@@ -621,7 +621,7 @@ $(".down").bind("click", function(event) {
 											</div>
 								<%}})()%>
 
-					
+
                 </div>
                 <div class="" style="width:110%;position:absolute;bottom:50%;">
 							 <div class="col-xs-6">
@@ -640,14 +640,14 @@ $(".down").bind("click", function(event) {
 
 				<div class="container-fluid">
             <div id="flights-3" class="carousel slide wow fadeInRight">
-                
+
                 <!-- Carousel items -->
                 <div class="carousel-inner">
-           
+
 							<% (function loadItems3(){
-								
+
 								for(var i = 24; i < 36 && data.images.length;i+=4){ %>
-				
+
 											<%if(i==24){%>
 											 <div class="item active">
 											<%}else{%>
@@ -655,7 +655,7 @@ $(".down").bind("click", function(event) {
 											<%}%>
 											<div class="row">
 											<%for(var j = 0; (j < 4) && (j + i < data.images.length);j++){%>
-							
+
 												      <div class="col-sm-6 col-md-6 col-lg-3 portfolio-item no-pad">
 															<a data-target="#portfolioModal2" class="portfolio-link" data-toggle="modal">
 																	<div class="caption">
@@ -671,7 +671,7 @@ $(".down").bind("click", function(event) {
 											</div>
 								<%}})()%>
 
-					
+
                 </div>
 
 							<div class="" style="width:110%;position:absolute;bottom:50%;">
@@ -1062,222 +1062,7 @@ $(".down").bind("click", function(event) {
 
 
 
-<section id="section3bg">
-<div class="container">
-    <div class="col-md-3">
 
-
-             <header>
-                <h2 class="text-center">Latest bids</h2>
-              </header>
-         
-
-					<aside>
-<div class="row">
-		<div class="">
-					<div class="">
-					</div>
-            		
-             	<div class="list">
-						<div class="bid-list">
-						
-						<div class="list-group">
-							<div class="control-height list-group-item"></div>
-							<a class="list-group-item" href="#">lorem ipsum
-								<span class="badge blue">32</span>
-							</a>
-							
-							<a class="list-group-item" href="#">lorem ipsum
-								<span class="badge blue">32</span>
-							</a>
-							<a class="list-group-item" href="#">lorem ipsum
-								<span class="badge blue">32</span>
-							</a>
-							<a class="list-group-item" href="#">lorem ipsum
-								<span class="badge blue">32</span>
-							</a>
-							<a class="list-group-item" href="#">lorem ipsum
-								<span class="badge blue">32</span>
-							</a>
-							<a class="list-group-item" href="#">lorem ipsum
-								<span class="badge blue">32</span>
-							</a>
-							<a class="list-group-item" href="#">lorem ipsum
-								<span class="badge blue">32</span>
-							</a>
-							<a class="list-group-item" href="#">lorem ipsum
-								<span class="badge blue">32</span>
-							</a>
-							<a class="list-group-item" href="#">lorem ipsum
-								<span class="badge blue">32</span>
-							</a>
-							<a class="list-group-item" href="#">lorem ipsum
-								<span class="badge blue">32</span>
-							</a>
-							<a class="list-group-item" href="#">lorem ipsum
-								<span class="badge blue">32</span>
-							</a>
-							<a class="list-group-item" href="#">lorem ipsum
-								<span class="badge blue">32</span>
-							</a>
-							<a class="list-group-item" href="#">lorem ipsum
-								<span class="badge blue">32</span>
-							</a>
-							<div class="control-height list-group-item"></div>
-							</div>
-							
-							
-						</div>
-						<a class="list-control control-height up" href="#">
-							<span class="block-center glyphicon glyphicon-chevron-up arrow" aria-hidden="true"></span>
-						</a>
-						<a class="list-control control-height down" href="#">
-           					<span class="glyphicon glyphicon-chevron-down arrow" aria-hidden="true"></span>
-           				</a>
-             		</div>
-              	</div>
-	</div>
-
-					</aside>
-
-					
-    	</div>
-		
-    <div class="col-xs-12 col-md-9 container wow slideInRight">
-    <h2 class="text-center">Flight deals</h2>
-		  <!-- Projects Row -->
-        <div class="row">
-            <div class="col-md-4 portfolio-item">
-                <a href="#">
-                    <img class="img-responsive" src="http://placehold.it/700x400" alt="">
-                </a>
-								<div class="container-fluid text-white">
-                <div class="text-center">
-								<hr/>
-                    <a href="#"><h1 class="">Project Name</h1></a>
-								<hr/>
-                </div>
-				
-                <p class="">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p>
-								</div>
-					  </div>
-            <div class="col-md-4 portfolio-item">
-                <a href="#">
-                    <img class="img-responsive" src="http://placehold.it/700x400" alt="">
-                </a>
-                <h3>
-                    <a href="#">Project Name</a>
-                </h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p>
-            </div>
-            <div class="col-md-4 portfolio-item">
-                <a href="#">
-                    <img class="img-responsive" src="http://placehold.it/700x400" alt="">
-                </a>
-                <h3>
-                    <a href="#">Project Name</a>
-                </h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p>
-            </div>
-        </div>
-        <!-- /.row -->
-
-        <!-- Projects Row -->
-        <div class="row">
-            <div class="col-md-4 portfolio-item">
-                <a href="#">
-                    <img class="img-responsive" src="http://placehold.it/700x400" alt="">
-                </a>
-                <h3>
-                    <a href="#">Project Name</a>
-                </h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p>
-            </div>
-            <div class="col-md-4 portfolio-item">
-                <a href="#">
-                    <img class="img-responsive" src="http://placehold.it/700x400" alt="">
-                </a>
-                <h3>
-                    <a href="#">Project Name</a>
-                </h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p>
-            </div>
-            <div class="col-md-4 portfolio-item">
-                <a href="#">
-                    <img class="img-responsive" src="http://placehold.it/700x400" alt="">
-                </a>
-                <h3>
-                    <a href="#">Project Name</a>
-                </h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p>
-            </div>
-        </div>
-
-        <!-- Projects Row -->
-        <div class="row">
-            <div class="col-md-4 portfolio-item">
-                <a href="#">
-                    <img class="img-responsive" src="http://placehold.it/700x400" alt="">
-                </a>
-                <h3>
-                    <a href="#">Project Name</a>
-                </h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p>
-            </div>
-            <div class="col-md-4 portfolio-item">
-                <a href="#">
-                    <img class="img-responsive" src="http://placehold.it/700x400" alt="">
-                </a>
-                <h3>
-                    <a href="#">Project Name</a>
-                </h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p>
-            </div>
-            <div class="col-md-4 portfolio-item">
-                <a href="#">
-                    <img class="img-responsive" src="http://placehold.it/700x400" alt="">
-                </a>
-                <h3>
-                    <a href="#">Project Name</a>
-                </h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p>
-            </div>
-        </div>
-        <!-- /.row -->
-				</div>
-		</section>
-
-
-
-
-<section id="action-parallax2" class="" data-speed="4" data-type="background">
-    <div class="overlay-dark"></div>
-    <div class="container text-center wow fadeIn">
-        <h2>SOME FACTS</h2>
-        <div class="row">
-            <div class="col-sm-3">
-                <i class="icon icon-heading ion-ios-monitor size-64"></i>
-                <span class='numscroller' data-min='0' data-max='29' data-delay='7' data-increment="2">0</span>
-                Themes released
-            </div>
-            <div class="col-sm-3">
-                <i class="icon icon-heading ion-ios-body size-64"></i>
-                <span class='numscroller' data-min='0' data-max='2775' data-delay='7' data-increment="10">0</span>
-                Community members
-            </div>
-            <div class="col-sm-3">
-                <i class="icon icon-heading ion-trophy size-64"></i>
-                <span class='numscroller' data-min='0' data-max='7' data-delay='3' data-increment="1">0</span>
-                Winning awars
-            </div>
-            <div class="col-sm-3">
-                <i class="icon icon-heading ion-android-checkmark-circle size-64"></i>
-                <span class='numscroller' data-min='0' data-max='78' data-delay='7' data-increment="3">0</span>
-                Completed project
-            </div>
-        </div>
-    </div>
-</section>
 
 <section>
 <div class="container">
@@ -1335,7 +1120,7 @@ $(".down").bind("click", function(event) {
                             </div>
                         </li>
                     </ul>
-              </div><!-- /Slide1 --> 
+              </div><!-- /Slide1 -->
             <div class="item">
                     <ul class="thumbnails">
                           <li class="col-sm-3">
@@ -1387,10 +1172,10 @@ $(".down").bind("click", function(event) {
                             </div>
                         </li>
                     </ul>
-              </div><!-- /Slide2 --> 
+              </div><!-- /Slide2 -->
             <div class="item">
                     <ul class="thumbnails">
-                        <li class="col-sm-3">	
+                        <li class="col-sm-3">
 							<div class="fff">
 								<div class="thumbnail">
 									<a href="#"><img src="http://placehold.it/360x240" alt=""></a>
@@ -1439,7 +1224,7 @@ $(".down").bind("click", function(event) {
                             </div>
                         </li>
                     </ul>
-              </div><!-- /Slide3 --> 
+              </div><!-- /Slide3 -->
         </div>
 	   <nav>
 			<ul class="control-box pager">
@@ -1447,54 +1232,11 @@ $(".down").bind("click", function(event) {
 				<li><a data-slide="next" href="#myCarousel" class=""><i class="glyphicon glyphicon-chevron-right"></i></li>
 			</ul>
 		</nav>
-	   <!-- /.control-box -->   
-                              
+	   <!-- /.control-box -->
+
     </div><!-- /#myCarousel -->
 	</div>
 
-</section>
-
-<!-- testimonials -->
-<section id="testimonials">
-    <div class="container wow fadeIn">
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <h2 class="text-center">Testimonials</h2>
-                <div id="carousel-testimonials" class="carousel slide carousel-fade" data-ride="carousel">
-                    <!-- Indicators -->
-                    <ol class="carousel-indicators">
-                        <li data-target="#carousel-testimonials" data-slide-to="0" class="active"></li>
-                        <li data-target="#carousel-testimonials" data-slide-to="1"></li>
-                        <li data-target="#carousel-testimonials" data-slide-to="2"></li>
-                    </ol>
-                    <!-- Wrapper for slides -->
-                    <div class="carousel-inner" role="listbox">
-                        <div class="item active">
-                            <img src="img/avatar1.jpg" alt="">
-                            <div class="carousel-caption">
-                                <p class="lead">Thank you very much, the theme is great! Very concise and simple.
-                                    <span class="carousel-name">Richard Kindall, Cover Customer</span></p>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <img src="img/avatar2.jpg" alt="">
-                            <div class="carousel-caption">
-                                <p class="lead">Adorable minimalist theme! Should be working well as a canvas for any upcoming project.
-                                    <span class="carousel-name">David Cohen, Cover Customer</span></p>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <img src="img/avatar3.jpg" alt="">
-                            <div class="carousel-caption">
-                                <p class="lead">Amazing and SUPER easy to incorporate, looks like a great theme, full functionality indeed
-                                    <span class="carousel-name">Jane Navarro, Cover Customer</span></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </section>
 
 
@@ -1539,7 +1281,7 @@ $(".down").bind("click", function(event) {
                     </div>
                 </div>
                 <div class="col-lg-3">
-                    <img src="img/features.jpg" class="img-features2 wow  fadeInRight" data-wow-delay="0.2s" data-wow-duration="2s" alt="responsive">
+                    <img src="images/iphone_6.png" class="img-features2 wow  fadeInRight" data-wow-delay="0.2s" data-wow-duration="2s" alt="responsive">
                 </div>
             </div>
         </div>
@@ -1650,6 +1392,6 @@ $(".down").bind("click", function(event) {
  </div>
 
 
-     
+
 <%- partial ('partials/footer.ejs') %>
 </body>

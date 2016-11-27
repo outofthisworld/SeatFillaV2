@@ -4,16 +4,16 @@
   proceed to a controller action. Because sails services all http methods
   (GET,PUT,DELETE,POST...ect) for each and every controller method/function/action/behaviour,
   it is our responsibility to make sure that each controller action is being invoked via the
-  right method to avoid any security implications. 
+  right method to avoid any security implications.
 
   The policies at this present time include:
-  
+
   1. adminPolicy: Confirms that the requester is an admin and that they are logged in.
-  
-  2. apiPolicy: Confirms that the indivual making the request has made the request using a 
+
+  2. apiPolicy: Confirms that the indivual making the request has made the request using a
   valid API key and secret.
-  
-  3. createAccountPolicy: Ensures that any post request coming in does not contain a user id, 
+
+  3. createAccountPolicy: Ensures that any post request coming in does not contain a user id,
   or boolean values indicating if the email is verified.
 
   4. emailConfirmedPolicy: Ensures that the user is logged in and they have a verified email address.
@@ -124,7 +124,9 @@ module.exports.policies = {
         'api':['passportAuth','viewProfilePolicy','isOwnProfilePolicy'],
         'providerSection':['passportAuth','viewProfilePolicy','isOwnProfilePolicy'],
         'findOneByUser':['viewProfilePolicy'],
-        'flightScheduling':['passportAuth','viewProfilePolicy']
+        'flightScheduling':['passportAuth','viewProfilePolicy'],
+        'find':true,
+        'findOne':true
     },
     UserSettings:{
         '*':false,

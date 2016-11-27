@@ -2,9 +2,7 @@
  * Bid.js
  *
  */
-
 module.exports = {
-
     attributes: {
         bidAmount: {
             type: 'number',
@@ -22,7 +20,9 @@ module.exports = {
             required: true
         },
         user: {
-            model: 'user'
+            model: 'user',
+            notNull:true,
+            required:true,
         }
     }
 };

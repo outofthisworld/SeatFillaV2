@@ -1,9 +1,8 @@
 module.exports = {
     attributes: {
-        hotelInfo: {
-            model: 'HotelInfo',
-            notNull: true,
-            required: true
+        hotels: {
+            collection: 'Hotel',
+            via:'hotelTags'
         },
         tag: {
             type: 'string',

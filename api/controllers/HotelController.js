@@ -1,11 +1,23 @@
 const _find = require('../out/find'),
     _create = require('../out/create'),
     _findOne = require('../out/findOne'),
-    _add = require('../out/add');
+    _add = require('../out/add')
 
 module.exports = {
+    /**
+     *
+     *
+     * @param {any} req
+     * @param {any} res
+     */
     retrieveSkyScannerListings(req, res) {
         async.auto({
+            /**
+             * Attempts to retrieve the users preffered currency.
+             *
+             * @param {any} callback
+             * @returns
+             */
             getPrefferedCurrency: function(callback) {
                 if (req.param('prefferedCurrency'))
                     return callback(null, req.param('prefferedCurrency'))
@@ -18,6 +30,12 @@ module.exports = {
                     return callback(err, null)
                 })
             },
+            /**
+             * Attempts to retrieve the users current location.
+             *
+             * @param {any} callback
+             * @returns
+             */
             getUserLocation: function(callback) {
                 if (req.param('userLocation'))
                     return callback(null, req.param('userLocation'))
@@ -30,6 +48,12 @@ module.exports = {
                     return callback(err, null)
                 })
             },
+            /**
+             * Retrieves the users locacle preference.
+             *
+             * @param {any} callback
+             * @returns
+             */
             getUserLocalePreference: function(callback) {
                 if (req.headers['accept-language'])
                     return callback(null, req.headers['accept-language'])
@@ -42,8 +66,13 @@ module.exports = {
                     return callback(err, null)
                 })
             },
+            /**
+             * Tries to retrieve the most relevent hotel suggestion based on query.
+             *
+             * @param {any} callback
+             * @returns
+             */
             retrieveMostReleventHotel: ['getPrefferedCurrency', 'getUserLocation', 'getUserLocalePreference', function(callback, results) {
-
                 if (req.param('entityId'))
                     return callback(null, {
                         mostRelevent: {
@@ -51,7 +80,7 @@ module.exports = {
                         }
                     })
 
-                sails.log.debug('Getting hotel auto suggest results');
+                sails.log.debug('Getting hotel auto suggest results')
                 sails.log.debug(req.allParams())
 
                 const queryObj = {
@@ -86,8 +115,7 @@ module.exports = {
                         return suggestion
                     })
 
-
-                    sails.log.debug('Found ' + mappedSuggestions.length + ' suggestions for query');
+                    sails.log.debug('Found ' + mappedSuggestions.length + ' suggestions for query')
 
                     return callback(null, {
                         suggestions: (mappedSuggestions.length && mappedSuggestions) ||
@@ -100,6 +128,12 @@ module.exports = {
                     return callback(err, null)
                 })
             }],
+            /**
+             * Builds the session object in order to create a skyscanner session.
+             *
+             * @param {any} suggestion
+             * @returns
+             */
             buildSessionObject: ['retrieveMostReleventHotel', function(callback, results) {
                 const sessionObject = SkyScannerHotelService.getDefaultSessionObject()
                 sails.log.debug('Results are: ' + JSON.stringify(results))
@@ -116,8 +150,8 @@ module.exports = {
                     (((results.getUserLocation && results.getUserLocation.coords && parseFloat(results.getUserLocation.coords.latitude)) || 36.8485) +
                         ',' + ((results.getUserLocation && results.getUserLocation.coords && parseFloat(results.getUserLocation.coords.longitude)) || 174.7633)) + '-latlong'
 
-                sails.log.debug('Entity id was : ' + sessionObject.entityId);
-                // The check in date for the hotel
+                sails.log.debug('Entity id was : ' + sessionObject.entityId)
+                    // The check in date for the hotel
                 sessionObject.checkindate = (req.param('dates') && req.param('dates').departure) || (new Date().toISOString().slice(0, 10))
 
                 // The check out date
@@ -132,12 +166,238 @@ module.exports = {
                 sails.log.debug('Created hotels session object : ' + JSON.stringify(sessionObject))
                 return callback(null, sessionObject)
             }],
+            /**
+             * Initiates the skyscanner session
+             *
+             * @param {any} suggestion
+             * @returns
+             */
             initiateSession: ['buildSessionObject', function(callback, results) {
                 SkyScannerHotelService.createSession(results.buildSessionObject).then(function(result) {
                     return callback(null, result)
                 }).catch(function(err) {
                     sails.log.error(err)
                     callback(err, null)
+                })
+            }],
+            /**
+             * Maps the results to database.
+             *
+             * @param {any} suggestion
+             * @returns
+             */
+            mapResultsToDB: ['initiateSessions', function(callback, results) {
+                const hotels = results.initiateSession.body.hotels;
+                const agents = results.initiateSession.body.agents;
+                const hotel_prices = results.initiateSession.body.hotel_prices;
+                const hotel_amenities = results.intitiateSession.body.amenities;
+                hotels.forEach(function(hotel) {
+                    async.auto({
+                        /**
+                         *
+                         *
+                         * @param {any} callback
+                         */
+                        create_hotel_search: function(callback) {
+                            const critieriaObj = {
+                                checkInDate: results.buildSessionObject.checkindate,
+                                checkOutDate: results.buildSessionObject.checkoutdate,
+                                numberOfRooms: results.buildSessionObject.rooms,
+                                numberOfGuests: results.buildSessionObject.guests,
+                                currency: results.buildSessionObject.currency,
+                                countryCode: results.buildSessionObject.market,
+                                locale: results.buildSessionObject.locale
+                            }
+
+                            HotelSearch.findOrCreate(critieriaObj, critieriaObj)
+                                .then(function(hotelSearch) {
+                                    return callback(null, hotelSearch)
+                                }).catch(function(err) {
+                                    return callback(err, null)
+                                })
+                        },
+                        /**
+                         *
+                         *
+                         * @param {any} suggestion
+                         * @returns
+                         */
+                        create_hotel: [
+                            function(cb, results) {
+                                Hotel.findOrCreate({
+                                    id: hotel.hotel_id
+                                }, {
+                                    id: hotel.hotel_id,
+                                    starRating: hotel.star_rating,
+                                    popularity: hotel.popularity,
+                                    popularity_desc: hotel.popularity_desc,
+                                    hotelName: hotel.name,
+                                    description: null,
+                                    longitude: hotel.longitude,
+                                    latitude: hotel.latitude,
+                                    websiteURL: 'skyscanner.net',
+                                    imageHostUrl: results.initiateSession.body.image_host_url,
+                                    detailsUrl: hotel.detailsUrl,
+                                    callingCode: null,
+                                    phoneNumber: null,
+                                    addressString: hotel.address
+                                }).then(function(hotel) {
+                                    return callback(null, hotel)
+                                }).catch(function(err) {
+                                    sails.log.error(err)
+                                    return callback(err, null)
+                                })
+                            }
+                        ],
+                        /**
+                         *
+                         *
+                         * @param {any} suggestion
+                         * @returns
+                         */
+                        add_hotel_search: ['create_hotel_search', 'create_hotel', function(cb, results) {
+                            results.create_hotel.hotelQueries.add(results.create_hotel_search.id)
+                            results.create_hotel.hotelQueries.save(function(err) {
+                                if (err) return cb(err)
+                                else return cb(null, true)
+                            })
+                        }],
+                        /**
+                         *
+                         *
+                         * @param {any} suggestion
+                         * @returns
+                         */
+                        create_hotel_images: ['create_hotel',
+                            function(callback, results) {
+                               _.each(hotel.images,function(key){
+                                    const firstPart = key;
+                                    _.each(hotel.images[key],function(keyJ){
+                                        const imageName = keyJ
+                                        const obj = hotel.images[key][keyJ]
+
+                                        if (!(Array.isArray(obj)) || obj.length != 2) {
+                                            continue
+                                        }
+
+                                        const width = obj[0]
+                                        const height = obj[1]
+                                        const ext = imageName.split('.')
+
+                                        if (ext.length != 2) {
+                                            continue
+                                        }
+
+                                        ext = ext[1]
+
+                                        const imageUrl = results.initiateSession.body.image_host_url + firstPart + imageName
+
+                                        results.create_hotel.hotelImages.add({
+                                            hotel: results.create_hotel.id,
+                                            fileDescriptor: imageUrl,
+                                            width,
+                                            height,
+                                            mimeType: null,
+                                            fileName: imageName,
+                                            fileExt,
+                                            ext
+                                        })
+                                    })
+                               })
+
+                                results.create_hotel.save(function(err) {
+                                    if (err) return callback(err)
+                                    else return callback(null, true)
+                                })
+                            }
+                        ],
+                        /**
+                         *
+                         *
+                         * @param {any} suggestion
+                         * @returns
+                         */
+                        create_hotel_tags: ['create_hotel',
+                          function(cb,results){
+                            results.create_hotel.hotelTags.add({
+                              tag:hotel.tag
+                            });
+                            results.create_hotel.save(function(err){
+                              if(err) return cb(err);
+                              else{
+                                return cb(null,true);
+                              }
+                            })
+                          }
+                        ],
+                         /**
+                         *
+                         *
+                         * @param {any} suggestion
+                         * @returns
+                         */
+                        create_agents:[
+                          function(cb,results){
+                            Agents.findOrCreate(agents,agents)
+                            .then(function(agents){
+                              return cb(null,agents);
+                            }).catch(cb);
+                          }
+                        ],
+                        create_amenities:[
+                          function(cb,results){
+                            HotelAmenities.findOrCreate(amenities,amenities)
+                            .then(function(amenities){
+                              return cb(null,amenities)
+                            }).catch(cb)
+                          }
+                        ],
+                        /**
+                         *
+                         *
+                         * @param {any} suggestion
+                         * @returns
+                         */
+                        create_hotel_prices: ['create_hotel','create_agents',
+                            function(cb, results) {
+                                const hotelPrices = hotel_prices.filter(function(price) {
+                                    price.id == results.create_hotel.id
+                                }).forEach(function(price) {
+                                    const hotelId = price.id
+                                    return price.agent_prices.map(function(agentPrice) {
+                                        return {
+                                            hotel: hotelId,
+                                            agent: agentPrice.id,
+                                            price_total: agentPrice.price_total
+                                        }
+                                    })
+                                    results.create_hotel.hotelPrices
+                                })
+
+                                results.create_hotel.
+
+                                HotelPrices.findOrCreate(hotelPrices,hotelPrices)
+                                .then(function(hotelPrices){
+                                  return callback(null,hotelPrices)
+                                })
+                            }
+                        ],
+                        /**
+                         *
+                         *
+                         * @param {any} suggestion
+                         * @returns
+                         */
+                        create_hotel_amenities: ['create_hotel','create_amenities',
+                            function(cb, results) {
+                              results.create_hotel.hotelAmenities.add(results.create_hotel.amenities);
+                              results.create_hotel.save(function(err){
+                                if(err) return cb(err)
+                                else return cb(null,true);
+                              })
+                            }
+                        ]
+                    })
                 })
             }]
         }, function(err, results) {
@@ -146,46 +406,66 @@ module.exports = {
                 return res.badRequest(err)
             } else {
                 sails.log.debug('Results were : ' + JSON.stringify(results))
-                results.status = 200;
+                results.status = 200
                 return res.ok(results)
             }
         })
     },
+    /**
+     *
+     *
+     * @param {any} req
+     * @param {any} res
+     * @returns
+     */
     pollSkyScannerSession(req, res) {
-
         if (!req.param('nextPollUrl') || !req.wantsJSON)
-            return res.badRequest();
+            return res.badRequest()
 
-        const defaultHotelRequestObject = SkyScannerHotelService.getDefaultHotelRequestObject();
-        const nextPollUrl = req.param('nextPollUrl');
-        defaultHotelRequestObject.pageSize = req.param('pageSize') || defaultHotelRequestObject.pageSize;
-        defaultHotelRequestObject.pageIndex = req.param('pageIndex') || defaultHotelRequestObject.pageIndex;
-        defaultHotelRequestObject.imageLimit = req.param('imageLimit') || defaultHotelRequestObject.imageLimit;
-        defaultHotelRequestObject.sortOrder = req.param('sortOrder') || defaultHotelRequestObject.sortOrder;
-        defaultHotelRequestObject.sortColumn = req.param('sortColumn') || defaultHotelRequestObject.sortColumn;
+        const defaultHotelRequestObject = SkyScannerHotelService.getDefaultHotelRequestObject()
+        const nextPollUrl = req.param('nextPollUrl')
+        defaultHotelRequestObject.pageSize = req.param('pageSize') || defaultHotelRequestObject.pageSize
+        defaultHotelRequestObject.pageIndex = req.param('pageIndex') || defaultHotelRequestObject.pageIndex
+        defaultHotelRequestObject.imageLimit = req.param('imageLimit') || defaultHotelRequestObject.imageLimit
+        defaultHotelRequestObject.sortOrder = req.param('sortOrder') || defaultHotelRequestObject.sortOrder
+        defaultHotelRequestObject.sortColumn = req.param('sortColumn') || defaultHotelRequestObject.sortColumn
 
         SkyScannerHotelService.requestHotelDetails(nextPollUrl, defaultHotelRequestObject)
             .then(function(result) {
-                sails.log.debug('Recieved result from requesting hotel details');
-                sails.log.debug(JSON.stringify(result));
-                return res.ok(result);
+                sails.log.debug('Recieved result from requesting hotel details')
+                sails.log.debug(JSON.stringify(result))
+                return res.ok(result)
             }).catch(function(err) {
-                sails.log.err(err);
-                return res.badRequest(err);
+                sails.log.err(err)
+                return res.badRequest(err)
             })
     },
+    /**
+     *
+     *
+     * @param {any} req
+     * @param {any} res
+     * @returns
+     */
     hotelDetails(req, res) {
         if (!req.param('detailsUrl') || !req.param('hotelIds') || !req.wantsJSON)
             return res.badRequest('Invalid parameters supplied')
 
         SkyScannerHotelService.createHotelDetails(req.param('detailsUrl'),
             req.param('hotelIds')).then(function(result) {
-            return res.ok(result);
+            return res.ok(result)
         }).catch(function(err) {
-            sails.log.error(err);
-            return res.badRequest(err);
+            sails.log.error(err)
+            return res.badRequest(err)
         })
     },
+    /**
+     *
+     *
+     * @param {any} req
+     * @param {any} res
+     * @returns
+     */
     create(req, res) {
         sails.log.debug('In hotel/create')
 
@@ -207,6 +487,11 @@ module.exports = {
         return async.auto({
 
             // Create the hotel address record
+            /**
+             *
+             *
+             * @param {any} callback
+             */
             createAddress: function(callback) {
                 Address.create(req.allParams()).then(function(address) {
                     return callback(null, address)
@@ -217,7 +502,18 @@ module.exports = {
             },
             // Create the hotel
             createHotelTuple: [function(callback, results) {
-
+                /**
+                 *
+                 *
+                 * @param {any} err
+                 * @returns
+                 */
+                /**
+                 *
+                 *
+                 * @param {any} err
+                 * @returns
+                 */
                 function handleError(err) {
                     sails.log.error(err)
                     return callback(err, null)
@@ -225,70 +521,68 @@ module.exports = {
 
                 req.setParam('user', req.user.id)
                 _create(req).then(function(hotel) {
-                    sails.log.debug('Created hotel record ' + JSON.stringify(hotel));
+                    sails.log.debug('Created hotel record ' + JSON.stringify(hotel))
                     return callback(null, hotel)
                 }).catch(handleError)
-
             }],
             // Create hotel info
             createHotelInfo: ['createAddress', 'createHotelTuple', function(callback, results) {
                 const obj = req.allParams()
-                obj.address = results.createAddress.id;
-                obj.hotel = results.createHotelTuple.id;
+                obj.address = results.createAddress.id
+                obj.hotel = results.createHotelTuple.id
                 return HotelInfo.create(obj).then(function(hotelInfo) {
                     return callback(null, hotelInfo)
                 }).catch(function(err) {
-                    return callback(err, null);
+                    return callback(err, null)
                 })
             }],
             createAssociation: ['createHotelInfo', function(callback, results) {
-                results.createHotelTuple.hotelInfo.add(results.createHotelInfo);
+                results.createHotelTuple.hotelInfo.add(results.createHotelInfo)
                 results.createHotelTuple.save(function(err) {
                     if (err) {
-                        sails.log.error(err);
-                        return callback(err, null);
+                        sails.log.error(err)
+                        return callback(err, null)
                     } else {
-                        return callback(null, 'success');
+                        return callback(null, 'success')
                     }
                 })
             }],
             // Retrieves the incoming images from the stream
             downloadHotelImages: ['createHotelTuple', function(callback, results) {
 
-                //Make sure we have our file data info
+                // Make sure we have our file data info
                 if (!req.param('fileData')) {
-                    return callback(new Error('File data must be supplied'), null);
+                    return callback(new Error('File data must be supplied'), null)
                 }
 
-                var fileData = null;
+                var fileData = null
 
                 try {
-                    //Parse info about our file data
-                    fileData = JSON.parse(req.param('fileData'));
+                    // Parse info about our file data
+                    fileData = JSON.parse(req.param('fileData'))
 
-                    //Check to make sure we have info about our file
+                    // Check to make sure we have info about our file
                     if (!Array.isArray(fileData) || fileData.length == 0) {
-                        throw new Error('No files sent with request');
+                        throw new Error('No files sent with request')
                     }
                 } catch (err) {
-                    //Catch and return any errors
-                    return callback(err, null);
+                    // Catch and return any errors
+                    return callback(err, null)
                 }
 
-                //Loop through our file data asynchrnously
+                // Loop through our file data asynchrnously
                 async.forEachOf(fileData, function(fileData, index, feCb) {
-
                     sails.log.debug('Saving file to ' + sails.config.appPath + require('util')
                         .format('/assets/images/hotels/%s/%s', req.user.id, results.createHotelTuple.id))
 
-                    //Start file upload from incoming request
+                    // Start file upload from incoming request
                     req.file('file[' + index + ']').upload({
                         dirname: sails.config.appPath + require('util')
                             .format('/assets/images/hotels/%s/%s', req.user.id, results.createHotelTuple.id),
                         maxBytes: 1024 * 1024 * 200 // 200mb
                     }, function whenDone(err, uploadedFiles) {
 
-                        //If there is an error, return it to the callback
+                        // If there is an error, return it to the callback
                         if (err) {
                             sails.log.error(err)
                             sails.log.debug(JSON.stringify(uploadedFiles))
@@ -299,14 +593,12 @@ module.exports = {
                             return callback(new Error('No images uploaded'))
                         }
 
-                        //Debug our uploaded files
+                        // Debug our uploaded files
                         sails.log.debug('Uploaded files were: ' + JSON.stringify(uploadedFiles))
 
                         // Loop through each uploaded file asynchronously, save its file descriptor
                         async.each(uploadedFiles, function(file, asyncCb) {
-
                             sails.log.debug('File was : ' + JSON.stringify(file))
-
 
                             // Create a hotel image record, linked to our previously created hotel
                             HotelImage.create({
@@ -318,17 +610,17 @@ module.exports = {
                                 fileName: file.filename,
                                 fileExt: require('path').extname(file.filename)
                             }).then(function(createdHotelImage) {
-                                results.createHotelInfo.hotelImages.add(createdHotelImage);
+                                results.createHotelInfo.hotelImages.add(createdHotelImage)
                                 results.createHotelInfo.save(function(err) {
                                     if (err) {
-                                        sails.log.error(err);
-                                        return asyncCb(err);
+                                        sails.log.error(err)
+                                        return asyncCb(err)
                                     } else {
-                                        return asyncCb();
+                                        return asyncCb()
                                     }
                                 })
                             }).catch(function(err) {
-                                return asyncCb(err);
+                                return asyncCb(err)
                             })
                         }, function(err) {
                             // if any of the file processing produced an error, err would equal that error
@@ -366,6 +658,13 @@ module.exports = {
             }
         })
     },
+    /**
+     *
+     *
+     * @param {any} req
+     * @param {any} res
+     * @returns
+     */
     find(req, res) {
         return _find(req, res).then(function(hotels) {
             return res.ok({
@@ -376,6 +675,13 @@ module.exports = {
             return res.badRequest()
         })
     },
+    /**
+     *
+     *
+     * @param {any} req
+     * @param {any} res
+     * @returns
+     */
     index(req, res) {
         return res.ok({
             user: req.user,
@@ -385,16 +691,34 @@ module.exports = {
             layout: 'layouts/search-layout'
         })
     },
+    /**
+     *
+     *
+     * @param {any} req
+     * @param {any} res
+     */
     add(req, res) {
-        req.setParam('user', req.user.id);
-        _add(req, res);
+        req.setParam('user', req.user.id)
+        _add(req, res)
     },
+    /**
+     *
+     *
+     * @param {any} req
+     * @param {any} res
+     * @returns
+     */
     findOne(req, res) {
         async.auto({
+            /**
+             *
+             *
+             * @param {any} callback
+             * @returns
+             */
             findOrCreateHotel(callback) {
-
                 if (!req.param('hotelData') && !req.param('id'))
-                    return callback(new Error('Invalid request'), null);
+                    return callback(new Error('Invalid request'), null)
 
                 sails.log.debug(req.allParams())
 
@@ -427,6 +751,21 @@ module.exports = {
                     // This will subscribe the requestee to all events via -
                     // .publishUpdate(), .publishDestroy(), .publishAdd(), .publishRemove(), and .message().
                     async.auto({
+                        /**
+                         *
+                         *
+                         * @param {any} callback
+                         */
+                        /**
+                         *
+                         *
+                         * @param {any} callback
+                         */
+                        /**
+                         *
+                         *
+                         * @param {any} callback
+                         */
                         findHotel: function(callback) {
                             _findOne(req).then(function(hotel) {
                                 return callback(null, {
@@ -444,25 +783,24 @@ module.exports = {
                                 hotel: results.findHotel.id
                             }).then(function(hotelInfo) {
                                 if (!hotelInfo) {
-                                    const error = new Error('Invalid state ');
-                                    error.code = 117;
-                                    return callback(error, null);
+                                    const error = new Error('Invalid state ')
+                                    error.code = 117
+                                    return callback(error, null)
                                 }
-                                results.findHotel.hotelInfo = hotelInfo;
+                                results.findHotel.hotelInfo = hotelInfo
                                 return callback(null, results.findHotel)
                             }).catch(function(err) {
-                                sails.log.error(err);
-                                return callback(err, null);
+                                sails.log.error(err)
+                                return callback(err, null)
                             })
                         }]
                     }, function(err, results) {
                         if (err) {
-                            return callback(err, null);
+                            return callback(err, null)
                         } else {
-                            return callback(null, results.populateHotelInfo);
+                            return callback(null, results.populateHotelInfo)
                         }
                     })
-
                 } else {
                     Hotel.findOrCreate({
                         id
@@ -472,7 +810,7 @@ module.exports = {
                         hotelInfo: null
                     }).then(function() {
 
-                        //Find hotel info...
+                        // Find hotel info...
                         return callback(null, {
                             id,
                             hotel: hotelData,
@@ -485,10 +823,10 @@ module.exports = {
             }
         }, function(err, results) {
             sails.log.debug('Results:')
-            sails.log.debug(JSON.stringify(results));
+            sails.log.debug(JSON.stringify(results))
             if (err) {
-                if (err.code == 117) return res.redirect('/hotel');
-                sails.log.error(err);
+                if (err.code == 117) return res.redirect('/hotel')
+                sails.log.error(err)
                 sails.log.debug('Retruning server error')
                 return res.serverError(err)
             } else {

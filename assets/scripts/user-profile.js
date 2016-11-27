@@ -2,12 +2,25 @@ $(window).ready(function () {
   (function ($, io) {
     const currentUserProfileUser = window.seatfilla.globals.userprofile.getCurrentUserProfileUser(window.location.pathname)
 
+    /**
+     *  Handles an error that occurs during this scripts duration.
+     *
+     * @param {any} err
+     */
     const handleProfileError = function (err) {
       console.log(err)
     }
 
-    if (!currentUserProfileUser) handleProfileError(new Error('Could not find profile user'))
+    /*
+      Early return if we cannot find the user this profile belongs to.
+    */
+    if (!currentUserProfileUser) return handleProfileError(new Error('Could not find profile user'))
 
+    /**
+     *
+     *
+     * @returns
+     */
     const obtainCurrentProfileUser = function () {
       return new Promise(function (resolve, reject) {
         io.socket.get('/user?username=' + currentUserProfileUser, function (user, jwRes) {
@@ -28,6 +41,11 @@ $(window).ready(function () {
       })
     }
 
+    /**
+     *
+     *
+     * @returns
+     */
     const obtainCurrentUser = function () {
       return new Promise(function (resolve, reject) {
         window.seatfilla.globals.getUser(function (status, result) {
@@ -40,6 +58,17 @@ $(window).ready(function () {
       })
     }
 
+    /**
+     *
+     *
+     * @param {any} currentProfileUser
+     * @param {any} user
+     */
+    /**
+     *
+     *
+     * @param {any} link
+     */
     const attachExternalFunctions = function (currentProfileUser, user) {
       if (!currentProfileUser) throw new Error('Invalid params')
 
@@ -53,14 +82,31 @@ $(window).ready(function () {
             user: 'loggedinuser',
             userprofile: user.userProfile.id
           },
+          /**
+           *
+           *
+           * @param {any} data
+           * @param {any} ts
+           * @param {any} xhr
+           */
           success: function (data, ts, xhr) {},
+          /**
+           *
+           */
           error: function () {}
         })
       }
 
       // Complete this when know what data is being sent from the server
+      /**
+       *
+       *
+       * @returns
+       */
       $.seatfilla.userprofile.currentUserIsLink = function () {
-        if (!user || !user.userProfile.userLinks.find(function (link) { link.user == currentProfileUser.id })) return false
+        if (!user || !user.userProfile.userLinks.find(function (link) {
+            link.user == currentProfileUser.id
+          })) return false
         return true
       }
 
@@ -68,12 +114,24 @@ $(window).ready(function () {
         Returns true via a CB if this is the users own profile.
         callback is required due the getUser being asnychronous.
       */
+      /**
+       *
+       *
+       * @param {any} cb
+       * @returns
+       */
       $.seatfilla.userprofile.isOwnProfile = function (cb) {
         if (!user || currentProfileUser.id != user.id) return false
         return true
       }
     }
 
+    /**
+     * Creates and attaches the dom reactor to this page.
+     *
+     * @param {Object} currentProfileUser
+     * @param {Object} user
+     */
     const attachDomReactor = function (currentProfileUser, user) {
       if (!currentProfileUser) throw new Error('Invalid params')
 
@@ -95,96 +153,147 @@ $(window).ready(function () {
         domReactor: true,
         targets: [
 
-        /*
-          Notification target
-        */
-        {
           /*
-            The event name for this target
+            Notification target
           */
-          eventName: 'notifications',
-          /*
-            True if we should listen for incoming socket events under this event name.
-          */
-          shouldListen: true,
-          /*
-            The path to load notifications
-          */
-          path: '/notifications',
-          /*
-            Find query string
-          */
-          where: {
-            user: currentProfileUser.id
-          },
-          /*
-            Limit,skip,sort,populate params
-          */
-          params: { limit: 20, sort: 'createdAt ASC' },
-          /*
-            Handle associations
-          */
-          addedto: {},
-          removedfrom: {},
-          /*
-            Handle display validators
-          */
-          validators: {
-            created: [
-              function (data) {
-                console.log(data)
-                return true
-              }
-            ]
-          },
-          /*
-            Render options
-          */
-          renderOpts: {
-            //The max dom elements to have within the container
-            maxDomElements: 20,
-            //How children elements are remove
-            childRemovalMethod: 'first',
-            //How new elements are added to the container
-            renderMethod: 'append',
-            /*
-              The template a container for this endpoint target.
-            */
-            template: '#notificationstemplate',
-            container: '#notificationscontainer',
-            /*
-              Modify the data returned into view friendly dates.
-            */
-            beforeDataRendered: function (notification) {
-              notification.date = moment(notification.createdAt).format('YYYY-MM-DD')
-              notification.day = moment(notification.createdAt).format('DD')
-              notification.month = moment(notification.createdAt).format('MM')
-              notification.year = moment(notification.createdAt).format('YY')
-              notification.hour = moment(notification.createdAt).format('HH')
-              notification.minutes = moment(notification.createdAt).format('MM')
-              notification.seconds = moment(notification.createdAt).format('SS')
-              notification.AMPM = moment(notification.createdAt).format('A')
-              console.log('Before data rendered:')
-              console.log(notification)
-              return notification
-            }
-          }
-        },
-        /*
-          User profile comment reply target
-        */
-        {
+          {
             /*
               The event name for this target
             */
-            eventName: 'userprofilecommentreply',    
+            eventName: 'notifications',
+            /*
+              True if we should listen for incoming socket events under this event name.
+            */
+            shouldListen: true,
+            /*
+              The path to load notifications
+            */
+            path: '/notifications',
+            /*
+              Find query string
+            */
+            where: {
+              user: currentProfileUser.id
+            },
+            /*
+              Limit,skip,sort,populate params
+            */
+            params: {
+              limit: 20,
+              sort: 'createdAt ASC'
+            },
+            /*
+              Handle associations
+            */
+            addedto: {},
+            removedfrom: {},
+            /*
+              Handle display validators
+            */
+            validators: {
+              created: [
+                function (data) {
+                  console.log(data)
+                  return true
+                }
+              ]
+            },
+            /*
+              Render options
+            */
+            renderOpts: {
+              // The max dom elements to have within the container
+              maxDomElements: 20,
+              // How children elements are remove
+              childRemovalMethod: 'first',
+              // How new elements are added to the container
+              renderMethod: 'append',
+              /*
+                The template a container for this endpoint target.
+              */
+              template: '#notificationstemplate',
+              container: '#notificationscontainer',
+              /*
+                Modify the data returned into view friendly dates.
+              */
+              /**
+               *
+               *
+               * @param {Object} notification
+               * @returns
+               */
+              beforeDataRendered: function (notification) {
+                notification.date = moment(notification.createdAt).format('YYYY-MM-DD')
+                notification.day = moment(notification.createdAt).format('DD')
+                notification.month = moment(notification.createdAt).format('MM')
+                notification.year = moment(notification.createdAt).format('YY')
+                notification.hour = moment(notification.createdAt).format('HH')
+                notification.minutes = moment(notification.createdAt).format('MM')
+                notification.seconds = moment(notification.createdAt).format('SS')
+                notification.AMPM = moment(notification.createdAt).format('A')
+                console.log('Before data rendered:')
+                console.log(notification)
+                return notification
+              }
+            }
+          },
+          {
+            /*
+              The event name for this target
+            */
+            eventName: 'userprofile',
+            path: '/userprofile/'+currentProfileUser.username+'/findOne',
+            params: {
+              id: currentProfileUser.userProfile,
+              populate: 'user,images'
+            },
+            /*
+               True if we should listen for socket events under this event name.
+            */
+            shouldListen: true,
+            renderOpts: {
+              /*
+                Max number of user profile comments to be displayed before triggering a removal
+              */
+              maxDomElements: 5,
+              /*
+                How child elements should be removed when new ones are added
+              */
+              childRemovalMethod: 'first',
+              /*
+                How children elements should be added
+              */
+              renderMethod: 'append',
+
+              /*
+                The template to use for displaying data.
+              */
+              template: '#userprofileinfotemplate',
+
+              /**
+               * Finds the container for this comment
+               *
+               * @param {Object} data, the data to be added to this container
+               * @returns
+               */
+              container: '#userprofileinfocontainer'
+            }
+          },
+          /*
+            User profile comment reply target
+          */
+          {
+            /*
+              The event name for this target
+            */
+            eventName: 'userprofilecommentreply',
             /*
                True if we should listen for socket events under this event name.
             */
             shouldListen: false,
             renderOpts: {
               /*
-                Max number of user profile comments to be displayed before triggering a removal 
+                Max number of user profile comments to be displayed before triggering a removal
               */
               maxDomElements: 5,
               /*
@@ -200,9 +309,13 @@ $(window).ready(function () {
                 The template to use for displaying data.
               */
               template: '#userprofilecommentreplytemplate',
-              /*
-                Finds the container for this comment
-              */
+
+              /**
+               * Finds the container for this comment
+               *
+               * @param {Object} data, the data to be added to this container
+               * @returns
+               */
               container: function (data) {
                 console.log(data)
                 console.log('finding container')
@@ -216,8 +329,15 @@ $(window).ready(function () {
           {
             eventName: 'userprofilecomment',
             path: '/userprofilecomment',
-            where: { userProfile: currentProfileUser.userProfile.id, isReply: false },
-            params: { limit: 10, sort: 'createdAt ASC', populate:'user,userProfile,replies'},
+            where: {
+              userProfile: currentProfileUser.userProfile,
+              isReply: false
+            },
+            params: {
+              limit: 10,
+              sort: 'createdAt ASC',
+              populate: 'user,userProfile,replies'
+            },
             shouldListen: true,
             /*
               Handles associations,
@@ -248,7 +368,7 @@ $(window).ready(function () {
                   Due to the nature of sails.js, the publishCreate event `create` will be triggered
                   for a comment whether or not it is a comment reply.
                 */
-                function validateTopLevelComment (data) {
+                function validateTopLevelComment(data) {
                   if (data && !data.isReply && data.user) return true
                   else return false
                 }
@@ -259,7 +379,7 @@ $(window).ready(function () {
                 The max number of DOM elements to hold within a container
                 If a `publish create` event occurs and the number of DOM elements
                 exceeds this amount, the dom reactor will automatically
-                remove the last child of the container. 
+                remove the last child of the container.
               */
               maxDomElements: 5,
               /*
@@ -276,7 +396,7 @@ $(window).ready(function () {
               childRemovalMethod: 'last',
 
               /*
-                The types of effects to be applied to this DOM element 
+                The types of effects to be applied to this DOM element
               */
               removeEffect: ['fadeOut', 1000],
               updateEffect: [],
@@ -286,10 +406,20 @@ $(window).ready(function () {
               */
               template: '#userprofilecommenttemplate',
               container: '#userprofilecommentcontainer',
-              /*
-                Hooks the dynamically generated form before it is created 
-                and applies ajaxForm to it, so that it will be posted via AJAX.
-              */
+
+              /**
+               * Hooks the dynamically generated form before it is created
+               * and applies ajaxForm to it, so that it will be posted via AJAX and
+               * automatically validated via attributes set on the form.
+               *
+               * Unfortunetely, this has to be done because jQuery does not pick up on
+               * dynamically generated DOM elements but rather only elements which
+               * are only visible on the page.
+               *
+               * Without listening to elements added to the DOM, this is the best way
+               * to attach to the dynamically generated form.
+               * @param {any} $html
+               */
               beforeCreate: function ($html) {
                 $html.find('.replyForm').ajaxForm($.ajaxFormHandler({
                   errorMessage: 'Reply not recorded',
@@ -299,48 +429,61 @@ $(window).ready(function () {
             }
           }
         ],
-        /*
-          If a problem occurs when loading data from a socket, catch and display the error to the console 
-          here.
-        */
-        onError: function (err) {
-          console.log(err)
-        }
+
+        /**
+         * A callback function for if an error occurs whilst creating the loader
+         * or loading data from the socket, currently this is set to just
+         * redirect the user to the homepage.
+         *
+         * @param {any} err
+         */
+        onError: handleProfileError
       })
     }
 
+
+    /**
+     *  On `load` event for when the data is first loaded by the SocketDataLoader.
+     *  The event is triggered and `this` refers to the data that has been loaded from
+     *  the socket.
+     *
+     *  Because we have full access to data returned from the SocketDataLoader within this event,
+     *  it is a useful place to add extensions which can be used to operate on the returned data.
+     */
     const addProfileLoadListener = function () {
       /*
-        On `load` event for when the data is first loaded by the SocketDataLoader.
-        The event is triggered and `this` refers to the data that has been loaded from
-        the socket.
-
-        Because we have full access to data returned from the SocketDataLoader within this event,
-        it is a useful place to add extensions which can be used to operate on the returned data. 
+        On `load` listener for created data loader.
       */
       $.seatfilla.userprofile.dataLoader.on('load', function () {
         const responseData = this
 
-        /*
-          Returns all data about a users profile.
-        */
+
+        /**
+         *
+         *
+         * @returns all data about a users profile
+         */
         $.seatfilla.userprofile.getProfileInfo = function () {
           return responseData
         }
 
-        /*
-          Calls back the specified callback in order to extend $.seatfilla.userprofile.
-        */
+        /**
+         * Calls back the specified callback in order to extend $.seatfilla.userprofile.
+         *
+         * @param {any} callback a callback function which takes in the userprofile namespace.
+         */
         $.seatfilla.userprofile.configure = function (callback) {
           if (callback && typeof callback == 'function') callback.call($.seatfilla.userprofile)
         }
       })
     }
 
+    /**
+     *  Loads and listens for data incoming via a socket.
+     */
     const loadProfile = function () {
       $.seatfilla.userprofile.dataLoader.loadAndListen()
     }
-
 
     /*
        Load results asynchronously and wait until all have complete,
@@ -362,8 +505,8 @@ $(window).ready(function () {
           loadProfile()
         }
       }).catch(function (err) {
-      // Handle error
-      handleProfileError(err)
-    })
+        // Handle error
+        handleProfileError(err)
+      })
   })(jQuery, io)
 })

@@ -1,0 +1,43 @@
+<%- partial ('../partials/nav.ejs') %>
+
+<style>
+.nopad{
+  padding:0px;
+}
+.nomargin:{
+  margin:0px;
+}
+</style>
+
+<div class="container80 wow fadeInRight" style="margin-top:120px;">
+    <h2 class="nopad wow bounceInDown" data-wow-duration="2s">Contact us</h2>
+    <hr/><br/>
+    <form class="col-sm-12 col-md-12 wow bounceInLeft">
+        <div class="row">
+            <div class="col-sm-4 col-md-4">
+                <label>First Name</label>
+                <input class="form-control" placeholder="Your First Name" type="text">
+                <label>Last Name</label>
+                <input class="form-control" placeholder="Your Last Name" type="text">
+                <label>Email Address</label>
+                <input class="form-control" placeholder="Your email address" type="text"> <label>Subject</label>
+                <select class="col-sm-3 col-md-3 form-control" id="subject" name="subject">
+                    <option selected="" value="na">Choose One:</option>
+                    <option value="service">General Customer Service</option>
+                    <option value="suggestions">Suggestions</option>
+                    <option value="product">Product Support</option>
+                </select>
+            </div>
+
+            <div class="col-sm-8 col-md-8">
+                <div class="form-group">
+                    <label>Message</label>
+                    <textarea class="col-sm-3 col-md-3 form-control" id="message" name="message" rows="10"></textarea>
+                    <button class="btn btn-primary pull-right" type="submit">Send</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+   <%- partial ('../partials/footer.ejs') %>

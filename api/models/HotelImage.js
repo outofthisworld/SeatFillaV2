@@ -1,7 +1,7 @@
 module.exports = {
     attributes: {
-        hotelInfo: {
-            model: 'HotelInfo',
+        hotel: {
+            model: 'hotel',
             required: true,
             notNull: true
         },
@@ -22,8 +22,6 @@ module.exports = {
         },
         mimeType: {
             type: 'string',
-            notNull: true,
-            required: true
         },
         fileName: {
             type: 'string',

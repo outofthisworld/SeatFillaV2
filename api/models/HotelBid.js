@@ -1,0 +1,23 @@
+module.exports = {
+  attributes:{
+    hotel:{
+      model:'hotel',
+      notNull:true,
+      required:true
+    },
+    bidAmount:{
+      type:'number',
+      notNull:true
+    },
+    currencyCode:{
+      type:'string',
+      notNull:true,
+      required:true
+    },
+    user:{
+      model:'user',
+      notNull:true,
+      required:true
+    }
+  }
+}

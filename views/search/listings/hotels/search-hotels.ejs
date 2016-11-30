@@ -160,9 +160,9 @@
   		<div class="media-body">
     		<p class="media-heading">Hotel</p>
           <p class="text-right">By Francisco</p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pharetra varius quam sit amet vulputate. 
-                Quisque mauris augue, molestie tincidunt condimentum vitae, gravida a libero. Aenean sit amet felis 
-                dolor, in sagittis nisi. Sed ac orci quis tortor imperdiet venenatis. Duis elementum auctor accumsan. 
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pharetra varius quam sit amet vulputate.
+                Quisque mauris augue, molestie tincidunt condimentum vitae, gravida a libero. Aenean sit amet felis
+                dolor, in sagittis nisi. Sed ac orci quis tortor imperdiet venenatis. Duis elementum auctor accumsan.
                 Aliquam in felis sit amet augue.</p>
           <ul class="list-inline list-unstyled">
   			<li><span><i class="glyphicon glyphicon-calendar"></i> 2 days, 8 hours </span></li>
@@ -188,7 +188,7 @@
     </div>
   </div>{{:~log('big')}}
                 <div class="row"> {{:~log('start row')}}
-            {{/if}} 
+            {{/if}}
             {{if !(~mulOf(#getIndex(),3) && #getIndex() != 0) || (~len < 4 || ~len==1)}}
                  <div class="col-md-6">
                 <div class="product-item">
@@ -204,10 +204,11 @@
                    <form action="/hotel/findOne/{{:hotel_id}}" method ="POST">
                         <button class="btn btn-info pull-right"> View details </button>
                         <input type="hidden" name="hotelData" value="{{>~stringify(~root.hotels[#getIndex()])}}"/>
+                        <input type="hidden" name="sessionObject" value="{{>~stringify(~root.sessionObject)}}"/>
                   </form>
                 <!--<div class="sticker sticker-new"></div>-->
                 </div>
-                </div> 
+                </div>
                 {{:~log('col 4')}}
                 {{if ~len==1 || #getIndex()==~sub(~len,1)}}
                     </div> {{:~log('end row')}}
@@ -226,9 +227,15 @@
       var availableResults = 0;
 
 
-      function displayHotels(result){
+      function displayHotels(res){
+          const result = res.result;
+          const sessionObject = res.sessionObject;
+
+          console.log('Session object:')
+          console.log(sessionObject);
+
           if(result.status != "COMPLETE") return;
-                        
+
                           $('#loadMoreResults').removeClass('hide');
 
                           const hotelListings = window.seatfilla.globals.response
@@ -262,25 +269,26 @@
 
                              if(displayableHotels.length){
                                 const html = tmpl.render({
-                                    hotels: displayableHotels
+                                    hotels: displayableHotels,
+                                    sessionObject
                                 }, {
                                     stringify(obj) {
                                         return JSON.stringify(obj);
                                     }
                                 });
                                 availableResults = result.total_hotels;
-                                $('#hotelListings').append(html);   
-                            
+                                $('#hotelListings').append(html);
+
                              }else{
                                  console.log('Hiding load more results , !displayableHotels.length')
                                 $('#loadMoreResults').addClass('hide')
                              }
-             
+
                           } else if(availableResults <= 0){
                               console.log('no results;')
                               console.log(hotelListings)
                               $('#loadMoreResults').addClass('hide')
-                              
+
                           }
 
                      $.waitingDialog.hide();
@@ -289,29 +297,27 @@
       //Polls the sky scanner session
       function pollSession(nextPollUrl, pageIndex) {
           $('#loadMoreResults').removeClass('hide');
-          
+          const sessionObject = this;
           console.log('Polling ' + nextPollUrl + ', page: ' + pageIndex);
           $.ajax({
-              method: 'GET',
+              method: 'POST',
               url: '/hotel/pollSkyScannerSession',
               data: {
                   nextPollUrl,
                   pageIndex,
                   pageSize: pageSize,
-                  imageLimit: imageLimit
+                  imageLimit: imageLimit,
               },
               success: function(result, s, xhr) {
-
-            
                   if (xhr.status == 200 && result && result.body) {
                       if (result.body.status != "COMPLETE") {
                           console.log('Not complete: ')
                           console.log(result);
-                          pollSession(result.nextPollUrl,pageIndex);
+                          pollSession.call(sessionObject,result.nextPollUrl,pageIndex);
                       } else {
                           console.log('Complete:')
                           console.log(result);
-                          displayHotels(result.body);
+                          displayHotels({result:result.body,sessionObject});
                       }
                       nextUrlToPoll = result.nextPollUrl || nextPollUrl;
 
@@ -327,11 +333,11 @@
           });
       }
 
-      function attachDomEventListeners() {
+      function attachDomEventListeners(result) {
           function attach() {
               $('#loadMoreResults').on('click', function() {
                   availableResults -= pageSize;
-                  pollSession(nextUrlToPoll, pageIndex++)
+                  pollSession.call(result.buildSessionObject,nextUrlToPoll, pageIndex++)
               })
           }
 
@@ -348,10 +354,15 @@
 
           const city = $('#city').val() || "<%= data.params.city || '' %>";
           const country = $('#country').val() || "<%= data.params.country || '' %>";
+          const numRooms = $('#numRooms').val() || "<%= data.params.numRooms || '' %>"
+          const numGuests = $('#numGuests').val() || "<%= data.params.numGuests || '' %>"
+          const checkoutdate = $('#checkOutDate').val() || "<%= data.params.checkOutDate || '' %>"
+          const checkindate = $('#checkInDate').val() || "<%= data.params.checkInDate || '' %>"
 
           var message;
+
           if(city || country){
-              message = 'Finding hotels relating to ' + (city || country);
+              message = 'Finding hotels in ' + (city || country);
           }else{
               message = 'Loading results based on your location';
           }
@@ -359,16 +370,45 @@
           $.waitingDialog.show(message);
 
           function makeRequest(results) {
+              if(!results.length) throw new Error('Invalid params')
+
               const data = {}
 
               if (results[0]) data.userLocation = results[0];
+
               if (results[1]) data.prefferedCurrency = results[1];
+
               if(city) data.city = city;
-              if(country) data.country = country;       
+
+              if(country) data.country = country;
+
               if($('#hotelPlaceSuggestions').val()) data.entityId = $('#hotelPlaceSuggestions').val();
+
+              const today = moment().toISOString();
+              const checkInDate = moment(checkindate || moment().add('1','days')).toISOString()
+              const checkOutDate = moment(checkoutdate || moment().add('8','days')).toISOString()
+
+              if(moment(checkInDate).isBefore(today)){
+                $.toaster({priority:'warning',message:'check in date must be before check out date'})
+                return;
+              }
+
+              if(moment(checkInDate).isAfter(checkOutDate)){
+                $.toaster({priority:'warning',message:'check in date must be before check out date'})
+                return;
+              }
+
+              data.dates = {
+                checkindate:checkInDate,
+                checkoutdate:checkOutDate
+              }
+
+              data.numberOfGuests = numGuests || 1;
+              data.numRooms = numRooms || 1;
 
               console.log('Sending: ');
               console.log(data);
+
               $.ajax({
                   method: 'POST',
                   url: '/hotel/retrieveSkyScannerListings',
@@ -390,18 +430,36 @@
                           }
 
                           if(result.initiateSession.body.status != 'COMPLETE'){
-                                pollSession(result.initiateSession.nextPollUrl,pageIndex++)
+                                pollSession.call(result.buildSessionObject,result.initiateSession.nextPollUrl,pageIndex++)
                           }else{
                                 nextUrlToPoll = result.initiateSession.nextPollUrl;
-                                displayHotels(result.initiateSession.body);
+                                displayHotels(
+                                  {
+                                    result:result.initiateSession.body,
+                                    sessionObject:result.buildSessionObject
+                                  });
                           }
-                          attachDomEventListeners();
+                          attachDomEventListeners(result);
                       } else {
                           console.log(result);
                           alert('Error creating session')
                       }
                   }
               })
+            const where = {
+              countryCode:data.userLocation.countryCode,
+              checkOutDate:data.dates.checkindate,
+              checkInDate:data.dates.checkoutdate,
+              numberOfGuests:data.numberOfGuests,
+              numberOfRooms:data.numRooms,
+              prefferedCurrency:data.prefferedCurrency
+            }
+            /*$.ajax({
+                  method: 'GET',
+                  url: '/hotelsearch?populate=hotels&where=' + JSON.stringify(where),
+                  success: function(result, s, xhr) {
+                  }
+            })*/
           }
           Promise.all([
               new Promise(function(resolve, reject) {
@@ -431,23 +489,21 @@
 
 
   $('#flight-search-details').load('/ajax/hotel-search-nav.ejs', function finished() {
-         
-             loadScript();
-
+            $('checkInDate').val(moment().add('1','days').format('YYYY-MM-DD'));
+            $('checkOutDate').val(moment().add('7','days').format('YYYY-MM-DD'));
             $('#searchHotels').on('click',function(){
                 loadScript();
             })
-
             $('#country').on('change',function(){
                  $('#hotelPlaceSuggestions').html("");
             })
-            
+            loadScript();
       });
 </script>
 <div class="container-fluid">
         <!--<div class="progressNotification">
 		<p>Fetching some results based on what we can decipher, please wait</p>
-   
+
         <div class="progress progress-striped active page-progress-bar">
             <div class="progress-bar" style="width: 100%;"></div>
         </div>

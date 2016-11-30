@@ -16,8 +16,8 @@ module.exports.http = {
     passportInit: passport.initialize(),
     passportSession: passport.session(),
     passportSessionInit: (function () {
-      /* 
-          Handles the serialization and 
+      /*
+          Handles the serialization and
           deserialization proccess for session storage (keeps server memory low)
         */
       passport.serializeUser(function (user, done) {
@@ -33,7 +33,8 @@ module.exports.http = {
           .populate('notifications')
           .populate('addresses')
           .populate('flightRequests')
-          .populate('bids')
+          .populate('hotelBids')
+          .populate('flightBids')
           .populate('apiKeys')
           .populate('supportTickets').exec(function (err, user) {
           if (err) {
@@ -85,7 +86,7 @@ module.exports.http = {
           }).then(function () {
             return new Promise(function (resolve, reject) {
               user.addresses.forEach(function (address, indx) {
-                
+
                 Country.findOne({alpha3Code: address.countryInfo }).then(function (country) {
                   user.addresses[indx].countryInfo = country
                 }).catch(function (err) {

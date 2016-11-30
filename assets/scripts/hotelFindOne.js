@@ -1,7 +1,6 @@
+
 /*
-
 Initializes the hotel script
-
 */
 (function($, io, window) {
 
@@ -190,17 +189,15 @@ Initializes the hotel script
     //Here we define our hotel script
     window.seatfilla.globals.initHotelScript = function(options) {
 
-        if (!options.id || !options.hotel || !options.hotelInfo || !options.provider)
+        if (!options.id || !options.resSendTime)
             throw new Error('Invalid script params ' + JSON.stringify(options));
 
+      
 
         if (isInitialized) return;
 
         //Store intialized state
         isInitialized = true;
-
-        console.log('Initializing hotel script with options: ' + JSON.stringify(options))
-        console.log(JSON.stringify(options.hotelInfo))
 
 
         /*
@@ -410,79 +407,69 @@ Initializes the hotel script
         }
 
         function populateData() {
-
-            const where = {
-                hotel: options.id
-            };
-
-            const hotelInfoWhere = {
-                hotelInfo: options.hotelInfo.id
-            };
-
-            console.log(hotelInfoWhere);
+            const where = { hotel: options.id};
 
             //Hold the promises we need (combine the results of multiple async `get` requests)
             const promises = [];
 
-            promises.push(new Promise(
+            [
+              '/hotel/' + options.id + '?populate=hotelAmenities,hotelTags',
+              '/HotelSale?where='+JSON.stringify(where)+'&populate=prices,bids',
+              '/HotelUserComment?where=' + JSON.stringify(where),
+              '/HotelUserRating?where=' + JSON.stringify(where),
+              '/HotelImage?where=' + JSON.stringify(where)
+            ].forEach(function(path){
+                promises.push(new Promise(
                 function(resolve, reject) {
-                    io.socket.get('/HotelUserComment?where=' + JSON.stringify(where), function(res, jwRes) {
+                    io.socket.get(path, function(res, jwRes) {
                         if (jwRes.statusCode == 200) {
                             return resolve(res);
                         } else {
-                            return reject(new Error('Error retrieving hotel user comment,' +
+                            return reject(new Error('Error retrieving result' +
                                 ' response status was ' + jwRes.statusCode))
                         }
                     })
                 }));
-
-            promises.push(new Promise(
-                function(resolve, reject) {
-                    io.socket.get('/HotelUserRating?where=' + JSON.stringify(where), function(res, jwRes) {
-                        if (jwRes.statusCode == 200) {
-                            return resolve(res);
-                        } else {
-                            return reject(new Error('Error retrieving hotel user rating,' +
-                                ' response status was ' + jwRes.statusCode))
-                        }
-                    })
-                }));
-
-            if (options.provider == 'Seatfilla') {
-
-                promises.push(new Promise(
-                    function(resolve, reject) {
-                        io.socket.get('/HotelImage?where=' + JSON.stringify(hotelInfoWhere), function(res, jwRes) {
-                            if (jwRes.statusCode == 200) {
-                                return resolve(res);
-                            } else {
-                                return reject(new Error('Error retrieving hotel images,' +
-                                    ' response status was ' + jwRes.statusCode))
-                            }
-                        })
-                    }));
-
-                promises.push(new Promise(
-                    function(resolve, reject) {
-                        io.socket.get('/HotelTag?where=' + JSON.stringify(hotelInfoWhere), function(res, jwRes) {
-                            if (jwRes.statusCode == 200) {
-                                return resolve(res);
-                            } else {
-                                return reject(new Error('Error retrieving hotel tags,' +
-                                    ' response status was ' + jwRes.statusCode))
-                            }
-                        })
-                    }));
-            }
+            })
 
             //Wait for each async call and combine the results
             //Note this is making use of promises which aren't
             //supported in IE without a polyfill
             Promise.all(promises).then(function(results) {
                 console.log('Results :');
-                console.log(JSON.stringify(results))
+                const hotel = results[0],
+                      hotelSales = results[1],
+                      hotelUserComments = results[2],
+                      hotelUserRatings = results[3],
+                      hotelImages = results[4];
 
-                //Now combine the results accordingly
+                console.log('Hotel:');
+                console.log(hotel);
+                console.log('Hotel sales:');
+                console.log(hotelSales);
+                console.log('hotelUserRatings:');
+                console.log(hotelUserRatings);
+                console.log('hotelImages:');
+                console.log(hotelImages);
+
+                var auctionEndTime = moment(hotelSales[0].checkInDate);
+                console.log('auction end time:')
+                console.log(auctionEndTime)
+                console.log('currentTime: ')
+                console.log(moment())
+                var secondsLeft =  auctionEndTime.diff(moment(),'seconds');
+                console.log(secondsLeft)
+                setInterval(function(){
+                  var sLeft = secondsLeft%60;
+                  var mLeft = (secondsLeft/60)%60;	
+                  var hours = secondsLeft/60/60;
+
+                  console.log(hours + ':' + mLeft + ':' + sLeft);
+                  secondsLeft-=1;
+                },1000)
+
+                
+               /* //Now combine the results accordingly
                 const hotelUserComments = results[0];
                 const hotelUserRatings = results[1];
 
@@ -600,14 +587,13 @@ Initializes the hotel script
                     }
                     pollDetails(detailsUrl);
                 }
-                //member to delete local disk shit (causes errors)
             }).catch(function(err) {
                 console.log(err);
-            })
-        } 
+            }*/
+        });
+        }
     
-        $.waitingDialog.show('Loading hotel.. ' + options.hotel.name ||
-         (options.hotelInfo && options.hotelInfo.hotelName));
+        $.waitingDialog.show('Please wait, we\'re loading this hotel');
         populateData();
 
         function attachRealTimeListeners() {

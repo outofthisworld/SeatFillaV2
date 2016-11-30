@@ -133,9 +133,13 @@ module.exports = {
             collection: 'Address',
             via: 'user'
         },
-        bids: {
-            collection: 'Bid',
+        hotelBids: {
+            collection: 'HotelBid',
             via: 'user'
+        },
+        flightBids:{
+          collection:'FlightBid',
+          via:'user'
         },
         apiKeys: {
             collection: 'ApiUsers',

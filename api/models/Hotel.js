@@ -1,93 +1,82 @@
 module.exports = {
-    attributes: {
-        id:{
-          type:'string',
-          primaryKey:true,
-          defaultsTo:require('node-uuid').v4()
+    attributes:{
+        hotelUserComments:{
+            collection:'HotelUserComment',
+            via:'hotel'
         },
-        hotelUserComments: {
-            collection: 'HotelUserComment',
-            via: 'hotel'
+        hotelUserRating:{
+            collection:'HotelUserRating',
+            via:'hotel'
         },
-        hotelUserRating: {
-            collection: 'HotelUserRating',
-            via: 'hotel'
+        provider:{
+            type:'string',
+            notNull:true,
+            required:true
         },
-        starRating: {
-            type: 'integer',
-            notNull: true
+        hotelImages:{
+            collection:'HotelImage',
+            via:'hotel'
         },
-        popularity:{
-          type:'integer',
-          defaultsTo:null
-        },
-        popularity_desc:{
-          type:'string',
-          defaultsTo:null
-        },
-        hotelImages: {
-            collection: 'HotelImage',
-            via: 'hotel'
-        },
-        hotelQueries:{
-          collection:'HotelSearch',
-          via:'hotels'
-        },
-        hotelPrices:{
-          collection:'HotelPrices',
-          via:'hotel'
-        },
-        hotelTags: {
-            collection: 'HotelTag',
-            via: 'hotels'
-        },
-        hotelName: {
-            type: 'string',
-            notNull: true,
-            required: true
-        },
-        description: {
-            type: 'string',
-        },
-        longitude: {
-            type: 'string',
-            notNull: true,
-            required: true
-        },
-        latitude: {
-            type: 'string',
-            notNull: true,
-            required: true
-        },
-        websiteURL: {
-            type: 'string',
-            notNull: true,
-            required: true,
-        },
-        imageHostUrl:{
-           type:'string',
-           defaultsTo:null
-        },
-        hotelAgents:{
-          collection:'Agents',
-          via:'id'
+        hotelTags:{
+            collection:'HotelTag',
+            via:'hotels'
         },
         hotelAmenities:{
-          collection:'HotelAmenities',
-          via:'hotels'
+            collection:'HotelAmenities',
+            via:'hotels'
         },
-        callingCode: {
-            type: 'string',
+        hotelSales:{
+            collection:'HotelSale',
+            via:'hotel'
         },
-        phoneNumber: {
-            type: 'string',
+        user:{
+            model:'user',
+            defaultsTo:null
         },
-        addressString:{
-          type:'string',
+        hotelName:{
+            type:'string',
+            notNull:true,
+            required:true
         },
-        user: {
-          model: 'user',
-          defaultsTo: null
+        description:{
+            type:'string',
+            notNull:true,
+            required:true
+        },
+        popularity:{
+            type:'string'
+        },
+        longitude:{
+            type:'string',
+            notNull:true,
+            required:true
+        },
+        imageHostUrl:{
+            type:'string'
+        },
+        detailsUrl:{
+            type:'string'
+        },
+        latitude:{
+            type:'string',
+            notNull:true,
+            required:true
+        },
+        callingCode:{
+            type:'string',
+        },
+        phoneNumber:{
+            type:'string',
+        },
+        mobileNumber:{
+           type:'string',
+        },
+        starRating:{
+            type:'integer',
+            notNull:true
+        },
+        address:{
+            type:'string',
         }
     }
 }

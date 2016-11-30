@@ -74,7 +74,7 @@ module.exports = {
             required: true,
         },
         bids: {
-            collection: 'bid',
+            collection: 'FlightBid',
             via: 'flightOffer'
         }
     },
@@ -82,7 +82,7 @@ module.exports = {
         hasValidDates: function(arrivalDateTime) {
             const arrivalDate = new Date(arrivalDateTime);
             const departureDate = new Date(this.departureDateTime);
-            //Lets make sure that the flight doesn't 
+            //Lets make sure that the flight doesn't
             return !isNaN(arrivalDate.getTime()) && !isNaN(departureDate.getTime()) && arivalDate > departureDate;
         },
         isValidExpireTime: function(offerExpireDateTime) {

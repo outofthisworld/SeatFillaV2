@@ -141,6 +141,36 @@ function init () {
     ScheduledPolicyIntialDelay: timeUtils.createTimeUnit(4).Hours
   })
 
+  GlobalCache.cache({
+    GlobalCache: 'create_hotel_details_cache',
+    ExpirationPolicies: [
+      // Remove from the cache if the item ages more than one hour.
+      GlobalCache.DataItemPolicies.insertedGreaterThanOrEqualTo(
+        timeUtils.createTimeUnit(24).Hours)
+    ],
+    ExpirationSettings: {
+      runExpirationPolicyOnInserts: function () {
+        return true
+      },
+      runExpirationPolicyOnDeletions: function () {
+        return true
+      }
+    },
+    SecondaryStoragePolicies: [
+      GlobalCache.DataItemPolicies.sizeOfCachedItemGreaterThanOrEqualTo(
+        memoryUtils.createMemoryUnit(1).Megabytes)
+    ],
+    SerializationPolicies: [
+      GlobalCache.SerializationPolicies.sizeOfCacheGreaterThan(
+        memoryUtils.createMemoryUnit(25).Megabytes, 'create_hotel_details_cache')
+    ],
+    SecondaryStorageSettings: {
+      UseSecondaryStorage: true
+    },
+    ScheduledPolicyInterval: timeUtils.createTimeUnit(3).Hours,
+    ScheduledPolicyIntialDelay: timeUtils.createTimeUnit(1).Hours
+  })
+
   hasInitialized = true
 }
 

@@ -149,7 +149,7 @@ $(window).ready(function () {
     })(typeof process !== 'undefined' && {}.toString.call(process) == '[object process]' ? global : self)
 
     DomSocketHandler = function (map) {
-      if (!this instanceof DomSocketHandler) return new $.DomSocketHandler()
+      if (!this instanceof DomSocketHandler) return new DomSocketHandler()
       this.validators = {}
       this.mapping = map
     }

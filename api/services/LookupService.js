@@ -213,6 +213,8 @@ module.exports = {
         }
      }
     */
+
+    
     fixer_io_get_exchange_rates(base) {
         if (!base) throw new Error('Invalid params to LookupService.js/rest_countries_get_country_info')
 

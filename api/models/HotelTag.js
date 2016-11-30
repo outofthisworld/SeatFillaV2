@@ -1,13 +1,13 @@
 module.exports = {
-    attributes: {
-        hotels: {
-            collection: 'Hotel',
-            via:'hotelTags'
+    attributes:{
+        tag:{
+            type:'string',
+            notNull:true,
+            required:true
         },
-        tag: {
-            type: 'string',
-            notNull: true,
-            required: true
+        hotels:{
+            collection:'Hotel',
+            via:'hotelTags'
         }
     }
 }

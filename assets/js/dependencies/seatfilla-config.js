@@ -69,7 +69,7 @@ window.seatfilla.globals.tryParseJsonResult = function(result) {
 
 /*
     Object: window.seatfilla.globals.locale
-    Comprises of the locale functions for seatfilla. 
+    Comprises of the locale functions for seatfilla.
 */
 
 window.seatfilla.globals.locale = window.seatfilla.globals.locale || {}
@@ -151,8 +151,8 @@ window.seatfilla.globals.cookies.getCookie = function(cname) {
     }
     /* end cookies */
 
-/* 
-    Object: window.seatfilla.globals.cache 
+/*
+    Object: window.seatfilla.globals.cache
     Comprises of the global cache, uses session or local storage to reduce the number
     of requests made to the server.
 */
@@ -605,7 +605,7 @@ window.seatfilla.globals.request.skyscannerAPI.sendFlightInfoAjaxRequest = funct
 
 /*
   Maps a hotel API response, done client side
-  to reduce server load and spread computation 
+  to reduce server load and spread computation
   to client side.
 */
 window.seatfilla.globals.response.skyscannerAPI.mapHotelAPIResponse = function(result, options) {
@@ -620,10 +620,14 @@ window.seatfilla.globals.response.skyscannerAPI.mapHotelAPIResponse = function(r
                     return amen.id == amId
                 })
 
-                if (!amenity) throw new Error('Invalid response mapping in seatfilla-config.js/mapHotelApiResponse')
+                if(!amenity) return null;
 
                 return amenity
+            }).filter(function(amenities){
+              return amenities != null;
             })
+
+            hotel.provider = 'Skyscanner';
 
             if (hotel.images && imageHostUrl) {
                 const arr = []
@@ -674,6 +678,24 @@ window.seatfilla.globals.response.skyscannerAPI.mapHotelAPIResponse = function(r
                 hotel.images = arr
             }
 
+             if ('hotels_prices' in result) {
+                    hotel.agent_prices = result['hotels_prices'].filter(function(hotel_price){
+                      return hotel_price.id == hotel.hotel_id;
+                    }).map(function(hotelPrice) {
+                        if ('agent_prices' in hotelPrice) {
+                            hotel['agent_prices'] = hotelPrice['agent_prices'].map(function(agentPrice) {
+                                const agent = result.agents.find(function(result) {
+                                    return result.id == agentPrice.id
+                                })
+
+                                agentPrice.agent = agent;
+                                return agentPrice
+                            })
+                        }
+                        return hotelPrice
+                    })
+                }
+
             return hotel
         } else {
             return null
@@ -682,23 +704,6 @@ window.seatfilla.globals.response.skyscannerAPI.mapHotelAPIResponse = function(r
         return hotel != null
     })
 
-    if ('hotels_prices' in result) {
-        result['hotels_prices'].map(function(hotelPrice) {
-            if ('agent_prices' in hotelPrice) {
-                hotelPrice['agent_prices'] = hotelPrice['agent_prices'].map(function(agentPrice) {
-                    const agent = result.agents.find(function(result) {
-                        console.log('result: ' + result)
-                        console.log('agent price: ' + agentPrice)
-                        return result.id == agentPrice.id
-                    })
-
-                    agentPrice.id = agent
-                    return agentPrice
-                })
-            }
-            return hotelPrice
-        })
-    }
     return result
 }
 

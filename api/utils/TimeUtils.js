@@ -10,49 +10,62 @@ module.exports = {
     millisecondsToSeconds(milliseconds) {
         return milliseconds / 1000
     },
-
     millisecondsToMinutes(milliseconds) {
-        return milliseconds / 1000 / 60
+        return this.millisecondsToSeconds(milliseconds) / 60
     },
-
     millisecondsToHours(milliseconds) {
-        return milliseconds / 1000 / 60 / 60
+        return this.millisecondsToMinutes(milliseconds) / 60
     },
-
+    millisecondsToDays(milliseconds){
+        return this.millisecondsToHours(milliseconds) / 24;
+    },
     hoursToMilliseconds(hours) {
-        return hours * 60 * 60 * 1000
+        return this.hoursToSeconds(hours) * 1000
     },
-
     hoursToMinutes(hours) {
         return hours * 60
     },
-
     hoursToSeconds(hours) {
-        return hours * 60 * 60
+        return this.hoursToMinutes(hours) * 60
     },
-
+    hoursToDays(hours){
+        return hours/24;
+    },
     secondsToMilliseconds(seconds) {
         return seconds * 1000
     },
-
     secondsToHours(seconds) {
-        return seconds / 60 / 60
+        return this.secondsToMinutes(seconds) / 60
     },
-
     secondsToMinutes(seconds) {
         return seconds / 60
     },
-
+    secondsToDays(seconds){
+        return this.secondsToHours(seconds) / 24;
+    },
     minutesToSeconds(minutes) {
         return minutes * 60
     },
-
     minutesToHours(minutes) {
         return minutes / 60
     },
-
+    minutesToDays(minutes){
+        return this.minutesToHours(minutes)/24;
+    },
     minutesToMilliseconds(minutes) {
-        return minutes * 60 * 1000
+        return this.minutesToSeconds(minutes) * 1000
+    },
+    daysToMilliseconds(days){
+        return this.daysToSeconds(days) * 1000;
+    },
+    daysToSeconds(days){
+        return this.daysToMinutes(days) * 60;
+    },
+    daysToMinutes(days){
+        return this.daysToHours(days) * 60;
+    },
+    daysToHours(days){
+        return days * 24;
     },
     createTimeUnit(value) {
         const _self = this
@@ -98,9 +111,11 @@ module.exports = {
                 },
                 toSeconds() {
                     return _self.createTimeUnit(_self.hoursToSeconds(value)).Seconds
+                },
+                toDays(){
+                    return _self.createTimeUnit(_self.hoursToDays(value)).Days
                 }
             },
-
             Milliseconds: {
                 value,
                 convert,
@@ -121,9 +136,10 @@ module.exports = {
                     return _self.createTimeUnit(_self.millisecondsToHours(value)).Hours
                 },
                 toSeconds() {
-                    console.log('in milli')
-                    console.log(_self.millisecondsToSeconds(value))
                     return _self.createTimeUnit(_self.millisecondsToSeconds(value)).Seconds
+                },
+                toDays(){
+                    return _self.createTimeUnit(_self.millisecondsToDays(value)).Days
                 }
             },
             Minutes: {
@@ -147,9 +163,11 @@ module.exports = {
                 },
                 toSeconds() {
                     return _self.createTimeUnit(_self.minutesToSeconds(value)).Seconds
+                },
+                toDays(){
+                    return _self.createTimeUnit(_self.minutesToDays(value)).Days
                 }
             },
-
             Seconds: {
                 value,
                 type: 'Seconds',
@@ -167,10 +185,39 @@ module.exports = {
                     return _self.createTimeUnit(_self.secondsToMinutes(value)).Minutes
                 },
                 toHours() {
-                    return _self.createTimeUnit(self.secondsToHours(value)).Hours
+                    return _self.createTimeUnit(_self.secondsToHours(value)).Hours
                 },
                 toSeconds() {
                     return this
+                },
+                toDays(){
+                    return _self.createTimeUnit(_self.secondsToDays(value)).Days
+                }
+            },
+            Days:{
+                value,
+                type: 'Days',
+                convert,
+                to,
+                getValue,
+                setValue,
+                toString() {
+                    return value + 'Second(s)';
+                },
+                toMilliseconds() {
+                    return _self.createTimeUnit(_self.daysToMilliseconds(value)).Milliseconds
+                },
+                toMinutes() {
+                    return _self.createTimeUnit(_self.daysToMinutes(value)).Minutes
+                },
+                toHours() {
+                    return _self.createTimeUnit(_self.daysToHours(value)).Hours
+                },
+                toSeconds() {
+                    return _self.createTimeUnit(_self.daysToSeconds(value)).Hours
+                },
+                toDays(){
+                    return this;
                 }
             }
         }

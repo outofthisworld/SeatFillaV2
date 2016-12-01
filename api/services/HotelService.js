@@ -1,14 +1,155 @@
 module.exports = {
   process_hotel_sale(sale) {
-    async.auto({
-      find_hotel_sale: function (callback) {
-        HotelSale.find({ id: sale.id })
-          .then(function (hotelSale) {
-            return callback(null, hotelSale)
-          }).catch(callback)
-      }
+    return new Promise(function (resolve, reject) {
+      async.auto({
+        find_hotel_sale: function (callback) {
+          HotelSale.populate('hotel').populate('prices').populate('bids').find({ id: sale.id })
+            .then(function (hotelSale) {
+              if (!hotelSale) {
+                return callback(new Error('Could not find speicifed sale'))
+              }
+              sails.log.debug('Processing hotel sale, found sale ' + JSON.stringify(hotelSale))
+              return callback(null, hotelSale)
+            }).catch(callback)
+        },
+        check_status: ['find_hotel_sale', function (callback, results) {
+          if (results.find_hotel_sale.status == 'closed') {
+            return callback(null, null)
+          } 
 
-    }, function (err, results) {})
+          const hours = require('TimeUtils')
+              .createTimeUnit(
+                new Date(results.find_hotel_sale.checkInDate) - new Date()
+          ).Milliseconds.toHours()
+
+          sails.log.debug('Hours left until check in date: ' + hours)
+
+          if(results.find_hotel_sale.saleType == 'auction' && hours <= 24
+            || results.find_hotel_sale.saleType == 'fixed' && hours <= 0){
+              return callback(null,{saleType:results.find_hotel_sale.saleType});
+          }else{
+              return callback(null,null);
+          }
+        }],
+        update_status: ['find_hotel_sale', 'check_status', function (callback, results) {
+          if (results.check_status) {
+            results.find_hotel_sale.status = 'closed'
+            results.find_hotel_sale.save(function (err) {
+              if (err) {
+                return callback(err, null)
+              }else {
+                return callback(null, true)
+              }
+            })
+          }else {
+            return callback(null, null)
+          }
+        }],
+        find_reserve: ['update_status', function (callback, results) {
+          if(!results.check_status) return callback(null,null);
+
+          if (results.find_hotel_sale.prices.length) {
+            var minPrice
+
+            _.each(results.find_hotel_sale.prices, function (price) {
+              if (!minPrice) {
+                minPrice = price
+              }else if (minPrice.price_total > price.price_total) {
+                minPrice = price
+              }
+            })
+
+            return callback(null, minPrice)
+          }else {
+            const error = new Error()
+            error.message = 'No reserves for this auction, invalid status'
+            error.errorCode = 219
+            return callback(error, null)
+          }
+        }],
+        find_winner: ['find_hotel_sale', 'find_reserve', 'check_status', function (callback, results) {
+          if (!results.check_status) return callback({hasWinner: false})
+
+          if (results.check_status.saleType == 'auction' && results.find_hotel_sale.bids.length) {
+            var minBid
+            _.each(results.find_hotel_sale.bids, function (bid) {
+              if (!minBid) {
+                minBid = bid
+              }else if (bid.bidAmount < minBid.bidAmount) {
+                minBid = bid
+              }
+            })
+
+            if (minBid.bidAmount >= results.find_reserve.price_total) {
+              User.find({id: minBid.user}).then(function (user) {
+                return callback(null,
+                  {
+                    hasWinner: true,
+                    bidAmount: minBid.bidAmount,
+                    reserveAmount: results.find_reserve.price_total,
+                    hotel: results.find_hotel_sale.hotel,
+                    hotelSale: results.find_hotel_sale,
+                    winner: user
+                  })
+              }).catch(function (err) {
+                return callback({
+                  wlError: err,
+                  error: new Error('Invalid bid user')
+                }, null)
+              })
+            }else {
+              return callback(null, {hasWinner: false})
+            }
+          }else {
+            return callback(null, {hasWinner: false})
+          }
+        }],
+        email_winner: ['find_winner', function (callback, results) {
+          if (results.find_winner.hasWinner) {
+            EmailService.sendEmailAsync(
+              sails.config.email.messageTemplates.hotelAuctionWinner(results.find_winner)
+            ).then(function(){
+              return callback(null,true);
+            }).catch(function(err){
+              sails.log.error(err);
+              return callback(err,null);
+            });
+          }
+          return callback(null,null);
+        }],
+        notify_winner: ['find_winner', function (callback, results) {
+          if (results.find_winner.hasWinner) {
+            NotificationService.sendNotification({
+                  user: results.find_winner.winner.id,
+                  title: 'You have won an auction for hotel ' + results.find_winner.hotel.name,
+                  message:'A bid of ' + results.find_winner.bidAmount + ' was place on hotel ' 
+                  + results.find_winner.hotel.name + ' and has won.',
+                  read: false,
+                  type: 'Individual',
+                  link: '/hotel/' + results.find_winner.hotel.id
+            }).then(function(){
+              return callback(null,true);
+            }).catch(function(err){
+              return callback(err,null);
+            })
+          }
+          return callback(null,null);
+        }]
+      }, function (err, results) {
+        if (err) {
+          sails.log.error(err)
+          sails.log.debug('Error processing auction sale');
+          if (err.errCode == 219) {
+            // Notify user of fail,
+            // log failiure
+          }
+          return reject(err)
+        }else {
+          sails.log.debug(results);
+          return resolve(results)
+        }
+      })
+    })
   },
   map_response_to_db(options) {
     const _this = this
@@ -97,10 +238,12 @@ module.exports = {
               const sales = hotelSale.filter(function (sale) {
                 const dateDif = new Date(sale.checkindate) - new Date()
                 const hours = require('TimeUtils').createTimeUnit(dateDif).Milliseconds.toHours()
-                if (sale.saleType == 'auction' && hours <= 24 || sale.status == 'closed') {
+                if (sale.saleType == 'auction' && hours <= 24 || sale.saleType == 'fixed' && hours <= 0) {
                   _this.process_hotel_sale(sale)
                   return false
-                } else {
+                }else if (sale.status == 'closed') {
+                  return false
+                }else {
                   return true
                 }
               })
@@ -298,6 +441,10 @@ module.exports = {
       }
 
       function create_hotel_prices (cb, results) {
+        if (!hotel.hotels_prices || !hotel.hotels_prices.length) {
+          return callback(new Error('No hotel prices'), null)
+        }
+
         if (!results.get_exchange_rate.rates.USD) {
           sails.log.debug('Could not find USD exchange rate')
           return cb(new Error('Error find usd conversion rate'), null)
@@ -335,19 +482,25 @@ module.exports = {
         sails.log.debug(objs)
         HotelPrices.findOrCreate(objs, objs)
           .then(function (hotelPrices) {
-            _.each(hotelPrices, function (hotelPrice) {
-              results.create_hotel_sale.prices.add(hotelPrice.id)
-            })
-            results.create_hotel_sale.save(function (err) {
-              if (err) {
-                sails.log.debug('Error saving hotel sale in hotel_prices')
-                return cb(err, null)
-              } else {
-                sails.log.debug('Succesfully saved hotel sale')
-                return cb(null, true)
-              }
-            })
+            return callback(null, hotelPrices)
+          /*_.each(hotelPrices, function (hotelPrice) {
+            results.create_hotel_sale.prices.add(hotelPrice.id)
           })
+          results.create_hotel_sale.save(function (err) {
+            if (err) {
+              sails.log.debug('Error saving hotel sale in hotel_prices')
+              return cb(err, null)
+            } else {
+              sails.log.debug('Succesfully saved hotel sale')
+              return cb(null, true)
+            }
+          })*/
+          }).catch(function (err) {
+          return callback({
+            wlError: err,
+            error: new Error('Error creating hotel prices')
+          }, null)
+        })
       }
 
       function create_hotel_amenities (cb, results) {

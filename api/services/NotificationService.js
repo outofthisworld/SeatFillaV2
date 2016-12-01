@@ -6,7 +6,7 @@ const functionalUtils = require('../utils/FunctionalUtils')
 
 module.exports = {
     // Lets handle sending async notifications to a (one) client.
-    sendDedicatedNotificationAsync: function(req, done) {
+    sendDedicatedNotificationAsync: function(req, done,options) {
         // Return a function which takes a message..
         return function(message) {
             // Lets run the asyncrounously since we're running database operations and javascript only has one thread..
@@ -30,6 +30,7 @@ module.exports = {
                     link: '/'
                 }, message)).then(function(notification) {
                     Notifications.publishCreate(notification)
+                    User.publishAdd(req.user.id, 'notifications', notification)
                     sails.log.debug('created notification (user logged in )' + JSON.stringify(notification))
                     cb(done, [null, notification])
                 }).catch(function(error) {
@@ -44,6 +45,20 @@ module.exports = {
                 return cb(done, [null, message]) || 'sent'
             }
         }
+    },
+    sendNotification(message){
+        if(!user || !message) return Promise.reject(new Error('Invalid user or message'))
+
+        return new Promise(function(resolve,reject){
+            Notifications.create(message)
+            .then(function(notification){
+                User.publishAdd(notification.user || notification.user.id, 'notifications', notification);
+                Notification.publishCreate(notification);
+                return resolve(notification)
+            }).catch(function(err){
+                return reject(err);
+            })
+        })
     },
     // Sends a system notification to all users.
     sendSystemNotification: function(message) {

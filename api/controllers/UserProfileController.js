@@ -26,14 +26,16 @@ module.exports = {
         return res.ok({
             UserProfile: req.options.userprofile
         }, {
-            title: req.options.userprofile.user.username + ' ' + req.__('UserProfile')
+            title: req.options.userprofile.user.username + ' ' + req.__('UserProfile'),
+             renderHtml: true
         })
     },
     flightScheduling(req, res) {
         return res.ok({
             UserProfile: req.options.userprofile
         }, {
-            title: req.options.userprofile.user.username + ' ' + req.__('UserProfile')
+            title: req.options.userprofile.user.username + ' ' + req.__('UserProfile'),
+             renderHtml: true
         })
     },
     flight_group(req, res) {

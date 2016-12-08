@@ -21,11 +21,13 @@ module.exports.http = {
           deserialization proccess for session storage (keeps server memory low)
         */
       passport.serializeUser(function (user, done) {
-        sails.log.debug('Serializing user: ' + user)
-        done(null, user.id)
+        sails.log.debug('Serializing user: ')
+        sails.log.debug(user)
+        return done(null, user.id || user.username)
       })
 
-      passport.deserializeUser(function (id, done) {
+      passport.deserializeUser(function (req,id, done) {
+        if(req.session.tempUser) return done(null,req.session.tempUser);
         return User.findOne({ id: id })
           .populate('roles')
           .populate('userSettings')
@@ -36,6 +38,7 @@ module.exports.http = {
           .populate('hotelBids')
           .populate('flightBids')
           .populate('apiKeys')
+          .populate('userProfile')
           .populate('supportTickets').exec(function (err, user) {
           if (err) {
             sails.log.error(err)

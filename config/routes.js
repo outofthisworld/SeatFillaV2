@@ -35,6 +35,9 @@ module.exports.routes = {
     /*
         Home controller routes
     */
+    'get /*':{
+        policy:'allPolicy'
+    },
     'get /': {
         controller:'HomeController',
         action:'index',
@@ -79,8 +82,19 @@ module.exports.routes = {
     },
     /* End home controller routes */
 
+
     /* Provider routes */
+    'get /Provider*':{
+        policy:'providerPolicy',
+    },
     'get /Provider/':{
+        controller:'ProviderController',
+        action:'index',
+        locals:{
+            layout: 'layouts/provider-layout.ejs'
+        }
+    },
+    'get /Provider/index':{
         controller:'ProviderController',
         action:'index',
         locals:{
@@ -132,20 +146,56 @@ module.exports.routes = {
             layout: 'layouts/provider-layout.ejs'
         }
     },
-    'get /Provider/webhook/sendWebhookVerification':{
+    'get /Provider/webhook/':{
+        controller:'WebhookController',
+        action:'find',
+        locals:{
+            layout: 'layouts/provider-layout.ejs'
+        }
+    },
+      'get /Provider/webhook/find':{
+        controller:'WebhookController',
+        action:'find',
+        locals:{
+            layout: 'layouts/provider-layout.ejs'
+        }
+    },
+    'get /Provider/webhook/:id/sendWebhookVerification':{
         controller:'WebhookController',
         action:'sendWebhookVerification',
         locals:{
             layout: 'layouts/provider-layout.ejs'
         }
     },
-    'get /Provider/webhook/verifyWebhook':{
+    'get /Provider/payment':{
+        controller:'ProviderController',
+        action:'paymentMethod',
+        locals:{
+            layout: 'layouts/provider-layout.ejs'
+        }
+    },
+    'get /Provider/webhook/:id/verifyWebhook':{
         controller:'WebhookController',
         action:'verifyWebhook',
         locals:{
             layout: 'layouts/provider-layout.ejs'
         }
     },
+    'POST /Provider/webhook/verifyWebhook':{
+        controller:'WebhookController',
+        action:'verifyWebhook',
+        locals:{
+            layout: 'layouts/provider-layout.ejs'
+        }
+    },
+    'POST /Provider/webhook/:id/verifyWebhook':{
+        controller:'WebhookController',
+        action:'verifyWebhook',
+        locals:{
+            layout: 'layouts/provider-layout.ejs'
+        }
+    },
+    
     /**********/
     'get /UserProfile/:username':{
         controller:'UserProfileController',
@@ -184,6 +234,27 @@ module.exports.routes = {
             layout:'layouts/profile-layout'
         }
     },
+    'get /api/':{
+        controller:'ApiController',
+        action:'index',
+        locals:{
+            layout:'layout'
+        }
+    },
+    'get /api/index':{
+        controller:'ApiController',
+        action:'index',
+        locals:{
+            layout:'layout'
+        }
+    },
+    'get /api/documentation':{
+        controller:'ApiController',
+        action:'documentation',
+        locals:{
+            layout:'layout'
+        }
+    },
     '/UserProfile/:username/feed':{
         controller:'FeedController',
         action:'index',
@@ -192,8 +263,15 @@ module.exports.routes = {
         }
     },
     'get /UserProfile/:username/api':{
-        controller:'UserProfileController',
-        action:'api', //isOwnProfile
+        controller:'ApiController',
+        action:'index', //isOwnProfile
+        locals:{
+            layout:'layouts/profile-layout'
+        }
+    },
+    'get /UserProfile/:username/api/documentation':{
+        controller:'ApiController',
+        action:'documentation', //isOwnProfile
         locals:{
             layout:'layouts/profile-layout'
         }
@@ -279,6 +357,16 @@ module.exports.routes = {
             layout:'layouts/profile-layout'
         }
     },
+    'get /flightoffer':{
+        locals:{
+            layout:'layouts/search-layout'
+        }
+    },
+    'get /flightoffer/index':{
+        locals:{
+            layout:'layouts/search-layout'
+        }
+    },
     /* ********************* */
 
 
@@ -327,13 +415,79 @@ module.exports.routes = {
         action:'register'
     },
 
-
-
-
-
+    /* Api routes */
+    'get /apiv1*':{
+        policy:'apiPolicy'
+    },
+    'get /apiv1/flightrequest':{
+        controller:'FlightRequestController',
+        action:'find',
+    },
+    'post /apiv1/flightrequest':{
+        controller:'FlightRequestController',
+        action:'create',
+    },
+    'get /apiv1/flightrequest/:id':{
+        controller:'FlightRequestController',
+        action:'findOne',
+    },
+    'get /apiv1/flightrequest/:id/accept':{
+        controller:'FlightRequestController',
+        action:'accept',
+    },
+    'patch /apiv1/flightrequest/:id':{
+        controller:'FlightRequestController',
+        action:'update',
+    },
+    'delete /apiv1/flightrequest/:id':{
+        controller:'FlightRequestController',
+        action:'destroy',
+    },
+    'get /apiv1/flightoffer':{
+        controller:'FlightOfferController',
+        action:'find',
+    },
+    'post /apiv1/flightoffer':{
+        controller:'FlightOfferController',
+        action:'create',
+    },
+    'get /apiv1/flightoffer/:id':{
+        controller:'FlightOfferController',
+        action:'findOne'
+    },
+    'patch /apiv1/flightoffer/:id':{
+        controller:'FlightOfferController',
+        action:'update'
+    },
+    'delete /apiv1/flightoffer/:id':{
+        controller:'FlightOfferController',
+        action:'destroy'
+    },
+    'get /apiv1/hoteloffer':{
+        controller:'FlightOfferController',
+        action:'find',
+    },
+    'post /apiv1/hoteloffer':{
+        controller:'FlightOfferController',
+        action:'create',
+    },
+    'get /apiv1/hoteloffer/:id':{
+        controller:'FlightOfferController',
+        action:'findOne'
+    },
+    'patch /apiv1/hoteloffer/:id':{
+        controller:'FlightOfferController',
+        action:'update'
+    },
+    'delete /apiv1/hoteloffer/:id':{
+        controller:'FlightOfferController',
+        action:'destroy'
+    },
     'get /ajax/templates/*.html':{
         policy:'acceptPolicy'
     },
+
+
 
     /***************************************************************************
      *                                                                          *

@@ -39,44 +39,30 @@ module.exports = {
         },
         firstName: {
             type: 'string',
-            required: true,
-            notNull: true,
-            minLength: 1,
-            maxLength: 30
+            notNull: false,
         },
         middleName: {
             type: 'string',
             required: false,
-            minLength: 1,
-            maxLength: 30
+            notNull:false,
         },
         lastName: {
             type: 'string',
-            required: true,
-            notNull: true,
-            minLength: 1,
-            maxLength: 30
         },
         home: {
             type: 'string',
-            required: true,
-            notNull: true
+            notNull:false
         },
         mobile: {
             type: 'string',
-            required: true,
-            notNull: true
+            notNull:false
         },
         email: {
             type: 'string',
-            required: true,
-            unique: true,
-            notNull: true,
+            notNull:false
         },
         username: {
             type: 'string',
-            minLength: 3,
-            maxLength: 20
         },
         displayName: {
             type: 'string',
@@ -96,24 +82,12 @@ module.exports = {
         },
         birthDay: {
             type: 'string',
-            integer: true,
-            required: false
         },
         birthMonth: {
             type: 'string',
-            integer: true,
-            required: false
-        },
-        provider: {
-            type: 'string',
-            required: false,
-            notNull: false,
-            defaultsTo: 'local'
         },
         birthYear: {
             type: 'string',
-            integer: true,
-            required: false
         },
         isEmailVerified: {
             type: 'boolean',
@@ -150,6 +124,9 @@ module.exports = {
             via: 'user',
             dominant: true
         },
+        image: {
+            type:'string'
+        },
         notifications: {
             collection: 'Notifications',
             via: 'user'
@@ -166,6 +143,10 @@ module.exports = {
             collection: 'Hotel',
             via: 'user'
         },
+        creditCards:{
+            collection:'CreditCard',
+            via:'payer_id'
+        },
         //A user can have many support tickets.
         supportTickets: {
             collection: 'SupportTicket',
@@ -176,7 +157,8 @@ module.exports = {
             via: 'members'
         },
         userProfile: {
-            model: 'UserProfile'
+            collection: 'UserProfile',
+            via:'user'
         },
         emailConfirmed: () => {
             return this.isEmailConfirmed;

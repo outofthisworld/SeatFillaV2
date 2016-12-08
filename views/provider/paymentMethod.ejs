@@ -1,0 +1,20 @@
+<div class="col-md-6 col-md-offset-2" style="margin-top:50px;">
+    <h2> More information required!</h2>
+    <small> Before proceeding, all providers must have a payment method associated with their account. Paypal 
+    at this present time is the only supported method of payment, if you do not have a paypal account
+    you can quickly and easily create one at <a href="https://www.paypal.com">paypal</a>.</small> 
+        <form method="POST" action="/provider/paymentMethod"class="form-horizontal" role="form" class="col-md-6 col-md-offset-3">
+                                    <div style="margin-top: 25px" class="input-group">
+                                        <%=req.flash('danger')%>
+                                        <div class="form-group">
+                                        <label for="email" class="col-xs-4">Please enter your paypal email:</label>
+                                        <div class="col-xs-8">
+                                        <input type="email" class="form-control" name="paypalEmail" value="" placeholder="Email" required/>
+                                                 <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-info btn-lg btn-block" type="submit">Confirm</button>
+                                </form>
+                                </div>
+            

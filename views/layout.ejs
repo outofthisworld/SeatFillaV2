@@ -3,11 +3,11 @@
     <head>
     <title><%= data && data.title || "Seatfilla.com" %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta property="og:url"           content="<%= data &&  data.url || 'http://seatfilla.com' %> " />
-	<meta property="og:type"          content="<%= data &&  data.type || 'article' %>"/>
-	<meta property="og:title"         content="<%= data &&  data.title || 'Cheap hotel at Seatfilla' %>" />
-	<meta property="og:description"   content="<%= data &&  data.description || 'Check out this amazing hotel!' %>" />
-	<meta property="og:image"         content="<%= data &&  data.image || 'http://wwww.seatfilla.com/images/Logo.png' %>" />
+    <meta property="og:url"           content="<%= req.options && req.options.url || 'http://seatfilla.com' %> " />
+	<meta property="og:type"          content="<%= req.options && req.options.type|| 'article' %>"/>
+	<meta property="og:title"         content="<%= req.options && req.options.title || 'Cheap hotel at Seatfilla' %>" />
+	<meta property="og:description"   content="<%= req.options && req.options.description|| 'Check out this amazing hotel!' %>" />
+	<meta property="og:image"         content="<%= req.options && req.options.image || 'http://wwww.seatfilla.com/images/Logo.png' %>" />
 
     <!--SCRIPTS-->
     <script src="/js/dependencies/sails.io.js"></script>
@@ -19,12 +19,14 @@
     <script src="/js/dependencies/airport-data2.js"></script>
     <script src="/js/dependencies/ajax-form.js"></script>
     <script src="/js/dependencies/chat.js"></script>
+    <script src="/js/dependencies/currency-handler.js"></script>
     <script src="/js/dependencies/device.min.js"></script>
     <script src="/js/dependencies/facebook.js"></script>
     <script src="/js/dependencies/geo-location.js"></script>
     <script src="/js/dependencies/geolocator.min.js"></script>
     <script src="/js/dependencies/index.js"></script>
     <script src="/js/dependencies/input-hook.js"></script>
+    <script src="/js/dependencies/jquery.countdown.min.js"></script>
     <script src="/js/dependencies/jquery.easing.min.js"></script>
     <script src="/js/dependencies/jquery.mb.YTPlayer.js"></script>
     <script src="/js/dependencies/jquery.toaster.js"></script>
@@ -40,7 +42,6 @@
     <script src="/js/dependencies/select2.full.min.js"></script>
     <script src="/js/dependencies/sidebar.js"></script>
     <script src="/js/dependencies/socket-handler.js"></script>
-    <script src="/js/dependencies/supported-currencies.js"></script>
     <script src="/js/dependencies/user.js"></script>
     <script src="/js/dependencies/wow.min.js"></script>
     <!--SCRIPTS END-->

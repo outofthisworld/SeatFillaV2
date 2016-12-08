@@ -4,9 +4,18 @@
 
 const _find = require('../out/find'),
     _update = require('../out/update');
+    
 module.exports = {
     create: function(req, res) {
-        UserService.createUser(req).then(function(user) {
+        const obj = (req.session.tempUser && Object.assign(_.clone(req.session.tempUser),_.clone(req.allParams()))) || null;
+        const user = obj? obj:req.allParams();
+        delete req.session.tempUser;
+        UserService.createUser({
+            user,
+            locale:req.headers['Accept-Language'] || 'en-US',
+            userAgent:req.headers['user-agent'],
+            ip:req.ip,
+        }).then(function(user) {
             NotificationService.sendDedicatedNotificationAsync(req)({
                 title: 'You have just signed up to Seatfilla',
                 message: 'Thank-you for registering at Seatfilla, be sure to verify your email!',
@@ -19,22 +28,22 @@ module.exports = {
             });
         }).catch(function(err) {
             sails.log.debug('Error creating user in UserController.js/create ' + err);
+            sails.log.error(err);
             return res.json({
                 status: 500,
                 error: err
             });
         });
     },
-    find(req, res) {
-        sails.log.debug('Finding user..');
+    /*find(req, res) {
         _find(req, res).then(function(result) {
             sails.log.debug('Found users via search :' + JSON.stringify(result));
             return res.json(200, result);
         }).catch(function(err) {
-            sails.log.error(err);
+        sails.log.error(err);
             return res.json(400, []);
         })
-    },
+    },*/
     update(req, res) {
         const UserProfile = req.options.userprofile;
         sails.log.debug('updating user : ' + req.method)
@@ -92,10 +101,14 @@ module.exports = {
         if (!req.user) return res.ok({
             status: 404
         });
-        else return res.ok({
+        else {
+            sails.log.debug('returning user');
+            sails.log.debug(req.user)
+            return res.ok({
             status: 200,
             username: req.user.username,
             id: req.user.id
-        });
+            });
+        }
     }
 };

@@ -44,35 +44,35 @@
 module.exports.policies = {
     UserController: {
         '*':true,
-        // 'find': ['getPolicy', 'adminPolicy', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
-        //'findOne': ['getPolicy', 'adminPolicy', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
-        'create': ['postPolicy', 'createAccountPolicy', 'notLoggedInPolicy'],
+        'find': [],
+        'findOne': [],
+        'create': ['postPolicy', 'createAccountPolicy', 'notLoggedInPolicy',],
         'index': ['getPolicy','passportAuth'],
         'update':['passportAuth','viewProfilePolicy','isOwnProfilePolicy']//Return user profile
     },
     AuthController: {
         '*': false,
         'generateApiToken': ['passportAuth'],
-        'removeApiToken': ['passportAuth', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
-        'removeAllApiTokens': ['passportAuth', 'whiteListedDomainPolicy', 'ipBlacklistPolicy'],
-        'local': true,
+        'removeApiToken': ['passportAuth'],
+        'removeAllApiTokens': ['passportAuth'],
+        'local': 'notLoggedInPolicy',
         'facebook': true,
         'instagram': true,
         'google': true,
-        'googleCallback': true,
-        'facebookCallback': true,
-        'instagramCallback': true,
+        'googleCallback': 'notLoggedInPolicy',
+        'facebookCallback': 'notLoggedInPolicy',
+        'instagramCallback':'notLoggedInPolicy',
         'twitter': true,
-        'twitterCallback': true,
+        'twitterCallback': 'notLoggedInPolicy',
     },
     HomeController:{
          '*':true,
-        'login':['notLoggedInPolicy','providerNotLoggedInPolicy'],
+        'login':['notLoggedInPolicy'],
+        'register':['notLoggedInPolicy']
     },
     ProviderController:{
-        '*':['providerAuthenticationPolicy'],
-        'login':['notLoggedInPolicy','providerNotLoggedInPolicy'],
-        'authenticate':['notLoggedInPolicy','providerNotLoggedInPolicy']
+        'login':['notLoggedInPolicy'],
+        'authenticate':['notLoggedInPolicy']
     },
     VerifyController: {
         '*': false,
@@ -80,9 +80,6 @@ module.exports.policies = {
     },
     FlightOfferController: {
         '*': false,
-        'create': ['apiPolicy'],
-        'delete': ['apiPolicy'],
-        'update': ['apiPolicy'],
         'find':true,
         'index':true
     },
@@ -119,13 +116,16 @@ module.exports.policies = {
         'create':['passportAuth','setUserPolicy'],
         'add':['passportAuth','setUserPolicy']
     },
+    HotelSaleController:{
+        'placebid':['passportAuth']
+    },
     UserProfileController:{
         '*':'viewProfilePolicy',
         'api':['passportAuth','viewProfilePolicy','isOwnProfilePolicy'],
         'providerSection':['passportAuth','viewProfilePolicy','isOwnProfilePolicy'],
         'findOneByUser':['viewProfilePolicy'],
-        'flightScheduling':['passportAuth','viewProfilePolicy'],
-        'find':true,
+        'flightScheduling':['passportAuth','viewProfilePolicy','isOwnProfilePolicy'],
+        'find':false,
         'findOne':true
     },
     UserSettings:{

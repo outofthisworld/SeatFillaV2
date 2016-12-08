@@ -1,0 +1,24 @@
+   <% req.flash('info').forEach(function (message) { %>
+                    <div class="alert alert-info">
+                    <%=message%>
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                      </button>
+                      </div>
+                    <% }) %>
+  <% req.flash('warning').forEach(function (message) { %>
+                    <div class="alert alert-warning">
+                    <%=message%>
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                      </button>
+                      </div>
+                    <% }) %>
+                    <% req.flash('danger').forEach(function (message) { %>
+                    <div class="alert alert-danger">
+                    <%=message%>
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                      </button>
+                      </div>
+    <% }) %>

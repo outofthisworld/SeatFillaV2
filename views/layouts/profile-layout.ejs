@@ -23,12 +23,14 @@
     <script src="/js/dependencies/airport-data2.js"></script>
     <script src="/js/dependencies/ajax-form.js"></script>
     <script src="/js/dependencies/chat.js"></script>
+    <script src="/js/dependencies/currency-handler.js"></script>
     <script src="/js/dependencies/device.min.js"></script>
     <script src="/js/dependencies/facebook.js"></script>
     <script src="/js/dependencies/geo-location.js"></script>
     <script src="/js/dependencies/geolocator.min.js"></script>
     <script src="/js/dependencies/index.js"></script>
     <script src="/js/dependencies/input-hook.js"></script>
+    <script src="/js/dependencies/jquery.countdown.min.js"></script>
     <script src="/js/dependencies/jquery.easing.min.js"></script>
     <script src="/js/dependencies/jquery.mb.YTPlayer.js"></script>
     <script src="/js/dependencies/jquery.toaster.js"></script>
@@ -44,7 +46,6 @@
     <script src="/js/dependencies/select2.full.min.js"></script>
     <script src="/js/dependencies/sidebar.js"></script>
     <script src="/js/dependencies/socket-handler.js"></script>
-    <script src="/js/dependencies/supported-currencies.js"></script>
     <script src="/js/dependencies/user.js"></script>
     <script src="/js/dependencies/wow.min.js"></script>
     <!--SCRIPTS END-->
@@ -70,75 +71,8 @@ $(window).ready(function(){
     if(err) alert('Error loading scripts')
   })
 })
-$(document).ready(function(){
-  $('.nav-tabs a[data-page]').on('click',function(){
-      const target = $(this).attr('data-page')
-      if(!target) return;
-      if($(this).attr('href')){
-          console.log($(this).attr('href'))
-      }
-      $('.nav-tabs li').removeClass('active')
-      $(this).parent().addClass('active')
-      const container = $(this).parent().parent().attr('data-container')
-      if(container){
-        $(container).html("")
-        console.log('loading: ' + target)
-        $(container).load(target,function(res,ts,xhr){
 
-            if(xhr.status != 200){
-                console.log('not 200')
-                return;
-            };
-            $.lazyLoadScripts({},function(err){
-                if(err) alert('Error loading scripts')
-            })
-        });
-      }
-  })
-})
 </script>
-
-<style>
-@import url(http://fonts.googleapis.com/css?family=Open+Sans);
-/* apply a natural box layout model to all elements, but allowing components to change */
-
-.activity-feed {
-  padding: 15px;
-}
-.activity-feed .feed-item {
-  position: relative;
-  padding-bottom: 20px;
-  padding-left: 30px;
-  border-left: 2px solid #e4e8eb;
-}
-.activity-feed .feed-item:last-child {
-  border-color: transparent;
-}
-.activity-feed .feed-item:after {
-  content: "";
-  display: block;
-  position: absolute;
-  top: 0;
-  left: -6px;
-  width: 10px;
-  height: 10px;
-  border-radius: 6px;
-  background: #fff;
-  border: 1px solid #f37167;
-}
-.activity-feed .feed-item .date {
-  position: relative;
-  top: -5px;
-  color: #8c96a3;
-  text-transform: uppercase;
-  font-size: 13px;
-}
-.activity-feed .feed-item .text {
-  position: relative;
-  top: -3px;
-}
-
-</style>
 </head>
 
 <body>
@@ -151,8 +85,8 @@ $(document).ready(function(){
             <div class="row">
             <div style="col-xs-3">
                 <div style="position:relative;left:150px;">
-                <img src="<%= data.UserProfile.image || 'http://placehold.it/350x150'%>" class="img-thumbnail picture hidden-xs" />
-                <img src="<%= data.UserProfile.image || 'http://placehold.it/350x150'%>" class="img-thumbnail visible-xs picture_mob" />
+                <img src="<%= data.UserProfile.user.image || 'http://placehold.it/350x150'%>" class="img-thumbnail picture hidden-xs" />
+                <img src="<%= data.UserProfile.user.image || 'http://placehold.it/350x150'%>" class="img-thumbnail visible-xs picture_mob" />
                 </div>
                 <%if(req.user && data.UserProfile.isOwnProfile){%>
                     <div class="pull-right" style="position:relative;">
@@ -191,13 +125,20 @@ $(document).ready(function(){
     <div class="container-fluid">
 
     <div class="">
-        <ul class="nav nav-tabs profile" data-container="#profilePageTemplateContainer">
-          <li class="active"><a data-page="/userprofile/<%=data.UserProfile.user.username%>?asAjax=true" data-toggle="tab">Profile</a></li>
-         <li><a data-page="/userprofile/<%=data.UserProfile.user.username%>/feed">Feed</a></li>
-         <li><a data-page="/userprofile/<%=data.UserProfile.user.username%>/update">Update settings</a></li>
-          <li><a data-page="/userprofile/<%=data.UserProfile.user.username%>/flightscheduling">Flight scheduling</a></li>
-          <li><a data-page="/notifications/findByUser">Notifications</a></li>
-          <li><a data-page="/userprofile/<%=data.UserProfile.user.username%>/provider">Provider section</a></li>
+        <ul id="userProfileNavTabsContainer" class="nav nav-tabs profile" data-container="#profilePageTemplateContainer">
+           <script id="userProfileNavTabsTemplate" type="text/html">
+            <li data-hash="#profile"  class="active"><a data-page="/userprofile/<%=data.UserProfile.user.username%>?asAjax=true" data-toggle="tab">Profile</a></li>
+            <li data-hash="#feed"><a data-page="/userprofile/<%=data.UserProfile.user.username%>/feed">Feed</a></li>
+            <li data-hash="#notifications" ><a data-page="/notifications/findByUser">Notifications</a></li>
+            <% if(req.user){ %>
+                {{if (~getCurrentUser() && (~getCurrentUser().id == ~getCurrentProfileUser().id)) }}
+                    <li data-hash="#updatesettings"><a data-page="/userprofile/<%=data.UserProfile.user.username%>/update">Update settings</a></li>
+                    <li data-hash="#flightscheudling"><a data-page="/userprofile/<%=data.UserProfile.user.username%>/flightScheduling">Flight scheduling</a></li>
+                    <li data-hash="#providersection"><a data-page="/userprofile/<%=data.UserProfile.user.username%>/provider">Provider section</a></li>
+                {{/if}}
+            <% } %>
+          </script>
+
         </ul>
         <div id="tabContent" class="tab-content">
           <div class="tab-pane active in">
@@ -339,7 +280,7 @@ $(document).ready(function(){
 </div>
 </div>
 
-
+ <%- partial ('../partials/modal.ejs') %>
  <%- partial ('../partials/toast.ejs') %>
 
 </body>

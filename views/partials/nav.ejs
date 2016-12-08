@@ -24,7 +24,7 @@
             <%}%>
             <li>
             <div class="styled-select white semi-square" id="currency_select_s" style="margin-top:5px;max-width:120px;">
-            <select class= "form-control centertext" id="seatfilla_currencies"></select>
+            <select class= "form-control centertext noselect" id="seatfilla_currencies"></select>
             </div>
             </li>
             </ul>
@@ -76,7 +76,7 @@
           <li><a href="#">Contact us</a></li>
 
           <li>
-	    <ul class="nav navbar-nav navbar-right">
+	    <ul id="userNavMenu" class="nav navbar-nav navbar-right">
 
 				<li class="dropdown" id="notificationDropdown" style="position:relative;bottom:6px;right:10px;">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown"  role="button" aria-expanded="false">
@@ -100,24 +100,24 @@
           <li class="active"><a href="#" class="btn btn-primary btn-lg" id="login-modal-trigger" role="button" data-toggle="modal" data-target="#login-modal">Login</a></li>
           <%}else{%>
             <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <span class="glyphicon glyphicon-user pull-right"></span> <%= req.user.email %> </a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <span class="glyphicon glyphicon-user pull-right"></span> <%= req.user.username %> </a>
             <ul class="dropdown-menu">
-              <li><a href="/user/myaccount">My Account <span class="glyphicon glyphicon-cog pull-right"></span></a></li>
+              <li><a href="/userprofile/<%=req.user.username%>">My profile <span class="glyphicon glyphicon-cog pull-right"></span></a></li>
               <li class="divider"></li>
-              <li><a href="/user/changedetails">Change Account Info <span class="glyphicon glyphicon-cog pull-right"></span></a></li>
+              <li><a href="/userprofile/<%=req.user.username%>/#updatesettings">Change Account Info <span class="glyphicon glyphicon-cog pull-right"></span></a></li>
               <li class="divider"></li>
-              <li><a href="#">My Active Requests <span class="glyphicon glyphicon-stats pull-right"></span></a></li>
+              <li><a href="/userprofile/<%=req.user.username%>/#flightscheduling">My Active Requests <span class="glyphicon glyphicon-stats pull-right"></span></a></li>
               <li class="divider"></li>
-              <li><a href="#">Notifications class="badge pull-right"> 42 </span></a></li>
+              <li><a href="/userprofile/<%=req.user.username%>/#notifications">Notifications <span class="badge pull-right"> <span id="unread_notifications">0</span> </span></a></li>
               <li class="divider"></li>
-              <li><a href="#">Accepted Flight Requests <span class="glyphicon glyphicon-heart pull-right"></span></a></li>
+              <li><a href="/userprofile/<%=req.user.username%>/#flightrequests">Accepted Flight Requests <span class="glyphicon glyphicon-heart pull-right"></span></a></li>
               <li class="divider"></li>
-              <li><a href="#">Sign Out <span class="glyphicon glyphicon-log-out pull-right"></span></a></li>
+              <li><a href="/login">Sign Out <span class="glyphicon glyphicon-log-out pull-right"></span></a></li>
             </ul>
           </li>
         <%}%>
 
-        <%if(req.user && req.user.roles.filter(function(role){
+        <%if(req.user && req.user.roles && req.user.roles.filter(function(role){
             return role == 'admin';
         }).length > 0){ %>
 				<li class="dropdown">

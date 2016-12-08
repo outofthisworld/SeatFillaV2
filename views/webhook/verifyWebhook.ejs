@@ -1,0 +1,8 @@
+
+
+
+<form method="POST" action="/provider/webhook/verifyWebhook">
+    <input placeholder="Please enter the verification token sent to this webhooks endpoint" type="text" name="verificationToken" class="input input-lg" required/>
+    <input type="hidden" name="id" value="<%=data.webHookId%>">
+    <button class="btn btn-info" type="submit">Submit</button>
+</form>

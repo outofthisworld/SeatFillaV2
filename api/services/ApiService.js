@@ -52,203 +52,201 @@ const keyParam = 'sfKey'
 const tokenHeaderSecretKey = 'x-seatfilla-key'
 const tokenHeaderToken = 'x-access-token'
 
-const createApiSecret = function(apiKey, sharedSecret) {
-    return apiKey + sharedSecret
+const createApiSecret = function (apiKey, sharedSecret) {
+  return apiKey + sharedSecret
 }
 
 const apiPermissions = {
-    'request_permission': false,
-    'accept_request_permission': true,
-    'flightoffer_permission': true,
-    'advertisements_permission': true
+  'request_permission': false,
+  'accept_request_permission': true,
+  'flightoffer_permission': true,
+  'advertisements_permission': true
 }
 
 module.exports = {
-    tokenRequiresVerification(requestPermissions) {
-        var requiresVerification = false
-        sails.log.debug('Verifying api request permissions: ' + JSON.stringify(requestPermissions))
-        for (var key in requestPermissions) {
-            sails.log.debug('Checking permission needs verification: ' + key)
-            if (key in apiPermissions) {
-                sails.log.debug('Permission required: ' + apiPermissions[key])
-                requiresVerification = requiresVerification || apiPermissions[key]
-            }
-        }
-
-        return requiresVerification
-    },
-    getApiPermissions() {
-        return Object.create(apiPermissions)
-    },
-    getApiPermissionKeys() {
-        return Object.keys(apiPermissions)
-    },
-    // Create an api token from the given request and payload
-    createApiToken: function(obj, payload, cb) {
-        // Grab the key..
-        const key = this.findApiKeyFromRequest(obj)
-
-        const ourSecret = uuid.v4();
-
-        // If we have the payload and the key...
-        if (payload && key) {
-            // Sign it and return.
-            return cb(null, jwt.sign(payload, createApiSecret(ourSecret, key)), ourSecret)
-        } else {
-            // Something went wrong.. lets debug.
-            sails.log.debug('Error creating API token in services/jwtService.js')
-                // return control, call callback.
-            return cb(new Error('Did not recieve all information required for creating API token'), null)
-        }
-    },
-    // Looks up an api route via the ApiRoutes model
-    locateApiRoute: function(obj) {
-        return new Promise(function(resolve, reject) {
-            ApiRoutes.find({
-                path: obj
-            }).exec(function(err, route) {
-                if (err) {
-                    sails.log.debug('An error in apiReqestPolicy.js occurred,most likely the API route is missing from the database.')
-                    return reject(err)
-                }
-                return resolve(route)
-            })
-        })
-    },
-
-    // finds the user half of the secret api key from a request object
-    findApiKeyFromRequest: function(req) {
-        return req.sfKey || req.param(keyParam) || req.headers[tokenHeaderSecretKey]
-    },
-    // finds the api token from the request object
-    findApiTokenFromRequest: function(req) {
-        return req.tokenParam || req.param(tokenParam) || req.headers[tokenHeaderToken]
-    },
-    // Locates an api user via supplying a token, the request object or the user associated with the request.
-    // If a user is supplied, since users can have many API tokens.. an array of api users will be returned.
-    locateApiUser: function(obj) {
-        return new Promise(function(resolve, reject) {
-            if (obj.token || obj.request) {
-                ApiUsers.findOne({
-                        apiToken: obj.token || this.findApiTokenFromRequest(obj.request)
-                    })
-                    .exec(function(err, user) {
-                        if (err) return reject(err)
-                        else return resolve(user)
-                    })
-            } else {
-                return reject(new Error('Invalid object attributes passed to services/ApiService.js, function locateApiUser'))
-            }
-        })
-    },
-    // Attempts to create a new API request given an object that contains
-    // request: req object
-    // path: request path
-    // token: api token
-    // Not that if the request object is not supplied, both path and token must be supplied.
-    createApiRequest: function(obj) {
-        return new Promise(function(resolve, reject) {
-            this.locateApiRoute(obj.path || obj.request.path).then(function(route) {
-                this.locateApiUser(obj || this.findApiTokenFromRequest(obj)).then(function(apiUser) {
-                    ApiRequest.create({
-                        apiUser: apiUser.apiToken,
-                        apiRoute: route.id
-                    }).exec(function(err, result) {
-                        if (err) return reject(err)
-                        else return resolve(result)
-                    })
-                }).catch(function(err) {
-                    return reject(err)
-                })
-            }).catch(function(err) {
-                return reject(err)
-            })
-        })
-    },
-    // Verify an api token.
-    verifyApiToken: function(req, cb) {
-
-        // Grab the token and the key
-        const token = this.findApiTokenFromRequest(req)
-        const key = this.findApiKeyFromRequest(req)
-
-        // We haven't been supplied with the right information.. return.
-        if (!token || !key) {
-            return cb(new Error('Missing token or key'))
-        }
-
-        this.locateApiUser({
-            token
-        }).then(function(apiUser) {
-            if (!apiUser) {
-                return cb(new Error('Could not locate token: ' + token + 'in ApiService.js/verifyApiToken'))
-            } else {
-                // Lets verify our token... and return to the callers cb.
-                jwt.verify(token, createApiSecret(apiUser.secret, key), (err, decoded) => {
-                    if (err) return cb(err)
-                    else return cb(null, decoded, token, apiUser)
-                })
-            }
-        }).catch(function(err) {
-            return cb(err);
-        })
-    },
-    createApiUser: function(user, apiToken, secret, permissions) {
-        if (!user || !apiToken || !secret || !permissions) throw new Error('Invalid params to create API user.')
-
-        const requiresVerification = this.tokenRequiresVerification(permissions)
-        sails.log.debug('Token requires verification? : ' + requiresVerification)
-
-        return new Promise(function(resolve, reject) {
-            ApiUsers.create({
-                apiToken: apiToken,
-                isVerified: !requiresVerification,
-                isBlocked: false,
-                user: user.id,
-                secret: secret
-            }).exec(function(err, ApiUser) {
-                if (err) return reject(err)
-                else return resolve(ApiUser)
-            })
-        })
-    },
-    removeAllApiTokens(options) {
-        const user = options.id || options.user.id || options.req.user.id
-
-        return new Promise(function(resolve, reject) {
-            if (!user) {
-                return Promise.reject(new Error('Could not located user when attempting to remove all API tokens'))
-            }
-            ApiUsers.destroy({
-                user
-            })
-        })
-    },
-    removeApiUser(options) {
-        const outer = this
-        const apiToken = options.token || outer.findApiTokenFromRequest(options)
-        const user = options.id || options.user.id
-
-        sails.log.debug('Removing api user with token: ' + apiToken + ' user id: ' + user)
-        return new Promise(function(resolve, reject) {
-            if (!apiToken || !user) {
-                return Promise.reject(new Error('Could not located token or user when attempting to remove API user'))
-            }
-            ApiUsers.destroy({
-                apiToken,
-                user
-            }).exec(function(err, del) {
-                if (err) {
-                    sails.log.debug('Error removing api user: ' + JSON.stringify(err))
-                    return reject(err)
-                }
-                return resolve(del)
-            })
-        })
-    },
-    findApiTokensForUser(options) {
-        return ApiUsers.find({
-            user: options.id || options.req.user.id
-        })
+  tokenRequiresVerification(requestPermissions) {
+    var requiresVerification = false
+    sails.log.debug('Verifying api request permissions: ' + JSON.stringify(requestPermissions))
+    for (var key in requestPermissions) {
+      sails.log.debug('Checking permission needs verification: ' + key)
+      if (key in apiPermissions) {
+        sails.log.debug('Permission required: ' + apiPermissions[key])
+        requiresVerification = requiresVerification || apiPermissions[key]
+      }
     }
+
+    return requiresVerification
+  },
+  getApiPermissions() {
+    return Object.create(apiPermissions)
+  },
+  getApiPermissionKeys() {
+    return Object.keys(apiPermissions)
+  },
+  // Create an api token from the given request and payload
+  createApiToken: function (obj, payload, cb) {
+    // Grab the key..
+    const key = this.findApiKeyFromRequest(obj)
+
+    const ourSecret = uuid.v4()
+
+    // If we have the payload and the key...
+    if (payload && key) {
+      // Sign it and return.
+      return cb(null, jwt.sign(payload, createApiSecret(ourSecret, key)), ourSecret)
+    } else {
+      // Something went wrong.. lets debug.
+      sails.log.debug('Error creating API token in services/jwtService.js')
+      // return control, call callback.
+      return cb(new Error('Did not recieve all information required for creating API token'), null)
+    }
+  },
+  // Looks up an api route via the ApiRoutes model
+  locateApiRoute: function (obj) {
+    return new Promise(function (resolve, reject) {
+      ApiRoutes.find({
+        path: obj
+      }).exec(function (err, route) {
+        if (err) {
+          sails.log.debug('An error in apiReqestPolicy.js occurred,most likely the API route is missing from the database.')
+          return reject(err)
+        }
+        return resolve(route)
+      })
+    })
+  },
+
+  // finds the user half of the secret api key from a request object
+  findApiKeyFromRequest: function (req) {
+    return req.sfKey || req.param(keyParam) || req.headers[tokenHeaderSecretKey]
+  },
+  // finds the api token from the request object
+  findApiTokenFromRequest: function (req) {
+    return req.tokenParam || req.param(tokenParam) || req.headers[tokenHeaderToken]
+  },
+  // Locates an api user via supplying a token, the request object or the user associated with the request.
+  // If a user is supplied, since users can have many API tokens.. an array of api users will be returned.
+  locateApiUser: function (obj) {
+    return new Promise(function (resolve, reject) {
+      if (obj.token || obj.request) {
+        ApiUsers.findOne({
+          apiToken: obj.token || this.findApiTokenFromRequest(obj.request)
+        }).populate('user')
+          .populate('apiRequests')
+          .exec(function (err, user) {
+            if (err) return reject(err)
+            else return resolve(user)
+          })
+      } else {
+        return reject(new Error('Invalid object attributes passed to services/ApiService.js, function locateApiUser'))
+      }
+    })
+  },
+  // Attempts to create a new API request given an object that contains
+  // request: req object
+  // path: request path
+  // token: api token
+  // Not that if the request object is not supplied, both path and token must be supplied.
+  createApiRequest: function (obj) {
+    return new Promise(function (resolve, reject) {
+      this.locateApiRoute(obj.path || obj.request.path).then(function (route) {
+        this.locateApiUser(obj || this.findApiTokenFromRequest(obj)).then(function (apiUser) {
+          ApiRequest.create({
+            apiUser: apiUser.apiToken,
+            apiRoute: route.id
+          }).exec(function (err, result) {
+            if (err) return reject(err)
+            else return resolve(result)
+          })
+        }).catch(function (err) {
+          return reject(err)
+        })
+      }).catch(function (err) {
+        return reject(err)
+      })
+    })
+  },
+  // Verify an api token.
+  verifyApiToken: function (req, cb) {
+
+    // Grab the token and the key
+    const token = this.findApiTokenFromRequest(req)
+    const key = this.findApiKeyFromRequest(req)
+
+    // We haven't been supplied with the right information.. return.
+    if (!token || !key) {
+      return cb(new Error('Missing token or key'))
+    }
+
+    this.locateApiUser({
+    token}).then(function (apiUser) {
+      if (!apiUser) {
+        return cb(new Error('Could not locate token: ' + token + 'in ApiService.js/verifyApiToken'))
+      } else {
+        // Lets verify our token... and return to the callers cb.
+        jwt.verify(token, createApiSecret(apiUser.secret, key), (err, decoded) => {
+          if (err) return cb(err)
+          else return cb(null, decoded, token, apiUser)
+        })
+      }
+    }).catch(function (err) {
+      return cb(err)
+    })
+  },
+  createApiUser: function (user, apiToken, secret, permissions) {
+    if (!user || !apiToken || !secret || !permissions) throw new Error('Invalid params to create API user.')
+
+    const requiresVerification = this.tokenRequiresVerification(permissions)
+    sails.log.debug('Token requires verification? : ' + requiresVerification)
+
+    return new Promise(function (resolve, reject) {
+      ApiUsers.create({
+        apiToken: apiToken,
+        isVerified: !requiresVerification,
+        isBlocked: false,
+        user: user.id,
+        secret: secret
+      }).exec(function (err, ApiUser) {
+        if (err) return reject(err)
+        else return resolve(ApiUser)
+      })
+    })
+  },
+  removeAllApiTokens(options) {
+    const user = options.id || options.user.id || options.req.user.id
+
+    return new Promise(function (resolve, reject) {
+      if (!user) {
+        return Promise.reject(new Error('Could not located user when attempting to remove all API tokens'))
+      }
+      ApiUsers.destroy({
+      user})
+    })
+  },
+  removeApiUser(options) {
+    const outer = this
+    const apiToken = options.token || outer.findApiTokenFromRequest(options)
+    const user = options.id || options.user.id
+
+    sails.log.debug('Removing api user with token: ' + apiToken + ' user id: ' + user)
+    return new Promise(function (resolve, reject) {
+      if (!apiToken || !user) {
+        return Promise.reject(new Error('Could not located token or user when attempting to remove API user'))
+      }
+      ApiUsers.destroy({
+        apiToken,
+      user}).exec(function (err, del) {
+        if (err) {
+          sails.log.debug('Error removing api user: ' + JSON.stringify(err))
+          return reject(err)
+        }
+        return resolve(del)
+      })
+    })
+  },
+  findApiTokensForUser(options) {
+    return ApiUsers.find({
+      user: options.id || options.req.user.id
+    })
+  }
 }

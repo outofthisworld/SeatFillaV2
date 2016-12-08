@@ -22,11 +22,13 @@ module.exports = {
 
                     req.session.providerlogin = {
                         isAuthenticated: true,
-                        apiKey: apiKey,
-                        apiUser: apiUser,
+                        apiKey,
+                        apiUser,
+                        decoded,
+                        token,
                         authenticationTime: new Date()
                     }
-                    resolve(true)
+                    resolve(req.session.providerlogin)
                 } else {
                     sails.log.error(err)
                     return reject(new Error('Invalid API key'))
@@ -38,14 +40,14 @@ module.exports = {
         if (!req || !req.session) throw new Error('Invalid params to ProviderService.js/isAuthenticated')
 
         return req.session.providerlogin &&
-            req.session.providerlogin.isAuthenticated
+            req.session.providerlogin.isAuthenticated;
     },
     getApiUser(req) {
         if (!req || !req.session) throw new Error('Invalid params to ProviderService.js/isAutenticated');
 
         if (!this.isAuthenticated(req)) throw new Error('Invalid params to ProviderService.js/getApiUser, user must be authenticated');
 
-        return req.session.providerlogin.apiUser;
+        return (req.session.providerlogin && req.session.providerlogin.apiUser);
     },
     getApiKey(req) {
         if (!req || !req.session) throw new Error('Invalid params to ProviderService.js/getApiKey')

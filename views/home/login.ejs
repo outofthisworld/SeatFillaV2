@@ -86,7 +86,7 @@
                                     </label><br>
                                     <small style="color:red;">* Warning do not use this option on public computers</small>
                                 </div>
-                                <input type="hidden" name="redirectSuccess" value="<%= (data && data.redirectSuccess) || '/'%>"/>
+                                <input type="hidden" id="redirectSuccess" name="redirectSuccess" value="<%= (data && data.redirectSuccess) || '/'%>"/>
                                 <input type="hidden" id="redirectFailiure" name="redirectFailiure"/>
                                 <!-- Change this to a button or input when using this as a form -->
                                 <button type="submit" id="login" class="btn btn-lg btn-success btn-block">Login</button>
@@ -106,6 +106,7 @@
 
     <script>
      $(document).ready(function(){
+         console.log(window.location.pathname)
          $('#redirectFailiure').val(window.location.pathname);
 
          window.seatfilla.globals.cache.get({
@@ -143,6 +144,7 @@
                 $('#apiSecret').css('display','')
                 $('#apiKey').attr('required','required')
                 $('#apiSecret').attr('required','required')
+                $('#redirectSuccess').val('/provider/index')
             }
         });
              

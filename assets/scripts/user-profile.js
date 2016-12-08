@@ -23,7 +23,7 @@ $(window).ready(function () {
      */
     const obtainCurrentProfileUser = function () {
       return new Promise(function (resolve, reject) {
-        io.socket.get('/user?username=' + currentUserProfileUser, function (user, jwRes) {
+        io.socket.get('/user?username=' + currentUserProfileUser + '&populate=userProfile', function (user, jwRes) {
           if (jwRes.statusCode == 200 && user) {
             if (Array.isArray(user)) {
               if (!(user.length)) return reject(new Error('Could not find current profile user'))
@@ -33,6 +33,10 @@ $(window).ready(function () {
               // Make sure that the first element wasn't null
               if (!user) return reject('Profile user was null')
             }
+            if (!user.userProfile || (Array.isArray(user.userProfile) && !user.userProfile.length)) {
+              return reject(new Error('Database error'))
+            }
+            user.userProfile = user.userProfile[0]
             return resolve(user)
           } else {
             return reject(new Error('Current profile user not found'))
@@ -135,12 +139,21 @@ $(window).ready(function () {
     const attachDomReactor = function (currentProfileUser, user) {
       if (!currentProfileUser) throw new Error('Invalid params')
 
+      console.log(currentProfileUser)
       /*
         Extend jQuery and add own namespace.
       */
       $.seatfilla = $.seatfilla || {}
       $.seatfilla.userprofile = $.seatfilla.userprofile || {}
 
+      const globalViewExtensions ={
+          getCurrentProfileUser() {
+            return currentProfileUser;
+          },
+          getCurrentUser() {
+            return user || null;
+          }
+      }
       /*
           Constructs a new SocketDataLoaderObject, which loads
           data intially from the socket and then, if set, uses
@@ -208,6 +221,7 @@ $(window).ready(function () {
               childRemovalMethod: 'first',
               // How new elements are added to the container
               renderMethod: 'append',
+              viewExtensions:globalViewExtensions,
               /*
                 The template a container for this endpoint target.
               */
@@ -241,11 +255,97 @@ $(window).ready(function () {
             /*
               The event name for this target
             */
-            eventName: 'userprofile',
-            path: '/userprofile/'+currentProfileUser.username+'/findOne',
+            eventName: 'hotelbid',
+            path: '/HotelBid',
+            where: {
+              user: currentProfileUser.id
+            },
             params: {
-              id: currentProfileUser.userProfile,
-              populate: 'user,images'
+              sort: 'createdAt DESC',
+              limit: '10',
+              populate: JSON.stringify({hotelSale: {}})
+            },
+            validators: {
+              created: function (data) {
+                if (!data.user || (data.user != currentProfileUser.id && data.user.id != currentProfileUser.id))
+                  return false
+              }
+            },
+            /*
+               True if we should listen for socket events under this event name.
+            */
+            shouldListen: true,
+            renderOpts: {
+              /*
+                Max number of user profile comments to be displayed before triggering a removal
+              */
+              maxDomElements: 10,
+              /*
+                How child elements should be removed when new ones are added
+              */
+              childRemovalMethod: 'last',
+              /*
+                How children elements should be added
+              */
+              renderMethod: 'append',
+              
+              viewExtensions:globalViewExtensions,
+
+              /*
+                The template to use for displaying data.
+              */
+              template: '#hotelbidtemplate',
+              container: '#hotelbidcontainer',
+
+              /**
+               * Finds the container for this comment
+               *
+               * @param {Object} data, the data to be added to this container
+               * @returns
+               */
+              afterCreate: function (data) {
+                console.log('after create')
+                $('#seatfilla_currencies').trigger('change')
+              }
+            }
+          },
+          {
+            /*
+              The event name for this target
+            */
+            eventName: 'user',
+            /*
+               True if we should listen for socket events under this event name.
+            */
+            addedto: {
+              hotelBids: {
+                event: 'hotelbid'
+              }
+            },
+            removedfrom: {
+              hotelBids: {
+                event: 'hotelbid'
+              }
+            },
+            shouldListen: true,
+            renderOpts: {
+              template: '#ph',
+              container: '#ph',
+              viewExtensions:globalViewExtensions,
+            }
+          },
+          {
+            /*
+              The event name for this target
+            */
+            eventName: 'hotelsale',
+            path: '/hotelsale',
+            where: {
+              currentWinner: currentProfileUser.id
+            },
+            params: {
+              sort: 'createdAt DESC',
+              populate: JSON.stringify({hotel: {},bids: {}})
             },
             /*
                True if we should listen for socket events under this event name.
@@ -265,6 +365,65 @@ $(window).ready(function () {
               */
               renderMethod: 'append',
 
+              viewExtensions:globalViewExtensions,
+
+              /*
+                The template to use for displaying data.
+              */
+              template: '#winninghotelsalestemplate',
+              container: '#winninghotelsalescontainer',
+              updateInDom(data, $html, $container) {
+                console.log(data)
+                if (data.currentWinner != currentProfileUser.id) {
+                  $.toaster({message: 'This user has just lost his bid placement in auction ' + data.hotel, priority: 'info'})
+                  $('#winninghotelsalescontainer').find('tr[data-attr-id="' + data.id + '"]').fadeOut(1000)
+                }else {
+                  $.toaster({message: 'This user has just lost his just secured his placement on auction ' + data.hotel, priority: 'info'})
+                  $('#winninghotelsalescontainer').find('tr[data-attr-id="' + data.id + '"]').css('background-color', 'green')
+                }
+              }
+            }
+          },
+          {
+            /*
+              The event name for this target
+            */
+            eventName: 'userprofile',
+            path: '/userprofile/' + currentProfileUser.username + '/findOne',
+            params: {
+              id: currentProfileUser.userProfile.id,
+              populate: 'user,images'
+            },
+            addedto: {
+              bids: {
+                event: 'hotelbid'
+              }
+            },
+            removedfrom: {
+              bids: {
+                event: 'hotelbid'
+              }
+            },
+            /*
+               True if we should listen for socket events under this event name.
+            */
+            shouldListen: true,
+            renderOpts: [{
+              /*
+                Max number of user profile comments to be displayed before triggering a removal
+              */
+              maxDomElements: 1,
+              /*
+                How child elements should be removed when new ones are added
+              */
+              childRemovalMethod: 'first',
+              /*
+                How children elements should be added
+              */
+              renderMethod: 'append',
+              
+              viewExtensions:globalViewExtensions,
+
               /*
                 The template to use for displaying data.
               */
@@ -277,7 +436,70 @@ $(window).ready(function () {
                * @returns
                */
               container: '#userprofileinfocontainer'
-            }
+              
+            },{
+              /*
+                Max number of user profile comments to be displayed before triggering a removal
+              */
+              maxDomElements: 1,
+              /*
+                How child elements should be removed when new ones are added
+              */
+              childRemovalMethod: 'first',
+              /*
+                How children elements should be added
+              */
+              renderMethod: 'append',
+              viewExtensions:globalViewExtensions,
+
+              /*
+                The template to use for displaying data.
+              */
+              template: '#userProfileNavTabsTemplate',
+              
+
+              /**
+               * Finds the container for this comment
+               *
+               * @param {Object} data, the data to be added to this container
+               * @returns
+               */
+              container: '#userProfileNavTabsContainer',
+              afterCreate:function(){
+                $('.nav-tabs a[data-page]').on('click',function(){
+                  const target = $(this).attr('data-page')
+                  if(!target) return;
+                  if($(this).attr('href')){
+                      console.log($(this).attr('href'))
+                  }
+                  $('.nav-tabs li').removeClass('active')
+                  $(this).parent().addClass('active')
+                  const container = $(this).parent().parent().attr('data-container')
+                  if(container){
+                    $(container).html("")
+                    console.log('loading: ' + target)
+                    $(container).load(target,function(res,ts,xhr){
+
+                        if(xhr.status != 200){
+                            console.log('not 200')
+                            return;
+                        };
+                        $.lazyLoadScripts({},function(err){
+                            if(err) alert('Error loading scripts')
+                        })
+                    });
+                  }
+              })
+              
+                function navigate(){
+                  const hashParts = window.location.hash.split('/');
+                    if(hashParts && hashParts.length){
+                        $('#userProfileNavTabsContainer').find('li[data-hash="'+hashParts[0]+'"]').find('a[data-page]').trigger('click')
+                    }
+                }navigate();
+                $('#userNavMenu').on('click',navigate);
+              }
+            }]
           },
           /*
             User profile comment reply target
@@ -309,6 +531,7 @@ $(window).ready(function () {
                 The template to use for displaying data.
               */
               template: '#userprofilecommentreplytemplate',
+              viewExtensions:globalViewExtensions,
 
               /**
                * Finds the container for this comment
@@ -318,7 +541,7 @@ $(window).ready(function () {
                */
               container: function (data) {
                 console.log(data)
-                console.log('finding container')
+                console.log('finding container for user profile comment')
                 const parentCommentId = data.id
                 const container = $('#userprofilecommentcontainer')
                   .find('li[data-attr-id="' + parentCommentId + '"] .userprofilecommentreplies')
@@ -330,7 +553,7 @@ $(window).ready(function () {
             eventName: 'userprofilecomment',
             path: '/userprofilecomment',
             where: {
-              userProfile: currentProfileUser.userProfile,
+              userProfile: currentProfileUser.userProfile.id,
               isReply: false
             },
             params: {
@@ -368,7 +591,7 @@ $(window).ready(function () {
                   Due to the nature of sails.js, the publishCreate event `create` will be triggered
                   for a comment whether or not it is a comment reply.
                 */
-                function validateTopLevelComment(data) {
+                function validateTopLevelComment (data) {
                   if (data && !data.isReply && data.user) return true
                   else return false
                 }
@@ -394,7 +617,7 @@ $(window).ready(function () {
                 upon a new element being created and maxDomElements being exceeded.
               */
               childRemovalMethod: 'last',
-
+              viewExtensions:globalViewExtensions,
               /*
                 The types of effects to be applied to this DOM element
               */
@@ -441,7 +664,6 @@ $(window).ready(function () {
       })
     }
 
-
     /**
      *  On `load` event for when the data is first loaded by the SocketDataLoader.
      *  The event is triggered and `this` refers to the data that has been loaded from
@@ -456,7 +678,6 @@ $(window).ready(function () {
       */
       $.seatfilla.userprofile.dataLoader.on('load', function () {
         const responseData = this
-
 
         /**
          *
@@ -505,8 +726,8 @@ $(window).ready(function () {
           loadProfile()
         }
       }).catch(function (err) {
-        // Handle error
-        handleProfileError(err)
-      })
+      // Handle error
+      handleProfileError(err)
+    })
   })(jQuery, io)
 })

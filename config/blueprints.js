@@ -157,5 +157,5 @@ module.exports.blueprints = {
   *                                                                           *
   ****************************************************************************/
 
-   defaultLimit: 5
+   defaultLimit: 30
 };

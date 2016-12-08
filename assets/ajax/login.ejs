@@ -1,90 +1,74 @@
 
       <div class="modal-dialog">
-			<div class="modal-content">
+			<div class="modal-content" >
+            <div class="text-center">
+            </div>
 				<div class="modal-header" align="center">
-					<img class="img-circle" id="img_logo" src="/images/Logo.png">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 					</button>
 				</div>
-                
-              
+            
                 <div id="div-forms">
-                    <form method="POST" action="/auth/local/" id="login-form">
+                    <form method="POST" action="/auth/local" id="login-form">
 		                <div class="modal-body">
-				    		<div id="div-login-msg">
-                                <div id="icon-login-msg" class="glyphicon glyphicon-chevron-right"></div>
-                                <span id="text-login-msg">Login.</span>
-                            </div>
-				    		<input id="login_username" name="email" class="form-control" type="text" placeholder="Username" required>
-				    		<input id="login_password" name="password"  class="form-control" type="password" placeholder="Password" required>
+                         <p class="text-center">Sign in with:</p>
+                                <div class="social-login">
+                                    <ul>
+                                        <li><a href="/auth/facebook"><i class="fa fa-facebook"></i> Facebook</a></li>
+                                        <li><a href="/auth/google"><i class="fa fa-google"></i> Google </a></li>
+                                        <li><a href="/auth/twitter"><i class="fa fa-twitter"></i> Twitter</a></li>
+                                    <ul>
+                                    </div>
+                            <hr/><br/>
+                            <div class="" style="margin-top:30px;">
+                            <p class="text-center"> Sign in with local auth </p>
+                            <div class="errors"></div>
+				    		<input name="email" class="form-control" type="text" placeholder="Username" required>
+				    		<input name="password"  class="form-control" type="password" placeholder="Password" required>
                             <div class="checkbox">
                                 <label>
                                     <input type="checkbox"> Remember me
                                 </label>
                             </div>
+                            </div>
         		    	</div>
 				        <div class="modal-footer">
                             <div>
-                                <button id="local-login-button" type="submit" class="btn btn-primary btn-lg btn-block">Login</button>
+                                <button id="local-login-button" type="submit" class="btn btn-info btn-block">Login</button>
                                 <br>
-                                <p>Sign in with:</p>
-                                <div class="social-login">
-                                    <ul>
-                                        <li><a href=""><i class="fa fa-facebook"></i> Facebook</a></li>
-                                        <li><a href=""><i class="fa fa-google"></i> Google </a></li>
-                                        <li><a href=""><i class="fa fa-twitter"></i> Twitter</a></li>
-                                    <ul>
-                                    </div>
+                               
                             </div>
 				    	    <div>
                                 <button id="login_lost_btn" type="button" class="btn btn-link">Lost Password?</button>
-                                <button id="login_register_btn" type="button" class="btn btn-link">Register</button>
                             </div>
 				        </div>
                     </form>
-                 
-                    <form id="lost-form" style="display:none;">
+                    <form action="/auth/forgotPassword" id="lost-form" style="display:none;">
     	    		    <div class="modal-body">
-		    				<div id="div-lost-msg">
-                                <div id="icon-lost-msg" class="glyphicon glyphicon-chevron-right"></div>
-                                <span id="text-lost-msg">Type your e-mail.</span>
-                            </div>
-		    				<input id="lost_email" class="form-control" type="text" placeholder="E-Mail (type ERROR for error effect)" required>
+                                <p>Please enter the email associated with your account.</p>
+		    				<input id="lost_email" class="form-control" type="text" placeholder="Your email" required>
             			</div>
 		    		    <div class="modal-footer">
                             <div>
-                                <button type="submit" class="btn btn-primary btn-lg btn-block">Send</button>
+                                <button type="submit" class="btn btn-info btn-block">Send password recovery email</button>
                             </div>
                             <div>
                                 <button id="lost_login_btn" type="button" class="btn btn-link">Log In</button>
-                                <button id="lost_register_btn" type="button" class="btn btn-link">Register</button>
                             </div>
 		    		    </div>
                     </form>
-        
-                    <form id="register-form" style="display:none;">
-            		    <div class="modal-body">
-		    				<div id="div-register-msg">
-                                <div id="icon-register-msg" class="glyphicon glyphicon-chevron-right"></div>
-                                <span id="text-register-msg">Register an account.</span>
-                            </div>
-		    				<input id="register_username" class="form-control" type="text" placeholder="Username (type ERROR for error effect)" required>
-                            <input id="register_email" class="form-control" type="text" placeholder="E-Mail" required>
-                            <input id="register_password" class="form-control" type="password" placeholder="Password" required>
-            			</div>
-		    		    <div class="modal-footer">
-                            <div>
-                                <button type="submit" class="btn btn-primary btn-lg btn-block">Register</button>
-                            </div>
-                            <div>
-                                <button id="register_login_btn" type="button" class="btn btn-link">Log In</button>
-                                <button id="register_lost_btn" type="button" class="btn btn-link">Lost Password?</button>
-                            </div>
-		    		    </div>
-                    </form>
-                    <!-- End | Register Form -->
-                    
                 </div>
+                <script type="text/html" id="jsonErrorTemplate">
+                    {{for errorMessages}}
+                        <div class="alert alert-danger">
+                                        {{:~root.errorMessages[#getIndex()]}}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        </div>
+                        </div>
+                    {{/for}}
+                    </script>
                 <!-- End # DIV Form -->
 			</div>

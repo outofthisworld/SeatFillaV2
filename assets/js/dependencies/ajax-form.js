@@ -31,7 +31,7 @@
             $($form).on('submit', function(e) {
                 e.stopImmediatePropagation()
                 e.preventDefault();
-                if ($form.valid()) {
+                if ($form.valid() && $form[0].checkValidity()) {
                     $.ajax({
                         data: $form.serialize(),
                         url: action,
@@ -44,7 +44,8 @@
                         }
                     })
                 } else {
-                    console.log('...not valid')
+                    $form.validate();
+                    $form.find(':submit').click()
                 }
             })
         })

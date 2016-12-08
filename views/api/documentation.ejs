@@ -1,0 +1,481 @@
+<script>
+/* activate sidebar */
+$('#sidebar').affix({
+  offset: {
+    top: 235
+  }
+});
+
+/* activate scrollspy menu */
+var $body   = $(document.body);
+var navHeight = $('.navbar').outerHeight(true) + 10;
+
+$body.scrollspy({
+    target: '#leftCol',
+	offset: navHeight
+});
+
+/* smooth scrolling sections */
+$('a[href*=#]:not([href=#])').click(function() {
+    if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
+      var target = $(this.hash);
+      target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+      if (target.length) {
+        $('html,body').animate({
+          scrollTop: target.offset().top - 50
+        }, 1000);
+        return false;
+      }
+    }
+});
+</script>
+
+<style>
+
+#masthead { 
+ min-height:250px;
+}
+
+#masthead h1 {
+ font-size: 30px;
+ line-height: 1;
+ padding-top:20px;
+}
+
+#masthead .well {
+ margin-top:8%;
+}
+
+@media screen and (min-width: 768px) {
+  #masthead h1 {
+    font-size: 50px;
+  }
+}
+
+.navbar-bright {
+ background-color:#111155;
+ color:#fff;
+}
+
+.affix-top,.affix{
+ position: static;
+}
+
+@media (min-width: 979px) {
+  #sidebar.affix-top {
+    position: static;
+      margin-top:30px;
+  	width:228px;
+  }
+  
+  #sidebar.affix {
+    position: fixed;
+    top:70px;
+    width:228px;
+  }
+}
+#sidebar li a{
+  color:white;
+}
+#sidebar li.active {
+  border:0 #eee solid;
+  border-right-width:5px;
+}
+ol{
+  padding-left:20px;
+}
+ol li{
+  padding-top:10px;
+  padding-left:10px;
+  list-style-type:decimal;
+}
+.panel.panel-default.documentation-panel{
+  max-height:500px;
+  overflow-y:scroll;
+}
+</style>
+</head>
+
+</body>
+
+<div id="masthead">  
+
+<!--main-->
+<div class="container">
+
+	<div class="row">
+      <!--left-->
+      <div class="col-md-3" id="leftCol">
+        <ul class="nav nav-stacked" id="sidebar" style="position:fixed;background-color:#2962FF;height:100vh;left:0px;padding:100px;">
+         <li><a href="#intro">API introduction</a></li>
+          <li><a href="#sec0">Flight Request Routes</a></li>
+          <li><a href="#sec1">Flight Offer Routes</a></li>
+          <li><a href="#sec2">Section 2</a></li>
+          <li><a href="#sec3">Section 3</a></li>
+          <li><a href="#sec4">Section 4</a></li>
+        </ul>
+      </div><!--/left-->
+      
+      <!--right-->
+      <div class="col-md-9">
+          <br/>
+         <div class="pull-right"><a href="/" class="btn btn-info">Back to seatfilla</a></div>
+         <h4 id="intro">Getting Started</h4>
+         <p> 
+          <h2>What does the Seatfilla API do?</h2>
+          <small> To sum it up quickly, here is some of the things you can do:
+          <br/><hr/><br/>
+          <ol>
+            <li>Offer flights to Seatfilla with a verified provider account </li>
+            <li>View flight requests made through Seatfilla for analytic purposes</li>
+            <li>Accept flight requests made through Seatfilla with a verified provider account, provided the user with a ticket.
+            payments to you will be made via paypal payments API. Currently, no other payment methods are supported.</li>
+            <li>Lots more, view the REST routes below for more details. </li>
+          </ol>
+
+          <h2> Setting up </h2>
+          Before getting started with the seatfilla API, you will need to have an account with Seatfilla and have been to the provider
+          section of your user profile in order to generate an API token. Your API token along with the secret key must be provided
+          in every request made to Seatfilla's API in order for the request to be proccessed.<br/>
+          <br/>
+          To add the token and key to your request please specify the token and key via anyone of the following methods:
+               <br/><hr/><br/>
+          <ol>
+          <li>Token in request query or body using param sfToken</li>
+          <li>Token in request header under `x-access-token`</li>
+          <li>Key in request query or body using param sfKey</li>
+          <li>Key in request header under 'x-seatfilla-key'</li>
+          </ol>  
+          <br/>
+
+          Seatfilla uses the secret key that you provide when generating the API token in order to encrypt the API token
+          and ensure that no malicious users will be able to use it without the key. As long as the secret you provide
+          remains a secret, your API key should remain secure and unusable should someone gain access to it.
+
+          Once you have finished registering and creating your API token, you can also log in to the provider section
+          <a href="/provider/login">here</a> which will allow you to monitor your requests to Seatfilla, create webhooks (HTTP callback routes)
+          that are triggered when certain events occur via Seatfillas backend.
+         </p>
+        <h2 id="sec0">Flight Request Routes</h2>
+
+      <div class="panel panel-default documentation-panel">
+        <div class="panel-body">
+        <div class="container-fluid">
+        <div class="panel panel-default">
+          <table class="table table-hover">
+            <tbody>
+              <tr>
+                <td class="text-left text-nowrap">
+                  <button class="btn btn-xs btn-info">GET</button>
+                  
+                </td>
+                <td>
+                  <p class="pull-right"> /apiv1/flightrequest/</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="panel-body">
+              Retrieve all flight requests from seatfilla
+          </div>
+        </div>
+      </div>
+
+      <div class="container-fluid">
+        <div class="panel panel-default">
+          <table class="table table-hover">
+            <tbody>
+              <tr>
+                <td class="text-left text-nowrap">
+                  <button class="btn btn-xs btn-info">POST</button>
+                  
+                </td>
+                <td>
+                  <p class="pull-right"> /apiv1/flightrequest/</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="panel-body">
+              Create a new flight request
+          </div>
+        </div>
+      </div>
+
+            <div class="container-fluid">
+        <div class="panel panel-default">
+          <table class="table table-hover">
+            <tbody>
+              <tr>
+                <td class="text-left text-nowrap">
+                  <button class="btn btn-xs btn-info">GET</button>
+                  
+                </td>
+                <td>
+                  <p class="pull-right"> /apiv1/flightrequest/:id</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="panel-body">
+              Find a flight request with the specified id
+          </div>
+        </div>
+      </div>
+
+
+          <div class="container-fluid">
+        <div class="panel panel-default">
+          <table class="table table-hover">
+            <tbody>
+              <tr>
+                <td class="text-left text-nowrap">
+                  <button class="btn btn-xs btn-info">PATCH</button>
+                  
+                </td>
+                <td>
+                  <p class="pull-right"> /apiv1/flightrequest/id/accept</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="panel-body">
+              Accept a flight request with the specified id. For this you will need a verified provider account.
+          </div>
+        </div>
+      </div>
+
+      <div class="container-fluid">
+        <div class="panel panel-default">
+          <table class="table table-hover">
+            <tbody>
+              <tr>
+                <td class="text-left text-nowrap">
+                  <button class="btn btn-xs btn-info">PATCH</button>
+                  
+                </td>
+                <td>
+                  <p class="pull-right"> /apiv1/flightrequest/:id</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="panel-body">
+              Update a flight request with the specified id, should you have created it.
+          </div>
+        </div>
+      </div>
+
+          <div class="container-fluid">
+        <div class="panel panel-default">
+          <table class="table table-hover">
+            <tbody>
+              <tr>
+                <td class="text-left text-nowrap">
+                  <button class="btn btn-xs btn-info">DELETE</button>
+                  
+                </td>
+                <td>
+                  <p class="pull-right"> /apiv1/flightrequest/:id</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="panel-body">
+              Delete a flight request with the specified id, should you have created it.
+          </div>
+        </div>
+      </div>
+      </div>
+      </div>
+
+         <h2 id="sec1">Flight Offer Routes</h2>
+      
+      <div class="panel panel-default documentation-panel">
+        <div class="panel-body">
+        <div class="container-fluid">
+        <div class="panel panel-default">
+          <table class="table table-hover">
+            <tbody>
+              <tr>
+                <td class="text-left text-nowrap">
+                  <button class="btn btn-xs btn-info">GET</button>
+                  
+                </td>
+                <td>
+                  <p class="pull-right"> /apiv1/flightoffers/</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="panel-body">
+              Retrieve all seatfilla flight offers
+          </div>
+        </div>
+      </div>
+
+      <div class="container-fluid">
+        <div class="panel panel-default">
+          <table class="table table-hover">
+            <tbody>
+              <tr>
+                <td class="text-left text-nowrap">
+                  <button class="btn btn-xs btn-info">GET</button>
+                  
+                </td>
+                <td>
+                  <p class="pull-right"> /apiv1/flightoffer/:id</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="panel-body">
+              Find a offer with the specified id
+          </div>
+        </div>
+      </div>
+
+      <div class="container-fluid">
+        <div class="panel panel-default">
+          <table class="table table-hover">
+            <tbody>
+              <tr>
+                <td class="text-left text-nowrap">
+                  <button class="btn btn-xs btn-info">PATCH</button>
+                  
+                </td>
+                <td>
+                  <p class="pull-right"> /apiv1/flightrequest/id</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="panel-body">
+              Update a flight offer with the specified id, should you have created it.
+          </div>
+        </div>
+      </div>
+
+          <div class="container-fluid">
+        <div class="panel panel-default">
+          <table class="table table-hover">
+            <tbody>
+              <tr>
+                <td class="text-left text-nowrap">
+                  <button class="btn btn-xs btn-info">DELETE</button>
+                  
+                </td>
+                <td>
+                  <p class="pull-right"> /apiv1/flightrequest/id</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="panel-body">
+              Delete a flight offer with the specified id, should you have created it.
+          </div>
+        </div>
+      </div>
+      </div>
+      </div>
+
+
+       <h2 id="sec3">Hotel Offer Routes</h2>
+      
+      <div class="panel panel-default documentation-panel">
+        <div class="panel-body">
+        <div class="container-fluid">
+        <div class="panel panel-default">
+          <table class="table table-hover">
+            <tbody>
+              <tr>
+                <td class="text-left text-nowrap">
+                  <button class="btn btn-xs btn-info">GET</button>
+                  
+                </td>
+                <td>
+                  <p class="pull-right"> /apiv1/flightoffers/</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="panel-body">
+              Retrieve all seatfilla flight offers
+          </div>
+        </div>
+      </div>
+
+      <div class="container-fluid">
+        <div class="panel panel-default">
+          <table class="table table-hover">
+            <tbody>
+              <tr>
+                <td class="text-left text-nowrap">
+                  <button class="btn btn-xs btn-info">GET</button>
+                  
+                </td>
+                <td>
+                  <p class="pull-right"> /apiv1/flightoffer/:id</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="panel-body">
+              Find a offer with the specified id
+          </div>
+        </div>
+      </div>
+
+      <div class="container-fluid">
+        <div class="panel panel-default">
+          <table class="table table-hover">
+            <tbody>
+              <tr>
+                <td class="text-left text-nowrap">
+                  <button class="btn btn-xs btn-info">PATCH</button>
+                  
+                </td>
+                <td>
+                  <p class="pull-right"> /apiv1/flightrequest/id</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="panel-body">
+              Update a flight offer with the specified id, should you have created it.
+          </div>
+        </div>
+      </div>
+
+          <div class="container-fluid">
+        <div class="panel panel-default">
+          <table class="table table-hover">
+            <tbody>
+              <tr>
+                <td class="text-left text-nowrap">
+                  <button class="btn btn-xs btn-info">DELETE</button>
+                  
+                </td>
+                <td>
+                  <p class="pull-right"> /apiv1/flightrequest/id</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="panel-body">
+              Delete a flight offer with the specified id, should you have created it.
+          </div>
+        </div>
+      </div>
+      </div>
+      </div>
+       
+
+        </div><!--/right-->
+  	</div><!--/row-->
+</div><!--/container-->
+
+
+
+
+

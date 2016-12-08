@@ -23,6 +23,22 @@
            $('select').removeAttr('disabled');
            $('button').removeAttr('disabled');
       });
+
+      $('#storeCreditCard').ajaxForm(function(err,response,jqXHR,ts,errorThrown){
+          if(err){
+            console.log('form error : ' + response);
+            console.log(response)
+            if(response.errorMessages){
+             $('.errors').append($.templates('#jsonErrorTemplate').render({errorMessages:response.errorMessages}));
+            }
+            $.toaster({message:'Error: ' + errorThrown,priority:'danger'})
+          }else{
+            console.log(response)
+            $('#ccards').append($.templates('#ccTemplate').render(response.response.credit_card))
+            $.toaster({message:'Succesfully stored credit card', priority:'success'})
+          }
+      })
+      
   });
   
 </script>
@@ -108,159 +124,26 @@ form .control-label{
 </style>
 
 <script type="text/html" id="errorTemplate">
-   <% req.flash('info').forEach(function (message) { %>
-                    <div class="alert alert-info">
-                    <%=message%>
-                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                      </button>
-                      </div>
-                    <% }) %>
-  <% req.flash('warning').forEach(function (message) { %>
-                    <div class="alert alert-warning">
-                    <%=message%>
-                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                      </button>
-                      </div>
-                    <% }) %>
-                    <% req.flash('danger').forEach(function (message) { %>
-                    <div class="alert alert-danger">
-                    <%=message%>
-                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                      </button>
-                      </div>
-    <% }) %>
+   <%- partial ('../partials/flash.ejs') %>
+</script>
+<script type="text/html" id="jsonErrorTemplate">
+  {{for errorMessages}}
+      <div class="alert alert-danger">
+          {{:~root.errorMessages[#getIndex()]}}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+          </button>
+          </div>
+      </div>
+  {{/for}}
 </script>
 <div id="wrapper" class="wrapper">
-    <div class="container" id="tourpackages-carousel">
-      <div class="row">
-        <div class="col-lg-12"><h1>My Card <a class="btn icon-btn btn-primary pull-right" href="#"><span class="glyphicon btn-glyphicon glyphicon-plus img-circle"></span> Add New Card</a></h1></div>
-        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
-          <div class="thumbnail">
-              <div class="caption">
-                <div class='col-lg-12'>
-                    <span class="glyphicon glyphicon-credit-card"></span>
-                    <span class="glyphicon glyphicon-trash pull-right text-primary"></span>
-                </div>
-                <div class='col-lg-12 well well-add-card'>
-                    <h4>John Deo Mobilel</h4>
-                </div>
-                <div class='col-lg-12'>
-                    <p>4111xxxxxxxx3265</p>
-                    <p class"text-muted">Exp: 12-08</p>
-                </div>
-                <button type="button" class="btn btn-primary btn-xs btn-update btn-add-card">Update</button>
-                <button type="button" class="btn btn-danger btn-xs btn-update btn-add-card">Vrify Now</button>
-                <span class='glyphicon glyphicon-exclamation-sign text-danger pull-right icon-style'></span>
-            </div>
-          </div>
-        </div>
-        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
-          <div class="thumbnail">
-              <div class="caption">
-                <div class='col-lg-12'>
-                    <span class="glyphicon glyphicon-credit-card"></span>
-                    <span class="glyphicon glyphicon-trash pull-right text-primary"></span>
-                </div>
-                <div class='col-lg-12 well well-add-card'>
-                    <h4>John Deo Mobilel</h4>
-                </div>
-                <div class='col-lg-12'>
-                    <p>4111xxxxxxxx3265</p>
-                    <p class"text-muted">Exp: 12-08</p>
-                </div>
-                <button type="button" class="btn btn-primary btn-xs btn-update btn-add-card">Update</button>
-            </div>
-          </div>
-        </div>
-        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
-          <div class="thumbnail">
-              <div class="caption">
-                <div class='col-lg-12'>
-                    <span class="glyphicon glyphicon-credit-card"></span>
-                    <span class="glyphicon glyphicon-trash pull-right text-primary"></span>
-                </div>
-                <div class='col-lg-12 well well-add-card'>
-                    <h4>John Deo Mobilel</h4>
-                </div>
-                <div class='col-lg-12'>
-                    <p>4111xxxxxxxx3265</p>
-                    <p class"text-muted">Exp: 12-08</p>
-                </div>
-                <button type="button" class="btn btn-primary btn-xs btn-update btn-add-card">Update</button>
-            </div>
-          </div>
-        </div>
-
-      <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
-          <div class="thumbnail">
-              <div class="caption">
-                <div class='col-lg-12'>
-                    <span class="glyphicon glyphicon-credit-card"></span>
-                    <span class="glyphicon glyphicon-trash pull-right text-primary"></span>
-                </div>
-                <div class='col-lg-12 well well-add-card'>
-                    <h4>John Deo Mobilel</h4>
-                </div>
-                <div class='col-lg-12'>
-                    <p>4111xxxxxxxx3265</p>
-                    <p class"text-muted">Exp: 12-08</p>
-                </div>
-                <button type="button" class="btn btn-primary btn-xs btn-update btn-add-card">Update</button>
-            </div>
-          </div>
-        </div>
-        
-        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
-          <div class="thumbnail">
-              <div class="caption">
-                <div class='col-lg-12'>
-                    <span class="glyphicon glyphicon-credit-card"></span>
-                    <span class="glyphicon glyphicon-trash pull-right text-primary"></span>
-                </div>
-                <div class='col-lg-12 well well-add-card'>
-                    <h4>John Deo Mobilel</h4>
-                </div>
-                <div class='col-lg-12'>
-                    <p>4111xxxxxxxx3265</p>
-                    <p class"text-muted">Exp: 12-08</p>
-                </div>
-                <button type="button" class="btn btn-primary btn-xs btn-update btn-add-card">Update</button>
-                 <button type="button" class="btn btn-danger btn-xs btn-update btn-add-card">Vrify Now</button>
-                 <span class='glyphicon glyphicon-exclamation-sign text-danger pull-right icon-style'></span>
-            </div>
-          </div>
-        </div>
-        
-        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
-          <div class="thumbnail">
-              <div class="caption">
-                <div class='col-lg-12'>
-                    <span class="glyphicon glyphicon-credit-card"></span>
-                    <span class="glyphicon glyphicon-trash pull-right text-primary"></span>
-                </div>
-                <div class='col-lg-12 well well-add-card'>
-                    <h4>John Deo Mobilel</h4>
-                </div>
-                <div class='col-lg-12'>
-                    <p>4111xxxxxxxx3265</p>
-                    <p class"text-muted">Exp: 12-08</p>
-                </div>
-                <button type="button" class="btn btn-primary btn-xs btn-update btn-add-card">Update</button>
-            </div>
-          </div>
-        </div>
-        
-        <div class="col-lg-12"><a href="#">View Deleted Cards</a></div>
-      </div><!-- End row -->
-    </div><!-- End container -->
+    
 	<div class="row">
 		<div class="col-xs-12">
             <div class="panel panel-deault material">
                 <div class="panel-heading border">
-                    <h4 class="panel-title" style="padding-left:5px;">Account settings</h4>
+                    <p class="panel-title" style="padding-left:5px;">Account settings</p>
                     <span class="pull-right">
                         <!-- Tabs -->
                         <ul class="nav panel-tabs">
@@ -422,7 +305,7 @@ form .control-label{
           <div class="row">          
       <div class="col-xs-8">
              <div class="panel-heading" style="margin:0px;padding:0px;padding-left:20px;"><p> Enter new payment details </p></div>
-      <form action="/paypal/storeCreditCard" method="POST" class="form-horizontal">
+      <form id="storeCreditCard" action="/paypal/storeCreditCard" method="POST" class="form-horizontal">
           <div class="errors"></div>
           <div class="form-group">
                             <label class="col-md-3 control-label" for="zip">First name</label>  
@@ -511,27 +394,56 @@ form .control-label{
             Current payment methods
           </div>
           <div class="panel-body container-fluid">
-            <table class="table table-stripped table-highlight">
-             <thead>
-              <tr>
-                <th>Card</th>
-                <th>Delete</th>
-              <tr>
-              <thead>
-              <tbody>
-                <% data.cards.forEach(function(card){ %>
-                  <tr> 
-                    <td>
-                    <%= card.number %>
-                    </td>
-                    <td>
-                      <button class="button btn-info"> delete </button>
-                    </td>
-                  </tr>
-                <% }); %>
-              </tbody>
-              </table>
+    <div class="container-fluid" id="tourpackages-carousel">
+      <script type="text/html" id="ccTemplate">
+          <div class="col-xs-12">
+            <div class="thumbnail">
+                <div class="caption">
+                  <div class='col-lg-12'>
+                      <span class="glyphicon glyphicon-credit-card"></span>
+                      <span class="glyphicon glyphicon-trash pull-right text-primary"></span>
+                  </div>
+                  <div class='col-lg-12 well well-add-card'>
+                      <p>{{:first_name}} {{:last_name}}</p>
+                  </div>
+                  <div class='col-lg-12'>
+                      <p>{{:number}}</p>
+                      <p class"text-muted">Exp: {{:expire_year}}/{{:expire_month}}</p>
+                  </div>
+                  <button type="button" class="btn btn-primary btn-xs btn-update btn-add-card">Update</button>
+                  <button type="button" class="btn btn-danger btn-xs btn-update btn-add-card">Vrify Now</button>
+                  <span class='glyphicon glyphicon-exclamation-sign text-danger pull-right icon-style'></span>
+              </div>
             </div>
+          </div>
+        </script>
+      <div id="ccards" class="row" style="max-height:400px;overflow-y:scroll;">
+
+       <% data.cards.forEach(function(card){ %>
+        <div class="col-xs-12">
+          <div class="thumbnail">
+              <div class="caption">
+                <div class='col-lg-12'>
+                    <span class="glyphicon glyphicon-credit-card"></span>
+                    <span class="glyphicon glyphicon-trash pull-right text-primary"></span>
+                </div>
+                <div class='col-lg-12 well well-add-card'>
+                    <p><%=card.first_name%> <%=card.last_name%></p>
+                </div>
+                <div class='col-lg-12'>
+                    <p><%= card.number %></p>
+                    <p class"text-muted">Exp: <%=card.expire_year%>/<%=card.expire_month%></p>
+                </div>
+                <button type="button" class="btn btn-primary btn-xs btn-update btn-add-card">Update</button>
+                <button type="button" class="btn btn-danger btn-xs btn-update btn-add-card">Vrify Now</button>
+                <span class='glyphicon glyphicon-exclamation-sign text-danger pull-right icon-style'></span>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+
+      </div><!-- End row -->
+    </div><!-- End container -->
           </div>
       </div>
       </div>

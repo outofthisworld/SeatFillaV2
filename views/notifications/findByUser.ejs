@@ -13,25 +13,25 @@ ul.list-group.notifications li{
 </style>
 
 <script type="text/html" id="notificationstemplate">
-   	<li>
-						<time datetime="{{:date}}">
-							<span class="day"> {{:day}} </span>
-							<span class="month"> {{:month}} </span>
-							<span class="year"> {{:year}} </span>
-							<span class="time"> At: {{:hour}}:{{:minutes}}:{{:seconds}} {{:AMPM}}</span>
-						</time>
-						<div class="info">
-							<p class="title"> {{:title}}</p>
-							<p class="desc">{{:message}}</p>
-						</div>
-						<div class="socialside">
-							<ul>
-								<li class="facebook" style="width:33%;"><a href="#facebook"> <span class="fa fa-facebook"></span></a></li>
-								<li class="twitter" style="width:34%;"><a href="#twitter"> <span class="fa fa-twitter"></span></a></li>
-								<li class="google-plus" style="width:33%;"><a href="#google-plus"> <span class="fa fa-google-plus"></span></a></li>
-							</ul>
-						</div>
-					</li>
+       <li>
+                        <time datetime="{{:date}}">
+                            <span class="day"> {{:day}} </span>
+                            <span class="month"> {{:month}} </span>
+                            <span class="year"> {{:year}} </span>
+                            <span class="time"> At: {{:hour}}:{{:minutes}}:{{:seconds}} {{:AMPM}}</span>
+                        </time>
+                        <div class="info">
+                            <p class="title"> {{:title}}</p>
+                            <p class="desc">{{:message}}</p>
+                        </div>
+                        <div class="socialside">
+                            <ul>
+                                <li class="facebook" style="width:33%;"><a href="#facebook"> <span class="fa fa-facebook"></span></a></li>
+                                <li class="twitter" style="width:34%;"><a href="#twitter"> <span class="fa fa-twitter"></span></a></li>
+                                <li class="google-plus" style="width:33%;"><a href="#google-plus"> <span class="fa fa-google-plus"></span></a></li>
+                            </ul>
+                        </div>
+                    </li>
 </script>
 <script>
 $(document).ready(function(){
@@ -42,7 +42,7 @@ $(document).ready(function(){
     function loadNotifications(){
         const $button = $('#loadNotifications');
          $.ajax({
-            url:'/userprofile/'+user+'/notifications/',
+            url:'/notifications/',
             method:'GET',
             data:{
                 limit,
@@ -51,11 +51,12 @@ $(document).ready(function(){
             },
             success:function(data,r,xhr){
                 if(xhr.status == 200){
-                    data.Notifications.forEach(function(notification){
-                      displayNotification(notification,'append')
+                    console.log(data)
+                    data.forEach(function(notification){
+                      $('#notificationscontainer').append($.templates('#notificationstemplate').render(notification))
                     })
-                  skip+=data.Notifications.length;
-                  if(skip >= data.TotalNotifications){
+                  skip+=data.length;
+                  if(!!data.length){
                       $button.addClass('hide');
                   }else{
                       $button.removeClass('hide');
@@ -63,7 +64,7 @@ $(document).ready(function(){
                 }else{
                     alert('error loading more notifications')
                 }
-                  $button.removeClass('m-progress')
+               $button.removeClass('m-progress')   
             },
             error:function(){
                   alert('error loading more notifications')
@@ -89,13 +90,13 @@ $(document).ready(function(){
          </h2><hr/><br/>
    
 
-		<div class="container-fluid">
-			<div class="col-sm-12">
-				<ul class="event-list notifications" id="notificationscontainer">
-				
-				</ul>
-			</div>
-		</div>
-    	<button id="loadNotifications" class="btn btn-lg btn-info btn-block m-progress">More notifications</button>
+        <div class="container-fluid">
+            <div class="col-sm-12">
+                <ul class="event-list notifications" id="notificationscontainer">
+                
+                </ul>
+            </div>
+        </div>
+        <button id="loadNotifications" class="btn btn-lg btn-info btn-block m-progress">More notifications</button>
 </div>
     

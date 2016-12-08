@@ -242,8 +242,8 @@ module.exports.scheduledtasks = function () {
     try {
       ScheduledExecutorService.execute(task.task, task.initialDelay, task.repeatingDelay)
     } catch (err) {
-      sails.log.err('Error bootstrapping scheduled task in bootstrap.js')
-      sails.log.err(err)
+      sails.log.error('Error bootstrapping scheduled task in bootstrap.js')
+      sails.log.error(err)
     }
   })
 

@@ -87,6 +87,7 @@
                     'data-attr-airportLink': $this.attr('data-attr-airportLink')
                 }))
             }
+            $cityLink.trigger('change');
         })
     }
 

@@ -17,11 +17,12 @@ const convert = data2xml({});
 module.exports = function sendOK(data, options) {
 
 
-
     // Get access to `req`, `res`, & `sails`
     var req = this.req;
     var res = this.res;
     var sails = req._sails;
+
+    sails.log.debug('Res ok for path ' + req.path)
 
 
     sails.log.silly('res.ok() :: Sending 200 ("OK") response');
@@ -50,9 +51,12 @@ module.exports = function sendOK(data, options) {
 
     // If appropriate, serve data as JSON(P)
     // If views are disabled, revert to json
-    if (!options.renderHtml && req.wantsJSON || sails.config.hooks.views === false) {
+    if (!options.renderHtml && (req.wantsJSON || req.isSocket || sails.config.hooks.views === false)) {
+        sails.log.debug('returning json p')
         return res.jsonx(data);
     }
+
+    sails.log.debug('past jsonP')
 
     if (options.renderHtml) {
         req.options.layout = null;

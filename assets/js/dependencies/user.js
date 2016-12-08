@@ -1,6 +1,8 @@
 $(window).ready(function() {
     (function(io) {
         window.seatfilla.globals.getUser(function(status, user) {
+            console.log('Get user')
+            console.log(user)
             if (status == 200 && user && user.status == 200) {
 
                 const socketEventHandlers = {

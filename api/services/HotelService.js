@@ -15,20 +15,20 @@ module.exports = {
         check_status: ['find_hotel_sale', function (callback, results) {
           if (results.find_hotel_sale.status == 'closed') {
             return callback(null, null)
-          } 
+          }
 
-          const hours = require('TimeUtils')
-              .createTimeUnit(
-                new Date(results.find_hotel_sale.checkInDate) - new Date()
+          const hours = require('../utils/TimeUtils')
+            .createTimeUnit(
+              new Date(results.find_hotel_sale.checkInDate) - new Date()
           ).Milliseconds.toHours()
 
           sails.log.debug('Hours left until check in date: ' + hours)
 
-          if(results.find_hotel_sale.saleType == 'auction' && hours <= 24
-            || results.find_hotel_sale.saleType == 'fixed' && hours <= 0){
-              return callback(null,{saleType:results.find_hotel_sale.saleType});
-          }else{
-              return callback(null,null);
+          if (results.find_hotel_sale.saleType == 'auction' && hours <= 24
+            || results.find_hotel_sale.saleType == 'fixed' && hours <= 0) {
+            return callback(null, {saleType: results.find_hotel_sale.saleType})
+          }else {
+            return callback(null, null)
           }
         }],
         update_status: ['find_hotel_sale', 'check_status', function (callback, results) {
@@ -46,7 +46,7 @@ module.exports = {
           }
         }],
         find_reserve: ['update_status', function (callback, results) {
-          if(!results.check_status) return callback(null,null);
+          if (!results.check_status) return callback(null, null)
 
           if (results.find_hotel_sale.prices.length) {
             var minPrice
@@ -108,65 +108,61 @@ module.exports = {
           if (results.find_winner.hasWinner) {
             EmailService.sendEmailAsync(
               sails.config.email.messageTemplates.hotelAuctionWinner(results.find_winner)
-            ).then(function(){
-              return callback(null,true);
-            }).catch(function(err){
-              sails.log.error(err);
-              return callback(err,null);
-            });
+            ).then(function () {
+              return callback(null, true)
+            }).catch(function (err) {
+              sails.log.error(err)
+              return callback(err, null)
+            })
           }
-          return callback(null,null);
+          return callback(null, null)
         }],
         notify_winner: ['find_winner', function (callback, results) {
           if (results.find_winner.hasWinner) {
             NotificationService.sendNotification({
-                  user: results.find_winner.winner.id,
-                  title: 'You have won an auction for hotel ' + results.find_winner.hotel.name,
-                  message:'A bid of ' + results.find_winner.bidAmount + ' was place on hotel ' 
-                  + results.find_winner.hotel.name + ' and has won.',
-                  read: false,
-                  type: 'Individual',
-                  link: '/hotel/' + results.find_winner.hotel.id
-            }).then(function(){
-              return callback(null,true);
-            }).catch(function(err){
-              return callback(err,null);
+              user: results.find_winner.winner.id,
+              title: 'You have won an auction for hotel ' + results.find_winner.hotel.name,
+              message: 'A bid of ' + results.find_winner.bidAmount + ' was place on hotel '
+                + results.find_winner.hotel.name + ' and has won.',
+              read: false,
+              type: 'Individual',
+              link: '/hotel/' + results.find_winner.hotel.id
+            }).then(function () {
+              return callback(null, true)
+            }).catch(function (err) {
+              return callback(err, null)
             })
           }
-          return callback(null,null);
+          return callback(null, null)
         }]
       }, function (err, results) {
         if (err) {
           sails.log.error(err)
-          sails.log.debug('Error processing auction sale');
+          sails.log.debug('Error processing auction sale')
           if (err.errCode == 219) {
             // Notify user of fail,
             // log failiure
           }
           return reject(err)
         }else {
-          sails.log.debug(results);
+          sails.log.debug(results)
           return resolve(results)
         }
       })
     })
   },
   map_response_to_db(options) {
+    sails.log.debug('In map response to db')
+    sails.log.debug(options)
+
     const _this = this
     const args = arguments
     return new Promise(function (resolve, reject) {
       const hotel = options.hotel
       const sessionObj = options.sessionObject
-      const hotelData = options.hotelData
+      const detailsUrl = options.detailsUrl
 
-      sails.log.debug('Hotel:')
-      sails.log.debug(JSON.stringify(hotel))
-      sails.log.debug('Session obj: ')
-      sails.log.debug(JSON.stringify(sessionObj))
-      sails.log.debug('Hotel data:')
-      sails.log.debug(JSON.stringify(hotelData))
-
-      if (!hotel || !sessionObj || !hotelData) {
+      if (!hotel || !sessionObj || !detailsUrl) {
         return reject(new Error('Invalid params to map_response_to_db : ' + JSON.stringify(args)))
       }
 
@@ -174,14 +170,14 @@ module.exports = {
         const checkInDate = sessionObj.checkindate
         if (!checkInDate) return callback(new Error('Invalid check in date'))
         const dateDif = new Date(checkInDate) - new Date()
-        const hours = require('TimeUtils').createTimeUnit(dateDif).Milliseconds.toHours()
+        const hours = require('../utils/TimeUtils').createTimeUnit(dateDif).Milliseconds.toHours()
         sails.log.debug('Hours left until date : ' + hours)
-        return callback(null, hours)
+        return callback(null, hours.value)
       }
 
       function determine_sale_type (callback, results) {
         const hours = results.determine_hours_left
-
+        sails.log.debug('hours left until check in date : ' + hours)
         if (hours >= 48) {
           return callback(null, 'auction')
         } else {
@@ -196,12 +192,12 @@ module.exports = {
           id: hotel.hotels[0].hotel_id,
           starRating: hotel.hotels[0].star_rating,
           popularity: hotel.hotels[0].popularity,
-          hotelName: hotel.hotels[0].name,
+          hotelName: hotel.hotels[0].name || 'Skyscanner hotel',
           description: hotel.hotels[0].description,
           longitude: hotel.hotels[0].longitude,
           latitude: hotel.hotels[0].latitude,
           websiteURL: hotel.base_host_url,
-          detailsUrl: hotelData.detailsUrl,
+          detailsUrl: detailsUrl,
           callingCode: null,
           phoneNumber: null,
           addressString: hotel.hotels[0].address,
@@ -234,10 +230,14 @@ module.exports = {
         }
         HotelSale.find(criteriaObj)
           .then(function (hotelSale) {
+            sails.log.debug('Found hotel sales: ')
+            sails.log.debug(hotelSale)
+
             if (hotelSale && Array.isArray(hotelSale)) {
+              sails.log.debug('checking hotel sails')
               const sales = hotelSale.filter(function (sale) {
                 const dateDif = new Date(sale.checkindate) - new Date()
-                const hours = require('TimeUtils').createTimeUnit(dateDif).Milliseconds.toHours()
+                const hours = require('../utils/TimeUtils').createTimeUnit(dateDif).Milliseconds.toHours()
                 if (sale.saleType == 'auction' && hours <= 24 || sale.saleType == 'fixed' && hours <= 0) {
                   _this.process_hotel_sale(sale)
                   return false
@@ -248,8 +248,10 @@ module.exports = {
                 }
               })
               if (sales.length)
-                return cb(null, sales)
+                sails.log.debug('Found hotel sales ')
+              return cb(null, sales)
             } else {
+              sails.log.debug('Did not find any sales, creating new sale')
               return cb(null, null)
             }
           }).catch(function (err) {
@@ -262,7 +264,10 @@ module.exports = {
       }
 
       function create_hotel_sale (cb, results) {
-        if (results.find_hotel_sale.length) return callback(null, results.find_hotel_sale)
+        if (results.find_hotel_sale && results.find_hotel_sale.length) {
+          sails.log.debug('Not creating hotel sale, already found')
+          return cb(null, results.find_hotel_sale)
+        }
 
         HotelSale.create({
           checkInDate: sessionObj.checkindate,
@@ -273,6 +278,7 @@ module.exports = {
           saleType: results.determine_sale_type,
           status: 'open'
         }).then(function (results) {
+          sails.log.debug('Succesfully created new hotel sale')
           return cb(null, results)
         }).catch(function (err) {
           return cb({
@@ -297,9 +303,13 @@ module.exports = {
           _.each(Object.keys(hotelImages[key]), function (keyJ) {
             const fileName = keyJ
             if (fileName.includes('order') || fileName.includes('provider')) return
+
             const dimensions = hotelImages[key][keyJ]
             const width = dimensions[0]
             const height = dimensions[1]
+
+            if (!(width > 600 && height > 600)) return
+
             const fileParts = fileName.split('.')
             const imageObj = {
               hotel: results.create_hotel.id,
@@ -310,6 +320,7 @@ module.exports = {
               fileName: fileName,
               fileExt: fileParts && fileParts.length == 2 && fileParts[1] || 'Uk'
             }
+            hotel.image = imageObj.fileDescriptor
             sails.log.debug(imageObj)
             promises.push(new Promise(function (resolve, reject) {
               HotelImage.findOrCreate(imageObj, imageObj).then(function (image) {
@@ -430,8 +441,6 @@ module.exports = {
         sails.log.debug('Looking up exchange rates')
         LookupService.fixer_io_get_exchange_rates(sessionObj.currency)
           .then(function (exchangeRates) {
-            sails.log.debug('Found exchange rates: ' + exchangeRates)
-            sails.log.debug(JSON.stringify(exchangeRates))
             return callback(null, exchangeRates)
           }).catch(function (err) {
           sails.log.debug('Error finding exhange rates for ' + sessionObj.currency)
@@ -441,7 +450,10 @@ module.exports = {
       }
 
       function create_hotel_prices (cb, results) {
+        sails.log.debug('creating hotel prices')
+
         if (!hotel.hotels_prices || !hotel.hotels_prices.length) {
+          sails.log.debug('Did not find hotel_prices or hotel_prices did not exist ')
           return callback(new Error('No hotel prices'), null)
         }
 
@@ -478,25 +490,27 @@ module.exports = {
             objs.push(obj)
           })
         })
-
+        sails.log.debug('Created hotel prices')
         sails.log.debug(objs)
+
         HotelPrices.findOrCreate(objs, objs)
           .then(function (hotelPrices) {
-            return callback(null, hotelPrices)
-          /*_.each(hotelPrices, function (hotelPrice) {
-            results.create_hotel_sale.prices.add(hotelPrice.id)
-          })
-          results.create_hotel_sale.save(function (err) {
-            if (err) {
-              sails.log.debug('Error saving hotel sale in hotel_prices')
-              return cb(err, null)
-            } else {
-              sails.log.debug('Succesfully saved hotel sale')
-              return cb(null, true)
-            }
-          })*/
+            sails.log.debug('Created hotel prices ')
+            sails.log.debug(hotelPrices)
+            _.each(hotelPrices, function (hotelPrice) {
+              results.create_hotel_sale.prices.add(hotelPrice.id)
+            })
+            results.create_hotel_sale.save(function (err) {
+              if (err) {
+                sails.log.debug('Error saving hotel sale in hotel_prices')
+                return cb(err, null)
+              } else {
+                sails.log.debug('Succesfully saved hotel sale')
+                return cb(null, hotelPrices)
+              }
+            })
           }).catch(function (err) {
-          return callback({
+          return cb({
             wlError: err,
             error: new Error('Error creating hotel prices')
           }, null)
@@ -548,7 +562,7 @@ module.exports = {
         create_agents: [create_hotel_agents],
         destroy_hotel_prices: ['create_hotel_sale', destroy_hotel_prices],
         get_exchange_rate: get_exchange_rate,
-        create_hotel_prices: ['destroy_hotel_prices', 'create_hotel', 'create_agents', 'get_exchange_rate', create_hotel_prices],
+        create_hotel_prices: ['create_hotel_sale', 'destroy_hotel_prices', 'create_hotel', 'create_agents', 'get_exchange_rate', create_hotel_prices],
         create_hotel_amenities: ['create_hotel', 'destroy_hotel_amenities', create_hotel_amenities]
       }, function (err, results) {
         sails.log.debug('Running final func...')

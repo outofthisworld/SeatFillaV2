@@ -46,5 +46,22 @@ module.exports = {
             heads: 'shoulds',
             knees: 'andToes'
         })
+    },
+    testWebhook(req,res){
+        sails.log.debug(req.headers)
+        sails.log.debug(req.allParams())
+        sails.log.debug(req)
+        sails.log.debug('Finished print verifying webhook')
+    },
+    testWebhookWithVerifyEntered(req,res){
+        sails.log.debug(req.headers);
+        sails.log.debug(req.allParams());
+        return res.ok()
+    },
+    testWebhookWithVerifyAutomatic(req,res){
+        sails.log.debug('test webhook with verify automatic')
+        sails.log.debug(req.headers)
+        sails.log.debug(req.allParams())
+        return res.ok({verificationToken:req.headers['x-seatfilla-web-hook-verification-key']})
     }
 }

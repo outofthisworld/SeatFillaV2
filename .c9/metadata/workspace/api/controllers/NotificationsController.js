@@ -1,1 +1,3 @@
-{"filter":false,"title":"NotificationsController.js","tooltip":"/api/controllers/NotificationsController.js","undoManager":{"mark":-1,"position":-1,"stack":[]},"ace":{"folds":[],"scrolltop":0,"scrollleft":0,"selection":{"start":{"row":21,"column":0},"end":{"row":21,"column":0},"isBackwards":false},"options":{"guessTabSize":true,"useWrapMode":false,"wrapToView":true},"firstLineState":0},"timestamp":1472276117813,"hash":"437d73f702bb8013b5f2f2f78536a9f549928e2b"}
+module.exports = {
+    
+}

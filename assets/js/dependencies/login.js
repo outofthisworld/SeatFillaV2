@@ -10,54 +10,25 @@ $(document).ready(function() {
         $('#login-modal').load('/ajax/login.ejs', function() {
             var $formLogin = $('#login-form');
             var $formLost = $('#lost-form');
-            var $formRegister = $('#register-form');
             var $divForms = $('#div-forms');
             var $modalAnimateTime = 300;
             var $msgAnimateTime = 150;
             var $msgShowTime = 2000;
 
-
-            $('#local-login-button').on('click', function() {
-                var $lg_username = $('#login_username').val();
-                var $lg_password = $('#login_password').val();
-                if ($lg_username == "ERROR") {
-                    msgChange($('#div-login-msg'), $('#icon-login-msg'), $('#text-login-msg'), "error", "glyphicon-remove", "Login error");
-                } else {
-                    msgChange($('#div-login-msg'), $('#icon-login-msg'), $('#text-login-msg'), "success", "glyphicon-ok", "Logging in...");
-                    setTimeout(function() {
-                        document.getElementById("login-form").submit();
-                    }, 1000);
+            $('#login-modal form').ajaxForm(function(err, res, jqXHR, textStatus, errorThrown){
+                console.log($(this))
+                console.log('submit form:')
+                console.log(res)
+                 $('.errors').html('');
+                if(err || !res || res.error || res.errorMessages){
+                    $('.errors').html($.templates('#jsonErrorTemplate').render(
+                        {errorMessages: (res && (res.errorMessages  || (res.error && [res.error]))) || [errorThrown]}
+                    ))
+                }else{
+                    window.location.href = '/'
                 }
-            });
+            })
 
-            $("#login-modal form").submit(function() {
-                switch (this.id) {
-                    case "lost-form":
-                        var $ls_email = $('#lost_email').val();
-                        if ($ls_email == "ERROR") {
-                            msgChange($('#div-lost-msg'), $('#icon-lost-msg'), $('#text-lost-msg'), "error", "glyphicon-remove", "Send error");
-                        } else {
-                            msgChange($('#div-lost-msg'), $('#icon-lost-msg'), $('#text-lost-msg'), "success", "glyphicon-ok", "Send OK");
-                        }
-                        return false;
-                    case "register-form":
-                        var $rg_username = $('#register_username').val();
-                        var $rg_email = $('#register_email').val();
-                        var $rg_password = $('#register_password').val();
-                        if ($rg_username == "ERROR") {
-                            msgChange($('#div-register-msg'), $('#icon-register-msg'), $('#text-register-msg'), "error", "glyphicon-remove", "Register error");
-                        } else {
-                            msgChange($('#div-register-msg'), $('#icon-register-msg'), $('#text-register-msg'), "success", "glyphicon-ok", "Register OK");
-                        }
-                        return false;
-                    default:
-                        return false;
-                }
-            });
-
-            $('#login_register_btn').click(function() {
-                modalAnimate($formLogin, $formRegister)
-            });
             $('#register_login_btn').click(function() {
                 modalAnimate($formRegister, $formLogin);
             });
@@ -66,9 +37,6 @@ $(document).ready(function() {
             });
             $('#lost_login_btn').click(function() {
                 modalAnimate($formLost, $formLogin);
-            });
-            $('#lost_register_btn').click(function() {
-                modalAnimate($formLost, $formRegister);
             });
             $('#register_lost_btn').click(function() {
                 modalAnimate($formRegister, $formLost);

@@ -30,6 +30,9 @@ module.exports = {
             notNull:true,
             required:true
         },
+        curentWinner:{
+            model:'user'
+        },
         prices:{
             collection:'HotelPrices',
             via:'hotelSale'

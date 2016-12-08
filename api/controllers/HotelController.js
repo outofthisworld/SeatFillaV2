@@ -153,7 +153,7 @@ module.exports = {
         sails.log.debug('Entity id was : ' + sessionObject.entityId)
         // The check in date for the hotel
         const tomorrow = new Date()
-        tomorrow.setDate(new Date().getDate() + 1)
+        tomorrow.setDate(new Date().getDate() + 3)
         sessionObject.checkindate = (req.param('dates') && req.param('dates').departure) || (tomorrow.toISOString().slice(0, 10))
 
         // The check out date
@@ -165,6 +165,7 @@ module.exports = {
 
         sessionObject.rooms = req.param('numRooms') || 1
 
+        req.session.hotelSessionObject = sessionObject
         sails.log.debug('Created hotels session object : ' + JSON.stringify(sessionObject))
         return callback(null, sessionObject)
       }],
@@ -483,112 +484,6 @@ module.exports = {
     req.setParam('user', req.user.id)
     _add(req, res)
   },
-  placeBid(req, res) {
-    const user = req.user,
-      bidAmount = req.param('bidAmount'),
-      currency = req.param('currency'),
-      hotel = req.param('hotelId')
-
-    const errors = []
-
-    if (!user) {
-      errors.push('User must be logged in')
-    }
-
-    if (!bidAmount) {
-      errors.push('No bid amount specified')
-    }
-
-    if (!currency) {
-      errors.push('No currency specified')
-    }
-
-    if (!hotel) {
-      errors.push('No hotel specified')
-    }
-
-    if (errors.length) {
-      return res.badRequest({error: new Error('ValidtionError'),errorMessages: errors})
-    }
-
-    async.auto({
-      find_hotel: function (callback) {
-        Hotel.find({id: hotel})
-          .populate('hotelPrices')
-          .populate('hotelBids').then(function (hotel) {
-          if (!hotel) {
-            return callback(new Error('Invalid hotel id'), null)
-          }else {
-            if (hotel.saleType != 'auction') {
-              return callback(new Error('Invalid operation, this hotel is not for auction.'))
-            }
-
-            return callback(null, hotel)
-          }
-        }).catch(callback)
-      },
-      convert_currency_to_usd: ['find_hotel', function (callback) {
-        try {
-          const bid = parseFloat(bidAmount)
-
-          LookupService.fixer_io_get_exchange_rates(currency)
-            .then(function (exchangeRates) {
-              if (!exchangeRates.USD) {
-                return callback(new Error('Error find usd conversion rate'), null)
-              }
-
-              var usdConversionRate = exchangeRates.USD
-
-              if (!(typeof usdConversionRate == 'number'))
-                usdConversionRate = parseFloat(exchangeRates.USD)
-
-              const usdBid = bid * usdConversionRate
-              return callback(null, {usd_bid_amount: usdBid})
-            }).catch(function (err) {
-            return callback(err, null)
-          })
-        } catch(err) {
-          return callback(err, null)
-        }
-      }],
-      check_bid_amount: ['convert_currency_to_usd', function (callback, results) {
-        const hotel = results.find_hotel
-
-        const maxBid = Math.max.apply(null, hotel.hotelBids)
-
-        const usd_bid_amount = results.convert_currency_to_usd.usd_bid_amount
-
-        if (usd_bid_amount > maxBid)
-          return callback(null, true)
-        else
-          return callback(new Error('Invalid bid amount, must be above the current max bid.'))
-      }],
-      add_bid_to_hotel: ['check_bid_amount', function (callback, results) {
-        const hotel = results.find_hotel
-
-        HotelBid.create({
-          bidAmount: results.convert_currency_to_usd.usd_bid_amount,
-          user: req.user,
-        hotel}).then(function (hotelBid) {
-          Hotel.publishAdd(hotel, 'hotelBids', hotelBid.id)
-          HotelBid.publishCreate(hotelBid)
-          return callback(null, hotelBid)
-        }).catch(callback)
-      }],
-      notify_bidders: ['add_bid_to_hotel', function (callback, results) {
-        return callback(null, true)
-      }],
-      email_bidders: ['add_bid_to_hotel', function (callback, results) {
-        return callback(null, true)
-      }]
-    }, function (err, results) {
-      if (err) {
-        return res.badRequest(err)
-      }else {
-        return res.ok({status: 200})
-      }
-    })
-  },
   /**
    *
    *
@@ -598,12 +493,22 @@ module.exports = {
    */
   findOne(req, res) {
     if (req.isSocket || req.wantsJSON) {
-      _findOne(req, res).then(function (result) {
-        return res.ok(result)
-      }).catch(function (err) {
-        return res.badRequest(err)
+      require('../out/re-write/findone')(req, res).then(function(results){
+        sails.log.debug('Results from ../out/re-write/findone')
+        sails.log.debug(results);
+        return res.ok(results)
+      }).catch(function(err){
+        return res.serverError();
       })
     }else {
+      var sessionObj = req.session.hotelSessionObject
+      var provider = req.param('provider')
+      var id = req.param('id')
+      var detailsUrl = req.param('detailsUrl')
+
+      if (!provider || !id) {
+        return res.badRequest('Invalid parameters')
+      }
       async.auto({
         /**
          *
@@ -615,38 +520,7 @@ module.exports = {
           if (!req.param('hotelData') && !req.param('id'))
             return callback(new Error('Invalid request'), null)
 
-          sails.log.debug(req.allParams())
-
-          var hotelData = null
-          var sessionObj = null
-          var id = null
-
-          if (req.param('hotelData') && req.param('sessionObject')) {
-            try {
-              hotelData = JSON.parse(req.param('hotelData'))
-            } catch (err) {
-              return callback(new Error('Error parsing hotelData'), null)
-            }
-
-            if ('hotel_id' in hotelData) {
-              id = hotelData['hotel_id']
-            } else {
-              return callback(new Error('No id supplied via hotelData parameter, invalid request'), null)
-            }
-
-            try {
-              sessionObj = JSON.parse(req.param('sessionObject'))
-            } catch(err) {
-              return callback(new Error('Error parsing session object'), null)
-            }
-          } else if (req.param('id')) {
-            hotelData = null
-            id = req.param('id')
-          } else {
-            return callback(new Error('Request requires either hotelData || id parameter to be set, both were null.'), null)
-          }
-
-          if (!hotelData) {
+          if (provider == 'seatfilla') {
             // No need to check if hotel isn't null, error will be thrown by _findOne.
             // This will subscribe the requestee to all events via -
             // .publishUpdate(), .publishDestroy(), .publishAdd(), .publishRemove(), and .message().
@@ -654,7 +528,9 @@ module.exports = {
             _findOne(req).then(function (hotel) {
               if (!hotel) return callback(new Error('Invalid hotel id'), null)
               return callback(null, {
-                id: hotel.id
+                id: hotel.id,
+                sessionObj: null,
+                hotel
               })
             }).catch(function (err) {
               sails.log.error(err)
@@ -672,29 +548,37 @@ module.exports = {
                 if (results.find_hotel && results.find_hotel.provider != 'skyscanner')
                   return callback(new Error('Found invalid hotel'), null)
 
-                 SkyScannerHotelService.pollDetails(hotelData['detailsUrl'],[id],callback)
-              }],
-              create_hotel: [
-                'poll_skyscanner_hotel_details',
-                'determine_sale_type',
-                function (callback, results) {
-                  SkyScannerHotelService.map_response_to_db({
-                    hotel: results.poll_skyscanner_hotel_details.body,
-                    hotelData,
-                    sessionObject: sessionObj,
-                  }).then(function (res) {
-                    sails.log.debug('mapped results in create_hotel')
-                    return callback(null, { id: res.create_hotel.id})
-                  }).catch(function (err) {
-                    return callback(err, null)
-                  })
+                if (results.find_hotel) {
+                   return callback(null, { id: results.find_hotel.id, sessionObject: sessionObj || null,hotel:results.find_hotel})
+                }else {
+                  if(!detailsUrl) return callback(new Error('Invalid params, no detailsUrl specified'),null);
+                  SkyScannerHotelService.pollHotelDetails(detailsUrl, [id], function (err, results) {
+                    if (!results) return
+
+                    sails.log.debug('Received result from polling details...')
+                    sails.log.debug(results)
+                    sails.log.debug('Mapping to db')
+
+                      HotelService.map_response_to_db({
+                        hotel: results.body,
+                        detailsUrl,
+                        sessionObject: sessionObj
+                      }).then(function (res) {
+                        sails.log.debug('mapped results in create_hotel')
+                          return callback(null, { id: res.create_hotel.id, sessionObject: sessionObj || null,hotel:res.create_hotel})
+                      }).catch(function (err) {
+                        sails.log.error(err)
+                          return callback(err, null)
+                      })
+      
+                    })
                 }
-              ]
+              }]
             }, function (err, results) {
               if (err) {
                 return callback(err, null)
               }else {
-                return callback(null, results.create_hotel)
+                return callback(null, results.poll_skyscanner_hotel_details)
               }
             })
           }
@@ -708,11 +592,13 @@ module.exports = {
             return res.redirect('/hotel')
           } else {
             sails.log.debug('In hotel controller returning res.ok with results :' + JSON.stringify(results.findOrCreateHotel))
-            return res.ok(
-              {
-                id: results.findOrCreateHotel.id,
-                resSendTime: new Date().getTime()
-              })
+            req.options.url = '/hotel/'+id+'?provider='+provider;
+            req.options.type = 'article'
+            req.options.title = 'Cheap Seatfilla hotel - ' + results.findOrCreateHotel.hotel.hotelName;
+            req.options.description = results.findOrCreateHotel.hotel.description;
+            req.options.image = results.findOrCreateHotel.hotel.image;
+            return res.ok({id:results.findOrCreateHotel.id,
+              sessionObject:results.findOrCreateHotel.sessionObj})
           }
         })
     }

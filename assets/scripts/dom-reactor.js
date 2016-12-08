@@ -322,7 +322,7 @@ $(window).ready(function () {
           }
 
           // obtain the HTML structure of the data
-          const html = $template.render(data.added || data)
+          const html = $template.render(data.added || data,renderOpts.viewExtensions || null)
           const $html = $(html)
 
           // Check to see if we need to remove elements from the DOM according to the spcified options
@@ -340,12 +340,16 @@ $(window).ready(function () {
           } else {
             if (renderOpts.beforeCreate && typeof renderOpts.beforeCreate == 'function') {
               console.log('Calling before create')
-              renderOpts.beforeCreate.call(null, $html)
+              renderOpts.beforeCreate.call(null, $html,data)
             }
-            console.log('Adding element to container')
+            console.log(renderOpts.renderMethod || 'append' + ' element to container ' + container)
             $html.hide()
             // Render the data to the container
             $container[renderOpts.renderMethod || 'append']($html.fadeIn(1000))
+
+            if(renderOpts.afterCreate && typeof renderOpts.afterCreate == 'function'){
+              renderOpts.afterCreate.call(null,data);
+            }
           }
         }
 
@@ -390,8 +394,7 @@ $(window).ready(function () {
         return null
       }
 
-      var findDomElement = mapping.renderOpts.findInDom
-      var updateInDom = mapping.renderOpts.updateInDom
+      var findDomElement = mapping.renderOpts.findInDom;
 
       var $updatedDomElement = null
       if (findDomElement && typeof findDomElement == 'function') {
@@ -491,22 +494,24 @@ $(window).ready(function () {
           }
 
           // Retrieve our HTML structure
-          const $html = $($template.render(data))
+          const $html = $($template.render(data,renderOpts.viewExtensions || {}))
 
-          // Try and find the updated dom element
-          const $updatedDomElement = _this.findInDom(data, $container, mapping, eventName)
-
-          // If we cant find it,log and return
-          if (!$updatedDomElement || !($updatedDomElement.length)) {
-            console.log('Unable to find update element in dom for data ' + JSON.stringify(data))
-            return
-          }
 
           // If updateInDom cb specified, call that and allow instantiator to add the html to the dom,
           // otherwise do it ourselves with specified options.
-          if (updateInDom) {
-            updateInDom.call(null, data, $html, $container)
+          if (renderOpts.updateInDom) {
+            renderOpts.updateInDom.call(null, data, $html, $container)
           } else {
+            
+            // Try and find the updated dom element
+            const $updatedDomElement = _this.findInDom(data, $container, mapping, eventName)
+
+            // If we cant find it,log and return
+            if (!$updatedDomElement || !($updatedDomElement.length)) {
+              console.log('Unable to find update element in dom for data ' + JSON.stringify(data))
+              return
+            }
+
             const updateEffect = (renderOpts.updateEffect &&
               Array.isArray(renderOpts.updateEffect) && renderOpts.updateEffect.length &&
               renderOpts.updateEffect.slice(0, 1)) || 'fadeOut'
@@ -689,16 +694,29 @@ $(window).ready(function () {
         subcriteria:{limit:5:sort:'created ASC'}
         params:{limit:10, sort:'createdAt ASC'},*/
 
-        // Extract this function to a more generic file later
+        // Extract this function to a more generic file later, takes an object and turns it into query params
+        // e.g 
+        /*
+            const obj{
+              foo:'one',
+              bar:'two'
+            }
+
+            would become /initialPath/?foo=one&
+        */
         function objectToHttpQueryString (initial, query) {
           if (!query) return initial
+
+          if(initial.endsWith('/')) initial = initial.slice(0,intial.length-1);
 
           var qString = '?'
           for (var key in query) {
             if (key)
-              qString = qString.concat('&' + key + '=' + query[key])
+              qString = qString.concat(key + '=' + query[key] + '&')
           }
-          return (initial || '').toString().concat(qString.trim().replace("/'/g", '').replace('/"/g', ''))
+          //Remove trailing/leadig white space, remove last &.
+          var path = (initial || '').toString().concat(qString.slice(0,qString.length-1).trim().replace("/'/g", '').replace('/"/g', ''));
+          return path;
         }
 
         /*
@@ -720,6 +738,9 @@ $(window).ready(function () {
 
           /*Event trigger*/
           function handleSocketEvent (eventName, verb, attribute, data) {
+            console.log('Recieved socket event : ' + eventName);
+            console.log(data)
+
             if (!eventName || !verb || !data) {
               console.log('Invalid params passed to trigger')
               return
@@ -821,6 +842,7 @@ $(window).ready(function () {
                 _this.trigger([key, 'loadedFromSocket'], null, [fResult[key], key])
               }
             }
+            _this.trigger('finishedLoadFromSocket',{})
             return Promise.resolve(fResult)
           }).catch(function (err) {
           console.log(err)
@@ -866,16 +888,15 @@ $(window).ready(function () {
 
           // Check to make sure that the target has the right options.
           if (options.domReactor) {
-            if(!Array.isArray(t.renderOpts) && !t.renderOpts || !t.renderOpts.template || !t.renderOpts.container){
-             throw new Error('Invalid params to $.domReactor')
-            }else if(Array.isArray(t.renderOpts)){
+            if(Array.isArray(t.renderOpts)){
               t.renderOpts.forEach(function(opt){
-                if(!opt.renderOpts || !opt.renderOpts.template || !opt.renderOpts.container){
-                      throw new Error('Invalid params to $.domReactor')
+                if(!opt || !opt.template || !opt.container){
+                      throw new Error('Invalid params to $.domReactor for ' + t.eventName + ' ' + JSON.stringify(opt))
                 }
               })
-            }else{
-              throw new Error('Invalid renderOpts in $.domReactor');
+            } else if ((!t.renderOpts || !t.renderOpts.template || !t.renderOpts.container)){
+              console.log(JSON.stringify(t))
+              throw new Error('Invalid params to $.domReactor ')
             }
           }
 

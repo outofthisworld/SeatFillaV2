@@ -1,7 +1,7 @@
 
 
    
-<form name="form-test" action="" method="get" >
+<form id="flightForm" action="" method="get" >
     <div class="col-xs-8">
         <div class="row">
             <h4 style="font-size:20px;padding:10px;"> Departure Information </h4>
@@ -24,7 +24,7 @@
          <div class="row">
             <h4 style="font-size:20px;padding:10px;"> Destination Information </h4>
             <div class="form-group">
-            <label class="col-md-1 control-label" for="departureCountry">Country</label>  
+            <label class="col-md-1 control-label" for="destinationCountry">Country</label>  
             <div class="col-md-3">
                     <select id="departureCountry" class="country form-control" data-attr-cityLink="#destinationCity" data-attr-airportLink="#destinationAirport"></select>
             </div>
@@ -44,31 +44,31 @@
                 <label for="street">
                     Adults
                 </label>
-                <input type="text" id="street" name="street" class="form-control" value="1" required/>
+                <input type="text" id="numAdultTickets" class="form-control" value="1" required/>
             </div>
             <div class="col-xs-2 form-group">
                 <label for="number" >
                     Children
                 </label>
-                <input type="number" id="number" name="number" class="form-control" value="0" required/>
+                <input type="number" id="numChildTickets" class="form-control" value="0" required/>
             </div>
              <div class="col-xs-2 form-group">
                 <label for="number" >
                     Infants
                 </label>
-                <input type="number" id="number" name="number" class="form-control" value="0" required/>
+                <input type="number" id="numInfantTickets" class="form-control" value="0" required/>
             </div>
             <div class="col-xs-3 form-group">
                 <label for="name" >
                     Departure Date
                 </label>
-                <input id="name" type="date" name="name" class="form-control input"/>
+                <input type="date" id="departureDate" name="departureDate" class="form-control input"/>
             </div>
             <div class="col-xs-3 form-group">
                 <label for="surname">
                     Return Date
                 </label>
-                <input id="surname" type="date" name="surname" class="form-control"/>
+                <input type="date" id="returnDate" name="returnDate" class="form-control"/>
             </div>
        
         </div>
@@ -76,7 +76,7 @@
         </div>
 
         <div class="col-xs-4">
-             <button class="btn btn-lg " style="position:absolute;right:-15px;background-color:#42a5f5;">
+             <button class="btn btn-lg" type="submit" style="position:absolute;right:-15px;background-color:#42a5f5;">
              <i class="fa fa-search" style="font-size:275px"></i></button>
         </div>
     </form>

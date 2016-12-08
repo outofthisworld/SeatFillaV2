@@ -12,7 +12,12 @@
 */
 
 module.exports.domainWhitelist = [
+    '127.0.0.1:1337',
+    'localhost:1337',
     '127.0.0.1',
+    'localhost',
     'seatfilla.com',
     'seatfilla.org',
+    'seatfilla.com:80',
+    'seatfilla.org:80',
 ]

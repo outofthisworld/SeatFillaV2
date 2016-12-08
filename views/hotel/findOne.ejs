@@ -1,791 +1,3188 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDBWrH7DuCZ8wNlOXgINCtI_gT9NkDRq4"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>
 <script>
-$(window).ready(function(){
-    $.getScript('/scripts/hotelFindOne.js',function(data, textStatus, jqxhr){
-        if(jqxhr.status == 200){
-            window.seatfilla.globals.initHotelScript({
-                id:<%= data.id || null %>,
-								resSendTime:<%= data.resSendTime || null %>,
-            })
-        }else{
-            alert('Error loading hotelFindOne.js');
-        }
+    $(window).ready(function() {
+
+		const rl = window.seatfilla.globals.getQParam('reload');
+		if(rl){
+			window.location.assign(window.location.href.replace('&reload='+rl,''))
+		}
+
+        $.getScript('/scripts/hotelFindOne.js', function(data, textStatus, jqxhr) {
+            if (jqxhr.status == 200) {
+                window.seatfilla.globals.initHotelScript({
+                    id: <%= data.id || null %> ,
+                    sessionObject: '<%- JSON.stringify(data.sessionObject || req.session.hotelSessionObject) %>'
+                })
+            } else {
+                alert('Error loading hotelFindOne.js');
+            }
+        });
+        
     });
-		
-});
 </script>
 <style>
-.preview {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -webkit-flex-direction: column;
-      -ms-flex-direction: column;
-          flex-direction: column; }
-  @media screen and (max-width: 996px) {
+    ul.inline-btn{
+		padding:0px;
+		margin:0px;
+	}
+	ul.inline-btn li{
+		width:50%;
+		float:left;
+	}
     .preview {
-      margin-bottom: 20px; } }
-.preview-pic {
-  -webkit-box-flex: 1;
-  -webkit-flex-grow: 1;
-      -ms-flex-positive: 1;
-          flex-grow: 1; }
-.preview-thumbnail.nav-tabs {
-  border: none;
-  margin-top: 15px; }
-  .preview-thumbnail.nav-tabs li {
-    width: 10%;
-    margin-right: 2.5%; }
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -webkit-flex-direction: column;
+        -ms-flex-direction: column;
+        flex-direction: column;
+    }
+    @media screen and (max-width: 996px) {
+        .preview {
+            margin-bottom: 20px;
+        }
+    }
+    .preview-pic {
+        -webkit-box-flex: 1;
+        -webkit-flex-grow: 1;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        max-height: 400px;
+        height: 400px;
+        min-height: 400px;
+        border-color: #2196F3;
+        border-width: 2px;
+        border-style: solid;
+    }
+    .preview-thumbnail.nav-tabs {
+        border: none;
+        margin-top: 15px;
+        min-height: 50px;
+        max-height: 50px;
+        height: 50px;
+        min-width: 50px;
+    }
+    .preview-thumbnail.nav-tabs li {
+        width: 10%;
+        margin-right: 2.5%;
+    }
     .preview-thumbnail.nav-tabs li img {
-      max-width: 100%;
-      display: block; }
+        max-width: 100%;
+        display: block;
+        min-height: 50px;
+        max-height: 50px;
+        min-width: 75px;
+    }
     .preview-thumbnail.nav-tabs li a {
-      padding: 0;
-      margin: 0; }
+        padding: 0;
+        margin: 0;
+    }
     .preview-thumbnail.nav-tabs li:last-of-type {
-      margin-right: 0; }
-.tab-content {
-  overflow: hidden; }
-  .tab-content img {
-    width: 100%;
-    -webkit-animation-name: opacity;
-            animation-name: opacity;
-    -webkit-animation-duration: .3s;
-            animation-duration: .3s; }
-.card {
-  margin-top: 50px;
-  background: #eee;
-  padding: 3em;
-  line-height: 1.5em; }
-@media screen and (min-width: 997px) {
-  .wrapper {
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex; } }
-.details {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -webkit-flex-direction: column;
-      -ms-flex-direction: column;
-          flex-direction: column; }
-.colors {
-  -webkit-box-flex: 1;
-  -webkit-flex-grow: 1;
-      -ms-flex-positive: 1;
-          flex-grow: 1; }
-.product-title, .price, .sizes, .colors {
-  text-transform: UPPERCASE;
-  font-weight: bold; }
-.checked, .price span {
-  color: #ff9f1a; }
-.product-title, .rating, .product-description, .price, .vote, .sizes {
-  margin-bottom: 15px; }
-.product-title {
-  margin-top: 0; }
-.size {
-  margin-right: 10px; }
-  .size:first-of-type {
-    margin-left: 40px; }
-.color {
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 10px;
-  height: 2em;
-  width: 2em;
-  border-radius: 2px; }
-  .color:first-of-type {
-    margin-left: 20px; }
-.add-to-cart, .like {
-  background: #ff9f1a;
-  padding: 1.2em 1.5em;
-  border: none;
-  text-transform: UPPERCASE;
-  font-weight: bold;
-  color: #fff;
-  -webkit-transition: background .3s ease;
-          transition: background .3s ease; }
-  .add-to-cart:hover, .like:hover {
-    background: #b36800;
-    color: #fff; }
-.not-available {
-  text-align: center;
-  line-height: 2em; }
-  .not-available:before {
-    font-family: fontawesome;
-    content: "\f00d";
-    color: #fff; }
-.orange {
-  background: #ff9f1a; }
-.green {
-  background: #85ad00; }
-.blue {
-  background: #0076ad; }
-.tooltip-inner {
-  padding: 1.3em; }
-@-webkit-keyframes opacity {
-  0% {
-    opacity: 0;
-    -webkit-transform: scale(3);
-            transform: scale(3); }
-  100% {
-    opacity: 1;
-    -webkit-transform: scale(1);
-            transform: scale(1); } }
-@keyframes opacity {
-  0% {
-    opacity: 0;
-    -webkit-transform: scale(3);
-            transform: scale(3); }
-  100% {
-    opacity: 1;
-    -webkit-transform: scale(1);
-            transform: scale(1); }
- }
-.btn-grey{
-    background-color:#D8D8D8;
-	color:#FFF;
+        margin-right: 0;
+    }
+    .tab-content {
+        overflow: hidden;
+    }
+    .tab-content img {
+        width: 100%;
+        max-height: 400px;
+        height: 400px;
+        min-height: 400px;
+        -webkit-animation-name: opacity;
+        animation-name: opacity;
+        -webkit-animation-duration: .3s;
+        animation-duration: .3s;
+    }
+    .card {
+        margin-top: 50px;
+        background: #eee;
+        padding: 3em;
+        line-height: 1.5em;
+    }
+    @media screen and (min-width: 997px) {
+        .wrapper {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+        }
+    }
+    .details {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -webkit-flex-direction: column;
+        -ms-flex-direction: column;
+        flex-direction: column;
+    }
+    .colors {
+        -webkit-box-flex: 1;
+        -webkit-flex-grow: 1;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+    }
+    .product-title,
+    .price,
+    .sizes,
+    .colors {
+        text-transform: UPPERCASE;
+        font-weight: bold;
+    }
+    .checked,
+    .price span {
+        color: #ff9f1a;
+    }
+    .product-title,
+    .rating,
+    .product-description,
+    .price,
+    .vote,
+    .sizes {
+        margin-bottom: 15px;
+    }
+    .product-title {
+        margin-top: 0;
+    }
+    .size {
+        margin-right: 10px;
+    }
+    .size:first-of-type {
+        margin-left: 40px;
+    }
+    .color {
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 10px;
+        height: 2em;
+        width: 2em;
+        border-radius: 2px;
+    }
+    .color:first-of-type {
+        margin-left: 20px;
+    }
+    .add-to-cart,
+    .like {
+        background: #ff9f1a;
+        padding: 1.2em 1.5em;
+        border: none;
+        text-transform: UPPERCASE;
+        font-weight: bold;
+        color: #fff;
+        -webkit-transition: background .3s ease;
+        transition: background .3s ease;
+    }
+    .add-to-cart:hover,
+    .like:hover {
+        background: #b36800;
+        color: #fff;
+    }
+    .not-available {
+        text-align: center;
+        line-height: 2em;
+    }
+    .not-available:before {
+        font-family: fontawesome;
+        content: "\f00d";
+        color: #fff;
+    }
+    .orange {
+        background: #ff9f1a;
+    }
+    .green {
+        background: #85ad00;
+    }
+    .blue {
+        background: #0076ad;
+    }
+    .tooltip-inner {
+        padding: 1.3em;
+    }
+    @-webkit-keyframes opacity {
+        0% {
+            opacity: 0;
+            -webkit-transform: scale(3);
+            transform: scale(3);
+        }
+        100% {
+            opacity: 1;
+            -webkit-transform: scale(1);
+            transform: scale(1);
+        }
+    }
+    @keyframes opacity {
+        0% {
+            opacity: 0;
+            -webkit-transform: scale(3);
+            transform: scale(3);
+        }
+        100% {
+            opacity: 1;
+            -webkit-transform: scale(1);
+            transform: scale(1);
+        }
+    }
+    .btn-grey {
+        background-color: #D8D8D8;
+        color: #FFF;
+    }
+    .rating-block {
+        background-color: #2196F3;
+        border: 1px solid #EFEFEF;
+        padding: 15px 15px 20px 15px;
+        border-radius: 3px;
+        color: white;
+    }
+    .rating-block h1 {
+        color: white;
+    }
+    .rating-block h2 {
+        color: white;
+    }
+    .bold {
+        font-weight: 700;
+    }
+    .padding-bottom-7 {
+        padding-bottom: 7px;
+    }
+    .review-block {
+        background-color: #fff;
+        border: 1px solid #EFEFEF;
+        padding: 15px;
+        margin-top: 15px;
+    }
+    .review-block-name {
+        font-size: 12px;
+        margin: 10px 0;
+    }
+    .review-block-date {
+        font-size: 12px;
+    }
+    .review-block-rate {
+        font-size: 13px;
+        margin-bottom: 1px;
+    }
+    .review-block-title {
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    .review-block-description {
+        font-size: 13px;
+    }
+    .tags a {
+        border: 1px solid #DDD;
+        display: inline-block;
+        color: #717171;
+        background: #FFF;
+        -webkit-box-shadow: 0 1px 1px 0 rgba(180, 180, 180, 0.1);
+        box-shadow: 0 1px 1px 0 rgba(180, 180, 180, 0.1);
+        -webkit-transition: all .1s ease-in-out;
+        -moz-transition: all .1s ease-in-out;
+        -o-transition: all .1s ease-in-out;
+        -ms-transition: all .1s ease-in-out;
+        transition: all .1s ease-in-out;
+        border-radius: 2px;
+        margin: 0 3px 6px 0;
+        padding: 5px 10px
+    }
+    .tags a:hover {
+        border-color: #08C;
+    }
+    .tags a.primary {
+        color: #FFF;
+        background-color: #428BCA;
+        border-color: #357EBD
+    }
+    .tags a.success {
+        color: #FFF;
+        background-color: #5CB85C;
+        border-color: #4CAE4C
+    }
+    .tags a.info {
+        color: #FFF;
+        background-color: #5BC0DE;
+        border-color: #46B8DA
+    }
+    .tags a.warning {
+        color: #FFF;
+        background-color: #F0AD4E;
+        border-color: #EEA236
+    }
+    .tags a.danger {
+        color: #FFF;
+        background-color: #D9534F;
+        border-color: #D43F3A
+    }
+    .border-light-blue {
+        border-color: lightblue;
+    }
+    .accordian {
+        width: 100%;
+        height: 320px;
+        overflow: hidden;
+        /*Time for some styling*/
+        
+        margin: 100px auto;
+        box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.35);
+        -webkit-box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.35);
+        -moz-box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.35);
+    }
+    /*A small hack to prevent flickering on some browsers*/
+    
+    .accordian ul {
+        width: 2000px;
+        /*This will give ample space to the last item to move
+  instead of falling down/flickering during hovers.*/
+    }
+    .accordian li {
+        position: relative;
+        display: block;
+        width: 160px;
+        float: left;
+        border-left: 1px solid #888;
+        box-shadow: 0 0 25px 10px rgba(0, 0, 0, 0.5);
+        -webkit-box-shadow: 0 0 25px 10px rgba(0, 0, 0, 0.5);
+        -moz-box-shadow: 0 0 25px 10px rgba(0, 0, 0, 0.5);
+        /*Transitions to give animation effect*/
+        
+        transition: all 0.5s;
+        -webkit-transition: all 0.5s;
+        -moz-transition: all 0.5s;
+        /*If you hover on the images now you should be able to 
+  see the basic accordian*/
+    }
+    /*Reduce with of un-hovered elements*/
+    
+    .accordian ul:hover li {
+        width: 40px;
+    }
+    /*Lets apply hover effects now*/
+    /*The LI hover style should override the UL hover style*/
+    
+    .accordian ul li:hover {
+        width: 640px;
+    }
+    .accordian li img {
+        display: block;
+    }
+    /*Image title styles*/
+    
+    .image_title {
+        background: rgba(0, 0, 0, 0.5);
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 640px;
+    }
+    .jumbotron {
+        background-color: #fff;
+        background-image: none;
+    }
+    .image_title a {
+        display: block;
+        color: #fff;
+        text-decoration: none;
+        padding: 20px;
+        font-size: 16px;
+    }
+    .panel-default .panel-heading {
+        background-color: #2196F3;
+        color: white;
+        background-image: none;
+        font-family: verdana;
+        font-size: 12px;
+        padding: 20px;
+    }
+    .panel-default .panel-heading p {
+        color: white;
+    }
+    .btn-add-to-cart {
+        background: #FD5A5B;
+        color: #fff;
+    }
+    .btn.btn-add-to-cart.focus,
+    .btn.btn-add-to-cart:focus,
+    .btn.btn-add-to-cart:hover {
+        color: #fff;
+        background: #FD7172;
+        outline: none;
+    }
+    .btn-add-to-cart:active {
+        background: #F9494B;
+        outline: none;
+    }
+    span.itemPrice {
+        font-size: 24px;
+        color: #FA5B58;
+    }
+    .sale-img img {
+        min-height: 200px;
+        min-width: 100%;
+		max-height:200px;
+    }
+    /*----------------------
+  ##star Rating Styles 
+  ----------------------*/
+    
+    .stars {
+        padding-top: 10px;
+        width: 100%;
+        display: inline-block;
+    }
+    span.glyphicon {
+        padding: 5px;
+    }
+    .glyphicon-star-empty {
+        color: #9d9d9d;
+    }
+    .glyphicon-star-empty,
+    .glyphicon-star {
+        font-size: 18px;
+    }
+    .glyphicon-star {
+        color: white;
+        transition: all .25s;
+    }
+    .glyphicon-star:hover {
+        transform: rotate(-15deg) scale(1.3);
+    }
+    .price-box {
+        margin: 0 auto;
+        border-radius: 10px;
+        padding: 40px 15px;
+        width: 500px;
+        max-height: 500px;
+    }
+    .ui-widget-content {
+        border: 1px solid #bdc3c7;
+        background: #e1e1e1;
+        color: #222222;
+        margin-top: 4px;
+    }
+    .ui-slider .ui-slider-handle {
+        position: absolute !important;
+        z-index: 2 !important;
+        width: 3.2em !important;
+        height: 2.2em !important;
+        cursor: default !important;
+        margin: 0 -20px auto !important;
+        text-align: center !important;
+        line-height: 30px !important;
+        color: #FFFFFF !important;
+        font-size: 15px !important;
+    }
+    .ui-corner-all {
+        /*border-radius: 20px;*/
+    }
+    .ui-slider-horizontal .ui-slider-handle {
+        top: -3em !important;
+    }
+    .ui-state-default,
+    .ui-widget-content .ui-state-default {
+        background: #393a40 !important;
+    }
+    .ui-slider-horizontal .ui-slider-handle {
+        margin-left: -0.5em !important;
+    }
+    .ui-slider .ui-slider-handle {
+        cursor: pointer;
+    }
+    .ui-slider a,
+    .ui-slider a:focus {
+        cursor: pointer;
+        outline: none;
+    }
+    .price,
+    .lead p {
+        font-weight: 600;
+        font-size: 32px;
+        display: inline-block;
+        line-height: 60px;
+    }
+    h4.great {
+        background: #00ac98;
+        margin: 0 0 55px -60px;
+        padding: 7px 15px;
+        color: #ffffff;
+        font-size: 18px;
+        font-weight: 600;
+        border-radius: 5px;
+        display: inline-block;
+        -moz-box-shadow: 2px 4px 5px 0 #ccc;
+        -webkit-box-shadow: 2px 4px 5px 0 #ccc;
+        box-shadow: 2px 4px 5px 0 #ccc;
+    }
+    .price-slider {
+        margin-bottom: 70px;
+    }
+    .form-pricing {
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 4px;
+    }
+    .price-form {
+        margin-bottom: 10px;
+        padding: 20px;
+        border: 1px solid #eeeeee;
+        border-radius: 4px;
+    }
+    .form-group {
+        margin-bottom: 0;
+    }
+    .form-group span.price {
+        font-weight: 200;
+        display: inline-block;
+        color: #7f8c8d;
+        font-size: 14px;
+    }
+    .help-text {
+        display: block;
+        margin-top: 32px;
+        margin-bottom: 10px;
+        color: #737373;
+        position: absolute;
+        font-weight: 200;
+        text-align: right;
+        width: 188px;
+    }
+    .price-form label {
+        font-weight: 200;
+        font-size: 21px;
+    }
+    .ui-slider-range-min {
+        background: #2980b9;
+    }
+    .ui-slider-label-inner {
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 10px solid #393a40;
+        display: block;
+        left: 50%;
+        margin-left: -10px;
+        position: absolute;
+        top: 100%;
+        z-index: 99;
+    }
+    #first-slider {
+        padding: 10px;
+    }
+    #first-slider .slide1 h3,
+    #first-slider .slide2 h3,
+    #first-slider .slide3 h3,
+    #first-slider .slide4 h3 {
+        color: #fff;
+        font-size: 20px;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+    #first-slider .slide1 h4,
+    #first-slider .slide2 h4,
+    #first-slider .slide3 h4,
+    #first-slider .slide4 h4 {
+        color: #fff;
+        font-size: 20px;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+    #first-slider .slide1 .text-left,
+    #first-slider .slide3 .text-left {
+        padding-left: 40px;
+    }
+    #first-slider .carousel-indicators {
+        bottom: 0;
+    }
+    #first-slider .carousel-control.right,
+    #first-slider .carousel-control.left {
+        background-image: none;
+    }
+    #first-slider .carousel .item {
+        min-height: 425px;
+        height: 100%;
+        width: 100%;
+    }
+    .carousel-inner .item .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        bottom: 0;
+        top: 0;
+        left: 0;
+        right: 0;
+    }
+    #first-slider h3 {
+        animation-delay: 1s;
+    }
+    #first-slider h4 {
+        animation-delay: 2s;
+    }
+    #first-slider h2 {
+        animation-delay: 3s;
+    }
+    #first-slider .carousel-control {
+        width: 6%;
+        text-shadow: none;
+    }
+    #first-slider h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 30px;
+        font-weight: bold;
+    }
+    #first-slider .p {
+        padding-top: 120px;
+        text-align: center;
+    }
+    #first-slider .p a {
+        text-decoration: underline;
+    }
+    #first-slider .carousel-indicators li {
+        width: 14px;
+        height: 14px;
+        background-color: rgba(255, 255, 255, .4);
+        border: none;
+    }
+    #first-slider .carousel-indicators .active {
+        width: 16px;
+        height: 16px;
+        background-color: #fff;
+        border: none;
+    }
+    .carousel-fade .carousel-inner .item {
+        -webkit-transition-property: opacity;
+        transition-property: opacity;
+    }
+    .carousel-fade .carousel-inner .item,
+    .carousel-fade .carousel-inner .active.left,
+    .carousel-fade .carousel-inner .active.right {
+        opacity: 0;
+    }
+    .carousel-fade .carousel-inner .active,
+    .carousel-fade .carousel-inner .next.left,
+    .carousel-fade .carousel-inner .prev.right {
+        opacity: 1;
+    }
+    .carousel-fade .carousel-inner .next,
+    .carousel-fade .carousel-inner .prev,
+    .carousel-fade .carousel-inner .active.left,
+    .carousel-fade .carousel-inner .active.right {
+        left: 0;
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+    .carousel-fade .carousel-control {
+        z-index: 2;
+    }
+    .carousel-control .fa-angle-right,
+    .carousel-control .fa-angle-left {
+        position: absolute;
+        top: 80%;
+        z-index: 5;
+        display: inline-block;
+    }
+    .carousel-control .fa-angle-left {
+        left: 50%;
+        width: 48px;
+        height: 48px;
+        margin-top: -5px;
+        font-size: 30px;
+        color: #fff;
+        border: 1px solid #ffffff;
+        -webkit-border-radius: 23px;
+        -moz-border-radius: 23px;
+        border-radius: 53px;
+    }
+    .carousel-control .fa-angle-right {
+        right: 50%;
+        width: 48px;
+        height: 48px;
+        margin-top: -5px;
+        font-size: 30px;
+        color: #fff;
+        border: 1px solid #ffffff;
+        -webkit-border-radius: 23px;
+        -moz-border-radius: 23px;
+        border-radius: 53px;
+    }
+    .carousel-control {
+        opacity: 1;
+        filter: alpha(opacity=100);
+    }
+    /********************************/
+    /*       Slides backgrounds     */
+    /********************************/
+    
+    #first-slider .slide1 {
+        background-image: url(http://s20.postimg.org/h50tgcuz1/image.jpg);
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+    #first-slider .slide2 {
+        background-image: url(http://s20.postimg.org/uxf8bzlql/image.jpg);
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+    #first-slider .slide3 {
+        background-image: url(http://s20.postimg.org/el56m97f1/image.jpg);
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+    #first-slider .slide4 {
+        background-image: url(http://s20.postimg.org/66pjy66dp/image.jpg);
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+    .text-1 {
+        font-family: Roboto;
+    }
+    .text-1 a {
+        color: #000000;
+        text-decoration: none;
+    }
+    .csslider1 {
+        display: inline-block;
+        position: relative;
+        padding: 0px;
+        width: 100%;
+    }
+    .csslider1 > .cs_anchor {
+        display: none;
+    }
+    .csslider1 > ul {
+        position: relative;
+        z-index: 1;
+        font-size: 0;
+        line-height: 0;
+        margin: 0 auto;
+        padding: 0;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .csslider1 > ul > li.img img {
+        width: 100%;
+    }
+    .csslider1 > ul > li.img {
+        font-size: 0pt;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+    }
+    .csslider1 > ul > li {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-size: 15px;
+        font-size: initial;
+        line-height: normal;
+        white-space: normal;
+        vertical-align: top;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        -webkit-transform: translate3d(0, 0, 0);
+        -moz-transform: translate3d(0, 0, 0);
+        -ms-transform: translate3d(0, 0, 0);
+        -o-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+    .csslider1 .cs_lnk {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+        font-size: 0pt;
+        opacity: 0;
+        filter: alpha(opacity=0);
+    }
+    .csslider1 > .cs_arrowprev,
+    .csslider1 > .cs_arrownext {
+        position: absolute;
+        top: 50%;
+        -webkit-box-sizing: content-box;
+        -moz-box-sizing: content-box;
+        box-sizing: content-box;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        z-index: 5;
+    }
+    .csslider1 > .cs_arrowprev > label,
+    .csslider1 > .cs_arrownext > label {
+        position: absolute;
+        text-decoration: none;
+        cursor: pointer;
+        opacity: 0;
+        z-index: -1;
+    }
+    .csslider1 > .cs_arrowprev {
+        left: 0;
+    }
+    .csslider1 > .cs_arrownext {
+        right: 0;
+    }
+    .csslider1 > .cs_arrowprev > label.num2,
+    .csslider1 > .cs_arrownext > label.num1 {
+        opacity: 1;
+        z-index: 5;
+    }
+    .csslider1 > .slide:checked ~ .cs_arrowprev > label,
+    .csslider1 > .slide:checked ~ .cs_arrownext > label {
+        opacity: 0;
+        z-index: -1;
+    }
+    .csslider1 > #cs_slide1_0:checked ~ .cs_arrowprev > label.num2,
+    .csslider1 > #cs_slide1_0:checked ~ .cs_arrownext > label.num1,
+    .csslider1 > #cs_slide1_1:checked ~ .cs_arrowprev > label.num0,
+    .csslider1 > #cs_slide1_1:checked ~ .cs_arrownext > label.num2,
+    .csslider1 > #cs_slide1_2:checked ~ .cs_arrowprev > label.num1,
+    .csslider1 > #cs_slide1_2:checked ~ .cs_arrownext > label.num0 {
+        opacity: 1;
+        z-index: 5;
+    }
+    /* calculate autoplay */
+    
+    @-webkit-keyframes arrow {
+        0%, 33.32333333333334% {
+            opacity: 1;
+            z-index: 5;
+        }
+        33.333333333333336%,
+        100% {
+            opacity: 0;
+            z-index: -1;
+        }
+    }
+    @-moz-keyframes arrow {
+        0%, 33.32333333333334% {
+            opacity: 1;
+            z-index: 5;
+        }
+        33.333333333333336%,
+        100% {
+            opacity: 0;
+            z-index: -1;
+        }
+    }
+    @-ms-keyframes arrow {
+        0%, 33.32333333333334% {
+            opacity: 1;
+            z-index: 5;
+        }
+        33.333333333333336%,
+        100% {
+            opacity: 0;
+            z-index: -1;
+        }
+    }
+    @-o-keyframes arrow {
+        0%, 33.32333333333334% {
+            opacity: 1;
+            z-index: 5;
+        }
+        33.333333333333336%,
+        100% {
+            opacity: 0;
+            z-index: -1;
+        }
+    }
+    @keyframes arrow {
+        0%, 33.32333333333334% {
+            opacity: 1;
+            z-index: 5;
+        }
+        33.333333333333336%,
+        100% {
+            opacity: 0;
+            z-index: -1;
+        }
+    }
+    .csslider1 > #cs_play1:checked ~ .cs_arrowprev > label.num2,
+    .csslider1 > #cs_play1:checked ~ .cs_arrownext > label.num1,
+    .csslider1 > #cs_pause1:checked ~ .cs_arrowprev > label.num2,
+    .csslider1 > #cs_pause1:checked ~ .cs_arrownext > label.num1 {
+        -webkit-animation: arrow 24000ms infinite -2000ms;
+        -moz-animation: arrow 24000ms infinite -2000ms;
+        -ms-animation: arrow 24000ms infinite -2000ms;
+        -o-animation: arrow 24000ms infinite -2000ms;
+        animation: arrow 24000ms infinite -2000ms;
+    }
+    .csslider1 > #cs_play1:checked ~ .cs_arrowprev > label.num0,
+    .csslider1 > #cs_play1:checked ~ .cs_arrownext > label.num2,
+    .csslider1 > #cs_pause1:checked ~ .cs_arrowprev > label.num0,
+    .csslider1 > #cs_pause1:checked ~ .cs_arrownext > label.num2 {
+        -webkit-animation: arrow 24000ms infinite 6000ms;
+        -moz-animation: arrow 24000ms infinite 6000ms;
+        -ms-animation: arrow 24000ms infinite 6000ms;
+        -o-animation: arrow 24000ms infinite 6000ms;
+        animation: arrow 24000ms infinite 6000ms;
+    }
+    .csslider1 > #cs_play1:checked ~ .cs_arrowprev > label.num1,
+    .csslider1 > #cs_play1:checked ~ .cs_arrownext > label.num0,
+    .csslider1 > #cs_pause1:checked ~ .cs_arrowprev > label.num1,
+    .csslider1 > #cs_pause1:checked ~ .cs_arrownext > label.num0 {
+        -webkit-animation: arrow 24000ms infinite 14000ms;
+        -moz-animation: arrow 24000ms infinite 14000ms;
+        -ms-animation: arrow 24000ms infinite 14000ms;
+        -o-animation: arrow 24000ms infinite 14000ms;
+        animation: arrow 24000ms infinite 14000ms;
+    }
+    .csslider1.cs_pauseHover:hover > .cs_arrowprev > label,
+    .csslider1 > #cs_pause1:checked ~ .cs_arrowprev > label,
+    .csslider1.cs_pauseHover:hover > .cs_arrownext > label,
+    .csslider1 > #cs_pause1:checked ~ .cs_arrownext > label {
+        -webkit-animation-play-state: paused !important;
+        -moz-animation-play-state: paused !important;
+        -ms-animation-play-state: paused !important;
+        -o-animation-play-state: paused !important;
+        animation-play-state: paused !important;
+    }
+    /* stop */
+    
+    .csslider1 > .slide:checked ~ .cs_arrowprev > label,
+    .csslider1 > .slide:checked ~ .cs_arrownext > label {
+        -webkit-animation: none;
+        -moz-animation: none;
+        -ms-animation: none;
+        -o-animation: none;
+        animation: none;
+    }
+    /* /calculate autoplay */
+    
+    .csslider1 > .cs_bullets {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        z-index: 6;
+        font-size: 0;
+        line-height: 8pt;
+        text-align: center;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    .csslider1 > .cs_bullets > div {
+        margin-left: -50%;
+        width: 100%;
+    }
+    .csslider1 > .cs_bullets > label {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+    }
+    .csslider1 > .cs_bullets > label > .cs_thumb {
+        visibility: hidden;
+        position: absolute;
+        opacity: 0;
+        z-index: 1;
+        line-height: 0;
+        left: -44px;
+        top: -48px;
+    }
+    .csslider1 > .cs_description {
+        z-index: 3;
+    }
+    .csslider1 > .cs_description a,
+    .csslider1 > .cs_description a:visited,
+    .csslider1 > .cs_description a:active {
+        color: inherit;
+    }
+    .csslider1 > .cs_description a:hover {
+        text-decoration: none;
+    }
+    .csslider1 > .cs_description > label {
+        position: absolute;
+        word-wrap: break-word;
+        white-space: normal;
+        text-align: left;
+        width: 1000%;
+        left: 0;
+    }
+    .csslider1 > .cs_description > label > span {
+        vertical-align: top;
+    }
+    .csslider1 > .cs_description > label span {
+        display: inline-block;
+    }
+    .csslider1 > ul > li {
+        position: absolute;
+        left: 0;
+        top: 0;
+        display: inline-block;
+        opacity: 0;
+        z-index: 1;
+        -webkit-transition: opacity 2000ms ease, -webkit-transform 24000ms linear;
+        -moz-transition: opacity 2000ms ease, -moz-transform 24000ms linear;
+        -ms-transition: opacity 2000ms ease, -ms-transform 24000ms linear;
+        -o-transition: opacity 2000ms ease, -o-transform 24000ms linear;
+        transition: opacity 2000ms ease, transform 24000ms linear;
+    }
+    .csslider1 > ul > li.num0 {
+        opacity: 0;
+        -webkit-transform: scale(1.3) translate(-11.53846%, 11.53846%);
+        -moz-transform: scale(1.3) translate(-11.53846%, 11.53846%);
+        -ms-transform: scale(1.3) translate(-11.53846%, 11.53846%);
+        -o-transform: scale(1.3) translate(-11.53846%, 11.53846%);
+        transform: scale(1.3) translate(-11.53846%, 11.53846%);
+    }
+    .csslider1 > ul > li.num1 {
+        opacity: 0;
+        -webkit-transform: scale(1.3) translate(11.53846%, 11.53846%);
+        -moz-transform: scale(1.3) translate(11.53846%, 11.53846%);
+        -ms-transform: scale(1.3) translate(11.53846%, 11.53846%);
+        -o-transform: scale(1.3) translate(11.53846%, 11.53846%);
+        transform: scale(1.3) translate(11.53846%, 11.53846%);
+    }
+    .csslider1 > ul > li.num2 {
+        opacity: 0;
+        -webkit-transform: scale(1.3) translate(-11.53846%, -11.53846%);
+        -moz-transform: scale(1.3) translate(-11.53846%, -11.53846%);
+        -ms-transform: scale(1.3) translate(-11.53846%, -11.53846%);
+        -o-transform: scale(1.3) translate(-11.53846%, -11.53846%);
+        transform: scale(1.3) translate(-11.53846%, -11.53846%);
+    }
+    .csslider1 > ul > li.num0 {
+        opacity: 1;
+        z-index: 2;
+    }
+    .csslider1 > .slide:checked ~ ul > li.num0 {
+        opacity: 0;
+        z-index: 1;
+    }
+    .csslider1 > #cs_slide1_0:checked ~ ul > li.num0,
+    .csslider1 > #cs_slide1_1:checked ~ ul > li.num1,
+    .csslider1 > #cs_slide1_2:checked ~ ul > li.num2 {
+        opacity: 1;
+        -webkit-transform: scale(1) translate(0, 0);
+        -moz-transform: scale(1) translate(0, 0);
+        -ms-transform: scale(1) translate(0, 0);
+        -o-transform: scale(1) translate(0, 0);
+        transform: scale(1) translate(0, 0);
+        z-index: 2;
+    }
+    /* calculate autoplay */
+    
+    @-webkit-keyframes kenbernsBR {
+        0%, 100% {
+            -webkit-transform: scale(1);
+            opacity: 0
+        }
+        8.333333333333334%,
+        33.333333333333336% {
+            opacity: 1
+        }
+        41.66666666666667%,
+        66.66666666666666% {
+            -webkit-transform: scale(1.3) translate(11.53846%, 11.53846%);
+            opacity: 0;
+            z-index: 2;
+        }
+    }
+    @-moz-keyframes kenbernsBR {
+        0%, 100% {
+            -moz-transform: scale(1);
+            opacity: 0
+        }
+        8.333333333333334%,
+        33.333333333333336% {
+            opacity: 1
+        }
+        41.66666666666667%,
+        66.66666666666666% {
+            -moz-transform: scale(1.3) translate(11.53846%, 11.53846%);
+            opacity: 0;
+            z-index: 2;
+        }
+    }
+    @-ms-keyframes kenbernsBR {
+        0%, 100% {
+            -ms-transform: scale(1);
+            opacity: 0
+        }
+        8.333333333333334%,
+        33.333333333333336% {
+            opacity: 1
+        }
+        41.66666666666667%,
+        66.66666666666666% {
+            -ms-transform: scale(1.3) translate(11.53846%, 11.53846%);
+            opacity: 0;
+            z-index: 2;
+        }
+    }
+    @-o-keyframes kenbernsBR {
+        0%, 100% {
+            -o-transform: scale(1);
+            opacity: 0
+        }
+        8.333333333333334%,
+        33.333333333333336% {
+            opacity: 1
+        }
+        41.66666666666667%,
+        66.66666666666666% {
+            -o-transform: scale(1.3) translate(11.53846%, 11.53846%);
+            opacity: 0;
+            z-index: 2;
+        }
+    }
+    @keyframes kenbernsBR {
+        0%, 100% {
+            transform: scale(1);
+            opacity: 0
+        }
+        8.333333333333334%,
+        33.333333333333336% {
+            opacity: 1
+        }
+        41.66666666666667%,
+        66.66666666666666% {
+            transform: scale(1.3) translate(11.53846%, 11.53846%);
+            opacity: 0;
+            z-index: 2;
+        }
+    }
+    @-webkit-keyframes kenbernsBL {
+        0%, 100% {
+            -webkit-transform: scale(1);
+            opacity: 0
+        }
+        8.333333333333334%,
+        33.333333333333336% {
+            opacity: 1
+        }
+        41.66666666666667%,
+        66.66666666666666% {
+            -webkit-transform: scale(1.3) translate(11.53846%, -11.53846%);
+            opacity: 0;
+            z-index: 2;
+        }
+    }
+    @-moz-keyframes kenbernsBL {
+        0%, 100% {
+            -moz-transform: scale(1);
+            opacity: 0
+        }
+        8.333333333333334%,
+        33.333333333333336% {
+            opacity: 1
+        }
+        41.66666666666667%,
+        66.66666666666666% {
+            -moz-transform: scale(1.3) translate(11.53846%, -11.53846%);
+            opacity: 0;
+            z-index: 2;
+        }
+    }
+    @-ms-keyframes kenbernsBL {
+        0%, 100% {
+            -ms-transform: scale(1);
+            opacity: 0
+        }
+        8.333333333333334%,
+        33.333333333333336% {
+            opacity: 1
+        }
+        41.66666666666667%,
+        66.66666666666666% {
+            -ms-transform: scale(1.3) translate(11.53846%, -11.53846%);
+            opacity: 0;
+            z-index: 2;
+        }
+    }
+    @-o-keyframes kenbernsBL {
+        0%, 100% {
+            -o-transform: scale(1);
+            opacity: 0
+        }
+        8.333333333333334%,
+        33.333333333333336% {
+            opacity: 1
+        }
+        41.66666666666667%,
+        66.66666666666666% {
+            -o-transform: scale(1.3) translate(11.53846%, -11.53846%);
+            opacity: 0;
+            z-index: 2;
+        }
+    }
+    @keyframes kenbernsBL {
+        0%, 100% {
+            transform: scale(1);
+            opacity: 0
+        }
+        8.333333333333334%,
+        33.333333333333336% {
+            opacity: 1
+        }
+        41.66666666666667%,
+        66.66666666666666% {
+            transform: scale(1.3) translate(11.53846%, -11.53846%);
+            opacity: 0;
+            z-index: 2;
+        }
+    }
+    @-webkit-keyframes kenbernsTL {
+        0%, 100% {
+            -webkit-transform: scale(1);
+            opacity: 0
+        }
+        8.333333333333334%,
+        33.333333333333336% {
+            opacity: 1
+        }
+        41.66666666666667%,
+        66.66666666666666% {
+            -webkit-transform: scale(1.3) translate(-11.53846%, -11.53846%);
+            opacity: 0;
+            z-index: 2;
+        }
+    }
+    @-moz-keyframes kenbernsTL {
+        0%, 100% {
+            -moz-transform: scale(1);
+            opacity: 0
+        }
+        8.333333333333334%,
+        33.333333333333336% {
+            opacity: 1
+        }
+        41.66666666666667%,
+        66.66666666666666% {
+            -moz-transform: scale(1.3) translate(-11.53846%, -11.53846%);
+            opacity: 0;
+            z-index: 2;
+        }
+    }
+    @-ms-keyframes kenbernsTL {
+        0%, 100% {
+            -ms-transform: scale(1);
+            opacity: 0
+        }
+        8.333333333333334%,
+        33.333333333333336% {
+            opacity: 1
+        }
+        41.66666666666667%,
+        66.66666666666666% {
+            -ms-transform: scale(1.3) translate(-11.53846%, -11.53846%);
+            opacity: 0;
+            z-index: 2;
+        }
+    }
+    @-o-keyframes kenbernsTL {
+        0%, 100% {
+            -o-transform: scale(1);
+            opacity: 0
+        }
+        8.333333333333334%,
+        33.333333333333336% {
+            opacity: 1
+        }
+        41.66666666666667%,
+        66.66666666666666% {
+            -o-transform: scale(1.3) translate(-11.53846%, -11.53846%);
+            opacity: 0;
+            z-index: 2;
+        }
+    }
+    @keyframes kenbernsTL {
+        0%, 100% {
+            transform: scale(1);
+            opacity: 0
+        }
+        8.333333333333334%,
+        33.333333333333336% {
+            opacity: 1
+        }
+        41.66666666666667%,
+        66.66666666666666% {
+            transform: scale(1.3) translate(-11.53846%, -11.53846%);
+            opacity: 0;
+            z-index: 2;
+        }
+    }
+    @-webkit-keyframes kenbernsTR {
+        0%, 100% {
+            -webkit-transform: scale(1);
+            opacity: 0
+        }
+        8.333333333333334%,
+        33.333333333333336% {
+            opacity: 1
+        }
+        41.66666666666667%,
+        66.66666666666666% {
+            -webkit-transform: scale(1.3) translate(-11.53846%, 11.53846%);
+            opacity: 0;
+            z-index: 2;
+        }
+    }
+    @-moz-keyframes kenbernsTR {
+        0%, 100% {
+            -moz-transform: scale(1);
+            opacity: 0
+        }
+        8.333333333333334%,
+        33.333333333333336% {
+            opacity: 1
+        }
+        41.66666666666667%,
+        66.66666666666666% {
+            -moz-transform: scale(1.3) translate(-11.53846%, 11.53846%);
+            opacity: 0;
+            z-index: 2;
+        }
+    }
+    @-ms-keyframes kenbernsTR {
+        0%, 100% {
+            -ms-transform: scale(1);
+            opacity: 0
+        }
+        8.333333333333334%,
+        33.333333333333336% {
+            opacity: 1
+        }
+        41.66666666666667%,
+        66.66666666666666% {
+            -ms-transform: scale(1.3) translate(-11.53846%, 11.53846%);
+            opacity: 0;
+            z-index: 2;
+        }
+    }
+    @-o-keyframes kenbernsTR {
+        0%, 100% {
+            -o-transform: scale(1);
+            opacity: 0
+        }
+        8.333333333333334%,
+        33.333333333333336% {
+            opacity: 1
+        }
+        41.66666666666667%,
+        66.66666666666666% {
+            -o-transform: scale(1.3) translate(-11.53846%, 11.53846%);
+            opacity: 0;
+            z-index: 2;
+        }
+    }
+    @keyframes kenbernsTR {
+        0%, 100% {
+            transform: scale(1);
+            opacity: 0
+        }
+        8.333333333333334%,
+        33.333333333333336% {
+            opacity: 1
+        }
+        41.66666666666667%,
+        66.66666666666666% {
+            transform: scale(1.3) translate(-11.53846%, 11.53846%);
+            opacity: 0;
+            z-index: 2;
+        }
+    }
+    .csslider1 > #cs_play1:checked ~ ul > li.num0,
+    .csslider1 > #cs_pause1:checked ~ ul > li.num0 {
+        -webkit-animation: kenbernsTR 24000ms infinite -2000ms linear;
+        -moz-animation: kenbernsTR 24000ms infinite -2000ms linear;
+        -ms-animation: kenbernsTR 24000ms infinite -2000ms linear;
+        -o-animation: kenbernsTR 24000ms infinite -2000ms linear;
+        animation: kenbernsTR 24000ms infinite -2000ms linear;
+    }
+    .csslider1 > #cs_play1:checked ~ ul > li.num1,
+    .csslider1 > #cs_pause1:checked ~ ul > li.num1 {
+        -webkit-animation: kenbernsBR 24000ms infinite 6000ms linear;
+        -moz-animation: kenbernsBR 24000ms infinite 6000ms linear;
+        -ms-animation: kenbernsBR 24000ms infinite 6000ms linear;
+        -o-animation: kenbernsBR 24000ms infinite 6000ms linear;
+        animation: kenbernsBR 24000ms infinite 6000ms linear;
+    }
+    .csslider1 > #cs_play1:checked ~ ul > li.num2,
+    .csslider1 > #cs_pause1:checked ~ ul > li.num2 {
+        -webkit-animation: kenbernsTL 24000ms infinite 14000ms linear;
+        -moz-animation: kenbernsTL 24000ms infinite 14000ms linear;
+        -ms-animation: kenbernsTL 24000ms infinite 14000ms linear;
+        -o-animation: kenbernsTL 24000ms infinite 14000ms linear;
+        animation: kenbernsTL 24000ms infinite 14000ms linear;
+    }
+    .csslider1 > #cs_play1:checked ~ ul > li,
+    .csslider1 > #cs_pause1:checked ~ ul > li {
+        -webkit-transition: none;
+        -moz-transition: none;
+        -ms-transition: none;
+        -o-transition: none;
+        transition: none;
+    }
+    .csslider1.cs_pauseHover:hover > ul > li,
+    .csslider1 > #cs_pause1:checked ~ ul > li {
+        -webkit-animation-play-state: paused !important;
+        -moz-animation-play-state: paused !important;
+        -ms-animation-play-state: paused !important;
+        -o-animation-play-state: paused !important;
+        animation-play-state: paused !important;
+    }
+    /* stop */
+    
+    .csslider1 > .slide:checked ~ ul > li {
+        -webkit-animation: none;
+        -moz-animation: none;
+        -ms-animation: none;
+        -o-animation: none;
+        animation: none;
+    }
+    /* /calculate autoplay */
+    
+    .csslider1 {
+        -webkit-perspective: 500px;
+        -moz-perspective: 500px;
+        -ms-perspective: 500px;
+        -o-perspective: 500px;
+        perspective: 500px;
+    }
+    .csslider1 > .cs_play_pause {
+        -webkit-transition: .5s opacity 0s ease;
+        -moz-transition: .5s opacity 0s ease;
+        -ms-transition: .5s opacity 0s ease;
+        -o-transition: .5s opacity 0s ease;
+        transition: .5s opacity 0s ease;
+    }
+    .csslider1 > .cs_arrowprev {
+        -webkit-transition: .5s opacity .15s ease, .5s -webkit-transform .15s cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        -moz-transition: .5s opacity .15s ease, .5s -moz-transform .15s cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        -ms-transition: .5s opacity .15s ease, .5s -ms-transform .15s cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        -o-transition: .5s opacity .15s ease, .5s -o-transform .15s cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        transition: .5s opacity .15s ease, .5s transform .15s cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        -webkit-transform: rotateY(-90deg);
+        -moz-transform: rotateY(-90deg);
+        -ms-transform: rotateY(-90deg);
+        -o-transform: rotateY(-90deg);
+        transform: rotateY(-90deg);
+    }
+    .csslider1 > .cs_arrownext {
+        -webkit-transition: .5s opacity .3s ease, .5s -webkit-transform .3s cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        -moz-transition: .5s opacity .3s ease, .5s -moz-transform .3s cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        -ms-transition: .5s opacity .3s ease, .5s -ms-transform .3s cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        -o-transition: .5s opacity .3s ease, .5s -o-transform .3s cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        transition: .5s opacity .3s ease, .5s transform .3s cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        -webkit-transform: rotateY(90deg);
+        -moz-transform: rotateY(90deg);
+        -ms-transform: rotateY(90deg);
+        -o-transform: rotateY(90deg);
+        transform: rotateY(90deg);
+    }
+    .csslider1 > .cs_arrowprev,
+    .csslider1 > .cs_arrownext,
+    .csslider1 > .cs_play_pause {
+        opacity: 0;
+    }
+    .csslider1:hover > .cs_arrowprev,
+    .csslider1:hover > .cs_arrownext,
+    .csslider1:hover > .cs_play_pause {
+        opacity: 1;
+        -webkit-transform: rotateX(0deg);
+        -moz-transform: rotateX(0deg);
+        -ms-transform: rotateX(0deg);
+        -o-transform: rotateX(0deg);
+        transform: rotateX(0deg);
+    }
+    .csslider1 > .cs_arrowprev > label,
+    .csslider1 > .cs_arrownext > label {
+        overflow: hidden;
+        margin-top: -35px;
+        width: 40px;
+        height: 70px;
+        /* Fallback for web browsers that doesn't support RGBa */
+        
+        background: #000;
+        background-color: rgba(0, 0, 0, 0.6);
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+    }
+    .csslider1 > .cs_arrowprev {
+        left: 70px;
+    }
+    .csslider1 > .cs_arrownext {
+        right: 70px;
+    }
+    .csslider1 > .cs_arrowprev > label {
+        right: 0;
+    }
+    .csslider1 > .cs_arrownext > label {
+        left: 0;
+    }
+    .csslider1 > .cs_arrowprev > label:after {
+        content: '\e800';
+    }
+    .csslider1 > .cs_arrownext > label:after {
+        content: '\e801';
+    }
+    .csslider1 > .cs_arrowprev > label:after,
+    .csslider1 > .cs_arrownext > label:after {
+        display: block;
+        font: 40px "demurecontrols";
+        text-align: center;
+        line-height: 76px;
+        color: #fff;
+    }
+    .csslider1 > .cs_arrowprev > label,
+    .csslider1 > .cs_arrownext > label {
+        -webkit-transition: 300ms width ease, 300ms margin-left ease, 300ms background-color ease;
+        -moz-transition: 300ms width ease, 300ms margin-left ease, 300ms background-color ease;
+        -ms-transition: 300ms width ease, 300ms margin-left ease, 300ms background-color ease;
+        -o-transition: 300ms width ease, 300ms margin-left ease, 300ms background-color ease;
+        transition: 300ms width ease, 300ms margin-left ease, 300ms background-color ease;
+    }
+    .csslider1 > .cs_arrowprev:hover > label {
+        background-color: #E34B64;
+        width: 70px;
+    }
+    .csslider1 > .cs_arrownext:hover > label {
+        background-color: #E34B64;
+        width: 70px;
+    }
+    .csslider1 > .cs_bullets {
+        bottom: 5px;
+        margin-bottom: 5px;
+    }
+    .csslider1 > .cs_bullets > label {
+        -webkit-perspective: 500px;
+        -moz-perspective: 500px;
+        -ms-perspective: 500px;
+        -o-perspective: 500px;
+        perspective: 500px;
+    }
+    .csslider1 > .cs_bullets > label > .cs_thumb {
+        border: 3px solid #E34B64;
+        margin-top: -11px;
+        -webkit-transition: opacity 0.5s cubic-bezier(0.175, 0.885, 0.320, 1.275), -webkit-transform 0.5s cubic-bezier(0.175, 0.885, 0.320, 1.275), visibility 0.5s cubic-bezier(0.175, 0.885, 0.320, 1.275);
+        -moz-transition: opacity 0.5s cubic-bezier(0.175, 0.885, 0.320, 1.275), -moz-transform 0.5s cubic-bezier(0.175, 0.885, 0.320, 1.275), visibility 0.5s cubic-bezier(0.175, 0.885, 0.320, 1.275);
+        -ms-transition: opacity 0.5s cubic-bezier(0.175, 0.885, 0.320, 1.275), -ms-transform 0.5s cubic-bezier(0.175, 0.885, 0.320, 1.275), visibility 0.5s cubic-bezier(0.175, 0.885, 0.320, 1.275);
+        -o-transition: opacity 0.5s cubic-bezier(0.175, 0.885, 0.320, 1.275), -o-transform 0.5s cubic-bezier(0.175, 0.885, 0.320, 1.275), visibility 0.5s cubic-bezier(0.175, 0.885, 0.320, 1.275);
+        transition: opacity 0.5s cubic-bezier(0.175, 0.885, 0.320, 1.275), transform 0.5s cubic-bezier(0.175, 0.885, 0.320, 1.275), visibility 0.5s cubic-bezier(0.175, 0.885, 0.320, 1.275);
+        -webkit-transform-origin: 0% 100% 0px;
+        -moz-transform-origin: 0% 100% 0px;
+        -ms-transform-origin: 0% 100% 0px;
+        -o-transform-origin: 0% 100% 0px;
+        transform-origin: 0% 100% 0px;
+        -webkit-transform: rotateX(90deg);
+        -moz-transform: rotateX(90deg);
+        -ms-transform: rotateX(90deg);
+        -o-transform: rotateX(90deg);
+        transform: rotateX(90deg);
+    }
+    .csslider1 > .cs_bullets > label > .cs_thumb:before {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 0;
+        left: 50%;
+        margin-left: -1px;
+        bottom: -8px;
+        border-left: 7px solid transparent;
+        border-right: 7px solid transparent;
+        border-top: 7px solid #E34B64;
+    }
+    .csslider1 > .cs_bullets > label:hover > .cs_thumb {
+        visibility: visible;
+        opacity: 1;
+        -webkit-transform: rotateX(0deg);
+        -moz-transform: rotateX(0deg);
+        -ms-transform: rotateX(0deg);
+        -o-transform: rotateX(0deg);
+        transform: rotateX(0deg);
+    }
+    .csslider1 > .cs_bullets > label {
+        margin: 0 6px;
+        padding: 9px;
+        -webkit-border-radius: 50%;
+        -moz-border-radius: 50%;
+        border-radius: 50%;
+        /* Fallback for web browsers that doesn't support RGBa */
+        
+        background: #000;
+        background-color: rgba(0, 0, 0, 0.6);
+    }
+    .csslider1 > .cs_bullets > label.num0 {
+        background-color: #E34B64;
+    }
+    .csslider1 > .slide:checked ~ .cs_bullets > label {
+        /* Fallback for web browsers that doesn't support RGBa */
+        
+        background: #000;
+        background-color: rgba(0, 0, 0, 0.6);
+    }
+    .csslider1 > #cs_slide1_0:checked ~ .cs_bullets > label.num0,
+    .csslider1 > #cs_slide1_1:checked ~ .cs_bullets > label.num1,
+    .csslider1 > #cs_slide1_2:checked ~ .cs_bullets > label.num2 {
+        background-color: #E34B64;
+    }
+    .csslider1 > .cs_bullets > label:hover {
+        background-color: #E34B64;
+    }
+    /* calculate autoplay */
+    
+    @-webkit-keyframes bullet {
+        0%, 33.32333333333334% {
+            background-color: #E34B64;
+        }
+        33.333333333333336%,
+        100% {
+            background: #000;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+    }
+    @-moz-keyframes bullet {
+        0%, 33.32333333333334% {
+            background-color: #E34B64;
+        }
+        33.333333333333336%,
+        100% {
+            background: #000;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+    }
+    @-ms-keyframes bullet {
+        0%, 33.32333333333334% {
+            background-color: #E34B64;
+        }
+        33.333333333333336%,
+        100% {
+            background: #000;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+    }
+    @-o-keyframes bullet {
+        0%, 33.32333333333334% {
+            background-color: #E34B64;
+        }
+        33.333333333333336%,
+        100% {
+            background: #000;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+    }
+    @keyframes bullet {
+        0%, 33.32333333333334% {
+            background-color: #E34B64;
+        }
+        33.333333333333336%,
+        100% {
+            background: #000;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+    }
+    .csslider1 > #cs_play1:checked ~ .cs_bullets > label.num0,
+    .csslider1 > #cs_pause1:checked ~ .cs_bullets > label.num0 {
+        -webkit-animation: bullet 24000ms infinite -2000ms;
+        -moz-animation: bullet 24000ms infinite -2000ms;
+        -ms-animation: bullet 24000ms infinite -2000ms;
+        -o-animation: bullet 24000ms infinite -2000ms;
+        animation: bullet 24000ms infinite -2000ms;
+    }
+    .csslider1 > #cs_play1:checked ~ .cs_bullets > label.num1,
+    .csslider1 > #cs_pause1:checked ~ .cs_bullets > label.num1 {
+        -webkit-animation: bullet 24000ms infinite 6000ms;
+        -moz-animation: bullet 24000ms infinite 6000ms;
+        -ms-animation: bullet 24000ms infinite 6000ms;
+        -o-animation: bullet 24000ms infinite 6000ms;
+        animation: bullet 24000ms infinite 6000ms;
+    }
+    .csslider1 > #cs_play1:checked ~ .cs_bullets > label.num2,
+    .csslider1 > #cs_pause1:checked ~ .cs_bullets > label.num2 {
+        -webkit-animation: bullet 24000ms infinite 14000ms;
+        -moz-animation: bullet 24000ms infinite 14000ms;
+        -ms-animation: bullet 24000ms infinite 14000ms;
+        -o-animation: bullet 24000ms infinite 14000ms;
+        animation: bullet 24000ms infinite 14000ms;
+    }
+    .csslider1 > #cs_play1:checked ~ .cs_bullets > label,
+    .csslider1 > #cs_pause1:checked ~ .cs_bullets > label {
+        -webkit-transition: none;
+        -moz-transition: none;
+        -ms-transition: none;
+        -o-transition: none;
+        transition: none;
+    }
+    .csslider1.cs_pauseHover:hover > .cs_bullets > label,
+    .csslider1 > #cs_pause1:checked ~ .cs_bullets > label {
+        -webkit-animation-play-state: paused !important;
+        -moz-animation-play-state: paused !important;
+        -ms-animation-play-state: paused !important;
+        -o-animation-play-state: paused !important;
+        animation-play-state: paused !important;
+    }
+    /* stop */
+    
+    .csslider1 > .slide:checked ~ .cs_bullets > label {
+        -webkit-animation: none;
+        -moz-animation: none;
+        -ms-animation: none;
+        -o-animation: none;
+        animation: none;
+    }
+    /* /calculate autoplay */
+    
+    .csslider1 > .cs_description > label {
+        font: 20px 'Roboto', sans-serif;
+        line-height: normal;
+        bottom: 35px;
+        left: 20px;
+        top: auto;
+        opacity: 1;
+        z-index: 1;
+        -webkit-perspective: 500px;
+        -moz-perspective: 500px;
+        -ms-perspective: 500px;
+        -o-perspective: 500px;
+        perspective: 500px;
+    }
+    .csslider1 > .cs_description > label > span {
+        margin: 1px 10px;
+        padding: 10px;
+        color: #fff;
+        overflow: hidden;
+        -webkit-transform-origin: 0% 0% 0px;
+        -moz-transform-origin: 0% 0% 0px;
+        -ms-transform-origin: 0% 0% 0px;
+        -o-transform-origin: 0% 0% 0px;
+        transform-origin: 0% 0% 0px;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+    }
+    .csslider1 > #cs_slide1_0:checked ~ .cs_description > .num0,
+    .csslider1 > #cs_slide1_1:checked ~ .cs_description > .num1,
+    .csslider1 > #cs_slide1_2:checked ~ .cs_description > .num2 {
+        z-index: 2;
+    }
+    .csslider1 > #cs_slide1_0:checked ~ .cs_description > .num0 > .cs_descr,
+    .csslider1 > #cs_slide1_1:checked ~ .cs_description > .num1 > .cs_descr,
+    .csslider1 > #cs_slide1_2:checked ~ .cs_description > .num2 > .cs_descr {
+        opacity: 1;
+        visibility: visible;
+        -webkit-transition: 750ms opacity 1350ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms -webkit-transform 1350ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms visibility 1350ms cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        -moz-transition: 750ms opacity 1350ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms -moz-transform 1350ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms visibility 1350ms cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        -ms-transition: 750ms opacity 1350ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms -ms-transform 1350ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms visibility 1350ms cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        -o-transition: 750ms opacity 1350ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms -o-transform 1350ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms visibility 1350ms cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        transition: 750ms opacity 1350ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms transform 1350ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms visibility 1350ms cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        -webkit-transform: rotateX(0deg);
+        -moz-transform: rotateX(0deg);
+        -ms-transform: rotateX(0deg);
+        -o-transform: rotateX(0deg);
+        transform: rotateX(0deg);
+    }
+    .csslider1 > #cs_slide1_0:checked ~ .cs_description > .num0 > .cs_title,
+    .csslider1 > #cs_slide1_1:checked ~ .cs_description > .num1 > .cs_title,
+    .csslider1 > #cs_slide1_2:checked ~ .cs_description > .num2 > .cs_title {
+        opacity: 1;
+        visibility: visible;
+        -webkit-transition: 750ms opacity 1200ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms -webkit-transform 1200ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms visibility 1200ms ease;
+        -moz-transition: 750ms opacity 1200ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms -moz-transform 1200ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms visibility 1200ms ease;
+        -ms-transition: 750ms opacity 1200ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms -ms-transform 1200ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms visibility 1200ms ease;
+        -o-transition: 750ms opacity 1200ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms -o-transform 1200ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms visibility 1200ms ease;
+        transition: 750ms opacity 1200ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms transform 1200ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms visibility 1200ms ease;
+        -webkit-transform: rotateX(0deg);
+        -moz-transform: rotateX(0deg);
+        -ms-transform: rotateX(0deg);
+        -o-transform: rotateX(0deg);
+        transform: rotateX(0deg);
+    }
+    .csslider1 > #cs_slide1_0:checked ~ .cs_description > .num0 .cs_wrapper,
+    .csslider1 > #cs_slide1_1:checked ~ .cs_description > .num1 .cs_wrapper,
+    .csslider1 > #cs_slide1_2:checked ~ .cs_description > .num2 .cs_wrapper {
+        opacity: 1;
+        -webkit-transform: translateX(0);
+        -moz-transform: translateX(0);
+        -ms-transform: translateX(0);
+        -o-transform: translateX(0);
+        transform: translateX(0);
+    }
+    .csslider1 > .cs_description > label > .cs_title {
+        margin: 0px 10px;
+        opacity: 0;
+        visibility: hidden;
+        z-index: 2;
+        /* Fallback for web browsers that doesn't support RGBa */
+        
+        background: #000;
+        background-color: rgba(0, 0, 0, 0.6);
+        -webkit-transform: rotateX(90deg);
+        -moz-transform: rotateX(90deg);
+        -ms-transform: rotateX(90deg);
+        -o-transform: rotateX(90deg);
+        transform: rotateX(90deg);
+        -webkit-transition: 750ms opacity 975ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms -webkit-transform 975ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms visibility 975ms ease;
+        -moz-transition: 750ms opacity 975ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms -moz-transform 975ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms visibility 975ms ease;
+        -ms-transition: 750ms opacity 975ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms -ms-transform 975ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms visibility 975ms ease;
+        -o-transition: 750ms opacity 975ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms -o-transform 975ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms visibility 975ms ease;
+        transition: 750ms opacity 975ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms transform 975ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms visibility 975ms ease;
+    }
+    .csslider1 > .cs_description > label > .cs_descr {
+        font-size: 0.8em;
+        margin: 1px 10px;
+        opacity: 0;
+        visibility: hidden;
+        z-index: 1;
+        background-color: #E34B64;
+        -webkit-transform: rotateX(-90deg);
+        -moz-transform: rotateX(-90deg);
+        -ms-transform: rotateX(-90deg);
+        -o-transform: rotateX(-90deg);
+        transform: rotateX(-90deg);
+        -webkit-transition: 750ms opacity 750ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms -webkit-transform 600ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms visibility 600ms cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        -moz-transition: 750ms opacity 750ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms -moz-transform 600ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms visibility 600ms cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        -ms-transition: 750ms opacity 750ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms -ms-transform 600ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms visibility 600ms cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        -o-transition: 750ms opacity 750ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms -o-transform 600ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms visibility 600ms cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        transition: 750ms opacity 750ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms transform 600ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms visibility 600ms cubic-bezier(0.680, -0.550, 0.265, 1.550);
+    }
+    .csslider1 > .cs_description > label > .cs_title > .cs_wrapper {
+        -webkit-transform: translateX(-100%);
+        -moz-transform: translateX(-100%);
+        -ms-transform: translateX(-100%);
+        -o-transform: translateX(-100%);
+        transform: translateX(-100%);
+        -webkit-transition: 750ms opacity 1450ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms -webkit-transform 1450ms cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        -moz-transition: 750ms opacity 1450ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms -moz-transform 1450ms cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        -ms-transition: 750ms opacity 1450ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms -ms-transform 1450ms cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        -o-transition: 750ms opacity 1450ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms -o-transform 1450ms cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        transition: 750ms opacity 1450ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms transform 1450ms cubic-bezier(0.680, -0.550, 0.265, 1.550);
+    }
+    .csslider1 > .cs_description > label > .cs_descr > .cs_wrapper {
+        -webkit-transform: translateX(100%);
+        -moz-transform: translateX(100%);
+        -ms-transform: translateX(100%);
+        -o-transform: translateX(100%);
+        transform: translateX(100%);
+        -webkit-transition: 750ms opacity 1675ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms -webkit-transform 1675ms cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        -moz-transition: 750ms opacity 1675ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms -moz-transform 1675ms cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        -ms-transition: 750ms opacity 1675ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms -ms-transform 1675ms cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        -o-transition: 750ms opacity 1675ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms -o-transform 1675ms cubic-bezier(0.680, -0.550, 0.265, 1.550);
+        transition: 750ms opacity 1675ms cubic-bezier(0.680, -0.550, 0.265, 1.550), 750ms transform 1675ms cubic-bezier(0.680, -0.550, 0.265, 1.550);
+    }
+    /* calculate autoplay */
+    
+    @-webkit-keyframes cs_descrWrapper {
+        1.53125%, 35.520833333333336% {
+            z-index: 2;
+        }
+        35.530833333333334%,
+        100% {
+            z-index: 0;
+        }
+    }
+    @-moz-keyframes cs_descrWrapper {
+        1.53125%, 35.520833333333336% {
+            z-index: 2;
+        }
+        35.530833333333334%,
+        100% {
+            z-index: 0;
+        }
+    }
+    @-ms-keyframes cs_descrWrapper {
+        1.53125%, 35.520833333333336% {
+            z-index: 2;
+        }
+        35.530833333333334%,
+        100% {
+            z-index: 0;
+        }
+    }
+    @-o-keyframes cs_descrWrapper {
+        1.53125%, 35.520833333333336% {
+            z-index: 2;
+        }
+        35.530833333333334%,
+        100% {
+            z-index: 0;
+        }
+    }
+    @keyframes cs_descrWrapper {
+        1.53125%, 35.520833333333336% {
+            z-index: 2;
+        }
+        35.530833333333334%,
+        100% {
+            z-index: 0;
+        }
+    }
+    .csslider1 > #cs_play1:checked ~ .cs_description > .num0 {
+        -webkit-animation: cs_descrWrapper 24000ms infinite -1400ms ease;
+        -moz-animation: cs_descrWrapper 24000ms infinite -1400ms ease;
+        -ms-animation: cs_descrWrapper 24000ms infinite -1400ms ease;
+        -o-animation: cs_descrWrapper 24000ms infinite -1400ms ease;
+        animation: cs_descrWrapper 24000ms infinite -1400ms ease;
+    }
+    .csslider1 > #cs_play1:checked ~ .cs_description > .num1 {
+        -webkit-animation: cs_descrWrapper 24000ms infinite 6600ms ease;
+        -moz-animation: cs_descrWrapper 24000ms infinite 6600ms ease;
+        -ms-animation: cs_descrWrapper 24000ms infinite 6600ms ease;
+        -o-animation: cs_descrWrapper 24000ms infinite 6600ms ease;
+        animation: cs_descrWrapper 24000ms infinite 6600ms ease;
+    }
+    .csslider1 > #cs_play1:checked ~ .cs_description > .num2 {
+        -webkit-animation: cs_descrWrapper 24000ms infinite 14600ms ease;
+        -moz-animation: cs_descrWrapper 24000ms infinite 14600ms ease;
+        -ms-animation: cs_descrWrapper 24000ms infinite 14600ms ease;
+        -o-animation: cs_descrWrapper 24000ms infinite 14600ms ease;
+        animation: cs_descrWrapper 24000ms infinite 14600ms ease;
+    }
+    @-webkit-keyframes cs_title {
+        1.53125%, 31.792083333333334% {
+            opacity: 1;
+            -webkit-transform: rotateX(-9deg);
+            z-index: 2;
+            visibility: visible;
+        }
+        2.1875%,
+        31.135833333333334% {
+            opacity: 1;
+            -webkit-transform: rotateX(0deg);
+            z-index: 2;
+            visibility: visible;
+        }
+        33.333333333333336% {
+            opacity: 0;
+            -webkit-transform: rotateX(90deg);
+            z-index: 2;
+            visibility: hidden;
+        }
+        33.343333333333334%,
+        100% {
+            z-index: 0;
+        }
+    }
+    @-moz-keyframes cs_title {
+        1.53125%, 31.792083333333334% {
+            opacity: 1;
+            -moz-transform: rotateX(-9deg);
+            z-index: 2;
+            visibility: visible;
+        }
+        2.1875%,
+        31.135833333333334% {
+            opacity: 1;
+            -moz-transform: rotateX(0deg);
+            z-index: 2;
+            visibility: visible;
+        }
+        33.333333333333336% {
+            opacity: 0;
+            -moz-transform: rotateX(90deg);
+            z-index: 2;
+            visibility: hidden;
+        }
+        33.343333333333334%,
+        100% {
+            z-index: 0;
+        }
+    }
+    @-ms-keyframes cs_title {
+        1.53125%, 31.792083333333334% {
+            opacity: 1;
+            -ms-transform: rotateX(-9deg);
+            z-index: 2;
+            visibility: visible;
+        }
+        2.1875%,
+        31.135833333333334% {
+            opacity: 1;
+            -ms-transform: rotateX(0deg);
+            z-index: 2;
+            visibility: visible;
+        }
+        33.333333333333336% {
+            opacity: 0;
+            -ms-transform: rotateX(90deg);
+            z-index: 2;
+            visibility: hidden;
+        }
+        33.343333333333334%,
+        100% {
+            z-index: 0;
+        }
+    }
+    @-o-keyframes cs_title {
+        1.53125%, 31.792083333333334% {
+            opacity: 1;
+            -o-transform: rotateX(-9deg);
+            z-index: 2;
+            visibility: visible;
+        }
+        2.1875%,
+        31.135833333333334% {
+            opacity: 1;
+            -o-transform: rotateX(0deg);
+            z-index: 2;
+            visibility: visible;
+        }
+        33.333333333333336% {
+            opacity: 0;
+            -o-transform: rotateX(90deg);
+            z-index: 2;
+            visibility: hidden;
+        }
+        33.343333333333334%,
+        100% {
+            z-index: 0;
+        }
+    }
+    @keyframes cs_title {
+        1.53125%, 31.792083333333334% {
+            opacity: 1;
+            transform: rotateX(-9deg);
+            z-index: 2;
+            visibility: visible;
+        }
+        2.1875%,
+        31.135833333333334% {
+            opacity: 1;
+            transform: rotateX(0deg);
+            z-index: 2;
+            visibility: visible;
+        }
+        33.333333333333336% {
+            opacity: 0;
+            transform: rotateX(90deg);
+            z-index: 2;
+            visibility: hidden;
+        }
+        33.343333333333334%,
+        100% {
+            z-index: 0;
+        }
+    }
+    @-webkit-keyframes cs_descr {
+        3.0625%, 29.604583333333334% {
+            opacity: 1;
+            -webkit-transform: rotateX(9deg);
+            z-index: 1;
+            visibility: visible;
+        }
+        4.375%,
+        28.948333333333334% {
+            opacity: 1;
+            -webkit-transform: rotateX(0deg);
+            z-index: 1;
+            visibility: visible;
+        }
+        33.333333333333336% {
+            opacity: 0;
+            -webkit-transform: rotateX(-90deg);
+            z-index: 1;
+            visibility: hidden;
+        }
+        33.343333333333334%,
+        100% {
+            z-index: 0;
+        }
+    }
+    @-moz-keyframes cs_descr {
+        3.0625%, 29.604583333333334% {
+            opacity: 1;
+            -moz-transform: rotateX(9deg);
+            z-index: 1;
+            visibility: visible;
+        }
+        4.375%,
+        28.948333333333334% {
+            opacity: 1;
+            -moz-transform: rotateX(0deg);
+            z-index: 1;
+            visibility: visible;
+        }
+        33.333333333333336% {
+            opacity: 0;
+            -moz-transform: rotateX(-90deg);
+            z-index: 1;
+            visibility: hidden;
+        }
+        33.343333333333334%,
+        100% {
+            z-index: 0;
+        }
+    }
+    @-ms-keyframes cs_descr {
+        3.0625%, 29.604583333333334% {
+            opacity: 1;
+            -ms-transform: rotateX(9deg);
+            z-index: 1;
+            visibility: visible;
+        }
+        4.375%,
+        28.948333333333334% {
+            opacity: 1;
+            -ms-transform: rotateX(0deg);
+            z-index: 1;
+            visibility: visible;
+        }
+        33.333333333333336% {
+            opacity: 0;
+            -ms-transform: rotateX(-90deg);
+            z-index: 1;
+            visibility: hidden;
+        }
+        33.343333333333334%,
+        100% {
+            z-index: 0;
+        }
+    }
+    @-o-keyframes cs_descr {
+        3.0625%, 29.604583333333334% {
+            opacity: 1;
+            -o-transform: rotateX(9deg);
+            z-index: 1;
+            visibility: visible;
+        }
+        4.375%,
+        28.948333333333334% {
+            opacity: 1;
+            -o-transform: rotateX(0deg);
+            z-index: 1;
+            visibility: visible;
+        }
+        33.333333333333336% {
+            opacity: 0;
+            -o-transform: rotateX(-90deg);
+            z-index: 1;
+            visibility: hidden;
+        }
+        33.343333333333334%,
+        100% {
+            z-index: 0;
+        }
+    }
+    @keyframes cs_descr {
+        3.0625%, 29.604583333333334% {
+            opacity: 1;
+            transform: rotateX(9deg);
+            z-index: 1;
+            visibility: visible;
+        }
+        4.375%,
+        28.948333333333334% {
+            opacity: 1;
+            transform: rotateX(0deg);
+            z-index: 1;
+            visibility: visible;
+        }
+        33.333333333333336% {
+            opacity: 0;
+            transform: rotateX(-90deg);
+            z-index: 1;
+            visibility: hidden;
+        }
+        33.343333333333334%,
+        100% {
+            z-index: 0;
+        }
+    }
+    .csslider1 > #cs_play1:checked ~ .cs_description > .num0 > .cs_title,
+    .csslider1 > #cs_pause1:checked ~ .cs_description > .num0 > .cs_title {
+        -webkit-animation: cs_title 24000ms infinite -1400ms ease;
+        -moz-animation: cs_title 24000ms infinite -1400ms ease;
+        -ms-animation: cs_title 24000ms infinite -1400ms ease;
+        -o-animation: cs_title 24000ms infinite -1400ms ease;
+        animation: cs_title 24000ms infinite -1400ms ease;
+    }
+    .csslider1 > #cs_play1:checked ~ .cs_description > .num1 > .cs_title,
+    .csslider1 > #cs_pause1:checked ~ .cs_description > .num1 > .cs_title {
+        -webkit-animation: cs_title 24000ms infinite 6600ms ease;
+        -moz-animation: cs_title 24000ms infinite 6600ms ease;
+        -ms-animation: cs_title 24000ms infinite 6600ms ease;
+        -o-animation: cs_title 24000ms infinite 6600ms ease;
+        animation: cs_title 24000ms infinite 6600ms ease;
+    }
+    .csslider1 > #cs_play1:checked ~ .cs_description > .num2 > .cs_title,
+    .csslider1 > #cs_pause1:checked ~ .cs_description > .num2 > .cs_title {
+        -webkit-animation: cs_title 24000ms infinite 14600ms ease;
+        -moz-animation: cs_title 24000ms infinite 14600ms ease;
+        -ms-animation: cs_title 24000ms infinite 14600ms ease;
+        -o-animation: cs_title 24000ms infinite 14600ms ease;
+        animation: cs_title 24000ms infinite 14600ms ease;
+    }
+    .csslider1 > #cs_play1:checked ~ .cs_description > .num0 > .cs_descr,
+    .csslider1 > #cs_pause1:checked ~ .cs_description > .num0 > .cs_descr {
+        -webkit-animation: cs_descr 24000ms infinite -1400ms ease;
+        -moz-animation: cs_descr 24000ms infinite -1400ms ease;
+        -ms-animation: cs_descr 24000ms infinite -1400ms ease;
+        -o-animation: cs_descr 24000ms infinite -1400ms ease;
+        animation: cs_descr 24000ms infinite -1400ms ease;
+    }
+    .csslider1 > #cs_play1:checked ~ .cs_description > .num1 > .cs_descr,
+    .csslider1 > #cs_pause1:checked ~ .cs_description > .num1 > .cs_descr {
+        -webkit-animation: cs_descr 24000ms infinite 6600ms ease;
+        -moz-animation: cs_descr 24000ms infinite 6600ms ease;
+        -ms-animation: cs_descr 24000ms infinite 6600ms ease;
+        -o-animation: cs_descr 24000ms infinite 6600ms ease;
+        animation: cs_descr 24000ms infinite 6600ms ease;
+    }
+    .csslider1 > #cs_play1:checked ~ .cs_description > .num2 > .cs_descr,
+    .csslider1 > #cs_pause1:checked ~ .cs_description > .num2 > .cs_descr {
+        -webkit-animation: cs_descr 24000ms infinite 14600ms ease;
+        -moz-animation: cs_descr 24000ms infinite 14600ms ease;
+        -ms-animation: cs_descr 24000ms infinite 14600ms ease;
+        -o-animation: cs_descr 24000ms infinite 14600ms ease;
+        animation: cs_descr 24000ms infinite 14600ms ease;
+    }
+    @-webkit-keyframes cs_title_text {
+        1.53125%, 31.792083333333334% {
+            opacity: 1;
+            -webkit-transform: translateX(-1%);
+        }
+        2.1875%,
+        31.135833333333334% {
+            opacity: 1;
+            -webkit-transform: translateX(0%);
+        }
+        33.333333333333336% {
+            opacity: 0;
+            -webkit-transform: translateX(100%);
+        }
+    }
+    @-moz-keyframes cs_title_text {
+        1.53125%, 31.792083333333334% {
+            opacity: 1;
+            -moz-transform: translateX(-1%);
+        }
+        2.1875%,
+        31.135833333333334% {
+            opacity: 1;
+            -moz-transform: translateX(0%);
+        }
+        33.333333333333336% {
+            opacity: 0;
+            -moz-transform: translateX(100%);
+        }
+    }
+    @-ms-keyframes cs_title_text {
+        1.53125%, 31.792083333333334% {
+            opacity: 1;
+            -ms-transform: translateX(-1%);
+        }
+        2.1875%,
+        31.135833333333334% {
+            opacity: 1;
+            -ms-transform: translateX(0%);
+        }
+        33.333333333333336% {
+            opacity: 0;
+            -ms-transform: translateX(100%);
+        }
+    }
+    @-o-keyframes cs_title_text {
+        1.53125%, 31.792083333333334% {
+            opacity: 1;
+            -o-transform: translateX(-1%);
+        }
+        2.1875%,
+        31.135833333333334% {
+            opacity: 1;
+            -o-transform: translateX(0%);
+        }
+        33.333333333333336% {
+            opacity: 0;
+            -o-transform: translateX(100%);
+        }
+    }
+    @keyframes cs_title_text {
+        1.53125%, 31.792083333333334% {
+            opacity: 1;
+            transform: translateX(-1%);
+        }
+        2.1875%,
+        31.135833333333334% {
+            opacity: 1;
+            transform: translateX(0%);
+        }
+        33.333333333333336% {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+    }
+    @-webkit-keyframes cs_descr_text {
+        3.0625%, 29.604583333333334% {
+            opacity: 1;
+            -webkit-transform: translateX(1%);
+        }
+        4.375%,
+        28.948333333333334% {
+            opacity: 1;
+            -webkit-transform: translateX(0%);
+        }
+        33.333333333333336% {
+            opacity: 0;
+            -webkit-transform: translateX(-100%);
+        }
+    }
+    @-moz-keyframes cs_descr_text {
+        3.0625%, 29.604583333333334% {
+            opacity: 1;
+            -moz-transform: translateX(1%);
+        }
+        4.375%,
+        28.948333333333334% {
+            opacity: 1;
+            -moz-transform: translateX(0%);
+        }
+        33.333333333333336% {
+            opacity: 0;
+            -moz-transform: translateX(-100%);
+        }
+    }
+    @-ms-keyframes cs_descr_text {
+        3.0625%, 29.604583333333334% {
+            opacity: 1;
+            -ms-transform: translateX(1%);
+        }
+        4.375%,
+        28.948333333333334% {
+            opacity: 1;
+            -ms-transform: translateX(0%);
+        }
+        33.333333333333336% {
+            opacity: 0;
+            -ms-transform: translateX(-100%);
+        }
+    }
+    @-o-keyframes cs_descr_text {
+        3.0625%, 29.604583333333334% {
+            opacity: 1;
+            -o-transform: translateX(1%);
+        }
+        4.375%,
+        28.948333333333334% {
+            opacity: 1;
+            -o-transform: translateX(0%);
+        }
+        33.333333333333336% {
+            opacity: 0;
+            -o-transform: translateX(-100%);
+        }
+    }
+    @keyframes cs_descr_text {
+        3.0625%, 29.604583333333334% {
+            opacity: 1;
+            transform: translateX(1%);
+        }
+        4.375%,
+        28.948333333333334% {
+            opacity: 1;
+            transform: translateX(0%);
+        }
+        33.333333333333336% {
+            opacity: 0;
+            transform: translateX(-100%);
+        }
+    }
+    .csslider1 > #cs_play1:checked ~ .cs_description > .num0 .cs_title > .cs_wrapper,
+    .csslider1 > #cs_pause1:checked ~ .cs_description > .num0 .cs_title > .cs_wrapper {
+        -webkit-animation: cs_title_text 24000ms infinite -1190ms ease;
+        -moz-animation: cs_title_text 24000ms infinite -1190ms ease;
+        -ms-animation: cs_title_text 24000ms infinite -1190ms ease;
+        -o-animation: cs_title_text 24000ms infinite -1190ms ease;
+        animation: cs_title_text 24000ms infinite -1190ms ease;
+    }
+    .csslider1 > #cs_play1:checked ~ .cs_description > .num1 .cs_title > .cs_wrapper,
+    .csslider1 > #cs_pause1:checked ~ .cs_description > .num1 .cs_title > .cs_wrapper {
+        -webkit-animation: cs_title_text 24000ms infinite 6810ms ease;
+        -moz-animation: cs_title_text 24000ms infinite 6810ms ease;
+        -ms-animation: cs_title_text 24000ms infinite 6810ms ease;
+        -o-animation: cs_title_text 24000ms infinite 6810ms ease;
+        animation: cs_title_text 24000ms infinite 6810ms ease;
+    }
+    .csslider1 > #cs_play1:checked ~ .cs_description > .num2 .cs_title > .cs_wrapper,
+    .csslider1 > #cs_pause1:checked ~ .cs_description > .num2 .cs_title > .cs_wrapper {
+        -webkit-animation: cs_title_text 24000ms infinite 14810ms ease;
+        -moz-animation: cs_title_text 24000ms infinite 14810ms ease;
+        -ms-animation: cs_title_text 24000ms infinite 14810ms ease;
+        -o-animation: cs_title_text 24000ms infinite 14810ms ease;
+        animation: cs_title_text 24000ms infinite 14810ms ease;
+    }
+    .csslider1 > #cs_play1:checked ~ .cs_description > .num0 .cs_descr > .cs_wrapper,
+    .csslider1 > #cs_pause1:checked ~ .cs_description > .num0 .cs_descr > .cs_wrapper {
+        -webkit-animation: cs_descr_text 24000ms infinite -1190ms ease;
+        -moz-animation: cs_descr_text 24000ms infinite -1190ms ease;
+        -ms-animation: cs_descr_text 24000ms infinite -1190ms ease;
+        -o-animation: cs_descr_text 24000ms infinite -1190ms ease;
+        animation: cs_descr_text 24000ms infinite -1190ms ease;
+    }
+    .csslider1 > #cs_play1:checked ~ .cs_description > .num1 .cs_descr > .cs_wrapper,
+    .csslider1 > #cs_pause1:checked ~ .cs_description > .num1 .cs_descr > .cs_wrapper {
+        -webkit-animation: cs_descr_text 24000ms infinite 6810ms ease;
+        -moz-animation: cs_descr_text 24000ms infinite 6810ms ease;
+        -ms-animation: cs_descr_text 24000ms infinite 6810ms ease;
+        -o-animation: cs_descr_text 24000ms infinite 6810ms ease;
+        animation: cs_descr_text 24000ms infinite 6810ms ease;
+    }
+    .csslider1 > #cs_play1:checked ~ .cs_description > .num2 .cs_descr > .cs_wrapper,
+    .csslider1 > #cs_pause1:checked ~ .cs_description > .num2 .cs_descr > .cs_wrapper {
+        -webkit-animation: cs_descr_text 24000ms infinite 14810ms ease;
+        -moz-animation: cs_descr_text 24000ms infinite 14810ms ease;
+        -ms-animation: cs_descr_text 24000ms infinite 14810ms ease;
+        -o-animation: cs_descr_text 24000ms infinite 14810ms ease;
+        animation: cs_descr_text 24000ms infinite 14810ms ease;
+    }
+    .csslider1 > #cs_play1:checked ~ .cs_description > label > .cs_title,
+    .csslider1 > #cs_play1:checked ~ .cs_description > label > .cs_descr,
+    .csslider1 > #cs_play1:checked ~ .cs_description > label > .cs_title > .cs_wrapper,
+    .csslider1 > #cs_play1:checked ~ .cs_description > label > .cs_descr > .cs_wrapper,
+    .csslider1 > #cs_pause1:checked ~ .cs_description > label > .cs_title,
+    .csslider1 > #cs_pause1:checked ~ .cs_description > label > .cs_descr,
+    .csslider1 > #cs_pause1:checked ~ .cs_description > label > .cs_title > .cs_wrapper,
+    .csslider1 > #cs_pause1:checked ~ .cs_description > label > .cs_descr > .cs_wrapper {
+        -webkit-transition: none;
+        -moz-transition: none;
+        -ms-transition: none;
+        -o-transition: none;
+        transition: none;
+    }
+    .csslider1.cs_pauseHover:hover > .cs_description > label > .cs_title,
+    .csslider1.cs_pauseHover:hover > .cs_description > label > .cs_descr,
+    .csslider1.cs_pauseHover:hover > .cs_description > label > .cs_title > .cs_wrapper,
+    .csslider1.cs_pauseHover:hover > .cs_description > label > .cs_descr > .cs_wrapper,
+    .csslider1 > #cs_pause1:checked ~ .cs_description > label > .cs_title,
+    .csslider1 > #cs_pause1:checked ~ .cs_description > label > .cs_descr,
+    .csslider1 > #cs_pause1:checked ~ .cs_description > label > .cs_title > .cs_wrapper,
+    .csslider1 > #cs_pause1:checked ~ .cs_description > label > .cs_descr > .cs_wrapper {
+        -webkit-animation-play-state: paused !important;
+        -moz-animation-play-state: paused !important;
+        -ms-animation-play-state: paused !important;
+        -o-animation-play-state: paused !important;
+        animation-play-state: paused !important;
+    }
+    /* stop */
+    
+    .csslider1 > .slide:checked ~ .cs_description > label {
+        -webkit-animation: none;
+        -moz-animation: none;
+        -ms-animation: none;
+        -o-animation: none;
+        animation: none;
+    }
+    @media only screen and (max-width: 480px),
+    only screen and (-webkit-max-device-pixel-ratio: 2) and (max-width: 480px),
+    only screen and ( max--moz-device-pixel-ratio: 2) and (max-width: 480px),
+    only screen and ( -o-max-device-pixel-ratio: 2/1) and (max-width: 480px),
+    only screen and ( max-device-pixel-ratio: 2) and (max-width: 480px),
+    only screen and ( max-resolution: 192dpi) and (max-width: 480px),
+    only screen and ( max-resolution: 2dppx) and (max-width: 480px) {
+        .csslider1 > .cs_description,
+        .csslider1 > .cs_bullets {
+            display: none;
+        }
+    }
+    .addon {
+        background: #fff;
+        border-radius: 3px;
+        -moz-border-radius: 3px;
+        -webkit-border-radius: 3px;
+    }
+    .addon li {
+        padding: 10px;
+        border-top: 1px solid #eee;
+        overflow: hidden;
+    }
+    .addon li {
+        list-style: none;
+    }
+    .clearfix {
+        display: block;
+    }
+    .clearfix:after {
+        content: " ";
+        display: block;
+        height: 0;
+        clear: both;
+        visibility: hidden;
+        overflow: hidden;
+    }
+    li {
+        display: list-item;
+        text-align: -webkit-match-parent;
+    }
+    ul {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font-size: 100%;
+        font: inherit;
+        vertical-align: baseline;
+    }
+    ul {
+        list-style: none;
+    }
+    .round {
+        border-radius: 100%;
+        display: block;
+        height: 48px;
+        width: 49px;
+        float: left;
+    }
+    .addon li em {
+        display: block;
+        height: 48px;
+        width: 49px;
+        float: left;
+    }
+    .addon li em.extra {
+        background-position: -118px 0;
+    }
+    .addon li em.hot {
+        background-position: -58px 0;
+    }
+    .addon p {
+        padding: 10px 15px;
+        margin: 0;
+        font: 600 16px/22px "myriad-pro", Arial, "Helvetica Neue", Helvetica, sans-serif;
+    }
+    p {
+        display: block;
+        -webkit-margin-before: 1em;
+        -webkit-margin-after: 1em;
+        -webkit-margin-start: 0px;
+        -webkit-margin-end: 0px;
+    }
+    .addon li .legend-info {
+        float: left;
+        margin-left: 10px;
+        width: 155px;
+    }
+    .addon strong {
+        display: block;
+        margin: 0 0 4px;
+    }
+    strong {
+        font-weight: bold;
+    }
+
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
 }
-.rating-block{
-	background-color:#FAFAFA;
-	border:1px solid #EFEFEF;
-	padding:15px 15px 20px 15px;
-	border-radius:3px;
+::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0,0,0,.5);
+    -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
 }
-.bold{
-	font-weight:700;
-}
-.padding-bottom-7{
-	padding-bottom:7px;
-}
-.review-block{
-	background-color:#FAFAFA;
-	border:1px solid #EFEFEF;
-	padding:15px;
-	border-radius:3px;
-	margin-bottom:15px;
-}
-.review-block-name{
-	font-size:12px;
-	margin:10px 0;
-}
-.review-block-date{
-	font-size:12px;
-}
-.review-block-rate{
-	font-size:13px;
-	margin-bottom:1px;
-}
-.review-block-title{
-	font-size:15px;
-	font-weight:700;
-	margin-bottom:10px;
-}
-.review-block-description{
-	font-size:13px;
-}
-.tags a{border:1px solid #DDD;display:inline-block;color:#717171;background:#FFF;-webkit-box-shadow:0 1px 1px 0 rgba(180,180,180,0.1);box-shadow:0 1px 1px 0 rgba(180,180,180,0.1);-webkit-transition:all .1s ease-in-out;-moz-transition:all .1s ease-in-out;-o-transition:all .1s ease-in-out;-ms-transition:all .1s ease-in-out;transition:all .1s ease-in-out;border-radius:2px;margin:0 3px 6px 0;padding:5px 10px}
-.tags a:hover{border-color:#08C;}
-.tags a.primary{color:#FFF;background-color:#428BCA;border-color:#357EBD}
-.tags a.success{color:#FFF;background-color:#5CB85C;border-color:#4CAE4C}
-.tags a.info{color:#FFF;background-color:#5BC0DE;border-color:#46B8DA}
-.tags a.warning{color:#FFF;background-color:#F0AD4E;border-color:#EEA236}
-.tags a.danger{color:#FFF;background-color:#D9534F;border-color:#D43F3A}
-.border-light-blue{border-color:lightblue;}
+
 </style>
 </head>
+
 <body>
-
-<%- partial ('../partials/nav.ejs') %>
-
-
- <!--Hotel template for Seatfilla hotels -->
- <script type="text/html" id="seatfillaHotelTemplate">
-	<div class="container main-container panel" style="padding:50px;border-color:lightblue;">
-			<div class="container-fluid">
-				<div class="row">
-					<div class="preview col-md-6" style="margin-top:80px;">
-                        <div class="row">			
+<div id="fb-root"></div>
+    <%- partial ( '../partials/nav.ejs') %>
+        <!--Hotel template for skyscanner hotels -->
+        <script type="text/html" id="hotelTemplate">
+            <div class="container-fluid main-container panel" style="">
+                <div class="jumbotron text-center" style="padding:50px;background-image:url('http://{{:~root.hotelImages[~rand(~root.hotelImages.length)].fileDescriptor}}');background-size:cover;">
+                    <h2 class="text-white" style="font-size:50px;">{{:hotel.hotelName}}</h2>
+                </div>
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-6" style="">
                             <div class="preview-pic tab-content">
-                            {{for hotelImages}}
-                                {{if #index == 0}}
-                                    <div class="tab-pane active" id="pic-{{:#getIndex()}}"><img class="img img-responsive" src="{{:~normalizeImagePath(fileDescriptor)}}"/></div>
+                                {{for hotelImages}} {{if #getIndex() == 0}}
+                                <div class="tab-pane active" id="pic-{{:#getIndex()}}"><img class="img img-responsive" width="300" height="300" src="http://{{:fileDescriptor}}" />
+                                </div>
                                 {{else}}
-                                    <div class="tab-pane" id="pic-{{:#getIndex()}}"><img class="img img-responsive" src="{{:~normalizeImagePath(fileDescriptor)}}"/></div>
-                                {{/if}}
-                            {{/for}}
+                                <div class="tab-pane" id="pic-{{:#getIndex()}}"><img class="img img-responsive" width="300" height="300" src="http://{{:fileDescriptor}}" />
+                                </div>
+                                {{/if}} {{/for}}
                             </div>
                             <ul class="preview-thumbnail nav nav-tabs">
-                            {{for hotelImages}}
-                                {{if #index == 0}}
-                                        <li class="active"><a data-target="#pic-{{:#getIndex()}}" data-toggle="tab"><img class="img img-thumbnail" src="{{:~normalizeImagePath(fileDescriptor)}}" /></a></li>
+                                {{for hotelImages}} {{if #getIndex() == 0}}
+                                <li class="active">
+                                    <a data-target="#pic-{{:#getIndex()}}" data-toggle="tab"><img class="img img-thumbnail" src="http://{{:fileDescriptor}}" />
+                                    </a>
+                                </li>
                                 {{else}}
-                                        <li class=""><a data-target="#pic-{{:#getIndex()}}" data-toggle="tab"><img class="img img-thumbnail" src="{{:~normalizeImagePath(fileDescriptor)}}" /></a></li>
-                                {{/if}}
-                            {{/for}}
+                                <li class="">
+                                    <a data-target="#pic-{{:#getIndex()}}" data-toggle="tab"><img class="img img-thumbnail" src="http://{{:fileDescriptor}}" />
+                                    </a>
+                                </li>
+                                {{/if}} {{/for}}
                             </ul>
-                        </div>
-                        <div class="row">
-                            <h4 style="padding:10px;font-size:24px;">Booking details</h4>
-                           <table class="table table-striped table-hover table-bordered">
-                            <thead>
-                            <tr>
-                                <th>Hotel website URL</th>
-                                <th>Booking URL</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-														
-                            <tr>
-                                <td><a href="{{:hotelInfo.websiteURL}}">Visit hotel website</a></td>
-                                <td><a href="{{:hotelInfo.bookingURL}}">Book this hotel</a></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                        </div>
-												<div class="row">
-																	<div class="action pull-right">
-									<button class="add-to-cart btn btn-default pull-right" type="button">Share</button>
-							<button class="add-to-cart btn btn-default pull-right" type="button">add to cart</button>
-						</div>
-												</div>
-					</div>
-					<div class="details col-md-6">
-						<h2 class="product-title">{{:hotelInfo.hotelName}}</h2>
-                        <hr/><br/>
-						<div class="rating">
-							<div class="stars pull-right">
-                                Hotel stars
-								<span class="fa fa-star checked"></span>
-								<span class="fa fa-star checked"></span>
-								<span class="fa fa-star checked"></span>
-								<span class="fa fa-star"></span>
-								<span class="fa fa-star"></span>
-							</div>
-						</div>
-                        <div class="panel">
-                            <div class="panel-body">
-						    								<p class="product-description">{{:hotelInfo.description}}</p>
-                            </div>
-                        </div>
-                        <br/>
-                        <div class="col-md-12">
-                        <p>Amenities</p>
-                        <div class="tags">
-                        <a href="http://www.jquery2dotnet.com/search/label/css" class="btn-warning">CSS</a> <a href="http://www.jquery2dotnet.com/search/label/Javascript" class="btn-primary">Java Script</a>
-                            <a href="http://www.jquery2dotnet.com/search/label/jquery" class="btn-danger">jQuery</a> <a href="http://www.jquery2dotnet.com/search/label/html5" class="btn-success">HTML5</a> <a href="http://www.jquery2dotnet.com/search/label/css3" class="btn-info">CSS3</a> <a href="http://www.jquery2dotnet.com/search?q=demo" class="btn-danger">DEMO</a>
-                            <a href="http://www.jquery2dotnet.com/search/label/mvc4" class="btn-warning">MVC4</a> <a href="http://www.jquery2dotnet.com/search/label/asp.net" class="btn-info">ASP.Net</a> <a href="http://www.jquery2dotnet.com/search/label/c%23" class="btn-primary">C#</a> <a href="http://www.jquery2dotnet.com/search/label/wpf" class="btn-success">WPF</a>
-                            <a href="http://www.jquery2dotnet.com/search/label/linq" class="btn-primary">linq</a> <a href="http://www.jquery2dotnet.com/search/label/bootstrap" class="btn-danger">Bootstrap</a>
-                        </div>
-                        <br/>
-                        </div>
-                       <div class="col-md-12">
-                        <p>Hotel tags</p>
-                        <div class="tags">
-                        <a href="http://www.jquery2dotnet.com/search/label/css" class="btn-warning">CSS</a> <a href="http://www.jquery2dotnet.com/search/label/Javascript" class="btn-primary">Java Script</a>
-                            <a href="http://www.jquery2dotnet.com/search/label/jquery" class="btn-danger">jQuery</a> <a href="http://www.jquery2dotnet.com/search/label/html5" class="btn-success">HTML5</a> <a href="http://www.jquery2dotnet.com/search/label/css3" class="btn-info">CSS3</a> <a href="http://www.jquery2dotnet.com/search?q=demo" class="btn-danger">DEMO</a>
-                            <a href="http://www.jquery2dotnet.com/search/label/mvc4" class="btn-warning">MVC4</a> <a href="http://www.jquery2dotnet.com/search/label/asp.net" class="btn-info">ASP.Net</a> <a href="http://www.jquery2dotnet.com/search/label/c%23" class="btn-primary">C#</a> <a href="http://www.jquery2dotnet.com/search/label/wpf" class="btn-success">WPF</a>
-                            <a href="http://www.jquery2dotnet.com/search/label/linq" class="btn-primary">linq</a> <a href="http://www.jquery2dotnet.com/search/label/bootstrap" class="btn-danger">Bootstrap</a>
-                        </div>
-                    </div>
-						<h4 class="price">current price: <span>$180</span></h4>
-						<p class="vote"><strong>91%</strong> of buyers enjoyed this product! <strong>(87 votes)</strong></p>
-							<div id="map">
 
-													</div>
-					</div>
-				</div><!--row-->
-                <br/>
-                <hr/><br/>
-                <div class="row">
-                <div class="col-sm-6">
-				<hr/>
-				<div class="review-block">
-					<div class="row">
-                    <br/>
-						<div class="col-sm-3">
-							<img src="http://dummyimage.com/60x60/666/ffffff&text=No+Image" class="img-rounded">
-							<div class="review-block-name"><a href="#">nktailor</a></div>
-							<div class="review-block-date">January 29, 2016<br/>1 day ago</div>
-						</div>
-						<div class="col-sm-9">
-							<div class="review-block-rate">
-								<button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
-								  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-								</button>
-								<button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
-								  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-								</button>
-								<button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
-								  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-								</button>
-								<button type="button" class="btn btn-default btn-grey btn-xs" aria-label="Left Align">
-								  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-								</button>
-								<button type="button" class="btn btn-default btn-grey btn-xs" aria-label="Left Align">
-								  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-								</button>
-							</div>
-							<div class="review-block-title">this was nice in buy</div>
-							<div class="review-block-description">this was nice in buy. this was nice in buy. this was nice in buy. this was nice in buy this was nice in buy this was nice in buy this was nice in buy this was nice in buy</div>
-                             <br/><br/>
-                        </div>
-					</div>
+                            <br/>
+                            <div class="" style="margin-top:150px;">
+                                <div class="panel panel-default" style="">
+                                    <div class="panel-heading">Description
+                                        <div class="rating pull-right">
+                                            <div class="stars">
+                                                Hotel stars ({{:hotel.starRating}})
+                                                <span class="fa fa-star checked"></span>
+                                                <span class="fa fa-star checked"></span>
+                                                <span class="fa fa-star checked"></span>
+                                                <span class="fa fa-star"></span>
+                                                <span class="fa fa-star"></span>
+                                            </div>
+                                            {{if hotel.popularity}}
+                                            <p class="vote"><strong>{{:hotel.popularity}}%</strong> of buyers enjoyed this product! <strong>(87 votes)</strong>
+                                            </p>
+                                            {{/if}}
+                                            <br/>
 
-                    <br/>
-                    <div class="row">
-						<div class="panel panel-default">
-
-													<%if(req.user){%>
-                            <form id="hotelReviewForm">
-                            <div class="panel-heading">
-                                <p> Write a review </p>
-                            </div>
-                            <div class="panel-content">
-                                <textarea name="message" rows="5" class="form-control" required min="100" placeholder="Your review"></textarea>
-                                <input type="hidden" name="hotel" value="{{:hotel.id}}"/>
-                            </div>
-                            <div class="panel-footer" style="min-height:80px;">
-                                <div class="col-xs-12">
-                                    <label class="col-xs-12 text-black" for="">Please submit your rating with this review</label>
-                                    <div class="col-xs-8">
-                                        <div class="review-block-rate">
-                                            {{for ~range(0,5)}}
-                                            <button type="button" class="btn btn-xs btn-grey btn-review-rating" data-attr-rating="{{:#getIndex()+1}}" aria-label="Left Align">
-                                            <span class="glyphicon glyphicon-star" style="margin-top:2px;" aria-hidden="true"></span>
-                                            </button>
-                                            {{/for}} 
                                         </div>
                                     </div>
-                                   <button type="submit" id="submitReview" class="btn btn-info pull-right">Submit review</button>
+                                    <div class="panel-body">
+                                        <p class="product-description">{{:hotel.description}}</p>
+                                                                                        <div class="fb-share-button" data-href="https://developers.facebook.com/docs/plugins/" data-layout="button" data-size="large" data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse">Share on fb</a></div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                        <div id="hotelSales" class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">All Deals on this hotel</div>
+                                <div class="panel-body" style="max-height:770px;overflow-y:scroll;">
+                                    {{for hotelSales}}
+                                    <div class="row" id="hotelSale{{:id}}">
+
+
+                                        <div class="col-md-12">
+                                            <div class="panel panel-default" style="border-width:0px;outline:0px;overflow-x:scroll;">
+                                                <div class="panel-body">
+                                                    <div class="col-md-12 panelTop">
+                                                        <div class="col-xs-12 col-sm-12 col-md-12 sale-img">
+                                                            <img class="img-responsive" src="http://{{:~root.hotelImages[~rand(~root.hotelImages.length)].fileDescriptor}}" alt="" />
+																	<div class="container-fluid">
+																<div class="row">
+															
+														
+																<table class="col-xs-12 table-responsive  table-striped table-condensed cf" style="font-size:12px;padding:0px;margin:0px;border-color:white;border-width:1px;">
+																	<thead class="cf material-blue-5 text-white">
+																		<tr>
+																	<th>Check in date</th>
+																	<th>Check out date</th>
+																	<th>Total days (including checkout)</th>
+																	<th>Number of guests</th>
+																	<th>Number of rooms</th>
+																	<th>Sale type:</th>
+																	<th>{{if saleType == 'auction'}}
+																					Time left
+																				{{else}}
+																					Time left
+																				{{/if}}</th> 
+																				</tr>
+					
+																	</thead>
+																	<tbody style="border-width:1px;border-color:#f3f3f3;border-style:solid;">
+																		<tr>
+																	<td>{{:~dateFormat(checkInDate,'YYYY-MM-DD')}}</td>
+																	<td>{{:~dateFormat(checkOutDate,'YYYY-MM-DD')}}</td>
+																	<td>{{:~dateDiff(checkOutDate,checkInDate,'days')}}</td>
+																	<td>{{:numberOfGuests}}</td>
+																	<td> {{:numberOfRooms}}</td>
+																	<td> {{:saleType}}</td>
+																	<td><span id="clock{{:id}}"></span></td>
+																	</tr>
+																		
+																	</tbody>
+																</table>
+															
+														</div>
+													
+                                                       
+                                                        </div>
+                                                        </div><br/>
+                                                     
+												
+                                                    </div>
+
+                                                    <div class="col-md-12 panelBottom">
+                                                        <br/><br/>
+
+																			
+                                                            <div class="col-xs-12">
+
+																{{if saleType=='auction'}}
+
+																	{{if bids.length}}
+																	<div class="addon panel" style="max-height:200px;overflow-y:scroll;">
+																		<p>Top bids on this hotel</p>
+																		<ul class="hotelBids" data-attr-hotelSaleId="{{:id}}">
+																			{{for bids}}
+																			<li data-attr-bid-id="{{:id}}" class="clearfix">
+																				<img class="round" src="https://placeholdit.imgix.net/~text?txtsize=33&txt=350%C3%97150&w=80&h=80"> 
+																				<div class="legend-info">
+
+																					<span class="itemPrice" data-attr-price="">
+																					<span data-attr-currency-symbol="{{:~currencySymbolFor(currency || 'USD')}}">{{:~currencySymbolFor(currency || 'USD')}}</span>
+																					<span data-attr-amount="{{:bidAmount}}">{{:~toFixedDp(bidAmount,2)}}</span>
+																					<span data-attr-currency-code="{{:currency || 'USD'}}">{{:currency || 'USD'}}</span>																																	
+																					</span>
+
+																					<small>Submitted {{:~dateDiff(~momentNow(),createdAt,'hours')}} hours ago by <a href="/userprofile/{{:user.username}}">{{:user.username}}</a> </small>
+																				</div>
+																			</li>
+																			{{/for}}
+																	
+																		</ul>
+																	</div>
+
+																	{{else}}
+																	<p> Be the first person to bid on this item! </p>
+																	{{/if}}
+
+																{{else}}
+
+
+																{{/if}}
+                                                            </div>
+                                                    
+
+                                                            <div class="col-xs-12">
+                                                                <div class="container-fluid">
+
+
+																{{if saleType=='auction'}}
+                                                                    <div class="col-sm-12">
+                                                                        <p>Choose your bid amount</p>
+                                                                        <hr/>
+                                                                        <br/>
+                                                                        <div id="slider{{:id}}"></div>
+
+                                                                    </div>		
+                                                                    <div class="form-group">
+                                                                        <label for="bidAmount{{:id}}" class="col-sm-6 control-label">Amount <span data-attr-currency-code>({{:~currentCurrencyCode()}})</span></label>
+
+
+                                                                        <div class="col-sm-12">
+                                                                            
+                                                                                <input type="hidden" id="bidAmount{{:id}}" class="form-control" /> <span data-attr-currency-symbol="{{:~currentCurrencySymbol()}}">{{:~currentCurrencySymbol()}} </span>
+                                                                                <p class="price lead" id="bidAmountLabel{{:id}}"></p> <span data-attr-currency-code="{{:~currentCurrencyCode()}}">{{:~currentCurrencyCode()}}</span>
+                                                                            
+                                                                        </div>
+                                                                        <div class="col-md-12 text-center">
+                                                                            <button data-target="#bidModal" data-attr-hotelSaleId="{{:id}}" id="showBidModal" data-toggle="modal" class="btn btn-lg btn-block btn-add-to-cart">
+																			<span class="glyphicon glyphicon-shopping-cart"></span>Bid on this item</button>  
+																			<div id="bidModal" class="modal in" style="">
+																			<div class="modal-dialog">
+																				<div class="modal-content">
+																				<div class="modal-header">
+																					<p>You are about to place a bid</p>
+																				</div>
+																				<div class="modal-body">
+																				      <div class="row">
+																						<div class="col-xs-12">
+																							<div class="alert alert-info" role="alert" style="text-align: center;"><i class="fa fa-info"></i>You are about to bid on this hotel auction </div>
+																							<p>The amount that will be bid is: <span id="bidModalPrice" class="itemPrice"></span></p>
+																							<div style="text-align: center; font-size: 10pt; margin: 16px;"><span style="color: #2e77bc;"><i class="fa fa-info-circle"></i></span>
+																								Before bidding: please read the following below to ensure you understand the bidding procedure.
+																							</div>
+																							<div class="panel panel-default">
+																								<div class="panel-body">
+																									<div style="color: #acacac; font-size: 9pt; text-align: center; padding: 0px; margin-bottom: 6px;">Bidding process:</div>
+																									<ul class="list-unstyled">
+																										<li><span class="text-success"></span> <span style="color: #acacac; font-size: 11pt; text-align: left;">1</span> <span style="font-size: 11pt; text-align: left;">
+																											<p>After placing a successful bid, you and other bidders will be notified of the new bid.</p>
+																										</span></li>
+																										<li><span class="text-success"></i></span> <span style="color: #acacac; font-size: 11pt; text-align: left;">2</span> <span style="font-size: 11pt; text-align: left;">
+																											<p>The hotel sale will remain open until 24 hours before the specified hotel check in date.</p>
+																										</span></li>
+																										<li><span class="text-success"></i></span> <span style="color: #acacac; font-size: 11pt; text-align: left;">3</span> <span style="font-size: 11pt; text-align: left;">
+																											<p>Upon closure and should the reserve price have been met, the winner of the auction will be notified via email and Seatfilla's notification system.</p>
+																										</span></li>
+																										<li><span class="text-success"></i></span> <span style="color: #acacac; font-size: 11pt; text-align: left;">4</span> <span style="font-size: 11pt; text-align: left;">
+																										    <p>Payment must be made within 12 hours of of winning the auction. Failiure to pay may result in your account being penalised. </p>
+																										</span></li>
+																									</ul>
+																								</div>
+																							</div>
+																							<div style="text-align: center; color: #a94442;">By confirming, you agree you have both read and agreed to Seatfilla's terms and conditions and terms of service.</div>
+																						</div>
+																					</div>
+																					<p>I confirm: </p>
+																					<div class="row">
+																						<ul class="inline-btn">
+																						<li>
+																							<button id="placeBid" data-attr-hotelSaleId="{{:id}}" data-dismiss="modal" class="btn btn-block btn-info btn-md">Yes</button></li>
+																							<li><button class="btn btn-danger btn-block btn-md" data-dismiss="modal">No</button></li>
+																						<ul>
+																						</div>
+																					</div>
+																				</div>
+																			
+																				</div>
+																			</div>
+																			</div>  
+                                                                        </div>
+                                                                    </div>
+                                                              {{else}}
+															        <button id="purchase" data-attr-item-type="hotelSale" class="btn btn-lg btn-add-to-cart"><span class="glyphicon glyphicon-shopping-cart"></span>Purchase this deal</button>
+															  {{/if}}
+
+
+                                                                </div>
+                                                            </div>
+									
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {{/for}}
+									              
+														
                                 </div>
                             </div>
-                            </form>
-													 <%}else{%>
-													 	 <button class="btn btn-info btn-sm pull-right">Please login to write a review</button>
-													 <%}%>
                         </div>
-					</div>
-				</div>
-                </div>
-                <div class="col-sm-3">
-				<div class="rating-block border-light-blue">  
-					<h1 style="noPad noMargin">Average user rating</h1>
-					<h2 class="bold text-center">{{:averageRating}}<small>/5</small></h2>
-                    <div class="input-group" style="margin:auto;">
-                    {{for ~range(0,~floor(averageRating))}}
-                        <button type="button" class="btn btn-warning btn-sm" aria-label="Left Align">
-                        <span class="glyphicon glyphicon-star" aria-hidden="true" data-rating-value="{{:~add(#index,1)}}"></span>
-                        </button>
-                    {{/for}}
-                    {{for ~range(0,~sub(5,~floor(averageRating)))}}
-										<button type="button" class="btn btn-default btn-grey btn-sm" aria-label="Left Align">
-											<span class="glyphicon glyphicon-star" aria-hidden="true" data-rating-value="{{:~add(#index,1)}}"></span>
-										</button>
-                    {{/for}}
+
+
+
                     </div>
-				</div>
-			</div>
+                    <!--row-->
 
-			<div class="col-sm-3 rating-block well-sm" style="min-height:410px;">
-				<h1 class="noPad noMargin">Rating breakdown</h1>
-                <br/>
-				<div class="pull-left">
-					<div class="pull-left" style="width:35px; line-height:1;">
-						<div style="height:9px; margin:5px 0;">5 <span class="glyphicon glyphicon-star"></span></div>
-					</div>
-					<div class="pull-left" style="width:180px;">
-						<div class="progress" style="height:9px; margin:8px 0;">
-						  <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="5" style="width: 1000%">
-							<span class="sr-only">80% Complete (danger)</span>
-						  </div>
-						</div>
-					</div>
-					<div class="pull-right" style="margin-left:10px;">{{:~numUsersWhoRated(5)}}</div>
-				</div>
-				<div class="pull-left">
-					<div class="pull-left" style="width:35px; line-height:1;">
-						<div style="height:9px; margin:5px 0;">4 <span class="glyphicon glyphicon-star"></span></div>
-					</div>
-					<div class="pull-left" style="width:180px;">
-						<div class="progress" style="height:9px; margin:8px 0;">
-						  <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="4" aria-valuemin="0" aria-valuemax="5" style="width: 80%">
-							<span class="sr-only">80% Complete (danger)</span>
-						  </div>
-						</div>
-					</div>
-					<div class="pull-right" style="margin-left:10px;">{{:~numUsersWhoRated(4)}}</div>
-				</div>
 
-				<div class="pull-left">
-					<div class="pull-left" style="width:35px; line-height:1;">
-						<div style="height:9px; margin:5px 0;">3 <span class="glyphicon glyphicon-star"></span></div>
-					</div>
-					<div class="pull-left" style="width:180px;">
-						<div class="progress" style="height:9px; margin:8px 0;">
-						  <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="3" aria-valuemin="0" aria-valuemax="5" style="width: 60%">
-							<span class="sr-only">80% Complete (danger)</span>
-						  </div>
-						</div>
-					</div>
-					<div class="pull-right" style="margin-left:10px;">{{:~numUsersWhoRated(3)}}</div>
-				</div>
-				<div class="pull-left">
-					<div class="pull-left" style="width:35px; line-height:1;">
-						<div style="height:9px; margin:5px 0;">2 <span class="glyphicon glyphicon-star"></span></div>
-					</div>
-					<div class="pull-left" style="width:180px;">
-						<div class="progress" style="height:9px; margin:8px 0;">
-						  <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="5" style="width: 40%">
-							<span class="sr-only">80% Complete (danger)</span>
-						  </div>
-						</div>
-					</div>
-					<div class="pull-right" style="margin-left:10px;">{{:~numUsersWhoRated(2)}}</div>
-				</div>
-				<div class="pull-left">
-					<div class="pull-left" style="width:35px; line-height:1;">
-						<div style="height:9px; margin:5px 0;">1 <span class="glyphicon glyphicon-star"></span></div>
-					</div>
-					<div class="pull-left" style="width:180px;">
-						<div class="progress" style="height:9px; margin:8px 0;">
-						  <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="5" style="width: 20%">
-							<span class="sr-only">80% Complete (danger)</span>
-						  </div>
-						</div>
-					</div>
-					<div class="pull-right" style="margin-left:10px;">{{:~numUsersWhoRated(1)}}</div>
-				</div>
-			</div>	
-        </div>     
-	</div><!--container fluid-->
+
+
+                    <div class="row">
+
+
+                        <div class="col-xs-12 col-sm-12 col-md-6">
+                            <div class="container-fluid">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">Amenities</div>
+                                    <div class="panel-body">
+                                        <div class="tags">
+                                            {{for hotel.hotelAmenities}} {{if ~getAmenityIcon(key)}}
+                                            <a href="" class="btn-warning">
+                                                <img class="{{:~getAmenityIcon(key)}}" width="50" height="50" src="/images/imagetransparent.png">
+                                                </img/>
+                                                <span>{{:name}}</span>
+                                            </a>
+                                            {{/if}} {{/for}}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">Hotel tags</div>
+                                    <div class="panel-body">
+                                        <div class="tags">
+                                            <a href="http://www.jquery2dotnet.com/search/label/css" class="btn-warning">CSS</a> <a href="http://www.jquery2dotnet.com/search/label/Javascript" class="btn-primary">Java Script</a>
+                                            <a href="http://www.jquery2dotnet.com/search/label/jquery" class="btn-danger">jQuery</a> <a href="http://www.jquery2dotnet.com/search/label/html5" class="btn-success">HTML5</a> <a href="http://www.jquery2dotnet.com/search/label/css3" class="btn-info">CSS3</a> <a href="http://www.jquery2dotnet.com/search?q=demo" class="btn-danger">DEMO</a>
+                                            <a href="http://www.jquery2dotnet.com/search/label/mvc4" class="btn-warning">MVC4</a> <a href="http://www.jquery2dotnet.com/search/label/asp.net" class="btn-info">ASP.Net</a> <a href="http://www.jquery2dotnet.com/search/label/c%23" class="btn-primary">C#</a> <a href="http://www.jquery2dotnet.com/search/label/wpf" class="btn-success">WPF</a>
+                                            <a href="http://www.jquery2dotnet.com/search/label/linq" class="btn-primary">linq</a> <a href="http://www.jquery2dotnet.com/search/label/bootstrap" class="btn-danger">Bootstrap</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--col6-->
+
+
+
+                        <div class="col-xs-12 col-sm-12 col-md-6">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">Hotel location</div>
+                                <div id="map"></div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="row">
+
+                        <div class="col-xs-12 col-sm-12 col-md-6">
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="col-md-12" style="padding:0">
+
+
+
+                                        <div class='csslider1 autoplay '>
+                                            <input name="cs_anchor1" id='cs_slide1_0' type="radio" class='cs_anchor slide'>
+                                            <input name="cs_anchor1" id='cs_slide1_1' type="radio" class='cs_anchor slide'>
+                                            <input name="cs_anchor1" id='cs_slide1_2' type="radio" class='cs_anchor slide'>
+                                            <input name="cs_anchor1" id='cs_play1' type="radio" class='cs_anchor' checked>
+                                            <input name="cs_anchor1" id='cs_pause1' type="radio" class='cs_anchor'>
+                                            <ul style="min-height:300px;">
+
+                                                <div style="width: 100%; visibility: hidden; font-size: 0px; line-height: 0;">
+                                                    <img src="" style="width: 100%;">
+                                                </div>
+
+                                                {{for hotelImages}}
+                                                <li class='num{{:#getIndex()}} img'>
+                                                    <img src='http://{{:fileDescriptor}}' alt='' title='' />
+                                                </li>
+                                                {{/for}}
+
+                                            </ul>
+                                            <div class='cs_description'>
+
+                                                {{for hotelImages}}
+                                                <label class='num{{:#getIndex()}}'>
+                                                    <span class="cs_title"><span class="cs_wrapper">
+    				{{:~root.hotel.hotelName}}
+    			</span></span>
+                                                </label>
+                                                {{/for}}
+
+                                            </div>
+
+                                            <div class='cs_arrowprev'>
+                                                <label class='num0' for='cs_slide1_0'></label>
+                                                <label class='num1' for='cs_slide1_1'></label>
+                                                <label class='num2' for='cs_slide1_2'></label>
+                                            </div>
+                                            <div class='cs_arrownext'>
+                                                <label class='num0' for='cs_slide1_0'></label>
+                                                <label class='num1' for='cs_slide1_1'></label>
+                                                <label class='num2' for='cs_slide1_2'></label>
+                                            </div>
+
+
+                                        </div>
+
+
+
+
+                                    </div>
+                                    <!--md12-->
+                                </div>
+                                <!--row-->
+                            </div>
+                            <!--container-->
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-6">
+
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-6">
+                                    <div class="rating-block well-sm">
+                                        <h2 style="noPad noMargin">Average user rating</h2>
+                                        <h2 class="bold text-center">{{:~averageUserRating()}}<small>/5</small></h2>
+                                        <div class="" style="margin:auto;">
+                                            {{for ~range(0,~floor(~averageUserRating()))}}
+                                            <button type="button" class="btn btn-warning btn-sm" aria-label="Left Align">
+                                                <span class="glyphicon glyphicon-star" aria-hidden="true" data-rating-value="{{:~add(#index,1)}}"></span>
+                                            </button>
+                                            {{/for}} {{for ~range(0,~sub(5,~floor(~averageUserRating())))}}
+                                            <button type="button" class="btn btn-default btn-grey btn-sm" aria-label="Left Align">
+                                                <span class="glyphicon glyphicon-star" aria-hidden="true" data-rating-value="{{:~add(#index,1)}}"></span>
+                                            </button>
+                                            {{/for}}
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-12 col-sm-12 col-md-6">
+                                    <div class="rating-block well-sm" style="min-height:382px;">
+                                        <h2 class="noPad noMargin text-center">User <span class="glyphicon glyphicon-star"></span>  ratings </h1>
+    												<div class="pull-left">
+    													<div class="pull-left" style="width:35px; line-height:1;">
+    														<div style="height:9px; margin:5px 0;">5 </div>
+    													</div>
+    													<div class="pull-left" style="width:180px;">
+    														<div class="progress" style="height:9px; margin:8px 0;">
+    															<div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="5" style="width: 100%">
+    															<span class="sr-only">80% Complete (danger)</span>
+    															</div>
+    														</div>
+    													</div>
+    													<div class="pull-right" style="margin-left:10px;">{{:~numUsersWhoRated(5)}}</div>
+    												</div>
+    												<div class="pull-left">
+    													<div class="pull-left" style="width:35px; line-height:1;">
+    														<div style="height:9px; margin:5px 0;">4</div>
+    													</div>
+    													<div class="pull-left" style="width:180px;">
+    														<div class="progress" style="height:9px; margin:8px 0;">
+    															<div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="4" aria-valuemin="0" aria-valuemax="5" style="width: 80%">
+    															<span class="sr-only">80% Complete (danger)</span>
+    															</div>
+    														</div>
+    													</div>
+    													<div class="pull-right" style="margin-left:10px;">{{:~numUsersWhoRated(4)}}</div>
+    												</div>
+    
+    												<div class="pull-left">
+    													<div class="pull-left" style="width:35px; line-height:1;">
+    														<div style="height:9px; margin:5px 0;">3 </div>
+    													</div>
+    													<div class="pull-left" style="width:180px;">
+    														<div class="progress" style="height:9px; margin:8px 0;">
+    															<div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="3" aria-valuemin="0" aria-valuemax="5" style="width: 60%">
+    															<span class="sr-only">80% Complete (danger)</span>
+    															</div>
+    														</div>
+    													</div>
+    													<div class="pull-right" style="margin-left:10px;">{{:~numUsersWhoRated(3)}}</div>
+    												</div>
+    												<div class="pull-left">
+    													<div class="pull-left" style="width:35px; line-height:1;">
+    														<div style="height:9px; margin:5px 0;">2 </div>
+    													</div>
+    													<div class="pull-left" style="width:180px;">
+    														<div class="progress" style="height:9px; margin:8px 0;">
+    															<div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="5" style="width: 40%">
+    															<span class="sr-only">80% Complete (danger)</span>
+    															</div>
+    														</div>
+    													</div>
+    													<div class="pull-right" style="margin-left:10px;">{{:~numUsersWhoRated(2)}}</div>
+    												</div>
+    												<div class="pull-left">
+    													<div class="pull-left" style="width:35px; line-height:1;">
+    														<div style="height:9px; margin:5px 0;">1 </span></div>
+    													</div>
+    													<div class="pull-left" style="width:180px;">
+    														<div class="progress" style="height:9px; margin:8px 0;">
+    															<div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="5" style="width: 20%">
+    															<span class="sr-only">80% Complete (danger)</span>
+    															</div>
+    														</div>
+    													</div>
+    													<div class="pull-right" style="margin-left:10px;">{{:~numUsersWhoRated(1)}}</div>
+    												</div>
+    											</div>	
+    								</div>
+    
+    						</div>
+    				</div>
+    
+    			</div>
+    
+    
+    
+    			<div class="row" style="">
+    			
+    				<div class="col-xs-6">
+    	
+    				</div>
+    
+    			</div>
+    
+    
+    			<div class="row">
+           <div class="col-sm-12">
+    			<div class="panel panel-default" style="padding:50px;">
+    			<div class="review-block" style="">
+    
+    				<div class="row">
+    					<div class="col-sm-3">
+    						<img src="http://dummyimage.com/60x60/666/ffffff&text=No+Image" class="img-rounded">
+    						<div class="review-block-name"><a href="#">nktailor</a></div>
+    						<div class="review-block-date">January 29, 2016<br/>1 day ago</div>
+    					</div>
+    					<div class="col-sm-9">
+    						<div class="review-block-rate">
+    							<button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
+    							  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+    							</button>
+    							<button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
+    							  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+    							</button>
+    							<button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
+    							  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+    							</button>
+    							<button type="button" class="btn btn-default btn-grey btn-xs" aria-label="Left Align">
+    							  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+    							</button>
+    							<button type="button" class="btn btn-default btn-grey btn-xs" aria-label="Left Align">
+    							  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+    							</button>
+    						</div>
+    						<div class="review-block-title">this was nice in buy</div>
+    						<div class="review-block-description">this was nice in buy. this was nice in buy. this was nice in buy. this was nice in buy this was nice in buy this was nice in buy this was nice in buy this was nice in buy</div>
+                    <br/><br/>
+                </div>
+    				</div>
+    
+                       <br/>
+                       <div class="row">
+    					<div class="panel panel-default">
+    
+    												<%if(req.user){%>
+                               <form id="hotelReviewForm">
+                               <div class="panel-heading">
+                                   <p> Write a review </p>
+                               </div>
+                               <div class="panel-content">
+                                   <textarea name="message" rows="5" class="form-control" required min="100" placeholder="Your review"></textarea>
+                                   <input type="hidden" name="hotel" value="{{:hotel.id}}"/>
+                               </div>
+                               <div class="panel-footer" style="min-height:80px;">
+                                   <div class="col-xs-12">
+                                       <label class="col-xs-12 text-black" for="">Please submit your rating with this review</label>
+                                       <div class="col-xs-8">
+                                           <div class="review-block-rate">
+                                               {{for ~range(0,5)}}
+                                               <button type="button" class="btn btn-xs btn-grey btn-review-rating" data-attr-rating="{{:#getIndex()+1}}" aria-label="Left Align">
+                                               <span class="glyphicon glyphicon-star" style="margin-top:2px;" aria-hidden="true"></span>
+                                               </button>
+                                               {{/for}} 
+                                           </div>
+                                       </div>
+                                      <button type="submit" id="submitReview" class="btn btn-info pull-right">Submit review</button>
+                                   </div>
+                               </div>
+                               </form>
+    												 <%}else{%>
+    												 	 <button class="btn btn-info btn-sm pull-right">Please login to write a review</button>
+    												 <%}%>
+                           </div>
+    				</div>
+    			</div>
+    			</div>
+           </div>
+    
+    		
+    		</div>
+           </div>     
+    	</div><!--container fluid-->
     </div><!--container main-->
+  </script>
+
+
+<script type="text/html" id="hotelBidTemplate">
+								<li id="{{:id}}" class="clearfix">
+			<img class="round" src="https://placeholdit.imgix.net/~text?txtsize=33&txt=350%C3%97150&w=80&h=80"> 
+																				<div class="legend-info">
+
+																					<span class="itemPrice" data-attr-price="">
+																					<span data-attr-currency-symbol="{{:~currencySymbolFor(currency || 'USD')}}">{{:~currencySymbolFor(currency || 'USD')}}</span>
+																					<span data-attr-amount="{{:bidAmount}}">{{:~toFixedDp(bidAmount,2)}}</span>
+																					<span data-attr-currency-code="{{:currency || 'USD'}}">{{:currency || 'USD'}}</span>																																	
+																					</span>
+
+																					<small>Submitted {{:~dateDiff(~momentNow(),createdAt,'hours')}} hours ago by <a href="/userprofile/{{:user.username}}">{{:user.username}}</a> </small>
+																				</div>
+																			</li>
 </script>
 
 
-<!--Hotel template for skyscanner hotels -->
-<script type="text/html" id="skyscannerHotelTemplate">
-	<div class="container-fluid main-container panel" style="padding:50px;border-color:lightblue;">
-			<div class="container-fluid">
-				<div class="row">
-					<div class="preview col-md-6" style="margin-top:110px;">
-                        <div class="row">			
-                            <div class="preview-pic tab-content">
-                            {{for hotel.images}}
-                                {{if #index == 0}}
-                                    <div class="tab-pane active" id="pic-{{:#getIndex()}}"><img class="img img-responsive img-thumbnail" src="http://{{:imagePath}}"/></div>
-                                {{else}}
-                                    <div class="tab-pane" id="pic-{{:#getIndex()}}"><img class="img img-responsive img-thumbnail" src="http://{{:imagePath}}"/></div>
-                                {{/if}}
-                            {{/for}}
-                            </div>
-                            <ul class="preview-thumbnail nav nav-tabs">
-                            {{for hotel.images}}
-                                {{if #index == 0}}
-                                        <li class="active"><a data-target="#pic-{{:#getIndex()}}" data-toggle="tab"><img class="img img-thumbnail" src="http://{{:imagePath}}" /></a></li>
-                                {{else}}
-                                        <li class=""><a data-target="#pic-{{:#getIndex()}}" data-toggle="tab"><img class="img img-thumbnail" src="http://{{:imagePath}}" /></a></li>
-                                {{/if}}
-                            {{/for}}
-														
-                            </ul>
-                        </div>
-                        <div class="row">
-                            <h4 style="padding:10px;font-size:24px;">Booking details</h4>
-														<div class="panel-body">
-                           <table class="table table-striped table-hover table-bordered">
-                            <thead>
-                            <tr>
-																<td>Agent Image</td>
-																<td>Agent name</td>
-                                <th>Available rooms</th>
-																<th>Price per night</th>
-																<th>Price total</th>
-                                <th>Booking URL</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-															{{for hotelInfo.hotels_prices}}
-															{{for agent_prices}}
-																<tr>
-																	<td>
-																	<img class="img img-responsive" src="{{:~getAgentDetails(id).image_url}}"/>
-																	</td>
-																  <td>
-																		{{:~getAgentDetails(id).name}}
-																	</td>
-																		<td>{{:available_rooms}}</td>
-																		<td>
-																			<span class="seatfilla_currency_symbol">
-																				{{:~currentCurrencySymbol()}}
-																			</span>
-																			<span class="seatfilla_price">
-																			{{:price_per_room_night}}
-																			</span>
-																			<span class="seatfilla_currency_code">
-																				{{:~currentCurrencyCode()}}
-																			</span>
-																		</td>
-																		<td>
-																			<span class="seatfilla_currency_symbol">
-																				{{:~currentCurrencySymbol()}}
-																			</span>
-																			<span class="seatfilla_price">
-																			{{:price_total}}
-																			</span>
-																			<span class="seatfilla_currency_code">
-																				{{:~currentCurrencyCode()}}
-																			</span>
-																		</td>
-																		<td><a href="{{:booking_deeplink}}">Book this hotel</a></td>
-																</tr>
-																{{for guests}}
-																{{/for}}
-															{{/for}}
-														{{/for}}
-                            </tr>
-                            </tbody>
-                        </table>
-												</div><!--panel body-->
-                        </div>
-												<div class="row">
-																	<div class="action pull-right">
-									<button class="add-to-cart btn btn-default pull-right" type="button">Share</button>
-							<button class="add-to-cart btn btn-default pull-right" type="button">add to cart</button>
-						</div>
-							
-												</div>
-					</div>
-					<div class="details col-md-6">
-						<span class="pull-right text-center"><h2 class="">{{:hotel.name}}</h2></span>
-                        <hr/><br/>
-                        <div class="panel" style="padding:50px;">
-														<div class="panel-heading">Description</div>
-                            <div class="panel-body">
-						    								<p class="product-description">{{:extendedHotelInfo.description}}</p>
-                            </div>
-                        </div>
-													<div class="rating">
-													<div class="stars pull-right">
-														Hotel stars ({{:hotel.star_rating}})
-														<span class="fa fa-star checked"></span>
-														<span class="fa fa-star checked"></span>
-														<span class="fa fa-star checked"></span>
-														<span class="fa fa-star"></span>
-														<span class="fa fa-star"></span>
-													</div>
-												</div>
-                        <br/>
-                        <div class="col-md-12">
-                        <p>Amenities</p>
-                        <div class="tags">
-												    {{for hotelInfo.amenities}}
-															{{if ~getAmenityIcon(key)}}
-                                 	  <a href="" class="btn-warning">  
-																		<img class="{{:~getAmenityIcon(key)}}" width="50" height="50" src="/images/imagetransparent.png"></img/>
-																		<span>{{:name}}</span>
-																		{{/if}}
-																	</a>	
-                            {{/for}}
-                        </div>
-                        <br/>
-                        </div>
-                       <div class="col-md-12">
-                        <p>Hotel tags</p>
-                        <div class="tags">
-                        <a href="http://www.jquery2dotnet.com/search/label/css" class="btn-warning">CSS</a> <a href="http://www.jquery2dotnet.com/search/label/Javascript" class="btn-primary">Java Script</a>
-                            <a href="http://www.jquery2dotnet.com/search/label/jquery" class="btn-danger">jQuery</a> <a href="http://www.jquery2dotnet.com/search/label/html5" class="btn-success">HTML5</a> <a href="http://www.jquery2dotnet.com/search/label/css3" class="btn-info">CSS3</a> <a href="http://www.jquery2dotnet.com/search?q=demo" class="btn-danger">DEMO</a>
-                            <a href="http://www.jquery2dotnet.com/search/label/mvc4" class="btn-warning">MVC4</a> <a href="http://www.jquery2dotnet.com/search/label/asp.net" class="btn-info">ASP.Net</a> <a href="http://www.jquery2dotnet.com/search/label/c%23" class="btn-primary">C#</a> <a href="http://www.jquery2dotnet.com/search/label/wpf" class="btn-success">WPF</a>
-                            <a href="http://www.jquery2dotnet.com/search/label/linq" class="btn-primary">linq</a> <a href="http://www.jquery2dotnet.com/search/label/bootstrap" class="btn-danger">Bootstrap</a>
-                        </div>
-                    </div>
-						<h4 class="price">Minimum total price: <span>${{:~minimum(hotelInfo.hotels_prices[0].agent_prices,'price_total')}}</span></h4>
-						<p class="vote"><strong>91%</strong> of buyers enjoyed this product! <strong>(87 votes)</strong></p>
-						<p>Hotel location<p>
-							<div id="map">
-							</div>
-					</div>
-				</div><!--row-->
-                <br/>
-                <hr/><br/>
-                <div class="row">
-                <div class="col-sm-6">
-				<hr/>
-				<div class="review-block">
-					<div class="row">
-                    <br/>
-						<div class="col-sm-3">
-							<img src="http://dummyimage.com/60x60/666/ffffff&text=No+Image" class="img-rounded">
-							<div class="review-block-name"><a href="#">nktailor</a></div>
-							<div class="review-block-date">January 29, 2016<br/>1 day ago</div>
-						</div>
-						<div class="col-sm-9">
-							<div class="review-block-rate">
-								<button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
-								  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-								</button>
-								<button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
-								  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-								</button>
-								<button type="button" class="btn btn-warning btn-xs" aria-label="Left Align">
-								  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-								</button>
-								<button type="button" class="btn btn-default btn-grey btn-xs" aria-label="Left Align">
-								  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-								</button>
-								<button type="button" class="btn btn-default btn-grey btn-xs" aria-label="Left Align">
-								  <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-								</button>
-							</div>
-							<div class="review-block-title">this was nice in buy</div>
-							<div class="review-block-description">this was nice in buy. this was nice in buy. this was nice in buy. this was nice in buy this was nice in buy this was nice in buy this was nice in buy this was nice in buy</div>
-                             <br/><br/>
-                        </div>
-					</div>
 
-                    <br/>
-                    <div class="row">
-						<div class="panel panel-default">
 
-													<%if(req.user){%>
-                            <form id="hotelReviewForm">
-                            <div class="panel-heading">
-                                <p> Write a review </p>
-                            </div>
-                            <div class="panel-content">
-                                <textarea name="message" rows="5" class="form-control" required min="100" placeholder="Your review"></textarea>
-                                <input type="hidden" name="hotel" value="{{:hotel.id}}"/>
-                            </div>
-                            <div class="panel-footer" style="min-height:80px;">
-                                <div class="col-xs-12">
-                                    <label class="col-xs-12 text-black" for="">Please submit your rating with this review</label>
-                                    <div class="col-xs-8">
-                                        <div class="review-block-rate">
-                                            {{for ~range(0,5)}}
-                                            <button type="button" class="btn btn-xs btn-grey btn-review-rating" data-attr-rating="{{:#getIndex()+1}}" aria-label="Left Align">
-                                            <span class="glyphicon glyphicon-star" style="margin-top:2px;" aria-hidden="true"></span>
-                                            </button>
-                                            {{/for}} 
-                                        </div>
-                                    </div>
-                                   <button type="submit" id="submitReview" class="btn btn-info pull-right">Submit review</button>
-                                </div>
-                            </div>
-                            </form>
-													 <%}else{%>
-													 	 <button class="btn btn-info btn-sm pull-right">Please login to write a review</button>
-													 <%}%>
-                        </div>
-					</div>
-				</div>
-                </div>
-                <div class="col-sm-3">
-				<div class="rating-block well-sm border-light-blue">  
-					<h1 style="noPad noMargin">Average user rating</h1>
-					<h2 class="bold text-center">{{:averageRating}}<small>/5</small></h2>
-                    <div class="input-group" style="margin:auto;">
-                    {{for ~range(0,~floor(averageRating))}}
-                        <button type="button" class="btn btn-warning btn-sm" aria-label="Left Align">
-                        <span class="glyphicon glyphicon-star" aria-hidden="true" data-rating-value="{{:~add(#index,1)}}"></span>
-                        </button>
-                    {{/for}}
-                    {{for ~range(0,~sub(5,~floor(averageRating)))}}
-					<button type="button" class="btn btn-default btn-grey btn-sm" aria-label="Left Align">
-					  <span class="glyphicon glyphicon-star" aria-hidden="true" data-rating-value="{{:~add(#index,1)}}"></span>
-					</button>
-                    {{/for}}
-                    </div>
-										
-				</div>
-			</div>
-			<div class="col-xs-3">
-			<div class="rating-block well-sm border-light-blue" style="min-height:382px;">
-				<h1 class="noPad noMargin">Rating breakdown</h1>
-                <br/>
-				<div class="pull-left">
-					<div class="pull-left" style="width:35px; line-height:1;">
-						<div style="height:9px; margin:5px 0;">5 <span class="glyphicon glyphicon-star"></span></div>
-					</div>
-					<div class="pull-left" style="width:180px;">
-						<div class="progress" style="height:9px; margin:8px 0;">
-						  <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="5" style="width: 1000%">
-							<span class="sr-only">80% Complete (danger)</span>
-						  </div>
-						</div>
-					</div>
-					<div class="pull-right" style="margin-left:10px;">{{:~numUsersWhoRated(5)}}</div>
-				</div>
-				<div class="pull-left">
-					<div class="pull-left" style="width:35px; line-height:1;">
-						<div style="height:9px; margin:5px 0;">4 <span class="glyphicon glyphicon-star"></span></div>
-					</div>
-					<div class="pull-left" style="width:180px;">
-						<div class="progress" style="height:9px; margin:8px 0;">
-						  <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="4" aria-valuemin="0" aria-valuemax="5" style="width: 80%">
-							<span class="sr-only">80% Complete (danger)</span>
-						  </div>
-						</div>
-					</div>
-					<div class="pull-right" style="margin-left:10px;">{{:~numUsersWhoRated(4)}}</div>
-				</div>
+  <div id="loading" class="hide">
+  </div>
+  <div id="templateContainer" style="padding:20px;min-height:1000px;background-repeat:no-repeat;background-size:cover;">
+  </div>
 
-				<div class="pull-left">
-					<div class="pull-left" style="width:35px; line-height:1;">
-						<div style="height:9px; margin:5px 0;">3 <span class="glyphicon glyphicon-star"></span></div>
-					</div>
-					<div class="pull-left" style="width:180px;">
-						<div class="progress" style="height:9px; margin:8px 0;">
-						  <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="3" aria-valuemin="0" aria-valuemax="5" style="width: 60%">
-							<span class="sr-only">80% Complete (danger)</span>
-						  </div>
-						</div>
-					</div>
-					<div class="pull-right" style="margin-left:10px;">{{:~numUsersWhoRated(3)}}</div>
-				</div>
-				<div class="pull-left">
-					<div class="pull-left" style="width:35px; line-height:1;">
-						<div style="height:9px; margin:5px 0;">2 <span class="glyphicon glyphicon-star"></span></div>
-					</div>
-					<div class="pull-left" style="width:180px;">
-						<div class="progress" style="height:9px; margin:8px 0;">
-						  <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="5" style="width: 40%">
-							<span class="sr-only">80% Complete (danger)</span>
-						  </div>
-						</div>
-					</div>
-					<div class="pull-right" style="margin-left:10px;">{{:~numUsersWhoRated(2)}}</div>
-				</div>
-				<div class="pull-left">
-					<div class="pull-left" style="width:35px; line-height:1;">
-						<div style="height:9px; margin:5px 0;">1 <span class="glyphicon glyphicon-star"></span></div>
-					</div>
-					<div class="pull-left" style="width:180px;">
-						<div class="progress" style="height:9px; margin:8px 0;">
-						  <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="5" style="width: 20%">
-							<span class="sr-only">80% Complete (danger)</span>
-						  </div>
-						</div>
-					</div>
-					<div class="pull-right" style="margin-left:10px;">{{:~numUsersWhoRated(1)}}</div>
-				</div>
-			</div>	
-			</div>
-        </div>     
-	</div><!--container fluid-->
-</div><!--container main-->
-</script>
 
-<div id="loading" class="hide">
-
-</div>
-<div id="templateContainer"><!-- page will be rendered here --></div>
-<%- partial ('../partials/footer.ejs') %>
+  <%- partial ('../partials/footer.ejs') %>
 </body>

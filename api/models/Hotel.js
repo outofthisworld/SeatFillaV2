@@ -17,6 +17,9 @@ module.exports = {
             collection:'HotelImage',
             via:'hotel'
         },
+        image:{
+            type:'string'
+        },
         hotelTags:{
             collection:'HotelTag',
             via:'hotels'

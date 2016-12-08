@@ -12,7 +12,7 @@ const webHookMapping = {
   'FlightRequestDestroy': ['/apiV1/FlightRequest/destroy'],
   'FlightOfferCreate': ['/apiV1/FlightOffer/create'],
   'FlightOfferUpdate': ['/apiV1/FlightOffer/update'],
-  'FlightOfferDestroy': ['/apiV1/FlightOffer/destroy']
+  'FlightOfferDestroy': ['/apiV1/FlightOffer/destroy'],
 }
 // Request comes in to create a new flight offer
 // Flight offer can be created at apiv1/flightOffer/create or flightoffer/create
@@ -88,7 +88,8 @@ module.exports = {
                 },
                 uri: updatedWebhook.url,
                 data,
-                method: 'POST'
+                method: 'POST',
+                timeout: 15000
               }, function (err, res, body) {
                 if (err) {
                   const error = new Error('Recieved error when sending request to ' + webHookUrl + ': ' + err.message)
@@ -131,7 +132,7 @@ module.exports = {
           return reject(err)
         } else {
           if (options.handleErrors) {
-               // Schedule resend, handle errors ..
+            // Schedule resend, handle errors ..
             results.sendWebhookRequests.errors.forEach(function (err) {
               // Handle
             })
@@ -144,15 +145,18 @@ module.exports = {
   verifyWebhook(options) {
     return new Promise(function (resolve, reject) {
       function tryVerify (webHook) {
+        if (!webHook) {
+          return Promise.reject('No webhook supplied to tryVerify')
+        }
         return new Promise(function (resolve, reject) {
-          if (webhook.verificationToken && webhook.verificationToken == options.token) {
+          if (webHook.verificationToken == options.token) {
             webHook.isVerified = true
             webHook.save(function (err) {
               if (err) {
                 sails.log.error(err)
                 return reject(new Error('Error saving verified web hook though response was valid'))
               } else {
-                return resolve(updatedWebhook)
+                return resolve(webHook)
               }
             })
           } else {
@@ -163,13 +167,15 @@ module.exports = {
       if (options.token && options.webHook && options.token == options.webHook.verificationToken) {
         return resolve(tryVerify(options.webHook))
       } else if (options.webHookId && options.token) {
-        return Webhook.find({
+        Webhook.findOne({
           id: options.webHookId
         })
           .then(function (webhook) {
+            sails.log.debug('verified webhook')
             return resolve(tryVerify(webhook))
           }).catch(function (err) {
           sails.log.error(err)
+          sails.log.debug('failed finding webhook')
           return reject(err)
         })
       } else {
@@ -180,35 +186,37 @@ module.exports = {
   sendWebhookVerification(webHook, url) {
     const token = require('node-uuid').v4()
     const _this = this
-    const id = typeof webHook == 'number' ? webHook : webHook.id
-    if (!typeof id == 'number') return Promise.reject(new Error('Invalid aprams'))
+    const id = webHook.id || webHook
 
     return Webhook.update({
-      id: webHook.id
+      id: id
     }, {
+      isVerified: false,
       verificationToken: token
     }).then(function (updatedWebhook) {
       return new Promise(function (resolve, reject) {
-        if (!updatedWebhook) {
+        if (!updatedWebhook.length) {
           return reject(new Error('Supplied webhook id does not exist'))
         }
+
+        updatedWebhook = updatedWebhook[0]
+
         if (!updatedWebhook.url.includes(url)) {
           return reject(new Error('Invalid verification URL, domains do not match'))
         }
         request({
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'x-seatfilla-web-hook-verification-key': updatedWebhook.verificationToken
           },
-          uri: updatedWebhook.url,
-          data: {
-            verificationToken: updatedWebhook.verificationToken
-          },
+          uri: url,
+          timeout: 10000,
           method: 'POST'
         }, function (err, res, body) {
-          if (err) {
-            return reject(err)
-          } else if (res.status != 200) {
-            return reject(new Error('Response status from provided URL was not 200'))
+          if (err || !res) {
+            return reject(err || new Error('No response from endpoint'))
+          }else if (res.statusCode != 200) {
+            return reject(new Error('Received response form endpoint but status was not 200, actual : ' + res.statusCode))
           } else if (res.body && res.body.verificationToken) {
             return _this.verifyWebhook({
               webHook: updatedWebhook,

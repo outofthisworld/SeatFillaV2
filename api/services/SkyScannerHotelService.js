@@ -168,9 +168,7 @@ module.exports = {
         uri: finalPath,
         method: 'GET'
       }, function (err, res, body) {
-        if (err) return reject({
-            error: err
-          })
+        if (err) return reject(err)
 
         try {
           const result = JSON.parse(body)
@@ -193,20 +191,21 @@ module.exports = {
           }
         } catch (err) {
           sails.log.error(err)
-          return reject({
-            error: err
-          })
+          return reject(err)
         }
       })
     })
   },
   pollHotelDetails(detailsUrl, ids, callback) {
-    this.createHotelDetails(detailsUrl,
+    const _this = this
+    var calledBack = false
+    _this.createHotelDetails(detailsUrl,
       ids).then(function (result) {
-      if (result.body.status == 'COMPLETE') {
+      if (result.body.status == 'COMPLETE' && !calledBack) {
+        calledBack = !calledBack
         return callback(null, result)
       } else {
-        this.pollHotelDetails(result.nextPollUrl)
+        _this.pollHotelDetails(result.nextPollUrl)
       }
     }).catch(callback)
   },

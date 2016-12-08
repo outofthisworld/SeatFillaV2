@@ -121,6 +121,9 @@ $(window).ready(function() {
             currentCurrencySymbol() {
                 return $('#seatfilla_currencies option:selected').attr('data-symbol')
             },
+            currencySymbolFor(currencyCode){
+                return $('#seatfilla_currencies option[value="'+currencyCode+'"]').attr('data-symbol');
+            },
             currentCurrencyCode() {
                 return $('#seatfilla_currencies option:selected').attr('value')
             },
@@ -130,8 +133,37 @@ $(window).ready(function() {
             getvar: function(key) {
                 return vars[key]
             },
+            rand:function(num){
+                return Math.round(Math.random() * (num-1));
+            },
+            toFixedDp(amt,dp){
+                if(typeof amt=='number'){
+                    return amt.toFixed(dp);
+                }else{
+                    try{
+                        return parseFloat(amt).toFixed(2);
+                    }catch(err){
+                        return 0;
+                    }
+                }
+            },
+            dateFormat(date,format){
+                return new moment(date).format(format);
+            },
+            momentNow(){
+                return moment();
+            },
             timeSinceNow:function(isoDate, type){
                 return moment().diff(moment(isoDate), type);
+            },
+            dateSub(date,amt,unit){
+                return moment(date).subtract(amt,unit);
+            },
+            dateDiff(dateOne,dateTwo,unit){
+               return moment(dateOne).diff(dateTwo,unit);
+            },
+            stringify(obj){
+                return JSON.stringify(obj);
             }
         })
         $.views.tags({

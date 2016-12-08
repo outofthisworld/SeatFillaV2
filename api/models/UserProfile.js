@@ -4,8 +4,9 @@ module.exports = {
             model: 'user',
             unique: true,
         },
-        image: {
-            type: 'string'
+        displayImage:{
+            model:'UserProfileImage',
+            notNull:true
         },
         images: {
             collection: 'UserProfileImage',

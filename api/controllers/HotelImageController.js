@@ -1,17 +1,10 @@
 module.exports = {
-    attributes: {
-        hotel: {
-            model: 'hotel',
-            notNull: true,
-            required: true
-        },
-        imageUrl: {
-            type: 'string',
-            required: true
-        },
-        fileDescriptor: {
-            type: 'string',
-            required: true
-        }
+ 
+    find(req,res){
+        require('../out/re-write/find')(req,res).then(function(result){
+            return res.ok(result);
+        }).catch(function(err){
+            return res.serverError();
+        })
     }
 }

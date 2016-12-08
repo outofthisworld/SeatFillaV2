@@ -1,7 +1,12 @@
 module.exports = {
     attributes:{
         bidAmount:{
-            type:'number',
+            type:'float',
+            notNull:true,
+            required:true
+        },
+        currency:{
+            type:'string',
             notNull:true,
             required:true
         },

@@ -86,18 +86,16 @@ $(document).ready(function () {
    window.seatfilla.globals.forms.validateAndSerialize('#registrationForm', '.success', '.errors', {
         successMessage:'Thank you for signing up at Seatfilla!',
         success(responseStatus, response, responseMessage) {
+            console.log(response)
             var step = nextStep();
             console.log('Step: ' + step);
             if(step == 'stepTwo'){
-                $('#validate-email-message').append(
-                    window.seatfilla.globals.forms.validationSuccessDiv.clone().append(
-                        $('<p></p>')
-                         .text('Thank you for registering at Seatfilla ! An email has been dispatched to ' + response.user.email +
-                        '. Please verify this email and then proceed to logging in!')));
+                $('#validate-email-message').append($.templates('#validateEmailTemplate').render(response))
             }
             window.seatfilla.globals.moveWindowToId('#stepOne');  
         },
         error(responseStatus, response, responseError) {
+            sails.log(response);
             window.seatfilla.globals.moveWindowToId('#stepOne');
         }
     });
@@ -129,59 +127,83 @@ $(document).ready(function () {
         <div class="container80">
             <div class="col-md-12">
                 <h2 class="text-center">Enter your details</h2>
+                   <% req.flash('info').forEach(function (message) { %>
+                    <div class="alert alert-info">
+                    <%=message%>
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                      </button>
+                      </div>
+                    <% }) %>
+                    <% req.flash('warning').forEach(function (message) { %>
+                    <div class="alert alert-warning">
+                    <%=message%>
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                      </button>
+                      </div>
+                    <% }) %>
+                    <% req.flash('danger').forEach(function (message) { %>
+                    <div class="alert alert-danger">
+                    <%=message%>
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                      </button>
+                      </div>
+                <% }) %>
                 <div class="success"></div>
                 <div class="errors"></div>
                 <div class="form-group">
                     <label class="control-label">Username</label>
-                    <input name="username"  minlength = "3" maxlength="20" type="text" required="required" class="form-control" placeholder="Enter Username"  />
+                    <input value="<%=req.session.tempUser && req.session.tempUser.username || ''%>" name="username"  minlength = "3" maxlength="20" type="text" required="required" class="form-control" placeholder="Enter Username"  />
                 </div>
                 <div class="form-group">
                     <label class="control-label">Email</label>
-                    <input name="email" type="email" required="required" class="form-control" placeholder="Enter Email"/>
+                    <input value="<%=req.session.tempUser && req.session.tempUser.email || ''%>" name="email" type="email" required="required" class="form-control" placeholder="Enter Email"/>
                 </div>
                 <div class="form-group">
                     <label class="control-label">Password</label>
-                    <input name="password" minlength="8" maxlength="25" type="password" required="required" class="form-control" placeholder="Enter Password"  />
+                    <input value="<%=req.session.tempUser && req.session.tempUser.password || ''%>" name="password" minlength="8" maxlength="25" type="password" required="required" class="form-control" placeholder="Enter Password"  />
                 </div>
                 <div class="form-group">
                     <label class="control-label">Confirm password</label>
-                    <input name="passwordConfirmation"  minlength="8" maxlength="25" type="password" required="required" class="form-control" placeholder="Verify Password"  />
+                    <input value="<%=req.session.tempUser && req.session.tempUser.passwordConfirmation || ''%>" name="passwordConfirmation"  minlength="8" maxlength="25" type="password" required="required" class="form-control" placeholder="Verify Password"  />
                 </div>
                 <div class="form-group">
                     <label class="control-label">First Name</label>
-                    <input name="firstName" minlength="1" maxlength="30" type="text" required="required" class="form-control" placeholder="Enter First Name"  />
+                    <input value="<%=req.session.tempUser && req.session.tempUser.firstName || ''%>" name="firstName" minlength="1" maxlength="30" type="text" required="required" class="form-control" placeholder="Enter First Name"  />
                 </div>
                 <div class="form-group">
                     <label class="control-label">Middle name</label>
-                    <input name="middleName" minlength="1"  maxlength="30" type="text" required="required" class="form-control" placeholder="Enter Middle Name" />
+                    <input value="<%=req.session.tempUser && req.session.tempUser.middleName|| ''%>" name="middleName" minlength="1"  maxlength="30" type="text" required="required" class="form-control" placeholder="Enter Middle Name" />
                 </div>
                  <div class="form-group">
                     <label class="control-label">Last Name</label>
-                    <input name="lastName" minlength="1"  maxlength="30" type="text" required="required" class="form-control" placeholder="Enter Last Name" />
+                    <input value="<%=req.session.tempUser && req.session.tempUser.lastName || ''%>" name="lastName" minlength="1"  maxlength="30" type="text" required="required" class="form-control" placeholder="Enter Last Name" />
                 </div>
                 <div class="form-group">
                     <label class="control-label">Home</label>
-                    <input name="home" minlength="1"  maxlength="30" type="tel" required="required" class="form-control" placeholder="Enter Home Phone No." />
+                    <input value="<%=req.session.tempUser && req.session.tempUser.home || ''%>" name="home" minlength="1"  maxlength="30" type="tel" required="required" class="form-control" placeholder="Enter Home Phone No." />
                 </div>
                 <div class="form-group">
                     <label class="control-label">Mobile</label>
-                    <input name="mobile" minlength="1"  maxlength="30" type="tel" required="required" class="form-control" placeholder="Enter Mobile Phone No." />
+                    <input value="<%=req.session.tempUser && req.session.tempUser.mobile|| ''%>" name="mobile" minlength="1"  maxlength="30" type="tel" required="required" class="form-control" placeholder="Enter Mobile Phone No." />
                 </div>
                 <div class="form-group">
                     <label class="control-label">Address line one</label>
-                    <input name="addressLine" minlength="1"  maxlength="30" type="text" required="required" class="form-control" placeholder="Address Line One" />
+                    <input value="<%=req.session.tempUser && req.session.tempUser.addressLine || ''%>" name="addressLine" minlength="1"  maxlength="30" type="text" required="required" class="form-control" placeholder="Address Line One" />
                 </div>
                 <div class="form-group">
                     <label class="control-label">Address line two</label>
-                    <input name="addressLineTwo" minlength="1"  maxlength="30" type="text" required="required" class="form-control" placeholder="Address Line Two" />
+                    <input value="<%=req.session.tempUser && req.session.tempUser.addressLineTwo || ''%>" name="addressLineTwo" minlength="1"  maxlength="30" type="text" required="required" class="form-control" placeholder="Address Line Two" />
                 </div>
                 <div class="form-group">
                     <label class="control-label">Address line three</label>
-                    <input name="addressLineThree" minlength="1"  maxlength="30" type="text" required="required" class="form-control" placeholder="Address Line Three" />
+                    <input value="<%=req.session.tempUser && req.session.tempUser.addressLineThree || ''%>" name="addressLineThree" minlength="1"  maxlength="30" type="text" required="required" class="form-control" placeholder="Address Line Three" />
                 </div>
                  <div class="form-group">
                     <label class="control-label">Date of birth</label>
-                    <input type="date" required="required" class="form-control"/>
+                    <input value="<%=req.session.tempUser && req.session.tempUser.username || ''%>" name="dateOfBirth" type="date" required="required" class="form-control"/>
                 </div>
                 <div class="form-group">
                     <label class="control-label">Country</label>
@@ -210,15 +232,36 @@ $(document).ready(function () {
     <div class="row setup-content" id="step-2">
         <div class="col-xs-12">
             <div class="col-md-12">
-                <h2 class="text-center">Validate your email</h2>
+                <script type="text/html" id="validateEmailTemplate">
+                     <h2 class="text-center">Validate your email</h2>
+                     <div class="alert alert-success validation-success" role="alert">
+                     {{if (!user.isEmailVerified)}}
+                        Thank you for registering at Seatfilla ! An email has been dispatched to {{:user.email}} 
+                        .Please verify this email and then proceed to <a href="/login">logging in</a>
+                     {{else}}
+                        Your account and email has been automatically verified, please click <a href="/auth/facebook">here</a> to login. 
+                     {{/if}}
+                     </div>
+
+                     <div class="panel panel-default">
+                        <div class="panel-body">
+                            <p>Your registration details:</p>
+                            <ul>
+                                <li>Username: {{:user.username}}</li>
+                                <li>Email: {{:user.email}}</li>
+                            </ul>
+                        </div>
+                     </div>
+                </script>
                 <div id="validate-email-message">
+                
                 </div>
         </div>
     </div>
     <div class="row setup-content" id="step-3">
         <div class="col-xs-12">
             <div class="col-md-12">
-                 <h2 class="text-center">Login</h2>
+                <h2 class="text-center">Login</h2>
                <a href="/user/login" > <button class="btn btn-success">Login to seatfilla</button></a>
             </div>
         </div>

@@ -93,10 +93,10 @@ label{
 -->
 <script>
 (function(){
-    var pageIndex = 0;
-    var numPolls = 0;
+    var pageIndex = 1;
 
     function renderView(response,r,xhr){
+        const _this = this;
         if ((response.errors || response.error) && response.errorType != 'gettyImageServiceRequest') {
                 console.log(response)
                 window.alert(JSON.stringify(response.errors))
@@ -108,18 +108,21 @@ label{
                     url: '/maps/pollSkyScannerFlightLivePricingApi',
                     data: {
                     urlEndPoint: nextPollUrl,
-                    destinationName: $('#arrivalCountry').val(),
-                    newskyscannerpageindex: index,
-                    newgettyimagespageindex: ((numPolls * parseInt(response.itinerary.pagesize))) %
-                    parseInt(response.gettyimagespagesize) == 0 ? parseInt(response.gettyimagespageindex) + 1 : response.gettyimagespageindex,
-                    gettyimagespagesize: response.gettyimagespagesize,
-                    skyscannerpagesize: response.itinerary.pagesize
+                    destinationName: _this.destination.name,
+                    newskyscannerpageindex: pageIndex,
+                    newgettyimagespageindex: pageIndex,
+                    gettyimagespagesize: 10,
+                    skyscannerpagesize: 10
                     },
                     success: function(response,r,xhr){
-                        if(response.status != 'COMPLETE'){
-                            numPolls+=1;
-                            pollSession(pageIndex,response.result.urlEndPoint.url);
+                        if(response.result.Status != 'UpdatesComplete'){
+                            console.log(response)
+                            return pollSession(pageIndex,response.result.urlEndPoint.url);
                         }
+
+                        pageIndex+=1;
+                        console.log('final response:')
+                        console.log(response);
 
                         const template = $.templates('#myTemplate');
                         const html = template.render(response);
@@ -150,16 +153,26 @@ label{
                 $('#products .item .switch').addClass('thumbnail')
             });
 
-            $('#searchFlight').on('click',function(){
+            $('#flightForm').submit(function(e){
+                e.preventDefault();
+       
                 const departureCity =  $('#departureCity').val();
-                const departureCityIataCode = $('#departureCity').attr('data-attr-iataCode');
+                const departureCityIataCode = $('#departureCity option:selected').attr('data-attr-iataCode');
                 const departureCountry = $('#departureCountry').val();
                 const departureAirport = $('#departureAirport').val();
+                const departureAirportCountry = $('#departureAirport option:selected').attr('data-attr-countryId');
+                console.log('departureDate:')
+                console.log($('#departureDate').val())
+                const departureDate = moment($('#departureDate').val()).format('YYYY-MM-DD');
 
-                const arrivalCity =  $('#arrivalCity').val();
-                const arrivalCityIataCode = $('#arrivalCity').attr('data-attr-iataCode');
-                const arrivalCountry = $('#arrivalCountry').val();
-                const arrivalAirport = $('#arrivalAirport').val();
+                console.log(departureCityIataCode)
+
+                const arrivalCity =  $('#destinationCity').val();
+                const arrivalCityIataCode = $('#destinationCity option:selected').attr('data-attr-iataCode');
+                const arrivalCountry = $('#destinationCountry').val();
+                const arrivalAirport = $('#destinationAirport').val();
+                const arrivalAirportCountry = $('#destinationAirport option:selected').attr('data-attr-countryId');
+                const returnDate = moment($('#returnDate').val()).format('YYYY-MM-DD');
 
                 const numAdultTickets = $('#numAdultTickets').val();
                 const numChildTickets = $('#numChildTickets').val();
@@ -167,25 +180,45 @@ label{
 
                 const prefferedCabinClass = $('prefferedCabinClass').val();
 
-                window.seatfilla.globals.request.skyscannerAPI.sendFlightInfoAjaxRequest({
-                    formValidation:'#ID',
-                    data:{
-                        dates:{departure,arrival},
-                        ticketInfo:{numAdultTickets,numChildTickets,numInfantTickets},
-                        prefferedCabinClass,
-                        groupPricing,
-                        destination:{iataCode:arrivalCityIataCode},
-                        origin:{iataCode:departureCityIataCode},
-                        currencyCodePreference
-                    },
-                    handlers:{
-                        success:renderView,
-                        error:handleAjaxError
+                const sendData ={
+                        dates:{
+                            departure:departureDate,
+                            arrival:returnDate
+                        },
+                        origin:{
+                            iataCode:departureCityIataCode,
+                            airportCountryId:departureAirportCountry,
+                            name:departureCity
+                        },
+                        destination:{
+                            iataCode:arrivalCityIataCode,
+                            name:arrivalCity
+                        },
+                        currencyCodePreference:$('#seatfilla_currencies option:selected').val(),
+                        prefferedCabinClass:prefferedCabinClass || 'Economy',
+                        ticketInfo:{
+                            numAdultTickets:numAdultTickets||1,
+                            numChildTickets:numChildTickets||0,
+                            numInfantTickets:numInfantTickets||0
+                        },
+                        groupPricing:true
+
+                    }
+
+                console.log('Sending:')
+                console.log(sendData);
+            
+                $.ajax({
+                    url:'/maps/retrieveFlightInfo',
+                    method:'POST',
+                    data:sendData,
+                    success:renderView.bind(sendData),
+                    error:function(){
+                        console.log('error')
                     }
                 })
             })
         }
-
         if(document.readyState != 'loading'){
             attach();
         }else{

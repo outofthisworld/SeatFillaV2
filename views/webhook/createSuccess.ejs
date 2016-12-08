@@ -20,6 +20,14 @@
             <li>Decrypted message value should equal: <%= req.flash('message')%></li>
         </ul>
         <small>This is the last time Seatfilla can display the decrypted message value. Please store this somewhere and remember it.</small>
+
+        <p> In order for this webhook to become active, you must verify you are the owner of the URL endpoint provided.
+            when clicking the verify button below, a request will be sent to the endpoint provided with a header param 'x-seatfilla-web-hook-verification-key'.
+            The value of this key must either be returned by the endpoint within the body of the response under the parameter 'verificationToken'
+            or a successful response must be returned within the specified timeout period (10s), we will then redirect you to a page where you
+            can enter verification token recieved.</p>
+            <br/>
+            <a class="btn btn-info pull-right" href="<%= req.flash('id')%>">Verify this webhook</a>
         </div>
     </div>
 

@@ -1,0 +1,27 @@
+module.exports = {
+    firstName:{
+        type:'string',
+        notNull:true,
+        required:true
+    },
+    lastName:{
+        type:'string',
+        notNull:true,
+        required:true
+    },
+    emailAddress:{
+        type:'string',
+        notNull:true,
+        required:true
+    },
+    subject:{
+        type:'string',
+        notNull:true,
+        required:true
+    },
+    message:{
+        type:'string',
+        notNull:true,
+        required:true
+    }
+}

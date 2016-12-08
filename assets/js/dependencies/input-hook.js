@@ -120,7 +120,7 @@
         attachCitySelect()
     }
 
-    function init() {
+    $.inputHookInit = function() {
         Promise.all([
             new Promise(function(resolve, reject) {
                 resolve(hookSelect2())
@@ -137,5 +137,5 @@
         })
     }
 
-    $(document).ready(init)
+    $(document).ready($.inputHookInit)
 })()

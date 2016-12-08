@@ -18,7 +18,7 @@ $(document).ready(function () {
       var ev = scheduler.getEvent(id)
       ev.my_template = $('#template').html()
       console.log(ev)
-
+        
       // This needs to be done after the containing function returns true
       // (template doesnt get added until then and at that point a auto generated ID is used.)
       ;(function wait () {
@@ -27,6 +27,10 @@ $(document).ready(function () {
             const x = scheduler.config.lightbox.sections[0]
             // Kind of hacky, have to find the auto generated container lightbox is putting template in
             const $content = $(($('#' + x.id)[0]).nextElementSibling)
+            $content.find('#departure_date').val(moment(ev.start_date).format('YYYY-MM-DD'))
+            $content.find('#departure_date_end').val(moment(ev.start_date).format('YYYY-MM-DD'))
+            $content.find('#return_date').val(moment(ev.start_date).add(7,'days').format('YYYY-MM-DD'))
+            $content.find('#return_date_end').val(moment(ev.start_date).add(7,'days').format('YYYY-MM-DD'))
           } else {
             // Poll again
             wait()
@@ -39,6 +43,7 @@ $(document).ready(function () {
     window.scheduler.attachEvent('onEventSave', function (id, e) {
       var ev = scheduler.getEvent(id)
       console.log(ev)
+      console.log('clicked save')
       $.ajax({
         url: '',
         data: {

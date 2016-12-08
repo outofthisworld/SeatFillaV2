@@ -20,7 +20,9 @@ label{
     
     $(document).ready(function(){
 
-        $('#tabContentPane').load('/userprofile/<%=req.user.username%>/api');
+        $('#tabContentPane').load('/userprofile/<%=req.user.username%>/api',function(err){
+            console.log(err)
+        });
 
        
         $('a[data-toggle="tab"]').on('click',function(){
@@ -30,6 +32,8 @@ label{
                     $('a[data-toggle="tab"]').removeClass('active');
                     _this.addClass('active');
                     $('#tabContentPane').html(res);
+                    $('#tabContentPane').find('#leftCol').hide();
+                    $('#tabContentPane').find('.col-md-9').removeClass('col-md-9').addClass('col-md-12');
                 }).fail(function(){
                     $('a[data-toggle="tab"]').removeClass('active');
                     _this.addClass('active');
@@ -46,7 +50,7 @@ label{
                             <li><a data-page="/userprofile/<%=req.user.username%>/api" data-toggle="tab">Api section</a></li>
                             <li><a data-page="/userprofile/<%=req.user.username%>/api/documentation" data-toggle="tab">Api documentation</a></li>
                         </ul>
-                                                <div id="tabContentPane" class="container-fluid">
+                        <div id="tabContentPane" class="container-fluid">
                         </div>
                         </div>
                         </div>

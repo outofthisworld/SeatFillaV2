@@ -1,7 +1,7 @@
 
 <div class="container-fluid">
 
-<div style="display:none;" id="template">
+<div style="" id="template">
         <div style="width:80%;">
 			<form id="flightRequestForm">
               <div class="form-group">
@@ -34,35 +34,36 @@
                 <div class="row">
                 <div class="col-xs-6">
                         <label for="departure_country">From country</label>   
-                        <select id="departure_country" name="departureCountry" data-attr-cityLink="#departure_city" class="country noselect form-control" required/> 
+                        <select id="departure_country" name="departureCountry" data-attr-cityLink="#departure_city" class="country form-control" required/> 
+                        
                         </select>
                 </div>
                 <div class="col-xs-6">
                         <label for="to_country">To country</label> 
-                        <select id="to_country" name="arrivalCountry" data-attr-cityLink="#to_city" class="country noselect form-control" required/>
+                        <select id="to_country" name="arrivalCountry" data-attr-cityLink="#to_city" class="country form-control" required/>
                         </select>
                 </div>
               </div>
               <div class="row">
                 <div class="col-xs-6">
                         <label for="departure_city">From city</label>   
-                        <select id="departure_city" name="departureIataCode" class="city noselect form-control" required/> 
+                        <select id="departure_city" name="departureIataCode" class="city form-control" required/> 
                         </select>
                 </div>
                 <div class="col-xs-6">
                         <label  for="to_city">To city</label> 
-                        <select id="to_city" name="arrivalIataCode" class="city noselect form-control" required/>
+                        <select id="to_city" name="arrivalIataCode" class="city form-control" required/>
                         </select>
                 </div>
               </div>
               <div class="row">
               <div class="col-xs-8">
               <label for="cabin_class">Cabin class</label>   
-                <select id="cabin_class" name="cabinClass" class="form-control noselect" required/>
-                <option value="Economy" selected>Economy</option>
-                <option value="PremiumEconomy">Premium Economy</option>
-                <option value="Business">Business Class</option>
-                <option value="First">First Class</option>
+                <select id="cabin_class" name="cabinClass" class="form-control noselect">
+                    <option value="Economy" selected>Economy</option>
+                    <option value="PremiumEconomy">Premium Economy</option>
+                    <option value="Business">Business Class</option>
+                    <option value="First">First Class</option>
                 </select>
                 </div>
               </div>
@@ -90,12 +91,6 @@
                    <span id="currencySymbol"></span> <input id="maxPrice" name="maxPrice" class="form-control" type="number" value="0"/> 
                    </div>
                 </div>
-        
-                <div class="col-xs-4">
-                <label for="currency">Currency</label>   
-                <select id="currency" name="currency" class="form-control" required/>
-                </select>
-                </div>
             </div>
             </form>
             </div>
@@ -122,5 +117,5 @@
 <!-- SCRIPTS WILL BE AUTOMATICALLY LOADED WHEN PAGE IS SENT VIA AJAX (see lazy-script-loader.js)-->
 <div style="display:hidden;" data-attr-lazyload-sync="" data-attr-href="/independent-css/scheduler/dhtmlxscheduler.css"></div>
 <div style="display:hidden;" data-attr-lazyload-sync="" data-attr-src="/scripts/scheduler/dhtmlxscheduler.js"></div>
-<div style="display:hidden;" data-attr-lazyload-sync="" data-attr-src="/scripts/flightRequestScheduler.js"></div>
+<div style="display:hidden;" data-attr-lazyload-sync="" data-attr-src="/scripts/user-profile.flightRequestScheduler.js"></div>
 

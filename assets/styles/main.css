@@ -291,7 +291,7 @@ a:focus {
     max-height: 80vh;
 }
 #section2bg {
-    background-image: url('http://hdwallpapersplace.com/wp-content/uploads/2015/08/exotic-holiday-resort-view-hd-wallpaper.jpg');
+    background-image: url('');
     background-attachment: fixed;
     background-position: top;
     background-size: cover;
@@ -2039,7 +2039,7 @@ hr {
     background-attachment: fixed!important;
 }
 .site-wrapper {
-    background: url('https://wallpaperscraft.com/image/plane_sky_flight_aviation_44479_2560x1600.jpg');
+    background: url('https://wallpaperscraft.com/image/resort_hotels_fires_coast_platform_ladder_evening_26760_2560x1440.jpg');
 }
 .site-wrapper-2 {
     background: url(../img/cover3.jpg);
@@ -2080,7 +2080,6 @@ hr {
     -webkit-background-size: cover;
     -moz-background-size: cover;
     background-size: cover;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, .5);
 }
 .site-wrapper-half {
     height: 50%;
@@ -2098,7 +2097,7 @@ hr {
 #footer a:focus {
     color: black;
 }
-.site-wrapper-inner {
+.site-wrap {
     position: relative;
     display: table-cell;
     vertical-align: top;
@@ -2133,101 +2132,7 @@ hr {
 .active {
     outline: 0;
 }
-.scroll-btn {
-    display: block;
-    width: 100%;
-    padding: 30px 0 10px;
-    text-align: center;
-}
-.scroll-btn .weel {
-    position: relative;
-    display: inline-block;
-    width: 20px;
-    height: 40px;
-    margin: 6px auto 5px;
-    opacity: .6;
-    border: 2px solid #fff;
-    border-radius: 24px;
-}
-.scroll-btn .mouse {
-    position: relative;
-    display: inline-block;
-    width: 50px;
-    height: 77px;
-    margin: 0 auto 5px;
-    opacity: .6;
-    border: 2px solid #fff;
-    border-radius: 24px;
-}
-.scroll-btn .weel span {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    display: block;
-    width: 8px;
-    height: 12px;
-    margin: -10px 0 0 -4px;
-    -webkit-animation: scroll 2s linear infinite;
-    -moz-animation: scroll 2s linear infinite;
-    animation: scroll 2s linear infinite;
-    border-radius: 20px;
-    background: #fff;
-}
-@-webkit-keyframes scroll {
-    1% {
-        top: 30%;
-        opacity: 1;
-    }
-    20% {
-        top: 80%;
-        opacity: 1;
-    }
-    60% {
-        top: 80%;
-        opacity: 0;
-    }
-    100% {
-        top: 30%;
-        opacity: 0;
-    }
-}
-@-moz-keyframes scroll {
-    1% {
-        top: 30%;
-        opacity: 1;
-    }
-    20% {
-        top: 80%;
-        opacity: 1;
-    }
-    60% {
-        top: 80%;
-        opacity: 0;
-    }
-    100% {
-        top: 30%;
-        opacity: 0;
-    }
-}
-@keyframes scroll {
-    1% {
-        top: 30%;
-        opacity: 1;
-    }
-    20% {
-        top: 80%;
-        opacity: 1;
-    }
-    60% {
-        top: 80%;
-        opacity: 0;
-    }
-    100% {
-        top: 30%;
-        opacity: 0;
-    }
-}
-/* About */
+
 
 #about {
     background: #fff;
@@ -2235,7 +2140,7 @@ hr {
 #about .icon {
     display: block;
 }
-/* Action */
+
 
 section#action,
 section#action-transparent {
@@ -2288,27 +2193,7 @@ section#action-transparent {
     -moz-background-size: cover;
     background-size: cover;
 }
-#action-parallax {
-    background-image: url(../img/cover5.jpg);
-}
-#action-parallax2 {
-    background-image: url(../img/cover4.jpg);
-}
-#action-parallax3 {
-    background-image: url(../img/cover3.jpg);
-}
-#action-parallax4 {
-    background-image: url(../img/cover6.jpg);
-}
-#action-parallax5 {
-    background-image: url(../img/cover10.jpg);
-}
-#action-parallax6 {
-    background-image: url(../img/cover11.jpg);
-}
-#action-parallax7 {
-    background-image: url(../img/cover7.jpg);
-}
+
 #action-transparent {
     background: #1b1f23;
 }
@@ -2323,8 +2208,6 @@ section#action-transparent {
     display: block;
     padding-top: 30px;
 }
-/* Numscroller */
-
 span.numscroller {
     font-size: 68px;
     font-weight: 300;
@@ -2342,7 +2225,6 @@ span.numscroller {
 #features .icon {
     display: block;
 }
-/* Portfolio */
 
 .portfolio-item .portfolio-link {
     position: relative;
@@ -2531,12 +2413,7 @@ a.portfolio-link:hover {
     .cover-container {
         padding-top: 100px;
     }
-    .mastfoot {
-        /*
-        position: absolute;
-        bottom: 0;
-*/
-    }
+
     .site-wrapper-inner {
         vertical-align: middle;
     }

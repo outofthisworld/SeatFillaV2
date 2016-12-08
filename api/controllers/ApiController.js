@@ -1,8 +1,9 @@
 module.exports = {
     index(req,res){
-         return res.ok();
+        sails.log.debug('returning res.ok in api controller')
+         return res.ok({tokens:req.user.apiKeys},{renderHtml:true});
     },
     documentation(req,res){
-        return res.ok();
+        return res.ok({},{renderHtml:true});
     }
 }

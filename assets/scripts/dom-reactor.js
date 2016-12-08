@@ -303,7 +303,7 @@ $(window).ready(function () {
           // If its a function, more processing is required to actually find the right container and the function will
           // be called with the data
           // If its a string, it is simply the ID of the container in which the new data should be rendered.
-          const $container = (typeof container == 'function') ? $(container.call(null, data)) : $(container.toString())
+          const $container = (typeof container == 'function') ? container.call(null, data) : $(container.toString())
 
           // At this point, we should check to see that we have a valid container and template
           // thats currently in the DOM. If we don't, then we simply return.

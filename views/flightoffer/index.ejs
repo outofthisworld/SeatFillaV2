@@ -93,16 +93,76 @@ label{
 -->
 <script>
 (function(){
-    var pageIndex = 1;
+
+
+
+    const mapItin = function(result,itin, directionality, legId) {
+                    if (!itin.PricingOptionsMapped) {
+                        itin.PricingOptions = itin.PricingOptions.map((pricingOption) => {
+                            return {
+                                pricingOption,
+                                agents: pricingOption.Agents.map((agentId) => {
+                                    return {
+                                        agentId,
+                                        agent: result.Agents.filter((agent) => {
+                                            return agent.Id == agentId
+                                        }).pop()
+                                    }
+                                })
+                            }
+                        })
+                        itin.PricingOptionsMapped = true
+                    }
+
+                    itin[directionality + 'Legs'] = result.Legs.filter(function(leg) {
+                        return leg.Id == legId;
+                    }).map(function(leg) {
+                        const _output = Object.assign({}, leg)
+
+                        _output.FlightNumbers = leg.FlightNumbers.map(function(flightNumberObj) {
+                            const carrierId = flightNumberObj.CarrierId
+                            return {
+                                flightNumber: flightNumberObj.FlightNumber,
+                                carrierId,
+                                carrierInfo: result.Carriers.filter((carrier) => {
+                                    return carrier.Id == carrierId
+                                }).pop()
+                            }
+                        })
+
+                        _output.SegmentIds = leg.SegmentIds.map(function(segmentId) {
+                            return {
+                                segmentId,
+                                segmentInfo: result.Segments.filter(function(segment) {
+                                    return segment.Id == segmentId
+                                })
+                            }
+                        })
+
+                        const destinationStationId = leg.DestinationStation
+                        _output.DestinationStation = result.Places.filter(function(place) {
+                            return place.Id == destinationStationId
+                        }).pop()
+
+                        const originStation = leg.OriginStation
+                        _output.OriginStation = result.Places.filter(function(place) {
+                            return place.Id == originStation
+                        }).pop()
+
+                        return _output
+                    })
+
+                    return itin
+                }
+
 
     function renderView(response,r,xhr){
+        
         const _this = this;
-        if ((response.errors || response.error) && response.errorType != 'gettyImageServiceRequest') {
-                console.log(response)
-                window.alert(JSON.stringify(response.errors))
-        } else {
-            //Map and render
-            (function pollSession(pageIndex,nextPollUrl){
+
+
+    function pollSession(pageIndex,nextPollUrl){
+        console.log(pageIndex)
                 $.ajax({
                     type: window.seatfilla.globals.site.endpoints.maps.retrieveFlightInfo.method,
                     url: '/maps/pollSkyScannerFlightLivePricingApi',
@@ -120,16 +180,41 @@ label{
                             return pollSession(pageIndex,response.result.urlEndPoint.url);
                         }
 
-                        pageIndex+=1;
                         console.log('final response:')
                         console.log(response);
 
-                        const template = $.templates('#myTemplate');
-                        const html = template.render(response);
-                        $('#container').append(html);
-                    }
+                        response.result.Itineraries.map(function(itin) {
+                            const outboundLegId = itin.OutboundLegId
+                            const inboundLegId = itin.InboundLegId
+
+                            mapItin(response.result,itin, 'Outbound', outboundLegId)
+
+                            if (inboundLegId) {
+                                mapItin(response.result,itin, 'Inbound', inboundLegId)
+                            }
+                            return itin
+                        }).forEach(function(itin, index) {
+                            $('#flights').append($.templates('#flightTemplate').render({itin:itin,cityImages:response.cityImages,index}) )  
+                            console.log(itin);
+                    });
+                    
+                }
                 })
-           })(pageIndex,response.result.urlEndPoint.url)
+           }
+
+        if ((response.errors || response.error) && response.errorType != 'gettyImageServiceRequest') {
+                console.log(response)
+                window.alert(JSON.stringify(response.errors))
+        } else {
+            //Map and render
+            var pageIndex = 1;
+            $('#nextPage').on('click',function(){
+                $(this).addClass('m-progress')
+                pollSession(pageIndex++,response.result.urlEndPoint.url)
+                $(this).removeClass('m-progress')
+            });
+
+            $('#nextPage').trigger('click');
         }
     }
 
@@ -143,18 +228,19 @@ label{
 
             $('#list').click(function(event){
                 event.preventDefault();$('#products .item').addClass('list-group-item');
-                $('#products .item .switch').removeClass('thumbnail')
+                $('#flights .item .switch').removeClass('thumbnail')
             });
         
             $('#grid').click(function(event){
                 event.preventDefault();
-                $('#products .item').removeClass('list-group-item');
-                $('#products .item').addClass('grid-group-item');
-                $('#products .item .switch').addClass('thumbnail')
+                $('#flights .item').removeClass('list-group-item');
+                $('#flights .item').addClass('grid-group-item');
+                $('#flights .item .switch').addClass('thumbnail')
             });
 
             $('#flightForm').submit(function(e){
                 e.preventDefault();
+                e.stopImmediatePropagation();
        
                 const departureCity =  $('#departureCity').val();
                 const departureCityIataCode = $('#departureCity option:selected').attr('data-attr-iataCode');
@@ -226,8 +312,81 @@ label{
         }
 
     })();
+    $('#filter-side-menu').load('/ajax/flight-filter-nav.ejs', function finished() {
+        $('#sort').on('click',function(){
+            
+        })
+    });
     $('#flight-search-details').load('/ajax/flight-search-nav.ejs', function finished() {});
 })();
+</script>
+
+<script id="flightTemplate" type="text/html">
+ <div class="item col-xs-6 col-lg-6">
+            <div class="thumbnail switch">
+               <div class="container-fluid">
+                    <div class="row">
+                    <br/>
+                        <div class="col-xs-12">
+                            <img  class="img img-responsive group list-group-image" style="width:100%;min-height:200px;max-height:200px;" src="{{:cityImages[~root.index].image}}" alt="" />
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="col-xs-6">
+                            <small>Inbound via</small>
+                            <img class="group list-group-image" src="{{:itin.InboundLegs[0].FlightNumbers[0].carrierInfo.ImageUrl}}" alt="" />
+                            </div>
+                            <div class="col-xs-6">
+                            <small>Outbound via</small>
+                                <img class="group list-group-image" src="{{:itin.OutboundLegs[0].FlightNumbers[0].carrierInfo.ImageUrl}}" alt="" />
+                            </div>
+
+                      <p>  A flight from  {{:itin.OutboundLegs[0].OriginStation.Code}} to {{:itin.InboundLegs[0].OriginStation.Code}}</p>
+
+                        <p>
+                        <strong>Inbound departure/arrival:</strong> <br/> {{:~dateFormat(itin.InboundLegs[0].Departure,'YYYY-MM-DD HH:MM')}} - {{:~dateFormat(itin.InboundLegs[0].Departure,'YYYY-MM-DD HH:MM')}} <br/><br/>
+                        <strong>Outbound departure/arrival:</strong> <br/> {{:~dateFormat(itin.InboundLegs[0].Departure,'YYYY-MM-DD HH:MM')}} - {{:~dateFormat(itin.InboundLegs[0].Arrival,'YYYY-MM-DD HH:MM')}}
+                          </p>
+                        <br/>
+                        <div style="height:200px;max-height:200px;min-height:200px;overflow-y:scroll;">
+                        <table class="table table-responsive">
+                        <thead>
+                            <tr>
+                                <th>Agent</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{for itin.PricingOptions}}
+                                <tr>
+                                <td><img class="img img-responsive" src="{{:agents[0].agent.ImageUrl}}"/></td>
+                                <td>{{:agents[0].agent.Name}}</td>
+                                <td>{{:pricingOption.Price}}</td>
+                                <td>{{:agents[0].agent.Type}}</td>
+                                </tr>
+                            {{/for}}
+                        </tbody>
+                        </table>
+                    </div>
+                      
+                    <div class="row">
+                        <div class="col-xs-12 col-md-6">
+                            <p class="lead"></p>
+                        </div>
+                        <div class="col-xs-12 col-md-6">
+                            <a class="btn btn-info" href="">Add to cart</a>
+                        </div>
+                     </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+             
+            </div>
+        </div>
 </script>
 <div class="container-fluid">
          
@@ -238,90 +397,9 @@ label{
             <span class="glyphicon glyphicon-th"></span>Grid</a>
         </div>
     </div>
-    <div id="products" class="row list-group">
-        <div class="item col-xs-4 col-lg-4">
-            <div class="thumbnail switch">
-                <img class="group list-group-image" src="http://placehold.it/400x250/000/fff" alt="" />
-                <div class="caption">
-                    <h4 class="group inner list-group-item-heading">
-                        Product title</h4>
-                    <p class="group inner list-group-item-text">
-                        Product description... Lorem ipsum dolor sit amet, consectetuer adipiscing elit,
-                        sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
-                    <div class="row">
-                        <div class="col-xs-12 col-md-6">
-                            <p class="lead">
-                                $21.000</p>
-                        </div>
-                        <div class="col-xs-12 col-md-6">
-                            <a class="btn btn-info" href="">Add to cart</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-         <div class="item  col-xs-4 col-lg-4">
-            <div class="thumbnail switch">
-                <img class="group list-group-image" src="http://placehold.it/400x250/000/fff" alt="" />
-                <div class="caption">
-                    <h4 class="group inner list-group-item-heading">
-                        Product title</h4>
-                    <p class="group inner list-group-item-text">
-                        Product description... Lorem ipsum dolor sit amet, consectetuer adipiscing elit,
-                        sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
-                    <div class="row">
-                        <div class="col-xs-12 col-md-6">
-                            <p class="lead">
-                                $21.000</p>
-                        </div>
-                        <div class="col-xs-12 col-md-6">
-                            <a class="btn btn-info" href="">Add to cart</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-         <div class="item  col-xs-4 col-lg-4">
-            <div class="thumbnail switch">
-                <img class="group list-group-image" src="http://placehold.it/400x250/000/fff" alt="" />
-                <div class="caption">
-                    <h4 class="group inner list-group-item-heading">
-                        Product title</h4>
-                    <p class="group inner list-group-item-text">
-                        Product description... Lorem ipsum dolor sit amet, consectetuer adipiscing elit,
-                        sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
-                    <div class="row">
-                        <div class="col-xs-12 col-md-6">
-                            <p class="lead">
-                                $21.000</p>
-                        </div>
-                        <div class="col-xs-12 col-md-6">
-                            <a class="btn btn-info" href="">Add to cart</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-         <div class="item  col-xs-4 col-lg-4">
-            <div class="thumbnail switch">
-                <img class="group list-group-image" src="http://placehold.it/400x250/000/fff" alt="" />
-                <div class="caption">
-                    <h4 class="group inner list-group-item-heading">
-                        Product title</h4>
-                    <p class="group inner list-group-item-text">
-                        Product description... Lorem ipsum dolor sit amet, consectetuer adipiscing elit,
-                        sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
-                    <div class="row">
-                        <div class="col-xs-12 col-md-6">
-                            <p class="lead">
-                                $21.000</p>
-                        </div>
-                        <div class="col-xs-12 col-md-6">
-                            <a class="btn btn-info" href="">Add to cart</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div id="flights" class="row list-group">
+       
+     
     </div>
+    <button id="nextPage" class="btn btn-lg btn-info btn-block">Search</button>
 </div>

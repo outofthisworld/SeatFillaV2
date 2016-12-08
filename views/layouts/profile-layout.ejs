@@ -100,12 +100,9 @@ $(window).ready(function(){
             </div>
             </div>
             <div class="header text-center">
-                      <h4 class="">{{:user.username}}</h4>
-                        <span class="text-white">{{:description}}</span>
-                  <script type="text/html">
-                        <h4 class="text-white">{{:user.username}}</h4>
-                        <span class="text-white">{{:description}}</span>
-                  </script>
+                      <h2 class="" style="padding:10px;"><%= data.UserProfile.user.username %></h2>
+                        <span class="text-white"><%= data.UserProfile.description %></span>
+      
             </div>
             <div class="row nav">
             <br>

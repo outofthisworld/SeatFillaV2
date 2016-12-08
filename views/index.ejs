@@ -286,7 +286,13 @@ div.seatfilla div.seatfilla-content:not(.active){
 
 
 <script>
+
 $(document).ready(function(){
+     (function(){
+       $('#lod').load('/ajax/flight-search-nav.ejs', function finished() {
+           $.inputHookInit();
+       })
+})()
 	var open = false;
 
 	function toggleNav(){
@@ -396,124 +402,28 @@ $(".down").bind("click", function(event) {
 </nav>
 
 <div class="wrapper">
- 	 												<paper-material elevation="5">
-<section id="top" class="site-wrapper" style="height:90vh;">
+ 	 											
+<section id="top" class="site-wrapper" style="height:100vh;">
 
-    <div class="site-wrapper-inner">
+    <div class="site-wrap">
 
-        <div class="masthead clearfix wow fadeIn" data-wow-delay=".9s">
-            <div class="inner">
-                <h1 class="wow fadeInDownBig text-white pull-left"><img src="images/Logo.png" width="50" height="50"/> Seat<span class="thin">filla</span></h1>
-
-            </div>
-        </div>
+       
 
         <div class="container">
-            <div class="">
-          <h4 class="text-white wow fadeInRightBig">get where you need to go</h4>
+            <div style="margin-top:150px;">
+          <h4 class="text-white wow fadeInRightBig">Get where you need to go</h4>
 
-<div class="container wow fadeInLeftBig">
-    <div class="row">
-        <div class="col-lg-5 col-md-12 col-sm-8 col-xs-9 seatfilla-container">
-            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 seatfilla-menu">
-              <ul class="list-group trip-plan-items">
-
-                <a href="#" class="list-group-item ">
-                  <i class="glyphicon glyphicon-tasks"></i>Schedule
-                </a>
-                <a href="#" class="list-group-item ">
-               <i class="glyphicon glyphicon-transfer"></i>My trips
-                </a>
-
-
-              </ul>
-            </div>
-            <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9 seatfilla">
-
-
-                <div class="seatfilla-content active">
-
-												<div class="row">
-																	<div class="col-xs-8 col-sm-8 col-md-8">
-
-																				<form role="form">
-																					<div class="row">
-																						<div class="col-xs-6 col-sm-6 col-md-6">
-																							<div class="form-group">
-																								<input type="text" name="first_name" id="first_name" class="form-control input pholderWhite" placeholder="Departure city">
-																							</div>
-																						</div>
-																						<div class="col-xs-6 col-sm-6 col-md-6">
-																							<div class="form-group">
-																								<input type="text" name="last_name" id="last_name" class="form-control pholderWhite" placeholder="Destination city">
-																							</div>
-																						</div>
-																					</div>
-																						<div class="row">
-																						<div class="col-xs-6 col-sm-6 col-md-6">
-																							<div class="form-group">
-																								<select class="form-control input">
-																								<option>One</option>
-																											<option>One</option>
-																								</select>
-																							</div>
-																						</div>
-																						<div class="col-xs-6 col-sm-6 col-md-6">
-																							<div class="form-group">
-																								<select class="form-control input"></select>
-																							</div>
-																						</div>
-																					</div>
-																					<div class="row">
-																						<div class="col-xs-6 col-sm-6 col-md-6">
-																							<div class="form-group">
-																								<input type="text" name="password" id="password" class="form-control input pholderWhite" placeholder="Password">
-																							</div>
-																						</div>
-																						<div class="col-xs-6 col-sm-6 col-md-6">
-																							<div class="form-group">
-																								<input type="text" name="password_confirmation" id="password_confirmation" class="form-control input pholderWhite" placeholder="Confirm Password">
-																							</div>
-																						</div>
-																					</div>
-
-																					<input type="submit" value="Register" class="btn btn-default btn-block">
-
-																				</form>
-
-																	</div><!--col-8-->
-
-																	<div class="col-xs-4">
-																	     <ul class="list-group" style="height:100%;margin:0px;padding:10px;">
-
-																				<a href="#" class="list-group-item " style="background-color:orange;color:white;border-radius:0px;border-width:2px;border-color:white;border-style:solid;margin:2px;">
-																					<i class="fa fa-search fa-5x"></i>
-																				</a>
-
-																	<a href="#" class="list-group-item " style="background-color:orange;color:white;border-radius:0px;border-width:2px;border-color:white;border-style:solid;margin:2px;">
-																					<i class="fa fa-map fa-5x"></i>
-																				</a>
-																			</ul>
-																	</div>
-
-
-											</div>
-
+        <div class="container wow fadeInLeftBig">
+             <div class="row">
+                <div class="panel panel-default" style="border-color:lightblue;border-style:solid;border-width:2px;">
+                    <div  id="lod" class="panel-body">
+                    
+                    </div>
                 </div>
-
-
-                <div class="seatfilla-content">
-                    <center>
-                      <h1 class="glyphicon glyphicon-transfer" style="font-size:12em;color:#00001a"></h1>
-                      <h2 style="margin-top: 0;color:#00001a"><a href="" class="btn btn-sm btn-primary btn-block" role="button">Trips</a></h2>
-                      <h3 style="margin-top: 0;color:#00001a">MY Trips </h3>
-                    </center>
-                </div>
-
-
-
+       
             </div>
         </div>
+    </div>
   </div>
 </div>
 </section>
@@ -702,8 +612,7 @@ $(".down").bind("click", function(event) {
                 <i class="icon ion-ios-close-empty size-96"></i>
             </div>
             <div class="container">
-                <h2>Magic Bicycle - Artweek Boston 2015</h2>
-                <hr>
+
                 <div class="row">
                     <div class="col-md-8">
                         <img src="img/portfolio/1.jpg" class="img-responsive img-centered" alt="">
@@ -712,9 +621,8 @@ $(".down").bind("click", function(event) {
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <p>We have created a new theme that will help designers, developers and companies create simple and beautiful business or personal website quickly and easily.</p>
-                        <p>We believe that the best user interfaces strive for simplicity. Fewer steps to take, fewer concepts to learn and a minified congnitive load. We are obsessed with beautiful digital experiences putting the user at the centre of everything we make.</p>
-                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam cursus. Morbi ut mi. Nullam enim leo, egestas id, condimentum at, laoreet mattis, massa. Sed eleifend nonummy diam. Praesent mauris ante, elementum et, bibendum at, posuere sit amet, nibh. Duis tincidunt lectus quis dui viverra vestibulum.</p>
+                        <p>Its simply amaxing.</p>
+                        <p>Get around the place with our new app.</p>
                         <p>
                             Client: <strong><a href="http://forbetterweb.com">ForBetterWeb</a></strong><br>
                             Date: <strong>April 2015</strong><br>
@@ -834,7 +742,7 @@ $(".down").bind("click", function(event) {
                 <i class="icon ion-ios-close-empty size-96"></i>
             </div>
             <div class="container">
-                <h2>Cover - Bootstrap Template</h2>
+                <h2></h2>
                 <hr>
                 <div class="row">
                     <div class="col-md-8">
@@ -842,14 +750,7 @@ $(".down").bind("click", function(event) {
                         <img src="img/portfolio/55.jpg" class="img-responsive img-centered" alt="">
                     </div>
                     <div class="col-md-4">
-                        <p>We have created a new theme that will help designers, developers and companies create simple and beautiful business or personal website quickly and easily.</p>
-                        <p>We believe that the best user interfaces strive for simplicity. Fewer steps to take, fewer concepts to learn and a minified congnitive load. We are obsessed with beautiful digital experiences putting the user at the centre of everything we make.</p>
-                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam cursus. Morbi ut mi. Nullam enim leo, egestas id, condimentum at, laoreet mattis, massa. Sed eleifend nonummy diam. Praesent mauris ante, elementum et, bibendum at, posuere sit amet, nibh. Duis tincidunt lectus quis dui viverra vestibulum.</p>
-                        <p>
-                            Client: <strong><a href="http://forbetterweb.com">ForBetterWeb</a></strong><br>
-                            Date: <strong>April 2015</strong><br>
-                            Service: <strong>Web Development</strong>
-                        </p>
+                        
                         <button type="button" class="border-button-black" data-dismiss="modal">CLOSE</button>
                     </div>
                 </div>
@@ -1064,184 +965,9 @@ $(".down").bind("click", function(event) {
 
 
 
-<section>
-<div class="container">
-<div class="carousel slide" id="myCarousel">
-
-        <div class="carousel-inner">
-            <div class="item active">
-                    <ul class="thumbnails">
-                      <li class="col-sm-3">
-							<div class="fff">
-								<div class="thumbnail">
-									<a href="#"><img src="http://placehold.it/360x240" alt=""></a>
-								</div>
-								<div class="caption">
-									<h4>Praesent commodo</h4>
-									<p>Nullam Condimentum Nibh Etiam Sem</p>
-									<a class="btn btn-mini" href="#">» Read More</a>
-								</div>
-                            </div>
-                        </li>
-                        <li class="col-sm-3">
-							<div class="fff">
-								<div class="thumbnail">
-									<a href="#"><img src="http://placehold.it/360x240" alt=""></a>
-								</div>
-								<div class="caption">
-									<h4>Praesent commodo</h4>
-									<p>Nullam Condimentum Nibh Etiam Sem</p>
-									<a class="btn btn-mini" href="#">» Read More</a>
-								</div>
-                            </div>
-                        </li>
-                        <li class="col-sm-3">
-							<div class="fff">
-								<div class="thumbnail">
-									<a href="#"><img src="http://placehold.it/360x240" alt=""></a>
-								</div>
-								<div class="caption">
-									<h4>Praesent commodo</h4>
-									<p>Nullam Condimentum Nibh Etiam Sem</p>
-									<a class="btn btn-mini" href="#">» Read More</a>
-								</div>
-                            </div>
-                        </li>
-                        <li class="col-sm-3">
-							<div class="fff">
-								<div class="thumbnail">
-									<a href="#"><img src="http://placehold.it/360x240" alt=""></a>
-								</div>
-								<div class="caption">
-									<h4>Praesent commodo</h4>
-									<p>Nullam Condimentum Nibh Etiam Sem</p>
-									<a class="btn btn-mini" href="#">» Read More</a>
-								</div>
-                            </div>
-                        </li>
-                    </ul>
-              </div><!-- /Slide1 -->
-            <div class="item">
-                    <ul class="thumbnails">
-                          <li class="col-sm-3">
-							<div class="fff">
-								<div class="thumbnail">
-									<a href="#"><img src="http://placehold.it/360x240" alt=""></a>
-								</div>
-								<div class="caption">
-									<h4>Praesent commodo</h4>
-									<p>Nullam Condimentum Nibh Etiam Sem</p>
-									<a class="btn btn-mini" href="#">» Read More</a>
-								</div>
-                            </div>
-                        </li>
-                        <li class="col-sm-3">
-							<div class="fff">
-								<div class="thumbnail">
-									<a href="#"><img src="http://placehold.it/360x240" alt=""></a>
-								</div>
-								<div class="caption">
-									<h4>Praesent commodo</h4>
-									<p>Nullam Condimentum Nibh Etiam Sem</p>
-									<a class="btn btn-mini" href="#">» Read More</a>
-								</div>
-                            </div>
-                        </li>
-                        <li class="col-sm-3">
-							<div class="fff">
-								<div class="thumbnail">
-									<a href="#"><img src="http://placehold.it/360x240" alt=""></a>
-								</div>
-								<div class="caption">
-									<h4>Praesent commodo</h4>
-									<p>Nullam Condimentum Nibh Etiam Sem</p>
-									<a class="btn btn-mini" href="#">» Read More</a>
-								</div>
-                            </div>
-                        </li>
-                        <li class="col-sm-3">
-							<div class="fff">
-								<div class="thumbnail">
-									<a href="#"><img src="http://placehold.it/360x240" alt=""></a>
-								</div>
-								<div class="caption">
-									<h4>Praesent commodo</h4>
-									<p>Nullam Condimentum Nibh Etiam Sem</p>
-									<a class="btn btn-mini" href="#">» Read More</a>
-								</div>
-                            </div>
-                        </li>
-                    </ul>
-              </div><!-- /Slide2 -->
-            <div class="item">
-                    <ul class="thumbnails">
-                        <li class="col-sm-3">
-							<div class="fff">
-								<div class="thumbnail">
-									<a href="#"><img src="http://placehold.it/360x240" alt=""></a>
-								</div>
-								<div class="caption">
-									<h4>Praesent commodo</h4>
-									<p>Nullam Condimentum Nibh Etiam Sem</p>
-									<a class="btn btn-mini" href="#">» Read More</a>
-								</div>
-                            </div>
-                        </li>
-                        <li class="col-sm-3">
-							<div class="fff">
-								<div class="thumbnail">
-									<a href="#"><img src="http://placehold.it/360x240" alt=""></a>
-								</div>
-								<div class="caption">
-									<h4>Praesent commodo</h4>
-									<p>Nullam Condimentum Nibh Etiam Sem</p>
-									<a class="btn btn-mini" href="#">» Read More</a>
-								</div>
-                            </div>
-                        </li>
-                        <li class="col-sm-3">
-							<div class="fff">
-								<div class="thumbnail">
-									<a href="#"><img src="http://placehold.it/360x240" alt=""></a>
-								</div>
-								<div class="caption">
-									<h4>Praesent commodo</h4>
-									<p>Nullam Condimentum Nibh Etiam Sem</p>
-									<a class="btn btn-mini" href="#">» Read More</a>
-								</div>
-                            </div>
-                        </li>
-                        <li class="col-sm-3">
-							<div class="fff">
-								<div class="thumbnail">
-									<a href="#"><img src="http://placehold.it/360x240" alt=""></a>
-								</div>
-								<div class="caption">
-									<h4>Praesent commodo</h4>
-									<p>Nullam Condimentum Nibh Etiam Sem</p>
-									<a class="btn btn-mini" href="#">» Read More</a>
-								</div>
-                            </div>
-                        </li>
-                    </ul>
-              </div><!-- /Slide3 -->
-        </div>
-	   <nav>
-			<ul class="control-box pager">
-				<li><a data-slide="prev" href="#myCarousel" class=""><i class="glyphicon glyphicon-chevron-left"></i></a></li>
-				<li><a data-slide="next" href="#myCarousel" class=""><i class="glyphicon glyphicon-chevron-right"></i></li>
-			</ul>
-		</nav>
-	   <!-- /.control-box -->
-
-    </div><!-- /#myCarousel -->
-	</div>
-
-</section>
-
 
    <section id="features">
-    <div class="container-fluid text-center wow fadeIn">
+    <div class="container-fluid text-center wow fadeInRight">
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
                 <h2>Try out our app</h2>
@@ -1253,29 +979,29 @@ $(".down").bind("click", function(event) {
                 <div class="col-lg-9 wow fadeInLeft" data-wow-delay="0.2s" data-wow-duration="2s">
                     <div class="row">
                         <div class="col-sm-4 wow fadeIn">
-                            <h1><i class="icon icon-heading ion-ios-box-outline size-64"></i>Demos <sup><span class="label label-danger ">New</span></sup></h1>
-                            <p>7 Unique Premade Demos</p>
+                            <h1><i class="icon icon-heading ion-plane size-64"></i>Cheap flights<sup><span class="label label-danger ">New</span></sup></h1>
+                            <p>Find cheap flights </p>
                         </div>
                         <div class="col-sm-4">
-                            <h1><i class="icon icon-heading ion-ios-settings size-64"></i> multi-purpose</h4>
-                            <p>A truly multi-purpose theme</p>
+                            <h1><i class="icon icon-heading ion-ios-search size-64"></i> Cheap hotels</h1>
+                            <p>Find cheap hotels</p>
                         </div>
                         <div class="col-sm-4">
-                            <h1><i class="icon icon-heading ion-ios-pie-outline size-64"></i>High conversion</h4>
-                            <p>Optimized for high conversion.</p>
+                            <h1><i class="icon icon-heading ion-thumbsup size-64"></i>Free</h1>
+                            <p>It's completely free!</p>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-4">
-                            <h1><i class="icon icon-heading ion-ios-monitor-outline size-64"></i>Seo Optimized</h4>
-                            <p>Seo Optimized, lightweight code based on bootstrap.</p>
+                            <h1><i class="icon icon-heading ion-speedometer size-64"></i>Fast</h1>
+                            <p>So you get to where you want to be fast</p>
                         </div>
                         <div class="col-sm-4">
-                            <h1><i class="icon icon-heading ion-ios-search size-64"></i>Good readability</h4>
+                            <h1><i class="icon icon-heading ion-ios-body size-64"></i>User friendly</h1>
                             <p> Clean Design focused on good readability</p>
                         </div>
                         <div class="col-sm-4">
-                            <h1><i class="icon icon-heading ion-iphone size-64"></i> Responsive</h4>
+                            <h1><i class="icon icon-heading ion-iphone size-64"></i> Responsive</h1>
                             <p>This theme looks great on any screen size or device</p>
                         </div>
                     </div>
@@ -1293,11 +1019,11 @@ $(".down").bind("click", function(event) {
     <div class="container">
         <div class="row">
             <div class="col-xs-12 text-center wow fadeIn">
-                <i class="icon icon-heading ion-ios-monitor-outline size-96 fa-opacity"></i>
+                <i class="icon icon-heading ion-paper-airplane size-96 fa-opacity"></i>
                 <br>
-                <h2 class="text-white">Cover is the perfect theme for your next project!</h2>
+                <h2 class="text-white">Dont forget to sign up to our news letter!</h2>
                 <p class="lead text-white">
-                    <b>Cover</b> will make your life as a Webdesigner easier
+                    <b>Recieve the lastest updates on flight deals!</b>
                 </p>
             </div>
         </div>
@@ -1309,7 +1035,7 @@ $(".down").bind("click", function(event) {
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
                 <h2>digital<span class="thin">experiences</span></h2>
-                <p class="lead">We believe that the best user interfaces strive for simplicity. Fewer steps to take, fewer concepts to learn and a minified congnitive load. We are obsessed with beautiful digital experiences putting the user at the centre of everything we make.</p>
+                <p class="lead"></p>
             </div>
         </div>
         <div class="col-md-10 col-md-offset-1">
@@ -1340,10 +1066,10 @@ $(".down").bind("click", function(event) {
         <div class="row">
             <div class="col-md-6">
                 <h2>contact<span class="thin">us</span></h2>
-                <p class="lead text-muted">Feel free to contact us to provide some feedback on our templates, give us suggestions for new templates and themes, or to just say hello!</p>
-                <h3><i class="icon ion-android-call"></i> (123) 456-7890</h3>
-                <h4 class="lead text-muted"><i class="icon ion-android-mail"></i> info@youwebsite.com<br>
-                    <i class="icon ion-ios-location"></i> 2345 Some Ave, New York, NY 23458</h4>
+                <p class="lead text-muted">Feel free to contact us regarding any inquiries!</p>
+                <h3><i class="icon ion-android-call"></i> (+64) xxxx-xxxx-xxxx</h3>
+                <h4 class="lead text-muted"><i class="icon ion-android-mail"></i> admin@seatfilla.com<br>
+                    <i class="icon ion-ios-location"></i>xxxxx xxxxx Auckland, NZ</h4>
             </div>
             <div class="col-md-5 col-md-offset-1">
                 <h2>Say<span class="thin">hello</span></h2>

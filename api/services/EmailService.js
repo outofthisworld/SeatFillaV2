@@ -16,10 +16,13 @@ const email_service = sails.config.appPath + '/email-service.json'
 const exportObj = {
   // Sends an async email
   sendEmailAsync: function (message) {
+    sails.log.debug('sending email: ' );
+    sails.log.debug(message)
     return new Promise((resolve, reject) => {
       transporter.sendMail(message, function (err, info) {
         if (err) {
           sails.log.debug('Error sending email: ' + err.message)
+          sails.log.error(err);
           return FileUtils.readJsonFileAsync(email_service).then(function (obj) {
             obj.FailedMessages.push(message)
             return fs.writeJsonFileAsync(email_service, obj).then(function () {
@@ -29,6 +32,7 @@ const exportObj = {
             })
           })
         } else {
+          sails.log.debug('Succesfully sent email')
           return resolve(info)
         }
       })

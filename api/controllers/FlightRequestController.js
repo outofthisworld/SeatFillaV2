@@ -11,27 +11,32 @@ module.exports = {
       })
     }
 
-    const obj = _.clone(req.allParams());
-    obj.user = req.user.id;
-    delete obj.id;
-
-    FlightRequest.create(obj).then(function(created){
-        FlightRequest.publishCreate(created)
-        return res.ok(created);
-    }).catch(function(err){
-        return res.negotiate(err);
+    const obj = _.clone(req.allParams())
+    obj.user = req.user.id
+    obj.status = 'AwaitingProviderAccept'
+    delete obj.id
+    sails.log.debug(req.allParams())
+    FlightRequest.create(obj).then(function (created) {
+      FlightRequest.publishCreate(created)
+      return res.ok(created)
+    }).catch(function (err) {
+      return res.negotiate(err)
     })
   },
   accept: function (req, res) {
     const flightRequestId = req.param('id')
 
     const errors = []
-    var apiUser;
-    try{
-        apiUser = ProviderService.getApiUser(req);
-    }catch(err){
-        errors.push(err.message);
+    var apiUser
+    try {
+      apiUser = ProviderService.getApiUser(req)
+    } catch(err) {
+      errors.push(err.message)
     }
+
+    sails.log.debug(req.allParams())
+    sails.log.debug('Found api user: ')
+    sails.log.debug(apiUser)
 
     if (!req.param('hours'))
       errors.push('Missing param hours')
@@ -45,7 +50,7 @@ module.exports = {
     }
 
     if (errors.length) {
-      return res.ok(400, {error: new Error('Validation Error'),errorMessages:errors})
+      return res.badRequest({status: 400,error: new Error('Validation Error'),errorMessages: errors})
     }
 
     async.waterfall([
@@ -57,16 +62,16 @@ module.exports = {
             return callback(null, flightRequest)
           }).catch(callback)
       },
-      function checkAccepted(flightRequest,callback){
-          AcceptedFlightRequest.find({flightRequest:flightRequest.id})
-          .exec(function(err,flightRequest){
-              if(err) return callback(err,null);
+      function checkAccepted (flightRequest, callback) {
+        AcceptedFlightRequest.findOne({flightRequest: flightRequestId})
+          .exec(function (err, acceptedFlightRequest) {
+            if (err) return callback(err, null)
 
-              if(flightRequest){
-                  return callback(new Error('This flight request has alredy been accepted'),null);
-              }
+            if (acceptedFlightRequest) {
+              return callback(new Error('This flight request has alredy been accepted'), null)
+            }
 
-              return callback(null,flightRequest);
+            return callback(null, flightRequest)
           })
       },
       function acceptFlightRequest (flightRequest, callback) {
@@ -78,67 +83,110 @@ module.exports = {
         const today = new Date()
         today.setHours(today.getHours() + hours)
         AcceptedFlightRequest.create(
-          { flightRequest: flightRequest.id },
           {
             flightRequest: flightRequest.id,
             validUntil: today.toISOString(),
-            apiUser: apiUser.apiToken
+            apiUser: ProviderService.getApiUser(req).apiToken
           }
-        ).populate('apiUser').then(function (acceptedFlightRequest) {
+        ).then(function (acceptedFlightRequest) {
           if (!acceptedFlightRequest) callback(new Error('Invalid state'))
-          else return callback(null, {flightRequest,acceptedFlightRequest})
+          else {
+            FlightRequest.update({id: flightRequest.id}, {status: 'AwaitingUserApproval'})
+              .exec(function (err,updated) {
+                if (err || !updated.length) {
+                  AcceptedFlightRequest.destroy({id: acceptedFlightRequest.id}).exec(function (error, des) {
+                    if (error) {
+                      sails.log.debug('critical error')
+                    }
+                    return callback(err, null)
+                  })
+                }
+                FlightRequest.publishUpdate(updated[0].id,updated[0]);
+                ApiUsers.publishAdd(ProviderService.getApiUser(req).apiToken, 'acceptedFlightRequests', acceptedFlightRequest)
+                AcceptedFlightRequest.publishCreate(acceptedFlightRequest)
+                return callback(null, {flightRequest,acceptedFlightRequest})
+              })
+          }
         }).catch(callback)
       },
-      function sendUserEmail (flightRequests, callback) {
-        EmailService.sendEmailAsync(sails.config.email.messageTemplates.flightRequestAccepted(flightRequests))
+      function sendUserEmail (flightRequest, callback) {
+        EmailService.sendEmailAsync(sails.config.email.messageTemplates.flightRequestAccepted(flightRequest))
           .then(function (info) {
-            callback(null, Object.extend(flightRequests, info))
+            sails.log.debug(info)
+            return callback(null, flightRequest)
           }).catch(callback)
       }
     ], function (err, results) {
+      sails.log.debug(results)
       if (err) {
-        return res.ok(400, err)
+        sails.log.debug(err)
+        return res.badRequest({error: err.message,errorMessages: [err.message],status: 400})
       }else {
-        return res.ok(results)
+        return res.ok({status: 200,message: 'succesfully accepted flight request',result: results.acceptFlightRequest})
       }
     })
   },
-  destroy(req,res){
-      const errors = [];
+  find(req, res) {
+    if (req.method == 'GET' && !(req.wantsJSON)) {
+      sails.log.debug('finding flight request, returning res.ok with view')
+      return res.ok({apiUser: ProviderService.getApiUser(req)}, {view: 'provider/flightRequests',layout: 'layouts/provider-layout'})
+    }
 
-     if(!req.param('id')) errors.push('Missing param:id')
+    var obj = {}
 
-     if(errors.length){
-         return res.badRequest({error:new Error('Validation Error'),errorMessages:errors})
-     }
+    if (req.param('where'))
+      obj = JSON.parse(req.param('where'))
 
-     FlightRequest.destroy({user:req.user.id,id:req.param('id')})
-     .then(function(destroyed){
-         FlightRequest.publishDestroy(destroyed);
-         return res.ok(destroyed)
-     }).catch(function(err){
-         return res.negotiate(err);
-     })
+    const queryObj = {where: obj,limit: req.param('limit'),skip: req.param('skip'),sort: req.param('sort')}
+    sails.log.debug(queryObj)
+    FlightRequest.find(queryObj)
+      .then(function (flightRequests) {
+        sails.log.debug(flightRequests)
+        if (req.isSocket) {
+          FlightRequest.watch(req)
+          FlightRequest.subscribe(req, _.map(flightRequests, function (fr) {return fr.id}))
+        }
+        return res.ok(flightRequests)
+      }).catch(function (err) {
+      return res.badRequest(err)
+    })
   },
-  update(req,res){
-      const errors = [];
+  destroy(req, res) {
+    const errors = []
 
-     if(!req.param('id')) errors.push('Missing param:id')
+    if (!req.param('id')) errors.push('Missing param:id')
 
-     if(errors.length){
-         return res.badRequest({error:new Error('Validation Error'),errorMessages:errors})
-     }
+    if (errors.length) {
+      return res.badRequest({error: new Error('Validation Error'),errorMessages: errors})
+    }
 
-     const obj = _.clone(req.allParams());
-     obj.user = req.user.id;
+    FlightRequest.destroy({user: req.user.id,id: req.param('id')})
+      .then(function (destroyed) {
+        FlightRequest.publishDestroy(destroyed)
+        return res.ok(destroyed)
+      }).catch(function (err) {
+      return res.negotiate(err)
+    })
+  },
+  update(req, res) {
+    const errors = []
 
-    FlightRequest.update({user:req.user.id,id:req.param('id')},obj)
-     .then(function(updated){
-         FlightRequest.publishUpdate(updated);
-         return res.ok(updated)
-     }).catch(function(err){
-         return res.negotiate(err);
-     })
+    if (!req.param('id')) errors.push('Missing param:id')
+
+    if (errors.length) {
+      return res.badRequest({error: new Error('Validation Error'),errorMessages: errors})
+    }
+
+    const obj = _.clone(req.allParams())
+    obj.user = req.user.id
+
+    FlightRequest.update({user: req.user.id,id: req.param('id')}, obj)
+      .then(function (updated) {
+        FlightRequest.publishUpdate(updated)
+        return res.ok(updated)
+      }).catch(function (err) {
+      return res.negotiate(err)
+    })
   },
   findByUser(req, res) {
     if (!req.param('username')) return res.notFound()

@@ -129,7 +129,8 @@ module.exports.routes = {
         controller:'FlightRequestController',
         action:'find',
         locals:{
-            layout: 'layouts/provider-layout.ejs'
+            layout: 'layouts/provider-layout.ejs',
+            view:'provider/flightRequests.ejs'
         },
     },
     'get Provider/FlightOffers':{
@@ -377,6 +378,13 @@ module.exports.routes = {
             layout:'layouts/profile-layout'
         }
     },
+    'post /UserProfile/:username/FlightRequest/Create':{
+        controller:'FlightRequest',
+        action:'create',
+        locals:{
+            layout:'layouts/profile-layout'
+        }
+    },
     'get /UserProfile/:username/FlightReqest/:id/Destroy*':{
         controller:'FlightRequestController',
         action:'destroy',
@@ -431,7 +439,7 @@ module.exports.routes = {
         controller:'FlightRequestController',
         action:'findOne',
     },
-    'get /apiv1/flightrequest/:id/accept':{
+    'post /apiv1/flightrequest/:id/accept':{
         controller:'FlightRequestController',
         action:'accept',
     },

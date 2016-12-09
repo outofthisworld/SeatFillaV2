@@ -1,4 +1,573 @@
 <style>
+
+@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+.activity-feed {
+    padding: 15px;
+}
+.activity-feed .feed-item {
+    position: relative;
+    padding-bottom: 20px;
+    padding-left: 30px;
+    border-left: 2px solid #e4e8eb;
+}
+.activity-feed .feed-item:last-child {
+    border-color: transparent;
+}
+.activity-feed .feed-item:after {
+    position: absolute;
+    top: 0;
+    left: -6px;
+    display: block;
+    width: 10px;
+    height: 10px;
+    content: '';
+    border: 1px solid #f37167;
+    border-radius: 6px;
+    background: #fff;
+}
+.activity-feed .feed-item .date {
+    font-size: 13px;
+    position: relative;
+    top: -5px;
+    text-transform: uppercase;
+    color: #8c96a3;
+}
+.activity-feed .feed-item .text {
+    position: relative;
+    top: -3px;
+}
+#legend {
+    font-family: Arial, sans-serif;
+    margin: 10px;
+    padding: 10px;
+    border: 3px solid orange;
+    background: #fff;
+}
+#legend img {
+    vertical-align: middle;
+}
+label {
+    font-size: 12px;
+}
+paper-button.fancy {
+    width: 100%;
+    margin: 0;
+    padding: 10px;
+    color: black;
+}
+.yellow-button {
+    text-transform: none;
+    color: #eeff41;
+}
+#myModal {
+    min-width: 80%;
+}
+#myModal .modal-dialog {
+    min-width: 80%;
+    min-height: 80%;
+}
+.service1-items {
+    position: relative;
+    float: left;
+    overflow: hidden;
+    width: 130px;
+    max-width: 100%;
+    height: 321px;
+    padding: 0 0 0 0;
+}
+.service1-item {
+    position: relative;
+    display: block;
+    float: left;
+    width: 120px;
+    height: 107px;
+    padding-right: 20px;
+    border-top: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+.service1-item > img {
+    max-width: 110px;
+    max-height: 110px;
+    -webkit-transition: all .2s ease-in;
+    -moz-transition: all .2s ease-in;
+    -o-transition: all .2s ease-in;
+    transition: all .2s ease-in;
+    opacity: .6;
+}
+.content-wrapper {
+    max-width: 1140px;
+    margin: 0 auto;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    border: 0;
+    border-radius: 0;
+    background: #fff;
+}
+.view-wrapper {
+    float: right;
+    max-width: 70%;
+    margin-top: 25px;
+}
+.container {
+    max-width: 100%;
+    padding-right: 0;
+    padding-left: 0;
+}
+.service1-item > img:hover {
+    cursor: pointer;
+    opacity: 1;
+}
+.service-image-left {
+    padding-right: 50px;
+}
+.service-image-right {
+    padding-left: 50px;
+}
+.service-image-left > center > img,
+.service-image-right > center > img {
+    max-height: 155px;
+}
+hide {
+    display: none;
+}
+.product-item {
+    position: relative;
+    margin-top: 20px;
+    padding: 15px;
+    background: #fff;
+}
+.product-item:hover {
+    box-shadow: 5px 5px rgba(234, 234, 234, .9);
+}
+.product-item:after {
+    font-size: 0;
+    line-height: 0;
+    display: block;
+    visibility: hidden;
+    clear: both;
+    height: 0;
+    content: '.';
+}
+.sticker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 63px;
+    height: 63px;
+}
+.sticker-new {
+    right: 0;
+    left: auto;
+    background: url() no-repeat;
+}
+.pi-img-wrapper {
+    position: relative;
+    width: 350px;
+    max-width: 350px;
+    height: 350px;
+    max-height: 350px;
+}
+.pi-img-wrapper img {
+    width: 350px;
+    max-width: 350px;
+    height: 350px;
+    max-height: 350px;
+}
+.pi-img-wrapper div {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    background: rgba(0, 0, 0, .3);
+}
+.product-item:hover > .pi-img-wrapper > div {
+    display: block;
+}
+.pi-img-wrapper div .btn {
+    font-size: 12px;
+    line-height: 1.4;
+    position: relative;
+    top: 50%;
+    margin: -13px 5px 0;
+    padding: 3px 10px;
+    text-transform: uppercase;
+    color: #fff;
+    border: 1px #fff solid;
+    background: transparent;
+}
+.product-item .btn:hover {
+    border-color: #c8c8c8;
+    background: #e84d1c;
+}
+.product-item h3 {
+    font-size: 14px;
+    font-weight: 300;
+    padding-bottom: 4px;
+    text-transform: uppercase;
+}
+.product-item h3 a {
+    color: #3e4d5c;
+}
+.product-item h3 a:hover {
+    color: #e02222;
+}
+.pi-price {
+    font-size: 18px;
+    float: left;
+    padding-top: 1px;
+    color: #e84d1c;
+}
+.product-item .add2cart {
+    float: right;
+    padding: 3px 6px;
+    text-transform: uppercase;
+    color: #a8aeb3;
+    border: 1px #ededed solid;
+}
+.product-item .add2cart:hover {
+    color: #fff;
+    border-color: #e84d1c;
+    background: #e84d1c;
+}
+@import url('http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900,400italic');
+@import url('//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css');
+.event-list {
+    font-family: 'Lato', sans-serif;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.event-list > li {
+    margin-top: -10px;
+    margin-bottom: 80px;
+    padding: 30px;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0 0 5px rgb(51, 51, 51);
+    box-shadow: 0 0 5px rgba(51, 51, 51, .7);
+}
+.panel.panel-shadow {
+    box-shadow: 0 0 5px rgb(51, 51, 51);
+    box-shadow: 0 0 5px rgba(51, 51, 51, .7);
+}
+@media(max-width:800px) {
+    .panel.panel-shadow {
+        margin-top: 50px;
+    }
+}
+.event-list > li > time {
+    display: inline-block;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+    text-transform: uppercase;
+    color: rgb(255, 255, 255);
+    background-color: rgb(12, 44, 102);
+}
+.event-list > li:nth-child(even) > time {
+    background-color: rgb(32, 82, 167);
+}
+.event-list > li > time > span {
+    display: none;
+}
+.event-list > li > time > .day {
+    font-size: 56pt;
+    font-weight: 100;
+    line-height: 1;
+    display: block;
+}
+.event-list > li time > .month {
+    font-size: 24pt;
+    font-weight: 900;
+    line-height: 1;
+    display: block;
+}
+.event-list > li > img {
+    width: 100%;
+}
+.event-list > li > .info {
+    padding-top: 5px;
+    text-align: center;
+}
+.event-list > li > .info > .title {
+    font-size: 17pt;
+    font-weight: 700;
+    margin: 0;
+}
+.event-list > li > .info > .desc {
+    font-size: 13pt;
+    font-weight: 300;
+    margin: 0;
+}
+.event-list > li > .info > ul,
+.event-list > li > .social > ul {
+    position: absolute;
+    right: 0;
+    display: table;
+    width: 100%;
+    list-style: none;
+    text-align: center;
+}
+.event-list > li > .social > ul {
+    margin: 0;
+}
+.event-list > li > .info > ul > li,
+.event-list > li > .social > ul > li {
+    font-size: 11pt;
+    font-weight: 300;
+    display: table-cell;
+    padding: 3px 0;
+    cursor: pointer;
+    color: rgb(30, 30, 30);
+}
+.event-list > li > .info > ul > li > a {
+    display: block;
+    width: 100%;
+    text-decoration: none;
+    color: rgb(30, 30, 30);
+}
+.event-list > li > .social > ul > li {
+    padding: 0;
+}
+.event-list > li > .social > ul > li > a {
+    padding: 3px 0;
+}
+.event-list > li > .info > ul > li:hover,
+.event-list > li > .social > ul > li:hover {
+    color: rgb(30, 30, 30);
+    background-color: rgb(200, 200, 200);
+}
+.facebook a,
+.twitter a,
+.google-plus a {
+    display: block;
+    width: 100%;
+    color: rgb(75, 110, 168) !important;
+}
+.twitter a {
+    color: rgb(79, 213, 248) !important;
+}
+.google-plus a {
+    color: rgb(221, 75, 57) !important;
+}
+.facebook:hover a {
+    color: rgb(255, 255, 255) !important;
+    background-color: rgb(75, 110, 168) !important;
+}
+.twitter:hover a {
+    color: rgb(255, 255, 255) !important;
+    background-color: rgb(79, 213, 248) !important;
+}
+.google-plus:hover a {
+    color: rgb(255, 255, 255) !important;
+    background-color: rgb(221, 75, 57) !important;
+}
+@media (min-width: 768px) {
+    .event-list > li {
+        position: relative;
+        display: block;
+        width: 100%;
+        height: 120px;
+        padding: 0;
+    }
+    .event-list > li > time,
+    .event-list > li > img {
+        display: inline-block;
+    }
+    .event-list > li > time,
+    .event-list > li > img {
+        float: left;
+        width: 120px;
+    }
+    .event-list > li > .info {
+        overflow: hidden;
+        background-color: rgb(245, 245, 245);
+    }
+    .event-list > li > time,
+    .event-list > li > img {
+        width: 120px;
+        height: 120px;
+        margin: 0;
+        padding: 0;
+    }
+    .event-list > li > .info {
+        position: relative;
+        height: 120px;
+        padding-right: 40px;
+        text-align: left;
+    }
+    .event-list > li > .info > .title,
+    .event-list > li > .info > .desc {
+        padding: 0 10px;
+    }
+    .event-list > li > .info > ul {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+    }
+    .event-list > li > .social {
+        position: absolute;
+        top: 0;
+        right: 0;
+        display: block;
+        width: 40px;
+    }
+    .event-list > li > .social > ul {
+        border-left: 1px solid rgb(230, 230, 230);
+    }
+    .event-list > li > .social > ul > li {
+        display: block;
+        padding: 0;
+    }
+    .event-list > li > .social > ul > li > a {
+        display: block;
+        width: 40px;
+        padding: 10px 0 9px;
+    }
+}
+.list-group {
+    border-radius: 0;
+}
+.list-group .list-group-item {
+    overflow: hidden;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+}
+.list-group .list-group-item .row-picture,
+.list-group .list-group-item .row-action-primary {
+    display: inline-block;
+    float: left;
+    padding-top: 8px;
+    padding-right: 16px;
+}
+.list-group .list-group-item .row-picture img,
+.list-group .list-group-item .row-action-primary img,
+.list-group .list-group-item .row-picture i,
+.list-group .list-group-item .row-action-primary i,
+.list-group .list-group-item .row-picture label,
+.list-group .list-group-item .row-action-primary label {
+    display: block;
+    width: 56px;
+    height: 56px;
+}
+.list-group .list-group-item .row-picture img,
+.list-group .list-group-item .row-action-primary img {
+    padding: 1px;
+    background: rgba(0, 0, 0, .1);
+}
+.list-group .list-group-item .row-picture img.circle,
+.list-group .list-group-item .row-action-primary img.circle {
+    border-radius: 100%;
+}
+.list-group .list-group-item .row-picture i,
+.list-group .list-group-item .row-action-primary i {
+    font-size: 20px;
+    line-height: 56px;
+    text-align: center;
+    color: white;
+    border-radius: 100%;
+    background: rgba(0, 0, 0, .25);
+}
+.list-group .list-group-item .row-picture label,
+.list-group .list-group-item .row-action-primary label {
+    margin-top: 5px;
+    margin-right: -7px;
+    margin-bottom: -5px;
+    margin-left: 7px;
+}
+.list-group .list-group-item .row-content {
+    display: inline-block;
+    width: calc(100% - 92px);
+    min-height: 66px;
+}
+.list-group .list-group-item .row-content .action-secondary {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+}
+.list-group .list-group-item .row-content .action-secondary i {
+    font-size: 20px;
+    cursor: pointer;
+    color: rgba(0, 0, 0, .25);
+}
+.list-group .list-group-item .row-content .action-secondary ~ * {
+    max-width: calc(100% - 30px);
+}
+.list-group .list-group-item .row-content .least-content {
+    font-size: 14px;
+    position: absolute;
+    top: 0;
+    right: 16px;
+    color: rgba(0, 0, 0, .54);
+}
+.list-group .list-group-item .list-group-item-heading {
+    font-size: 20px;
+    line-height: 29px;
+    color: rgba(0, 0, 0, .77);
+}
+.list-group .list-group-separator {
+    clear: both;
+    overflow: hidden;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.list-group .list-group-separator:before {
+    float: right;
+    width: calc(100% - 90px);
+    content: '';
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
+}
+.bg-profile {
+    z-index: 1;
+    height: 150px;
+    background-color: #3498db !important;
+}
+.bg-bottom {
+    height: 100px;
+    margin-left: 30px;
+}
+.img-profile {
+    z-index: 2;
+    display: inline-block !important;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin-top: -50%;
+    padding: 1px;
+    vertical-align: bottom;
+    color: #fff;
+    border: 2px solid #fff;
+    border-radius: 6px;
+    background-color: #fff;
+}
+.row-float {
+    margin-top: -40px;
+}
+.explore a {
+    font-size: 13px;
+    font-weight: 600;
+    color: green;
+}
+.twitter a {
+    color: #4099ff;
+}
+.img-box {
+    border: 0;
+    border-radius: 2px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, .16), 0 3px 6px rgba(0, 0, 0, .23);
+}
+
+
+.nav-tabs li{
+    max-height:60px;
+    background:transparent;
+    background-image:none;
+    padding:10px;
+}
     .comments-container {
         margin: 15px;
     }
@@ -42,10 +611,7 @@
         padding-right: 0;
         padding-left: 0;
     }
-    /**
-  * Lineas / Detalles
-  -----------------------*/
-
+ 
     .comments-list:before {
 
         width: 2px;
@@ -270,7 +836,7 @@ position: relative;
 list-style:none;
 }
 
-/* item hover */
+
 .rectangle-list p
 {
 display: block;
@@ -287,13 +853,13 @@ text-decoration: none;
 transition: all .3s ease-out;
 }
 
-/* item hover */
+
 .rectangle-list p:hover
 {
 background: lightblue;
 }
 
-/* number  */
+
 .rectangle-list p:before
 {
 content: counter(li);
@@ -312,7 +878,7 @@ text-align: center;
 font-weight: bold;
 }
 
-/* number hover */
+
 .rectangle-list p:after
 {
 position: absolute;
@@ -367,17 +933,17 @@ span.play-mix-btn:hover {
 }
 .listing-tab{
     padding:0;
-}.related-artist .artist-next{padding-left:0;}
-.related-artist .col-md-12{padding-right:0;}
+}.itemms .artist-next{padding-left:0;}
+.itemms .col-md-12{padding-right:0;}
 .play-mix-btn span {
     color: #1775bc;
 }
-.related-artist img{width:100%;}
-.related-artist h3 {
+.itemms img{width:100%;}
+.itemms h3 {
     font-size: 17px;
     margin-left: 15px;
     margin-top: 9px;
-}.related-artist{overflow:hidden;padding-bottom:10px;}
+}.itemms{overflow:hidden;padding-bottom:10px;}
 .listing-tab .tab-content ul{padding:0;margin:0;}
 .listing-tab .tab-content ul li {
     list-style-type: none;
@@ -507,7 +1073,7 @@ border-width:2px;
         <div class="container-fluid">
         <div class="row-fluid">
             <div class="panel">
-            <div class="panel-heading text-white">User info</div>
+            <div class="panel-heading text-black">User info</div>
             <div class="panel-body" id="userprofileinfocontainer">
 
             </div>
@@ -515,7 +1081,6 @@ border-width:2px;
                   <p>{{:user.displayName}}</p>
                   <address>
                       <strong>{{:user.firstName}} {{:user.lastName}}</strong><br>
-                       <strong>{{:user.firstName}} {{:user.lastName}}</strong><br>
                       <abbr title="Email">Email:</abbr> <i class="icon-globe"></i> {{:user.username}}@seatfilla.com
                   </address>
                 </script>
@@ -531,10 +1096,10 @@ border-width:2px;
 				</header>
 				<div class="card-block">
 					<div class="img-card">
-						<img src="https://placehold.it/300x250&text=Movie" alt="" class="img img-responsive" />
+						<img src="https://placehold.it/300x250&text=HotelDeal" alt="" class="img img-responsive" />
 					</div>
 					<p class="tagline card-text text-xs-center">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
-					<a href="#" class="btn btn-info btn-block"><i class="fa fa-eye"></i> Watch Now</a>
+					<a href="#" class="btn btn-info btn-block"><i class="fa fa-eye"></i> View</a>
 				</div>
 			</article>
 		</div>
@@ -545,10 +1110,10 @@ border-width:2px;
 				</header>
 				<div class="card-block">
 					<div class="img-card">
-						<img src="https://placehold.it/300x250&text=Movie" alt=""  class="img img-responsive"/>
+						<img src="https://placehold.it/300x250&text=HotelDeal" alt=""  class="img img-responsive"/>
 					</div>
 					<p class="tagline card-text text-xs-center">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
-					<a href="#" class="btn btn-info btn-block"><i class="fa fa-eye"></i> Watch Now</a>
+					<a href="#" class="btn btn-info btn-block"><i class="fa fa-eye"></i> View</a>
 				</div>
 			</article>
 		</div>
@@ -559,10 +1124,10 @@ border-width:2px;
 				</header>
 				<div class="card-block">
 					<div class="img-card">
-						<img src="https://placehold.it/300x250&text=Movie" alt=""  class="img img-responsive"/>
+						<img src="https://placehold.it/300x250&text=HotelDeal" alt=""  class="img img-responsive"/>
 					</div>
 					<p class="tagline card-text text-xs-center">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
-					<a href="#" class="btn btn-info btn-block"><i class="fa fa-eye"></i> Watch Now</a>
+					<a href="#" class="btn btn-info btn-block"><i class="fa fa-eye"></i> View</a>
 				</div>
 			</article>
 		</div>
@@ -573,17 +1138,215 @@ border-width:2px;
 				</header>
 				<div class="card-block">
 					<div class="img-card">
-						<img src="https://placehold.it/300x250&text=Movie" alt=""  class="img img-responsive"/>
+						<img src="https://placehold.it/300x250&text=HotelDeal" alt=""  class="img img-responsive"/>
 					</div>
 					<p class="tagline card-text text-xs-center">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
-					<a href="#" class="btn btn-info btn-block"><i class="fa fa-eye"></i> Watch Now</a>
+					<a href="#" class="btn btn-info btn-block"><i class="fa fa-eye"></i> View</a>
 				</div>
 			</article>
 		</div>
 	</div>
 </section>
 <br/>
-          <section>
+         
+
+            <div class="col-xs-12">
+                <div class="panel panel-default" style="padding:40px">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="panel no-image material-blue-6 text-white">
+                                    <div class="panel-heading">
+                                        <div class="row">
+                                            <div class="col-xs-6">
+                                                <i class="fa fa-envelope-o fa-5x"></i>
+                                            </div>
+                                            <div class="col-xs-6 text-right">
+                                                <p class="announcement-heading text-white">1</p>
+                                                <!--	<p class="announcement-text">Users</p> -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <a href="#">
+                                        <div class="panel-footer announcement-bottom">
+                                            <div class="row">
+                                                <div class="col-xs-6">
+                                                    Notifications
+                                                </div>
+                                                <div class="col-xs-6 text-right">
+                                                    <i class="fa fa-arrow-circle-right"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="panel  material-pink-6 text-white">
+                                    <div class="panel-heading">
+                                        <div class="row">
+                                            <div class="col-xs-6">
+                                                <i class="fa fa-comment-o fa-5x"></i>
+                                            </div>
+                                            <div class="col-xs-6 text-right">
+                                                <p class="announcement-heading text-white">12</p>
+                                                <!-- <p class="announcement-text"> Items</p> -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <a href="#">
+                                        <div class="panel-footer announcement-bottom" style="border-color:white;border-width:2px;border-style:solid;">
+                                            <div class="row">
+                                                <div class="col-xs-6">
+                                                    Chat
+                                                </div>
+                                                <div class="col-xs-6 text-right">
+                                                    <i class="fa fa-arrow-circle-right"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="panel material-pink-6 text-white">
+                                    <div class="panel-heading">
+                                        <div class="row">
+                                            <div class="col-xs-6">
+                                                <i class="fa fa-bell-o fa-5x"></i>
+                                            </div>
+                                            <div class="col-xs-6 text-right">
+                                                <p class="announcement-heading ">18</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <a href="#">
+                                        <div class="panel-footer announcement-bottom">
+                                            <div class="row">
+                                                <div class="col-xs-6">
+                                                    Requests
+                                                </div>
+                                                <div class="col-xs-6 text-right">
+                                                    <i class="fa fa-arrow-circle-right"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="panel  material-blue-6 text-white">
+                                    <div class="panel-heading">
+                                        <div class="row">
+                                            <div class="col-xs-6">
+                                                <i class="fa fa-comments fa-5x"></i>
+                                            </div>
+                                            <div class="col-xs-6 text-right">
+                                                <p class="announcement-heading">56</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <a href="#">
+                                        <div class="panel-footer announcement-bottom">
+                                            <div class="row">
+                                                <div class="col-xs-6">
+                                                    Complete
+                                                </div>
+                                                <div class="col-xs-6 text-right">
+                                                    <i class="fa fa-arrow-circle-right"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.row -->
+
+
+                    </div>
+                </div>
+            </div>
+            <!--col-->
+
+            <div class="container-fluid">
+            <div class="row">
+
+                <div id="catlist">
+           
+            
+        </div>
+        </div>
+        </div>
+        </div>
+        <!--col6-->
+
+        <div class="col-md-6">
+            <div class="row">
+
+
+        <section>
+        <div class="container-fluid">
+
+            <div class="clearfix"></div>
+                <div class="tabbable-panel margin-tops4 ">
+                <div class="tabbable-line">
+                    <ul class="nav nav-tabs tabtop  tabsetting">
+                    <li class="active"> <a href="#tab_default_1" data-toggle="tab"> Flight requests </a> </li>
+                    <li> <a href="#tab_default_2" data-toggle="tab"> Accepted flight requests</a> </li>
+
+                    </ul>
+                    <div class="tab-content margin-tops">
+                    <div class="tab-pane active fade in" id="tab_default_1">
+                        <div class="panel panel-deault">
+                        <div class="panel-heading"><p class="text-white">Flight requests</p></div>
+                        <div class="panel-body" style="overflow-y:scroll;max-height:300px;">
+                        <table border=0 class="rectangle-list">
+                            <tr>
+                                <td>
+                                <ol>
+                                
+                                </ol>
+                                </td>
+                            </tr>
+                        </table>
+                        </div>
+                    </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="tab_default_2">
+                    <div class="panel panel-deault">
+                        <div class="panel-heading"><p class="text-white">Accepted Flight Requests</p></div>
+                        <div class="panel-body" style="overflow-y:scroll;max-height:300px;">
+                        <table border=0 class="rectangle-list">
+                            <tr>
+                                <td>
+                                <ol>
+                                <li><p>There is a 2 drink minimum for all guests with reserved seating tickets</p></li>
+                                <li><p>Dancing is not allowed on the premises. (abc-257 & 253)</p></li>
+                                <li><p>No alcoholic beverages shall be consumed off the premises. (abc-257 & 253)</p></li>
+                                <li><p>Flash photography is not permitted in the lounge.</p></li>
+                                <li><p>Please present tickets upon arrival.</p></li>
+                                </ol>
+                                </td>
+                            </tr>
+                        </table>
+                        </div>
+                    </div>
+                    </div>
+
+                    </div>
+                </div>
+                </div>
+            </div>
+            </section>
+
+
+          </div>
+
+          <div class="row">
+
+            <section>
         <div class="container-fluid">
 
             <div class="clearfix"></div>
@@ -753,321 +1516,61 @@ border-width:2px;
             </div>
             </section>
 
-            <div class="col-xs-12">
-                <div class="panel panel-default" style="padding:40px">
-                    <div class="panel-body">
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="panel no-image material-blue-6 text-white">
-                                    <div class="panel-heading">
-                                        <div class="row">
-                                            <div class="col-xs-6">
-                                                <i class="fa fa-envelope-o fa-5x"></i>
-                                            </div>
-                                            <div class="col-xs-6 text-right">
-                                                <p class="announcement-heading text-white">1</p>
-                                                <!--	<p class="announcement-text">Users</p> -->
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <a href="#">
-                                        <div class="panel-footer announcement-bottom">
-                                            <div class="row">
-                                                <div class="col-xs-6">
-                                                    Notifications
-                                                </div>
-                                                <div class="col-xs-6 text-right">
-                                                    <i class="fa fa-arrow-circle-right"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="panel  material-pink-6 text-white">
-                                    <div class="panel-heading">
-                                        <div class="row">
-                                            <div class="col-xs-6">
-                                                <i class="fa fa-comment-o fa-5x"></i>
-                                            </div>
-                                            <div class="col-xs-6 text-right">
-                                                <p class="announcement-heading text-white">12</p>
-                                                <!-- <p class="announcement-text"> Items</p> -->
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <a href="#">
-                                        <div class="panel-footer announcement-bottom" style="border-color:white;border-width:2px;border-style:solid;">
-                                            <div class="row">
-                                                <div class="col-xs-6">
-                                                    Chat
-                                                </div>
-                                                <div class="col-xs-6 text-right">
-                                                    <i class="fa fa-arrow-circle-right"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="panel material-pink-6 text-white">
-                                    <div class="panel-heading">
-                                        <div class="row">
-                                            <div class="col-xs-6">
-                                                <i class="fa fa-bell-o fa-5x"></i>
-                                            </div>
-                                            <div class="col-xs-6 text-right">
-                                                <p class="announcement-heading ">18</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <a href="#">
-                                        <div class="panel-footer announcement-bottom">
-                                            <div class="row">
-                                                <div class="col-xs-6">
-                                                    Requests
-                                                </div>
-                                                <div class="col-xs-6 text-right">
-                                                    <i class="fa fa-arrow-circle-right"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="panel  material-blue-6 text-white">
-                                    <div class="panel-heading">
-                                        <div class="row">
-                                            <div class="col-xs-6">
-                                                <i class="fa fa-comments fa-5x"></i>
-                                            </div>
-                                            <div class="col-xs-6 text-right">
-                                                <p class="announcement-heading">56</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <a href="#">
-                                        <div class="panel-footer announcement-bottom">
-                                            <div class="row">
-                                                <div class="col-xs-6">
-                                                    Complete
-                                                </div>
-                                                <div class="col-xs-6 text-right">
-                                                    <i class="fa fa-arrow-circle-right"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- /.row -->
-
-
-                    </div>
-                </div>
-            </div>
-            <!--col-->
-
-            <div class="container-fluid">
-            <div class="row">
-
-                <div id="catlist">
-            <dl>
-                <dt><img src="http://placehold.it/300x200" alt="Product image" width="93" height="62" /><strong>Some info text here</strong><a href="#">The Name of the Product Goes here</a></dt>
-                <dd>
-                    <p>The description of whatever the heading is about goes here. The description of whatever the heading is about goes here.The description of whatever the heading is about goes here.</p>
-                </dd>
-            </dl>
-            <dl>
-                <dt><img src="http://placehold.it/300x200" alt="Product image" width="93" height="62" /><strong>Some info text here</strong><a href="#">The Name of the Product Goes here</a></dt>
-                <dd>
-                    <p>The description of whatever the heading is about goes here. The description of whatever the heading is about goes here.The description of whatever the heading is about goes here.</p>
-                    <p>Another line of text to show that it doesn't wrap under the image. Another line of text to show that it doesn't wrap under the image. </p>
-                </dd>
-            </dl>
-            <dl>
-                <dt><img src="http://placehold.it/300x200" alt="Product image" width="93" height="62" /><strong>Some info text here</strong><a href="#">The Name of the Product Goes here but with a longer line so that it wraps to the next line.</a></dt>
-                <dd>
-                    <p>The description of whatever the heading is about goes here. The description of whatever the heading is about goes here.The description of whatever the heading is about goes here.</p>
-                </dd>
-            </dl>
-            <dl>
-                <dt><img src="http://placehold.it/300x200" alt="Product image" width="93" height="62" /><strong>Some info text here</strong><a href="#">The Name of the Product Goes here</a></dt>
-                <dd>
-                    <p>The description of whatever the heading is about goes here. The description of whatever the heading is about goes here.The description of whatever the heading is about goes here.</p>
-                </dd>
-            </dl>
-            <dl>
-                <dt><img src="http://placehold.it/300x200" alt="Product image" width="93" height="62" /><strong>Some info text here</strong><a href="#">The Name of the Product Goes here</a></dt>
-                <dd>
-                    <p>The description of whatever the heading is about goes here. The description of whatever the heading is about goes here.The description of whatever the heading is about goes here.</p>
-                </dd>
-            </dl>
-        </div>
-        </div>
-        </div>
-        </div>
-        <!--col6-->
-
-        <div class="col-md-6">
-            <div class="row">
-
-
-        <section>
-        <div class="container-fluid">
-
-            <div class="clearfix"></div>
-                <div class="tabbable-panel margin-tops4 ">
-                <div class="tabbable-line">
-                    <ul class="nav nav-tabs tabtop  tabsetting">
-                    <li class="active"> <a href="#tab_default_1" data-toggle="tab"> Flight requests </a> </li>
-                    <li> <a href="#tab_default_2" data-toggle="tab"> Accepted flight requests</a> </li>
-
-                    </ul>
-                    <div class="tab-content margin-tops">
-                    <div class="tab-pane active fade in" id="tab_default_1">
-                        <div class="panel panel-deault">
-                        <div class="panel-heading"><p class="text-white">Flight requests</p></div>
-                        <div class="panel-body" style="overflow-y:scroll;max-height:300px;">
-                        <table border=0 class="rectangle-list">
-                            <tr>
-                                <td>
-                                <ol>
-                                <li><p>There is a 2 drink minimum for all guests with reserved seating tickets</p></li>
-                                <li><p>Dancing is not allowed on the premises. (abc-257 & 253)</p></li>
-                                <li><p>No alcoholic beverages shall be consumed off the premises. (abc-257 & 253)</p></li>
-                                <li><p>Flash photography is not permitted in the lounge.</p></li>
-                                <li><p>Please present tickets upon arrival.</p></li>
-                                </ol>
-                                </td>
-                            </tr>
-                        </table>
-                        </div>
-                    </div>
-                    </div>
-
-                    <div class="tab-pane fade" id="tab_default_2">
-                    <div class="panel panel-deault">
-                        <div class="panel-heading"><p class="text-white">Accepted Flight Requests</p></div>
-                        <div class="panel-body" style="overflow-y:scroll;max-height:300px;">
-                        <table border=0 class="rectangle-list">
-                            <tr>
-                                <td>
-                                <ol>
-                                <li><p>There is a 2 drink minimum for all guests with reserved seating tickets</p></li>
-                                <li><p>Dancing is not allowed on the premises. (abc-257 & 253)</p></li>
-                                <li><p>No alcoholic beverages shall be consumed off the premises. (abc-257 & 253)</p></li>
-                                <li><p>Flash photography is not permitted in the lounge.</p></li>
-                                <li><p>Please present tickets upon arrival.</p></li>
-                                </ol>
-                                </td>
-                            </tr>
-                        </table>
-                        </div>
-                    </div>
-                    </div>
-
-                    </div>
-                </div>
-                </div>
-            </div>
-            </section>
-
-
-          </div>
-
-          <div class="row">
-
             <div class="artist-title col-md-12">
-                <a href="">SOmething</a><br/>
+                <a href="">Content</a><br/>
             </div>
             <div class="artist-collage col-md-12">
-                <span class="play-mix"><span class="btn btn-info play-mix-btn"> <span>►</span>Deals</span></span>
-                <div class="col-md-6"><img src="https://placeholdit.imgix.net/~text?txtsize=33&txt=350%C3%97350&w=200&h=200" alt="artist-image" width="150" height="150"></div>
+                <span class="play-mix"><span class="btn btn-info play-mix-btn"> Deals</span></span>
+                <div class="col-md-6"><img src="https://placeholdit.imgix.net/~text?txtsize=33&txt=350%C3%97350&w=200&h=200" width="150" height="150"></div>
                 <div class="col-md-6 collage-rhs">
-                    <div class="col-md-12"><img src="https://placeholdit.imgix.net/~text?txtsize=33&txt=350%C3%97350&w=200&h=200" alt="artist-image" width="150" height="84"></div>
-                    <div class="col-md-12"><img src="https://placeholdit.imgix.net/~text?txtsize=33&txt=350%C3%97350&w=200&h=200" alt="artist-image" width="150" height="84"></div>
+                    <div class="col-md-12"><img src="https://placeholdit.imgix.net/~text?txtsize=33&txt=350%C3%97350&w=200&h=200"  width="150" height="84"></div>
+                    <div class="col-md-12"><img src="https://placeholdit.imgix.net/~text?txtsize=33&txt=350%C3%97350&w=200&h=200" width="150" height="84"></div>
                 </div>
             </div>
             <div class="listing-tab col-md-12">
                   <!-- Nav tabs -->
                   <ul class="nav nav-tabs" id="myTabs" role="tablist">
-                    <li role="presentation" class="active"><a href="#track" aria-controls="track" role="tab" data-toggle="tab">Top tracks</a></li>
-                    <li role="presentation"><a href="#albums" aria-controls="albums" role="tab" data-toggle="tab">Albums</a></li>
+                    <li role="presentation" class="active"><a href="#items" aria-controls="items" role="tab" data-toggle="tab">Items</a></li>
+                    <li role="presentation"><a href="#albums" aria-controls="albums" role="tab" data-toggle="tab">Other</a></li>
                   </ul>
 
                   <!-- Tab panes -->
                   <div class="tab-content">
-                    <div role="tabpanel" class="tab-pane active" id="track">
+                    <div role="tabpanel" class="tab-pane active" id="items">
                         <ul>
-                            <li><a href="#">Loyal</a>    <span>4:31</span></li>
-                            <li><a href="#">Ayo</a> <span>6:01</span></li>
-                            <li><a href="#">Look at Me Now</a>  <span>4:09</span></li>
-                            <li><a href="#">Liquor</a>  <span>3:51</span></li>
-                            <li><a href="#">Love More</a>   <span>4:15</span></li>
-                            <li><a href="#">Bitches N Marijuana</a> <span>4:17</span></li>
-                            <li><a href="#">Don't Judge Me</a>  <span>4:52</span></li>
-                            <li><a href="#">Turn Up the Music</a>   <span>4:18</span></li>
-                            <li><a href="#">With You</a>  <span>4:16</span></li>
-                            <li><a href="#">Next to You</a> <span>6:04</span></li>
-                            <li><a href="#">View all</a></li>
+                            <li><a href="#"></a> Item   <span> one</span></li>
+                            
                         </ul>
-                        <div class="related-artist">
-                            <h3>Related artist</h3>
+                        <div class="itemms">
+                            <h3></h3>
                             <div class="col-md-12">
-                                <div class="col-md-4 artist-next"><img src="http://i.ytimg.com/i/vWtix2TtWGe9kffqnwdaMw/mq1.jpg" alt="" >Rihanna</div>
-                                <div class="col-md-4 artist-next"><img src="http://i.ytimg.com/i/U6cE7pdJPc6DU2jSrKEsdQ/mq1.jpg" alt="" >Drake</div>
-                                <div class="col-md-4 artist-next"><img src="http://i.ytimg.com/i/2-zLDHEP2rEkqwgutb2ctA/mq1.jpg" alt="" >Tyga</div>
+                                <div class="col-md-4 artist-next"><img src="" alt="" ></div>
+                                <div class="col-md-4 artist-next"><img src="" alt="" ></div>
+                                <div class="col-md-4 artist-next"><img src="" alt="" ></div>
                             </div>
                         </div>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="albums">
                         <ul>
-                            <li><a href="#"><img src="http://i.ytimg.com/p/PL-o37YO_uwcLPmR8QBTegC2BoJ03I3tqe/mqdefault.jpg" alt="" width="50" height="50"> Kiss kiss</a></li>
+                            <li><a href="#"><img src="" alt="" width="50" height="50"> </a></li>
 
                         </ul>
-                        <div class="related-artist">
-                            <h3>Related artist</h3>
+                        <div class="itemms">
+                            <h3></h3>
                             <div class="col-md-12">
-                                <div class="col-md-4 artist-next"><img src="http://i.ytimg.com/i/vWtix2TtWGe9kffqnwdaMw/mq1.jpg" alt="" >Rihanna</div>
-                                <div class="col-md-4 artist-next"><img src="http://i.ytimg.com/i/U6cE7pdJPc6DU2jSrKEsdQ/mq1.jpg" alt="" >Drake</div>
-                                <div class="col-md-4 artist-next"><img src="http://i.ytimg.com/i/2-zLDHEP2rEkqwgutb2ctA/mq1.jpg" alt="" >Tyga</div>
+                                <div class="col-md-4 artist-next"><img src="" alt=""></div>
+                                <div class="col-md-4 artist-next"><img src="" alt=""></div>
+                                <div class="col-md-4 artist-next"><img src="" alt=""></div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            
           </div>
 
-        <div class="row">
-          <div class="container-fluid">
-              <div class="row">
-                  <div class="col-md-12">
-                      <div class="panel panel-default">
-                          <div class="panel-heading"><strong><a class="post-title" href="#">Post Title</a></strong></div>
-                              <div class="panel-body">
-                                  <div class="col-md-12">
-                                      <a href="#" class="thumbnail"><img class="img-responsive img-thumbnail" src="http://placehold.it/260x180" alt=""></a>
-                                  </div>
-                                      <p>Lorem ipsum dolor sit amet, id nec conceptam conclusionemque. Et eam tation option. Utinam salutatus ex eum. Ne mea dicit tibique facilisi, ea mei omittam explicari conclusionemque ad nobis propriae quaerendum sea. sum dolor sit amet, id nec conceptam conclusionemque.sum dolor sit amet.
-                                      </p>
 
-                              </div>
-                          <div class="panel-footer">
-                              <span class="glyphicon glyphicon-user" id="start"></span> <label id="started">By</label> <a href="#" id="startedby">Admin</a> |
-                              <span class="glyphicon glyphicon-eye-open" id="visit"></span> <a href="#" id="visited">Visited</a> |
-                              <span class="glyphicon glyphicon-comment" id="comment"></span> <a href="#" id="comments">Comments</a> |
-                              <a href="#"><span class="label label-info">Tutorials</span></a>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-        </div>
 
 
 <div class="container-fluid">
@@ -1075,49 +1578,7 @@ border-width:2px;
 
 
 
-        <!-- Design Group 'pending request' -->
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-4 col-sm-6">
-                    <div class="card-style">
-                        <div class="media">
-
-                            <div class="media-left">
-                                <img class="media-object img-thumbnail card-img" src="https://goo.gl/Xfk2oe">
-                            </div>
-
-                            <div class="media-body">
-                                <a href="#"><p class="media-heading">Disc. Programação Internet Rica - 2016.2</p></a>
-                                <div class="members"><small>1.235 Members</small></div>
-                                <div class="btn btn-sm btn-primary btn-part">Pending Request</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Design Group with badge activity counter (If you are already a member) -->
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-6 col-sm-6">
-                    <div class="card-style">
-                        <div class="media">
-
-                            <div class="media-left">
-                                <img class="media-object img-thumbnail card-img" src="https://goo.gl/T99N2c">
-                            </div>
-
-                            <div class="media-body">
-                                <a href="#"><p class="media-heading">HTML5 + CSS3 Dev's</p></a>
-                                <span class="members"><small>1.235 Members</small></span>
-                                <span class="badge">+99</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    
 
 
 

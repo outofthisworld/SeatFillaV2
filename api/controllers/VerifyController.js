@@ -25,11 +25,14 @@ module.exports = {
                 }
             })
     },
-    flightRequestPaymentMethods(req, res) {
+    paymentFailiure(req,res){
+        return res.ok({})
+    },
+    pay(req, res) {
         if (!req.user) {
-            res.redirect('/login?redirectSuccess=/verify/flightRequestPaymentMethods/' + req.params.id)
+            res.redirect('/login?redirectSuccess=/verify/pay?id=' + req.param('id'))
         } else {
-            if (!req.isGET() || !req.params.id)
+            if (!req.isGET() || !req.param('id'))
                 return res.badRequest()
 
             const requestID = req.params.id
@@ -43,8 +46,8 @@ module.exports = {
                 .then(function(creditCards) {
                     return res.ok({
                         creditCards,
-                        requestID
-                    })
+                        requestId:req.param('id')
+                    },{view:'verify/paymentMethod',layout:'layout'})
                 }).catch(function(err) {
                     sails.log.error(err)
                     return res.serverError(err)
@@ -86,6 +89,13 @@ module.exports = {
         const cc_id = req.param('cc_id')
         const requestId = req.param('requestId')
 
+        sails.log.debug('CC ID:')
+        sails.log.debug(cc_id)
+        sails.log.debug('request ID:')
+        sails.log.debug(requestId)
+
+        if(!cc_id || !requestId) return res.badRequest();
+
         function findCreditCard(callback) {
             const errType = 'UnknownCreditCard'
             CreditCard.findOne({
@@ -103,47 +113,33 @@ module.exports = {
         }
 
         function findFlightRequest(callback) {
-            AcceptedFlightRequests.findOne({
-                    id: requestId
+                AcceptedFlightRequest.findOne({
+                    id: req.param('requestId')
                 })
                 .populate('apiUser')
                 .populate('flightRequest')
                 .then(function(flightRequest) {
+                    sails.log.debug('Found flight request: ')
+                    sails.log.debug(flightRequest)
+                    var error = new Error('')
                     if (!flightRequest) {
-                        const errType = 'UnknownFlightRequest'
-                        const error = new Error('Invalid flight request id')
-                        error.errType = errType
+                        error.message = 'Invalid flight request id'
+                        error.errType = 'UnknownFlightRequest'
                         return callback(error, null)
                     }
                     if (new Date(flightRequest.validDate) < new Date()) {
-                        const errorType = 'ExpiredFlightRequestOffer'
-                        const error = new Error('Flight request offer has expired')
-                        error.errType = errorType
+                        error.message = 'Flight request offer has expired'
+                        error.errType = 'ExpiredFlightRequestOffer'
                         return callback(null, error)
                     }
                     if (flightRequest.userPaymentStatus == 'PAID') {
-                        const errorType = 'AlreadyPaidError'
-                        const error = new Error('This flight request has already been paid for.')
-                        error.errType = errorType
+                        error.message = 'This flight request has already been paid for.'
+                        error.errType = 'AlreadyPaidError'
                         return callback(null, error)
-                    } else {
-                        User.findOne({
-                                id: flightRequest.user
-                            })
-                            .then(function(user) {
-                                if (!user) {
-                                    const error = new Error('Unknown flight request user, invalid database state.')
-                                    const errorType = 'UnknownFlightRequestUser'
-                                    return callback(error, null)
-                                } else {
-                                    flightRequest.user = user
-                                    return callback(null, flightRequest)
-                                }
-                            }).catch(function(err) {
-                                err.errType = 'UserDBError'
-                                return callback(err, null)
-                            })
-                    }
+                    } 
+
+                    return callback(null, flightRequest)
+                
                 }).catch(function(err) {
                     err.errorType = 'AcceptedFlightRequestDBError'
                     return callback(err, null)
@@ -151,15 +147,17 @@ module.exports = {
         }
 
         function chargeUserCreditCard(callback, results) {
+            sails.log.debug('results in chargeUserCreditCard:')
+            sails.log.debug(results.findFlightRequest.flightRequest)
             const errorType = 'ChargeUserCreditCard'
             PaypalService.charge_credit_card(
                 [{
                     'amount': {
-                        'total': results.findFlightRequest.maximumPayment,
-                        'currency': results.findFlightRequest.currency
+                        total: parseFloat(results.findFlightRequest.flightRequest.maximumPayment + 5),
+                        currency: 'USD' //results.findFlightRequest.flightRequest.currency --> NZD is not supported
                     },
                     'description': 'Seatfilla flight - ' + results.findFlightRequest.id
-                }], credit_card).then(function(paypal_response) {
+                }], {credit_card:results.findCreditCard}).then(function(paypal_response) {
                 /*
                     validate response; A succesfully response should have the following structure:
                     There is more information sent with the response from paypal ,however the ID can be used to
@@ -188,6 +186,7 @@ module.exports = {
                     return callback(error, null)
                 }
             }).catch(function(err) {
+                sails.log.error(err);
                 err.errType = errorType
                 return callback(err, null)
             })
@@ -195,10 +194,10 @@ module.exports = {
 
         function updateUserPaymentStatus(callback, results) {
             const errType = 'UpdateUserPaymentStatus'
-            results.findFlightRequest.userPaymentStatus = 'PAID'
+            results.findFlightRequest.flightRequest.userPaymentStatus = 'PAID'
                 // This id can be used later on for locating the trasnaction via paypal
-            results.findFlightRequest.userPaymentId = results.chargeUserCreditCard.id
-            results.findFlightRequest.save(function(err) {
+            results.findFlightRequest.flightRequest.userPaymentId = results.chargeUserCreditCard.id
+            results.findFlightRequest.flightRequest.save(function(err) {
                 if (err) {
                     err.errType = errType
                     return callback(err, null)
@@ -208,16 +207,18 @@ module.exports = {
 
         function sendProviderPayment(callback, results) {
             const errType = 'SendProviderPayment'
-            PaypayService.createPaypalPayoutSyncMode({
+
+            const payoutObj = {
                 'recipient_type': 'EMAIL',
                 'amount': {
-                    'value': results.findFlightRequest.maximumPayment,
-                    'currency': results.findFlightRequest.currency
+                    'value': parseFloat(results.findFlightRequest.flightRequest.maximumPayment + 5),
+                    'currency': 'USD' //results.findFlightRequest.flightRequest.currency
                 },
-                'receiver': results.findFlightRequest.apiUser.email, // fix this (this should be the providers paypal email),
-                'note': 'Seatfilla - payment for accepted flight ' + results.findFlightRequest.id,
-                'sender_item_id': results.findFlightRequest.id
-            }).then(function(response) {
+                'receiver': results.findFlightRequest.apiUser.paypalEmail, // fix this (this should be the providers paypal email),
+                'note': 'Seatfilla - payment for accepted flight ' + results.findFlightRequest.flightRequest.id,
+                'sender_item_id': results.findFlightRequest.flightRequest.id
+            }
+            PaypalService.createPaypalPayoutSyncMode(payoutObj).then(function(response) {
                 // Validate response
                 if (response && response.batch_status && response.batch_status.toLowerCase() == 'success') {
                     return callback(null, response)
@@ -241,10 +242,10 @@ module.exports = {
 
         function updateProviderPaymentStatus(callback, results) {
             const errType = 'UpdateProviderPaymentStatus'
-            results.findFlightRequest.providerPayoutStatus = 'PAID'
-            results.findFlightRequest.providerPayoutBatchId = results.sendProviderPayment.payout_batch_id
-            results.findFlightRequest.providerPayoutItemId = results.sendProviderPayment.items[0].payout_item_id
-            results.findFlightRequest.results.findFlightRequest.save(function(err) {
+            results.findFlightRequest.flightRequest.providerPayoutStatus = 'PAID'
+            results.findFlightRequest.flightRequest.providerPayoutBatchId = results.sendProviderPayment.payout_batch_id
+            results.findFlightRequest.flightRequest.providerPayoutItemId = results.sendProviderPayment.items[0].payout_item_id
+            results.findFlightRequest.flightRequest.save(function(err) {
                 if (err) {
                     err.errType = errType
                     return callback(err, null)
@@ -254,7 +255,7 @@ module.exports = {
             })
         }
 
-        function handleError(err) {
+        function handleError(err,result) {
             // Log the error.
             sails.log.error(err)
                 /*
@@ -274,10 +275,12 @@ module.exports = {
                   the error stored within `req.flash` via the delegating method
                 */
                 redirectFailiure() {
-                    require('../../ErrorUtils').errToJson('/NonCriticalApproveFlightRequestErrors.json', err, {
+                    sails.log.debug('writing error :')
+                    sails.log.debug(sails.config.appPath+'/NonCriticalApproveFlightRequestErrors.json')
+                    require('../utils/ErrorUtils').errToJson(sails.config.appPath+'/NonCriticalApproveFlightRequestErrors.json', err, {
                         useBase: true
                     })
-                    return res.redirect(req.options.redirectFailiureUrl || req.body['redirectFailiureUrl'] || '/')
+                    return res.redirect('verify/paymentFailiure' || req.options.redirectFailiureUrl || req.body['redirectFailiureUrl'] || '/')
                 },
                 // We couldn't find the specified credit card in the database
                 UnknownCreditCard() {
@@ -328,7 +331,7 @@ module.exports = {
                             if (!options.JSONFilePath)
                                 return callback(null, null)
 
-                            require('../../ErrorUtils').errToJson(options.JSONFilePath, {
+                            require('../Utils/ErrorUtils').errToJson(options.JSONFilePath, {
                                 error: err,
                                 errorType: err.errType,
                                 errorMessage: err.message,
@@ -370,7 +373,7 @@ module.exports = {
                             // Something went wrong with the two fail safes, display to the user
                             // a way to contact us with the necessary information to
                             // lodge an inquiry
-                            const flightRequestId = result.findFlightRequest.id
+                            const flightRequestId = result.findFlightRequest.flightRequestid
                             const transactionId = result.chargeUserCreditCard.id
                             const state = result.chargeUserCreditCard.state
 
@@ -380,12 +383,14 @@ module.exports = {
                                 // Now display to the user that we have recieved payment but failed to update database
                                 // and they can contact us to resolve the issue
                                 case 'UpdateUserPaymentStatus':
+                                    sails.log.debug('update user payment status failiure')
                                     req.flash('criticalErrorTitle', 'We have recieved your payment but failed to update your payment status.')
                                     req.flash('criticalErrorMessage',
                                         'Please contact us so we can fix this immediately. You can use the following transaction id as a reference : ' + trasactionId + ' along with this flight request id :' + flightRequestId)
                                     break
                                 case 'SendProviderPayment':
                                 case 'UpdateProviderPaymentStatus':
+                                    sails.log.debug('send provider payment failiure')
                                     // Handle it in this way for now, obviously not ideal
                                     req.flash('criticalErrorTitle', 'We have failed to send payment to the provider of this flight.')
                                     req.flash('criticalErrorMessage',
@@ -397,20 +402,14 @@ module.exports = {
                                 default: // This shouldn't happen
                                     throw new Error('Programmer Error in verifycontroller.js')
                             }(options.errorType);
-
-                            _this.redirectFailiure();
-                        } else {
-                            // We've logged the error, handle it manually and 
-                            // Show success to the user
-                            return res.redirect(req.options.redirectSuccessUrl || req.body['redirectSuccessUrl'] || '/')
                         }
                     })
                 },
                 // The user has payed but we couldn't update their payment status within the database
                 UpdateUserPaymentStatus() {
                     this.handleCriticalError({
-                        JSONFilePath: sails.config.appPath + '/UpdateUserPaymentStatusError.json',
-                        emailAddresses: sails.config.seatfilla.adminEmail,
+                        JSONFilePath: '/UpdateUserPaymentStatusError.json',
+                        emailAddresses: 'outofthisworld24@hotmail.com',
                         emailTemplate: 'userPaymentStatusFailiure',
                         templateArgs: [result.findFlightRequest, result.chargeUserCreditCard, err],
                         errorType: 'UpdateUserPaymentStatus'
@@ -419,8 +418,8 @@ module.exports = {
                 // The user has paid for the flight but we couldnt sent the provider payment
                 SendProviderPayment() {
                     this.handleCriticalError({
-                        JSONFilePath: sails.config.appPath + '/SendProviderPaymentError.json',
-                        emailAddresses: sails.config.seatfilla.adminEmail,
+                        JSONFilePath: '/SendProviderPaymentError.json',
+                        emailAddresses: 'outofthisworld24@hotmail.com',
                         emailTemplate: 'sendProviderPaymentFailiure',
                         templateArgs: [result.findFlightRequest, err],
                         errorType: 'SendProviderPayment'
@@ -429,8 +428,8 @@ module.exports = {
                 // The provider has been payed but we couldn't update their payment status
                 UpdateProviderPaymentStatus() {
                     this.handleCriticalError({
-                        JSONFilePath: sails.config.appPath + '/UpdateProviderPaymentStatusError.json',
-                        emailAddresses: sails.config.seatfilla.adminEmail,
+                        JSONFilePath: '/UpdateProviderPaymentStatusError.json',
+                        emailAddresses: 'outofthisworld24@hotmail.com',
                         emailTemplate: 'updateProviderPaymentStatusFailiure',
                         templateArgs: [result.findFlightRequest, err],
                         errorType: 'UpdateProviderPaymentStatus'
@@ -438,6 +437,7 @@ module.exports = {
                 },
                 /* End critical errors */
             }
+            sails.log.debug('Error type: ' + err.errType)
             if (errorObj[err.errType]) {
                 errorObj[err.errType]()
             } else { // Programmer error.
@@ -458,7 +458,14 @@ module.exports = {
             }]
         }, function(err, result) {
             if (err) {
-                handleError(err)
+                async.auto({
+                    handleError:function(){
+                       handleError(err,result)
+                    },
+                    return_to_user:['handleError',function(){
+                       return res.redirect('verify/paymentFailiure');  
+                    }]
+                })
             } else {
                 // Payment done, send webhook to 
                 // provider with transaction details,

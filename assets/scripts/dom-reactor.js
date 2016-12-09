@@ -900,6 +900,7 @@ $(window).ready(function () {
             }
           }
 
+
           // Function to hook dom nodes, that is, when they are added to the DOM callback
           // function is triggered. This is a solution to AJAX pages,
           // where not all containers may be present on a page at once.

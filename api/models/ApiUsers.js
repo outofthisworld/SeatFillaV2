@@ -27,8 +27,15 @@ module.exports = {
             notNull: true,
             required: true
         },
+        paypalEmail:{
+            type:'string'
+        },
         apiRequests: {
             collection: 'ApiRequest',
+            via: 'apiUser'
+        },
+        acceptedFlightRequests:{
+            collection: 'AcceptedFlightRequest',
             via: 'apiUser'
         },
         secret: {

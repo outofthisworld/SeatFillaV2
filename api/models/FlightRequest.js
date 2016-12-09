@@ -21,21 +21,6 @@ module.exports = {
             required: true,
             notNull: true
         },
-        departureCityId: {
-            type: 'string',
-            notNull: true,
-            required: true
-        },
-        departureContinent: {
-            type: 'string',
-            required: true,
-            notNull: true
-        },
-        departureContinentId: {
-            type: 'string',
-            required: true,
-            notNull: true
-        },
         departureCountry: {
             type: 'string',
             required: true,
@@ -46,7 +31,7 @@ module.exports = {
             required: true,
             notNull: true
         },
-        departureCountryCurrency: {
+        departureCountryCountryCode: {
             type: 'string',
             required: true,
             notNull: true
@@ -61,21 +46,6 @@ module.exports = {
             required: true,
             notNull: true
         },
-        arrivalCityId: {
-            type: 'string',
-            required: true,
-            notNull: true
-        },
-        arrivalContinent: {
-            type: 'string',
-            required: true,
-            notNull: true
-        },
-        arrivalContinentId: {
-            type: 'string',
-            required: true,
-            notNull: true
-        },
         arrivalCountry: {
             type: 'string',
             required: true,
@@ -86,7 +56,8 @@ module.exports = {
             required: true,
             notNull: true
         },
-        arrivalCountryCurrency: {
+        arrivalCountryCountryCode: {
+            type: 'string',
             required: true,
             notNull: true
         },
@@ -161,6 +132,9 @@ module.exports = {
         notifySeatfillaFlights: {
             type: 'boolean',
             defaultsTo: true
+        },
+        status:{
+            type:'string'
         },
         //One to many (User can have many requests,
         //request can have one user.)

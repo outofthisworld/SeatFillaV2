@@ -2,10 +2,56 @@
 
 <script>
 
-  $('#tabContent .tab-pane').load('/UserProfile/<%=req.user.username%>/FlightRequest/Create',function(){
-      $.lazyLoadScripts({},function(err){
-        if(err) alert('Error loading scripts')
+  $('#pcontent').load('/UserProfile/<%=req.user.username%>/FlightRequest/Create',function(res){
+    console.log(res)
+    $.inputHookInit();
+    $('#departure_date').val(moment().format('YYYY-MM-DD'))
+    $('#departure_date_end').val(moment().format('YYYY-MM-DD'))
+    $('#return_date').val(moment().add(7,'days').format('YYYY-MM-DD'))
+    $('#return_date_end').val(moment().add(7,'days').format('YYYY-MM-DD'))
+    $('#flightRequestForm').on('submit',function(e){
+      e.preventDefault();
+      console.log('click')
+
+    /*'data-attr-countryId': city.countryId,
+        'data-attr-location': city.location,
+        'data-attr-iataCode': city.iataCode,
+        'data-attr-id:': city.id,
+        'data-attr-currency': city.currency,
+        'data-attr-cityIndex': city.cityIndex,
+        'data-attr-countryIndex': city.countryIndex,
+        'data-attr-continentIndex': city.continentIndex*/
+
+      var obj = $('#flightRequestForm').serialize();
+      var obj2 = {
+        departureIataCode:$('#departureCity option:selected').attr('data-attr-iataCode'),
+        departureLocation:$('#departureCity option:selected').attr('data-attr-location'),
+        departureCountryId :$('#departureCity option:selected').attr('data-attr-countryId'),
+        departureCountryCurrency:$('#departureCountry option:selected').attr('data-attr-currency'),
+        departureCountryCountryCode:$('#departureCountry option:selected').attr('data-attr-countryCode'),
+        arrivalIataCode: $('#arrivalCity option:selected').attr('data-attr-iataCode'),
+        arrivalCountryCurrency: $('#arrivalCountry option:selected').attr('data-attr-currency'),
+        arrivalCity:$('#arrivalCity').val(),
+        arrivalCountryCountryCode:$('#arrivalCountry option:selected').attr('data-attr-countryCode'),
+        arrivalCountryId :$('#arrivalCity option:selected').attr('data-attr-countryId'),
+        arrivalLocation:$('#arrivalCity option:selected').attr('data-attr-location'),
+        currency :$('#seatfilla_currencies option:selected').val(),
+        timeZoneOffset: new Date().getTimezoneOffset(),
+        requestLocale: 'en-US',
+      }
+      $.ajax({
+        url:'/UserProfile/<%=req.user.username%>/FlightRequest/Create',
+        method:'POST',
+        data:obj + '&'+$.param(obj2),
+        success:function(res){
+          console.log(res);
+          $.toaster({priority:'info',message:'Succesfully created flight request'})
+        },
+        error:function(){
+          $.toaster({priority:'danger',message:'Error creating flight request'})
+        }
       })
+    })
   })
 
 </script>
@@ -16,7 +62,7 @@
        
         </ul>
         <div id="tabContent" class="tab-content">
-          <div class="tab-pane active in" id="pc">
+          <div id="pcontent" class="tab-pane active in" id="pc">
             
           </div>
         </div>

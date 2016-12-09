@@ -479,8 +479,9 @@ $(window).ready(function () {
                     $(container).html("")
                     console.log('loading: ' + target)
                     $(container).load(target,function(res,ts,xhr){
-
+                                  console.log(res)
                         if(xhr.status != 200){
+              
                             console.log('not 200')
                             return;
                         };

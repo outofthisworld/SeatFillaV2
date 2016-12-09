@@ -1,0 +1,459 @@
+<style>
+.widget .panel-body { padding:0px; }
+.widget .list-group { margin-bottom: 0; }
+.widget .panel-title { display:inline }
+.widget .label-info { float: right; }
+.widget li.list-group-item {border-radius: 0;border: 0;border-top: 1px solid #ddd;}
+.widget li.list-group-item:hover { background-color: #f3f3f3; }
+.widget .mic-info { color: #666666;font-size: 11px; }
+.widget .action { margin-top:5px; }
+.widget .comment-text { font-size: 12px; }
+.widget .btn-block { border-top-left-radius:0px;border-top-right-radius:0px; }
+.flightrequest-table th{
+    font-size:10px;
+}
+.tabbable-line > .nav-tabs {
+  border: none;
+  margin: 0px;
+}
+.tabbable-line > .nav-tabs > li {
+  margin-right: 2px;
+}
+.tabbable-line > .nav-tabs > li > a {
+  border: 0;
+  margin-right: 0;
+  color: #737373;
+}
+.tabbable-line > .nav-tabs > li > a > i {
+  color: #a6a6a6;
+}
+.tabbable-line > .nav-tabs > li.open, .tabbable-line > .nav-tabs > li:hover {
+  border-bottom: 4px solid #fbcdcf;
+}
+.tabbable-line > .nav-tabs > li.open > a, .tabbable-line > .nav-tabs > li:hover > a {
+  border: 0;
+  background: none !important;
+  color: #333333;
+}
+.tabbable-line > .nav-tabs > li.open > a > i, .tabbable-line > .nav-tabs > li:hover > a > i {
+  color: #a6a6a6;
+}
+.tabbable-line > .nav-tabs > li.open .dropdown-menu, .tabbable-line > .nav-tabs > li:hover .dropdown-menu {
+  margin-top: 0px;
+}
+.tabbable-line > .nav-tabs > li.active {
+  border-bottom: 4px solid #f3565d;
+  position: relative;
+}
+.tabbable-line > .nav-tabs > li.active > a {
+  border: 0;
+  color: #333333;
+}
+.tabbable-line > .nav-tabs > li.active > a > i {
+  color: #404040;
+}
+.tabbable-line > .tab-content {
+  margin-top: -3px;
+  background-color: #fff;
+  border: 0;
+  border-top: 1px solid #eee;
+  padding: 15px 0;
+}
+.portlet .tabbable-line > .tab-content {
+  padding-bottom: 0;
+}
+.tabbable-line.tabs-below > .nav-tabs > li {
+  border-top: 4px solid transparent;
+}
+.tabbable-line.tabs-below > .nav-tabs > li > a {
+  margin-top: 0;
+}
+.tabbable-line.tabs-below > .nav-tabs > li:hover {
+  border-bottom: 0;
+  border-top: 4px solid #fbcdcf;
+}
+.tabbable-line.tabs-below > .nav-tabs > li.active {
+  margin-bottom: -2px;
+  border-bottom: 0;
+  border-top: 4px solid #f3565d;
+}
+.tabbable-line.tabs-below > .tab-content {
+  margin-top: -10px;
+  border-top: 0;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+}
+</style>
+
+<script type="text/html" id="flightRequestItem">
+<li class="list-group-item" data-attr-flightRequestId="{{:id}}">
+                        <div class="row">
+                            <div class="col-xs-2 col-md-1">
+                                <img src="http://placehold.it/80" class="img-circle img-responsive" alt="" /></div>
+                            <div class="col-xs-10 col-md-11">
+                                <div>
+                                     Departure {{:departureCountry}} to {{:arrivalCountry}}
+                                    <div class="mic-info">
+                                     User: <a href="/userprofile/{{:username}}">{{:username}}</a>
+                                    </div>
+                                </div>
+                                <div class="comment-text" style="overflow:scroll;">
+                                     <table class="flightrequest-table table table-responsive table-bordered table-condensed">
+                                            <thead>
+                                                <tr>
+                                                    <th>id</th>
+                                                    <th>Username</th>
+                                                    <th>Price</th>
+                                                    <th>Currency</th>
+                                                    <th>Departure country code</th>
+                                                    <th>Departure country</th>
+                                                    <th>Departure city</th>
+                                                    <th>Departure city IATA code</th>
+                                                    <th>Arrival country code</th>
+                                                    <th>Arrival country</th>
+                                                    <th>Arrival city</th>
+                                                    <th>Arrival city IATA code</th>
+                                                    <th>Cabin class</th>
+                                                    <th>Adults</th>
+                                                    <th>Children</th>
+                                                    <th>Infants</th>
+                                                    <th>Flight type</th>
+                                                    <th>From departure date</th>
+                                                    <th>To departure date</th>
+                                                    <th>From return date</th>
+                                                    <th>To return date</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody data-attr-flightRequestId="{{:id}}">
+                                            <tr>
+                                            
+                                                    <tr>
+                                                    <td>{{:id}}</td>
+                                                    <td>{{:username}}</td>
+                                                    <td>{{:maximumPayment}}</td>
+                                                    <td>{{:currency}}</td>
+                                                    <td>{{:departureCountryId}}</td>
+                                                    <td>{{:departureCountry}}</td>
+                                                    <td>{{:departureCity}}</td>
+                                                    <td>{{:departureIataCode}}</td>
+                                                    <td>{{:arrivalCountryId}}</td>
+                                                    <td>{{:arrivalCountry}}</td>
+                                                    <td>{{:arrivalCity}}</td>
+                                                    <td>{{:arrivalIataCode}}</td>
+                                                    <td>{{:cabinClass}}</td>
+                                                    <td>{{:adults}}</td>
+                                                    <td>{{:children}}</td>
+                                                    <td>{{:infants}}</td>
+                                                    <td>Flight type</td> 
+                                                    <td>{{:departureDateStart}}</td></td>
+                                                    <td>{{:departureDateEnd}}</td>
+                                                    <td>{{:returnDateStart}}</td>
+                                                    <td>{{:returnDateEnd}}</td>
+                                                    </tr>
+                                  
+                                            </tr>
+                                            
+                                            </tbody>
+                                    </table>   
+                                </div>
+                                <div class="action">
+                                       <div class="container">
+                                        <div class="row">
+                                            <button type="button" id="flightRequestAcceptModalButton{{:id}}"  type="button" class="btn btn-info badge" data-toggle="modal" data-target="#myModal{{:id}}">Accept flight request</button>  
+                                            <div id="myModal{{:id}}" class="modal fade" role="dialog">
+                                            <div class="vertical-alignment-modal">
+                                            <div class="modal-dialog vertical-align-center">
+                                            
+                                                <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal">×</button>
+                                                    <h4 class="modal-title">Accept flight request</h4>
+                                                </div>
+                                                <div class="modal-body" style="">
+                                                <form id="acceptForm" method="POST" action="/apiv1/flightrequest/{{:id}}/accept" data-attr-flightRequestId="{{:id}}">
+                                     
+                                                    <label for="number" class="col-xs-4">Hours user has to make payment (12+ hours)</label>
+                                                  
+                                                    <input id="number" name="hours" style="width:40%;" class="input" value="12" type="number" min="12" required/>
+                                             
+                                                        <button type="submit" class="btn btn-default">Accept</button>
+                                                        <button  class="btn btn-default" data-dismiss="modal">Close</button>
+                                                
+                                                </form>
+                                                </div>
+                                                </div>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+</script>
+
+<script type="text/html" id="acceptedFlightRequestItem">
+<li class="list-group-item">
+                        <div class="row">
+                            <div class="col-xs-2 col-md-1">
+                                <img src="http://placehold.it/80" class="img-circle img-responsive" alt="" /></div>
+                            <div class="col-xs-10 col-md-11">
+                                <div>
+                                    Accepted flight request: ({{:id}})
+                                </div>
+                                <div class="comment-text" style="overflow:scroll;">
+                                     <table class="flightrequest-table table table-responsive table-bordered table-condensed">
+                                            <thead>
+                                                <tr>
+                                                    <th>id</th>
+                                                    <th>Provider payout status</th>
+                                                    <th>Payout batch id</th>
+                                                    <th>Payout item id</th>
+                                                    <th>User payment status</th>
+                                                    <th>User payment id</th>
+                                                    <th>Valid until</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody data-attr-acceptedFlightRequestId="{{:id}}">
+                                            <tr>
+                                            
+                                                    <tr>
+                                                    <td>{{:id}}</td>
+                                                    <td>{{:providerPayoutStatus}}</td>
+                                                    <td>{{:providerPayoutBatchId || 'N/A'}}</td>
+                                                    <td>{{:providerPayoutItemId || 'N/A'}}</td>
+                                                    <td>{{:userPaymentStatus}}</td>
+                                                    <td>{{:userPaymentId || 'N/A'}}</td>
+                                                    <td>{{:validUntil}}</td>
+                                                    </tr>
+                                  
+                                            </tr>
+                                            
+                                            </tbody>
+                                    </table>   
+                                </div>
+                                <div class="action">
+                             
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+</script>
+
+<script>
+$(document).ready(function() {
+    (function($, io) {
+
+        const apiUser = "<%=data.apiUser.apiToken%>";
+
+        $('#flightRequestItems').on('submit', '#acceptForm', function(e) {
+            e.preventDefault();
+            e.stopImmediatePropagation()
+            var $form = $(this)
+            if (!$form[0].checkValidity()) {
+                $form.find(':submit').click()
+            }
+
+            const $this = $(this);
+            const id = $this.attr('data-attr-flightRequestId');
+            $.ajax({
+                url: $this.attr('action'),
+                method: $this.attr('method'),
+                data: $this.serialize(),
+                success: function(res) {
+                    console.log(res);
+                    if (res.status == 200) {
+                        $('#myModal'+id).modal('toggle')
+                        $.toaster({
+                            message: 'Succesfully accepted flight request'
+                        })
+                    } else {
+                        $.taoster({
+                            message: 'Error accepting flight request ! ' + res.error || res.errorMessage,
+                            priority: 'info'
+                        });
+                    }
+                },
+                error: function() {
+                    alert('error')
+                }
+            })
+        })
+
+        const frWhere = {
+            status: "AwaitingProviderAccept"
+        }
+        var limit = 20;
+        var skip = 0;
+        io.socket.get('/flightrequest?where=' + JSON.stringify(frWhere) + '&limit=' + limit + '&skip=' + skip, function(data) {
+            skip += 20;
+            console.log(data)
+            data.forEach(function(d) {
+                const $html = $($.templates('#flightRequestItem').render(d));
+                $html.hide();
+                $('#flightRequestItems').append($html.fadeIn(1000));
+            })
+        })
+
+        var acceptedFlightRequestLimit = 20;
+        var acceptedFlightRequestSkip = 0;
+        const afrWhere = {
+            apiUser
+        }
+        io.socket.get('/acceptedflightrequest?where=' + JSON.stringify(afrWhere) + '&limit=' + limit + '&skip=' + acceptedFlightRequestSkip, function(data) {
+            skip += 20;
+            console.log(data)
+            data.forEach(function(d) {
+                const $html = $($.templates('#acceptedFlightRequestItem').render(d));
+                $html.hide();
+                $('#acceptedFlightRequestItems').append($html.fadeIn(1000));
+            })
+        })
+
+        io.socket.get('/apiusers?apiToken=' + apiUser, function() {})
+
+        io.socket.on('apiusers', function(data) {
+            console.log(data);
+            switch (data.verb) {
+                case 'addedTo':
+                    if (data.added && data.attribute == 'acceptedFlightRequests') {
+                        const $html = $($.templates('#acceptedFlightRequestItem').render(data.added))
+                        $('#acceptedFlightRequestItems').prepend($html.hide().fadeIn(1000));
+                    }
+                    if (data.added && data.attribute == 'apiRequests') {
+
+                    }
+                    break;
+            }
+        })
+
+        io.socket.on('flightrequest', function(res) {
+            console.log('recieved flight request event');
+            console.log(res)
+            switch (res.verb) {
+                case 'destroyed':
+                    $('.list-group-item[data-attr-flightRequestId="' + res.id + '"]').fadeOut(1000).remove();
+                    break;
+                case 'updated':
+                    if (res.data.status == 'AwaitingUserApproval') {
+                        const $ele = $('.list-group-item[data-attr-flightRequestId="' + res.id + '"]');
+                        console.log('found ele:')
+                        console.log($ele)
+                        $ele.css({'background-color': '#2f4f4f','color':'white'})
+                        $('#flightRequestAcceptModalButton' + res.id).hide();
+                    }
+                    break;
+                case 'created':
+                    const $html = $($.templates('#flightRequestItem').render(res.data));
+                    $html.hide();
+                    $('#flightRequestItems').prepend($html.fadeIn(1000));
+                    break;
+            }
+        })
+
+    })($, window.io);
+});
+</script>
+
+
+<div id="wrapper" style="padding:20px;">
+<div class="container">
+    <div class="row">
+		<div class="col-md-12">
+
+
+			<div class="tabbable-panel">
+				<div class="tabbable-line">
+					<ul class="nav nav-tabs ">
+						<li class="active">
+							<a href="#tab_default_1" data-toggle="tab">
+							Flight Requests </a>
+						</li>
+						<li>
+							<a href="#tab_default_2" data-toggle="tab">
+							Accepted flight requests </a>
+						</li>
+						<li>
+							<a href="#tab_default_3" data-toggle="tab">
+							Proccessed flight requests </a>
+						</li>
+					</ul>
+					<div class="tab-content">
+						<div class="tab-pane active" id="tab_default_1">
+							        <div style="margin:7px">
+                                    <div class="col-xs-6">
+                                        <div class="btn-group">
+                                            <select>
+                                                <option>country</option>
+                                            </select>
+                                            <select>
+                                                <option>country</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-6 pull-right form-group">
+                                        <input type="text" class="form-control" style="border-radius:0px" placeholder="Search">
+                                    </div>
+                                    </div>
+                                    <br/><br/>
+                                    <div class="row">
+                                    <div class="panel  widget">
+                                        <div class="panel-body">
+                                            <ul id="flightRequestItems" class="list-group">
+                                    
+                                            
+                                            <br/>
+                                        </div>
+                                        <a href="#" class="btn btn-primary btn-sm btn-block" role="button"><span class="glyphicon glyphicon-refresh"></span> More</a>
+                                    </div>
+                                </div>
+                            
+						</div>
+						<div class="tab-pane" id="tab_default_2">
+                        	<div class="tab-pane active" id="tab_default_1">
+							        <div style="margin:7px">
+                                    <div class="col-xs-6">
+                                        <div class="btn-group">
+                                            <select>
+                                                <option>country</option>
+                                            </select>
+                                            <select>
+                                                <option>country</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-6 pull-right form-group">
+                                        <input type="text" class="form-control" style="border-radius:0px" placeholder="Search">
+                                    </div>
+                                    </div>
+                                    <br/><br/>
+                                    <div class="row">
+                                    <div class="panel  widget">
+                                        <div class="panel-body">
+                                            <ul id="acceptedFlightRequestItems" class="list-group">
+                                    
+                                            
+                                            <br/>
+                                        </div>
+                                        <a href="#" class="btn btn-primary btn-sm btn-block" role="button"><span class="glyphicon glyphicon-refresh"></span> More</a>
+                                    </div>
+                                </div>
+                            
+						</div>
+						</div>
+						<div class="tab-pane" id="tab_default_3">
+							
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+		</div>
+	</div>
+</div>
+
+</div>
+
+                    

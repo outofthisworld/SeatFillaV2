@@ -1,4 +1,4 @@
-$(document).ready(function () {
+/*$(document).ready(function () {
   (function () {
     console.log('loading scheduler')
     $('#scheduler_here').css('display', 'block')
@@ -56,3 +56,4 @@ $(document).ready(function () {
     })
   })()
 })
+*/

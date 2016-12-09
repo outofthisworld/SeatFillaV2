@@ -1,9 +1,9 @@
 
 <div class="container-fluid">
 
-<div style="" id="template">
+<div id="template">
         <div style="width:80%;">
-			<form id="flightRequestForm">
+			<form id="flightRequestForm" method="POST" action="/UserProfile/<%=req.user.username%>/FlightRequest/Create">
               <div class="form-group">
                 <label for="flight_type">Type of request</label>
                 <select id="flight_type" class="form-control noselect">
@@ -33,26 +33,26 @@
               </div>
                 <div class="row">
                 <div class="col-xs-6">
-                        <label for="departure_country">From country</label>   
-                        <select id="departure_country" name="departureCountry" data-attr-cityLink="#departure_city" class="country form-control" required/> 
+                        <label for="departureCountry">From country</label>   
+                        <select id="departureCountry" name="departureCountry" data-attr-cityLink="#departureCity" class="country form-control" required/> 
                         
                         </select>
                 </div>
                 <div class="col-xs-6">
-                        <label for="to_country">To country</label> 
-                        <select id="to_country" name="arrivalCountry" data-attr-cityLink="#to_city" class="country form-control" required/>
+                        <label for="arrivalCountry">To country</label> 
+                        <select id="arrivalCountry" name="arrivalCountry" data-attr-cityLink="#arrivalCity" class="country form-control" required/>
                         </select>
                 </div>
               </div>
               <div class="row">
                 <div class="col-xs-6">
-                        <label for="departure_city">From city</label>   
-                        <select id="departure_city" name="departureIataCode" class="city form-control" required/> 
+                        <label for="departureCity">From city</label>   
+                        <select id="departureCity" name="departureCity" class="city form-control" required/> 
                         </select>
                 </div>
                 <div class="col-xs-6">
-                        <label  for="to_city">To city</label> 
-                        <select id="to_city" name="arrivalIataCode" class="city form-control" required/>
+                        <label  for="arrivalCity">To city</label> 
+                        <select id="arrivalCity" name="arrivaCity" class="city form-control" required/>
                         </select>
                 </div>
               </div>
@@ -88,34 +88,14 @@
                 <div class="col-xs-8">
                    <label  for="maxPrice">Find flights cheaper than (Not required): </label> 
                    <div class="form-inline">
-                   <span id="currencySymbol"></span> <input id="maxPrice" name="maxPrice" class="form-control" type="number" value="0"/> 
+                   <span id="currencySymbol"></span> <input id="maxPrice" name="maximumPayment" class="form-control" type="number" value="0"/> 
                    </div>
                 </div>
             </div>
+            <button type="submit" class="btn btn-info btn-block">Create a flight request</button>
             </form>
             </div>
 </div>
 
-<h2 class="text-center">Make a flight request</h2>
-<div id="scheduler_here" class="dhx_cal_container" style='width:100%;height:1000px;'>
-    <div class="dhx_cal_navline">
-        <div class="dhx_cal_prev_button">&nbsp;</div>
-        <div class="dhx_cal_next_button">&nbsp;</div>
-        <div class="dhx_cal_today_button"></div>
-        <div class="dhx_cal_date"></div>
-        <div class="dhx_cal_tab" name="day_tab" style="right:204px;"></div>
-        <div class="dhx_cal_tab" name="week_tab" style="right:140px;"></div>
-        <div class="dhx_cal_tab" name="month_tab" style="right:76px;"></div>
-    </div>
-    <div class="dhx_cal_header"></div>
-    <div class="dhx_cal_data"></div>       
-</div>
-
-</div>
-
 	
 <!-- SCRIPTS WILL BE AUTOMATICALLY LOADED WHEN PAGE IS SENT VIA AJAX (see lazy-script-loader.js)-->
-<div style="display:hidden;" data-attr-lazyload-sync="" data-attr-href="/independent-css/scheduler/dhtmlxscheduler.css"></div>
-<div style="display:hidden;" data-attr-lazyload-sync="" data-attr-src="/scripts/scheduler/dhtmlxscheduler.js"></div>
-<div style="display:hidden;" data-attr-lazyload-sync="" data-attr-src="/scripts/user-profile.flightRequestScheduler.js"></div>
-

@@ -5,7 +5,9 @@ module.exports = function (req, res, next) {
     if(ProviderService.getApiUser(req)){
         return next();
     }
-  }catch(err){}
+  }catch(err){
+    return res.badRequest('Sorry, you are not authorized!');
+  }
 
   async.auto({
     check_verified: [function (callback, results) {

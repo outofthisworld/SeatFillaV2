@@ -75,7 +75,6 @@ module.exports.policies = {
         'authenticate':['notLoggedInPolicy']
     },
     VerifyController: {
-        '*': false,
         'email': ['getPolicy']
     },
     FlightOfferController: {

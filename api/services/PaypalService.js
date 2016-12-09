@@ -145,6 +145,7 @@ module.exports = {
                         if (options.credit_card.id && options.credit_card.payer_id) {
                             header['credit_card_token']['credit_card_id'] = options.credit_card.id;
                             header['credit_card_token']['payer_id'] = options.credit_card.payer_id;
+                            sails.log.debug('returning header : ' + header)
                             return callback(null, header);
                         } else {
                             return callback(new Error('Invalid params to charge credit card, options.credit_card was set without credit_card_id || payer_id'), null);
@@ -178,6 +179,7 @@ module.exports = {
                             return callback(new Error('No credit card currently available for this user to complete payment.'), null)
                         }
                     }).catch(function(err) {
+                        sails.log.error(err)
                         return callback(err, null);
                     })
 
@@ -192,10 +194,14 @@ module.exports = {
                         transactions
                     }
                     sails.log.debug('returning payment details')
+                    sails.log.debug('Payment details :');
+                    sails.log.debug(paymentDetails)
                     return callback(null, paymentDetails);
                 },
                 function charge_transactions(paymentDetails, callback) {
                     sails.log.debug('charging transaction')
+                    sails.log.debug('Submitting transaction :')
+                    sails.log.debug(JSON.stringify(paymentDetails))
                     paypal.payment.create(paymentDetails, function(err, res) {
                         if (err) {
                             sails.log.debug('error charing credit card')
@@ -245,19 +251,19 @@ module.exports = {
                 "email_subject": "Payment from Seatfilla"
             }
 
-            if (!Array.isArray(data)) {
-                if (!data.sender_batch_header) {
-                    data.sender_batch_header = senderBatchHeader;
-                }
-            } else if (Array.isArray(data)) {
-                data = {
-                    sender_batch_header: senderBatchHeader,
-                    items: data
-                }
-            }
+            data = {
+                sender_batch_header,
+                items:[
+                    data
+                ]
+            };
 
+            sails.log.debug('Creating payout with:')
+            sails.log.debug(data)
+            sails.log.debug(JSON.stringify(data));
             paypal.payout.create(data, sync_mode, function(error, payout) {
                 if (error) {
+                    sails.log.error(error)
                     return reject(error);
                 } else {
                     return resolve(payout);

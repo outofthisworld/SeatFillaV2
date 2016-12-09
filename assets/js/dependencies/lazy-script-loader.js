@@ -120,11 +120,6 @@ $(window).ready(function() {
                         resolve()
                     })
                 }),
-                new Promise(function(resolve, reject) {
-                    $.lazyLoadScriptsSynchronous(options, function() {
-                        resolve()
-                    })
-                })
             ]).then(function(results) {
                 done()
             }).catch(function(err) {

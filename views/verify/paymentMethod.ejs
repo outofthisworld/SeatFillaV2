@@ -1,0 +1,19 @@
+
+
+<%if(data.creditCards.length){%>
+    <h2> Please select your payment method </h2>
+
+    <%=JSON.stringify(data)%>
+   <form method="POST" action="/verify/approveFlightRequestOffer">
+    <select name="cc_id">
+        <% data.creditCards.forEach(function(creditCard){ %>
+            <option value="<%=creditCard.id%>"><%=creditCard.id%></option>
+        <% }) %>
+    </select>
+    request id: <%=data.requestId%>
+    <input type="hidden" name="requestId" value="<%=data.requestId%>"/>
+    <button type="submit" class="btn btn-info btn-block">Select</button>
+    </form>
+<% }else{ %>
+    You currently have no payment methods, <a href="/userprofile/<%=req.user.username%>">click here to set one up</a>
+<%} %>

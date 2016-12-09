@@ -34,14 +34,20 @@ module.exports.email = {
         },
         //{ flightRequest, acceptedFlightRequest }
         flightRequestAccepted: function(object) {
-            return {
+            sails.log.debug('flight request accepted email params:')
+            sails.log.debug(object)
+            sails.log.debug('sending: ')
+            const email =  {
                 from: 'SeatFilla.com',
                 to: object.flightRequest.user.email,
                 subject: 'Your flight request has been accepted!',
                 type: 'flightrequestaccept',
                 html: 'Hello <em>' + object.flightRequest.user + ' <em><br/><br/>' +
-                    'Your flight request has been accepted please visit ' 
+                    'Your flight request has been accepted please visit <a href="/Verify/pay?id='+object.acceptedFlightRequest.id+'"></a>'
+                    + ' to pay for your flight.' 
             }
+            sails.log.debug(email)
+            return email;
         },
         userPaymentStatusFailiure: function(flightRequest,credit_card,err) {
             return {

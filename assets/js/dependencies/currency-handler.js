@@ -100,7 +100,6 @@ $(document).ready(function () {
           }
 
           if (!(newCurrencyCode in exchangeRates.rates)) {
-            alert('Error unsupported currency')
             return
           }
 

@@ -247,7 +247,7 @@ textarea, input { outline: none; }
       <div class="panel-heading" style="">
        <h2 style="color:white"> It looks like you are lost! (404)</h2>
             <h2 class="text-white"> Cause: </h2>
-      <p class="text-center text-white"><%= (data.error && data.error.message) || data.error %></p>
+      <p class="text-center text-white"><%= (data && data.error && data.error.message) || (data && data.error) || 'Something went wrong!' %></p>
        <br/>
       </div>
       <div class="panel-body">

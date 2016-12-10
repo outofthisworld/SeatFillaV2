@@ -30,7 +30,9 @@ module.exports = {
           required:true
         },
         currency:{
-
+          type:'string',
+          required:true,
+          notNull:true
         },
         userPaymentStatus: {
             type: 'string',

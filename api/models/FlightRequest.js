@@ -118,10 +118,16 @@ module.exports = {
             notNull: true,
             required: true
         },
+        flightType: {
+            type: 'string',
+            enum: ['One-way','Return'],
+            notNull: true,
+            required: true
+        },
         maximumPayment: {
             type: 'float',
             decimal: true,
-            min: 0,
+            min: 1,
             max: 20001
         },
         timeZoneOffset: {

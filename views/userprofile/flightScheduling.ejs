@@ -13,14 +13,51 @@
       e.preventDefault();
       console.log('click')
 
-    /*'data-attr-countryId': city.countryId,
-        'data-attr-location': city.location,
-        'data-attr-iataCode': city.iataCode,
-        'data-attr-id:': city.id,
-        'data-attr-currency': city.currency,
-        'data-attr-cityIndex': city.cityIndex,
-        'data-attr-countryIndex': city.countryIndex,
-        'data-attr-continentIndex': city.continentIndex*/
+      console.log($('#departure_date').val())
+      const departureDateMoment = moment($('#departure_date').val())
+      const departureDateEndMoment = moment($('#departure_date_end').val())
+      const returnDateMoment = moment($('#return_date').val())
+      const returnDateEndMoment = moment($('#return_date_end').val())
+
+      if(!departureDateMoment.isValid() || !departureDateEndMoment.isValid()
+      || !returnDateMoment.isValid() || !returnDateEndMoment.isValid()){
+          $.toaster({message:'Invalid dates',priority:'danger'})
+          return;
+      }
+
+      if(!departureDateMoment.isSameOrAfter(moment(moment().format('YYYY-MM-DD')))){
+          $.toaster({message:'Departure date must be in the future',priority:'danger'})
+          return;
+      }
+
+      if(!returnDateMoment.isSameOrAfter(moment(moment().format('YYYY-MM-DD')))){
+          $.toaster({message:'Return date must be in the future',priority:'danger'})
+      }
+
+      if(!departureDateEndMoment.isSameOrAfter(departureDateMoment)){
+        $.toaster({message:'Start departure date must be before end departure date',priority:'danger'})
+        return;
+      }
+
+      if(!returnDateEndMoment.isSameOrAfter(returnDateMoment)){
+        $.toaster({message:'Start return date must be before end return date ',priority:'danger'})
+        return;
+      }
+
+      const departureCountry = $('#departureCountry');
+      const arrivalCountry = $('#arrivalCountry');
+
+      if($('#departureCountry option:selected').attr('data-attr-countryCode') ===
+         $('#arrivalCountry option:selected').attr('data-attr-countryCode')){
+        $.toaster({message:'Departure and arrival country cannot be the same',priority:'danger'})
+        return;
+      }
+
+      if($('#arrivalCity option:selected').attr('data-attr-iataCode') ===
+      $('#departureCity option:selected').attr('data-attr-iataCode')){
+        $.toaster({message:'Departure and arrival city cannot be the same',priority:'danger'})
+        return;
+      }
 
       var obj = $('#flightRequestForm').serialize();
       var obj2 = {
@@ -59,11 +96,11 @@
     <div class="">
         <ul class="nav nav-tabs" data-container="#pc">
           <li class="active"><a data-page="/userprofile/<%=req.user.username%>/FlightRequest/create" data-toggle="tab">Request a flight</a></li>
-       
+
         </ul>
         <div id="tabContent" class="tab-content">
           <div id="pcontent" class="tab-pane active in" id="pc">
-            
+
           </div>
         </div>
     </div>

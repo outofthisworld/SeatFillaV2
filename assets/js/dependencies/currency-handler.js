@@ -113,7 +113,6 @@ $(document).ready(function () {
           $currencySymbol.text(newCurrencySymbol)
           $amount.text(newAmount.toFixed(2))
         })
-
         $('span[data-attr-currency-code]').attr('data-attr-currency-code',newCurrencyCode);
         $('span[data-attr-currency-code]').text(newCurrencyCode);
         $('span[data-attr-currency-symbol]').attr('data-attr-currency-symbol',newCurrencySymbol);

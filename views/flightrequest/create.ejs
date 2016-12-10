@@ -1,8 +1,13 @@
 <script>
-  $(document).ready(function(){
-    $('.userCurrencySymbol').text($('#seatfilla_currencies option:selected').attr('data-symbol'))
-    $('.userCurrencyCode').text($('#seatfilla_currencies option:selected').val())
+
+  $('#seatfilla_currencies').on('change',function(){
+      $('.userCurrencySymbol').text($('#seatfilla_currencies option:selected').attr('data-symbol'))
+      $('.userCurrencyCode').text($('#seatfilla_currencies option:selected').val())
   })
+
+  $('#seatfilla_currencies').trigger('change');
+
+
 </script>
 <div class="container-fluid">
 

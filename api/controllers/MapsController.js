@@ -13,7 +13,7 @@ module.exports = {
                     return callback(null, object)
                 }).catch(function(err) {
                     sails.log.error(err)
-                    return callback(err, null)
+                    return callback(null, null)
                 })
             }],
             createUserSearch: [function(callback, results) {
@@ -29,7 +29,7 @@ module.exports = {
                     }).catch(function(err) {
                         sails.log.error(err)
                         sails.log.debug('Error creating user search ' + JSON.stringify(err))
-                        return callback(err, null)
+                        return callback(null, null)
                     })
             }],
             getUserCurrencyCodePreference: [function(callback, results) {

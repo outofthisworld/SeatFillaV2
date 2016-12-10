@@ -24,6 +24,14 @@ module.exports = {
             notNull: true,
             required: true
         },
+        amount:{
+          type:'number',
+          notNull:true,
+          required:true
+        },
+        currency:{
+
+        },
         userPaymentStatus: {
             type: 'string',
             enum: ['PENDING', 'PROCESSING', 'PAID'],

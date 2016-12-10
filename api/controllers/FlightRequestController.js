@@ -26,6 +26,7 @@ module.exports = {
   accept: function (req, res) {
     const flightRequestId = req.param('id')
 
+
     const errors = []
     var apiUser
     try {
@@ -44,9 +45,17 @@ module.exports = {
     var hours
     try {
       hours = parseInt(req.param('hours'))
-      if (hours < 12) errors.push('Invalid hours value specified')
+      if (!hours || hours < 12) errors.push('Invalid hours value specified')
     } catch(err) {
       errors.push('Invalid hours value specified')
+    }
+
+    var amount;
+    try{
+      amount = parseFloat(req.param('amount'))
+      if(!amount) errors.push('Invalid amount specified')
+    }catch(err){
+      errors.push('Invalid amount specified');
     }
 
     if (errors.length) {
@@ -86,7 +95,8 @@ module.exports = {
           {
             flightRequest: flightRequest.id,
             validUntil: today.toISOString(),
-            apiUser: ProviderService.getApiUser(req).apiToken
+            apiUser: ProviderService.getApiUser(req).apiToken,
+            amount
           }
         ).then(function (acceptedFlightRequest) {
           if (!acceptedFlightRequest) callback(new Error('Invalid state'))

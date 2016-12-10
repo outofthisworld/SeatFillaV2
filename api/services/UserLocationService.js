@@ -1,7 +1,7 @@
 module.exports = {
   findOrCreateUserLocation(user, userLocation) {
     if (!user || !user.id || !userLocation || !userLocation.coords || !userLocation.address)
-      throw new Error('Invalid params to UserLocationService.js/findOrCreateUserLocation')
+      return;
 
     return UserLocation.findOrCreate({
       user: user.id,
@@ -75,7 +75,7 @@ module.exports = {
 
       countryInfo = countryInfo[0]
 
-      // this is ugly >.< whyyy is data never in a pretty format 
+      // this is ugly >.< whyyy is data never in a pretty format
       const mappedCountryInfo = (function mapCountryInfo (object) {
         const cInfo = {}
 

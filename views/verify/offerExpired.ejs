@@ -1,0 +1,10 @@
+
+</head>
+<body>
+
+<%- partial ('../partials/nav.ejs') %>
+<div class="container-fluid" style="margin-top:200px;">
+  <h2 class="text-center">Sorry, this offer has expired! </h2>
+  <p class="text-center"> The flight request was valid until <%= data.acceptedFlightRequest.validUntil %> </p>
+</div>
+<%- partial ('../partials/footer.ejs') %>

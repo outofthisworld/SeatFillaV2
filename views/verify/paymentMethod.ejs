@@ -1,19 +1,68 @@
 
+<style>
+.panel-title {display: inline;font-weight: bold;}
+.checkbox.pull-right { margin: 0; }
+.pl-ziro { padding-left: 0px; }
+</style>
+</head>
+<body>
 
-<%if(data.creditCards.length){%>
-    <h2> Please select your payment method </h2>
 
-    <%=JSON.stringify(data)%>
-   <form method="POST" action="/verify/approveFlightRequestOffer">
-    <select name="cc_id">
-        <% data.creditCards.forEach(function(creditCard){ %>
-            <option value="<%=creditCard.id%>"><%=creditCard.id%></option>
-        <% }) %>
-    </select>
-    request id: <%=data.requestId%>
-    <input type="hidden" name="requestId" value="<%=data.requestId%>"/>
-    <button type="submit" class="btn btn-info btn-block">Select</button>
+<%- partial ('../partials/nav.ejs') %>
+
+<div class="container">
+    <div class="col-xs-8">
+    <form method="POST" action="/verify/approveFlightRequestOffer">
+    <div class="row">
+        <div class="col-xs-12 col-md-8 col-md-offset-2" style="padding-top:120px;">
+            <h2>Seatfilla payment</h2>
+            <div class="panel" >
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        Please select the credit card you would like to use
+                    </h3>
+                </div>
+                <div class="panel-body">
+                  <select name="cc_id">
+                      <% data.creditCards.forEach(function(creditCard){ %>
+                          <option value="<%=creditCard.id%>"><%=creditCard.id%></option>
+                      <% }) %>
+                  </select>
+                  <input type="hidden" name="requestId" value="<%=data.requestId%>"/>
+
+                </div>
+            </div>
+                     <!--Payment info-->
+            <p> Payment details </p>
+            <div class="panel panel-default">
+            <div class="panel-body">
+            <ul>
+            <li><p>Tracking no: <%= data.acceptedFlightRequest.id %></p></li>
+            <li><p>Hours left: <%= data.hoursLeft %></p></li>
+            <li><p>Current payment status: <%= data.acceptedFlightRequest.userPaymentStatus%></p></li>
+            <li><p>Provider payment status: <%= data.acceptedFlightRequest.providerPayoutStatus%></p></li>
+            <li><p>Amount you owe: <%= data.acceptedFlightRequest.amount %></p></li>
+            </ul>
+            </div>
+            </div>
+            <ul class="nav nav-pills nav-stacked">
+                <li class="active"><a href="#"><span class="badge pull-right"><span class="glyphicon glyphicon-usd"></span><%= data.acceptedFlightRequest.amount %></span> The selected credit card will be charged:</a>
+                </li>
+            </ul>
+            <br/>
+            <%if(data.creditCards.length){%>
+            <button type="submit" class="btn btn-info btn-lg btn-block" role="button">Pay</button>
+           <% }else{ %>
+              You currently have no payment methods, <a href="/userprofile/<%=req.user.username%>">click here to set one up</a>
+          <%} %>
+        </div>
+    </div>
     </form>
-<% }else{ %>
-    You currently have no payment methods, <a href="/userprofile/<%=req.user.username%>">click here to set one up</a>
-<%} %>
+    </div>
+    <div class="col-md-4">
+      <p class="text-black"></p>
+    </div>
+</div>
+
+<%- partial ('../partials/footer.ejs') %>
+

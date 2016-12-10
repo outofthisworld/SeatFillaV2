@@ -17,6 +17,10 @@ module.exports = {
             defaultsTo: false,
             notNull: true
         },
+        verifiedInfo:{
+          model:'VerifiedApiUserInfo',
+          required:false
+        },
         isBlocked: {
             type: 'boolean',
             defaultsTo: false,

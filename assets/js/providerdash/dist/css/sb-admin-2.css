@@ -7,22 +7,22 @@ body {
 body.provider-login{
   background-color:#FEFEFE;
   height:100vh;
+
 }
 
 #wrapper {
-  width: 100%;
+  width: 100vw;
 }
 #page-wrapper {
-  padding: 0 15px;
+  padding: 0 0;
   min-height: 568px;
   background-color: white;
 }
 @media (min-width: 768px) {
   #page-wrapper {
     position: inherit;
-    margin: 0 0 0 250px;
-    padding: 0 30px;
-    border-left: 1px solid #e7e7e7;
+    margin: 0 0 0 255px;
+    padding: 0 0px;
   }
 }
 .navbar-top-links {
@@ -78,10 +78,11 @@ body.provider-login{
   padding: 15px;
 }
 .sidebar ul li {
-  border-bottom: 1px solid #e7e7e7;
+  border-bottom: 1px solid #fff;
 }
 .sidebar ul li a.active {
-  background-color: #eeeeee;
+  color:white;
+  background-color: #337ab7;
 }
 .sidebar .arrow {
   float: right;
@@ -551,7 +552,7 @@ table.dataTable thead .sorting:after {
 }
 /* Dropdown Button */
 .dropbtn {
-  
+
     border: none;
     cursor: pointer;
 }

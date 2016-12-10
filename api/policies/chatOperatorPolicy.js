@@ -1,5 +1,5 @@
 module.exports = function(req, res, next) {
-    if ((req.isAuthenticated || req.isAuthenticated()) && (req.user && req.user.hasRole('operator'))) {
+    if ((req.user && req.user.hasRole('operator'))) {
         sails.log.debug('Succesfully authenticated chat operator');
         return next();
     }

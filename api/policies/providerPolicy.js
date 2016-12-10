@@ -1,8 +1,8 @@
 module.exports = function (req, res, done) {
   sails.log.debug('req.path: ' + req.path);
   if (!ProviderService.hasSessionExpired(req)) {
-    if (req.path.indexOf('/provider/login') == -1 && 
-       req.path.indexOf('/provider/payment') == -1 
+    if (req.path.indexOf('/provider/login') == -1 &&
+       req.path.indexOf('/provider/payment') == -1
        && !ProviderService.getApiUser(req).paypalEmail) {
       return res.redirect('/provider/payment')
     }else{

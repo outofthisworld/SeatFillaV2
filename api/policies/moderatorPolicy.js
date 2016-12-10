@@ -1,5 +1,5 @@
 module.exports = function(req, res, next) {
-    if ((req.isAuthenticated || req.isAuthenticated()) && (req.session.user && req.user.hasRole('moderator'))) {
+    if ((req.session.user && req.user.hasRole('moderator'))) {
         sails.log.debug('Succesfully authenticated moderator');
         return next();
     }

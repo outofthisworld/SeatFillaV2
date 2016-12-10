@@ -1,5 +1,5 @@
 module.exports = function(req, res, next) {
-    if ((req.isAuthenticated || req.isAuthenticated()) && (req.user && req.user.hasRole('admin'))) {
+    if ((req.user && req.user.hasRole('admin'))) {
         sails.log.debug('Succesfully authenticated admin');
         return next();
     }

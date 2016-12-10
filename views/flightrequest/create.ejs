@@ -16,7 +16,7 @@
 			<form id="flightRequestForm" method="POST" action="/UserProfile/<%=req.user.username%>/FlightRequest/Create">
               <div class="form-group">
                 <label for="flightType">Type of request</label>
-                <select id="flight_type" class="form-control" required>
+                <select id="flight_type" name="flightType" class="form-control" required>
                 <option value="One-way">One-way</option>
                 <option value="Return" selected>Return Flight</option>
                 </select>

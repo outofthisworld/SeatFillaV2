@@ -90,15 +90,15 @@
                         <div class="row">
                             <div class="col-xs-2 col-md-1">
                                 <img src="http://placehold.it/80" class="img-circle img-responsive" alt="" /></div>
-                            <div class="col-xs-10 col-md-11">
+                            <div class="col-xs-12">
                                 <div>
                                      Departure {{:departureCountry}} to {{:arrivalCountry}}
                                     <div class="mic-info">
                                      User: <a href="/userprofile/{{:username}}">{{:username}}</a>
                                     </div>
                                 </div>
-                                <div class="comment-text" style="overflow:scroll;">
-                                     <table class="flightrequest-table table table-responsive table-bordered table-condensed">
+                                <div class="" style="overflow-y:scroll;">
+                                     <table class="flightrequest-table table table-responsive table-bordered" style="width:100%;">
                                             <thead>
                                                 <tr>
                                                     <th>id</th>
@@ -215,7 +215,7 @@
                                 <div>
                                     Accepted flight request: ({{:id}})
                                 </div>
-                                <div class="comment-text" style="overflow:scroll;">
+                                <div class="" style="overflow:scroll;">
                                      <table class="flightrequest-table table table-responsive table-bordered table-condensed">
                                             <thead>
                                                 <tr>
@@ -451,7 +451,7 @@ $(document).ready(function() {
         });
 
 
-        $('#search').on('input',function(){
+        $('.search').on('input',function(){
           const query = $(this).val()
 
           console.log(query)
@@ -462,8 +462,6 @@ $(document).ready(function() {
           }
 
           $('tbody tr').each(function(indx,row){
-            console.log($(row))
-            console.log($(row).children())
               if($(row).find('td[data-attr-text="'+query+ '"]').length){
                 $(row).css('background-color','lightblue');
               }
@@ -493,12 +491,12 @@ $(document).ready(function() {
 
 
 <div id="wrapper" style="padding-top:20px;">
-<div class="container">
-    <div class="row">
-		<div class="col-md-12">
+<div class="container-fluid">
+    <div class="row" style="width:100%;">
+		<div class="">
 
 
-			<div class="tabbable-panel">
+			<div class="tabbable-panel" style="">
 				<div class="tabbable-line">
 					<ul class="nav nav-tabs ">
 						<li class="active">
@@ -516,43 +514,48 @@ $(document).ready(function() {
 					</ul>
 					<div class="tab-content">
 						<div class="tab-pane active" id="tab_default_1">
-							        <div style="margin:7px">
-
+							        <div style="">
+                                    <div class="col-xs-6">
+                                      <p> Flight requests </p>
+                                    </div>
                                     <div class="col-xs-6 pull-right form-group">
-                                        <input type="text" id="search" class="form-control" style="border-radius:0px" placeholder="Search">
+                                        <input type="text" class="search form-control" style="border-radius:0px" placeholder="Search">
                                     </div>
                                      <div class="col-xs-12">
-                                        <p> Filter results </p>
-                                        <div class="btn-group">
-                                            <div class="col-md-2">
-                                            <p>Departure country</p>
-                                            <select class="noselect country form-control" id="filterDepartureCountry">
-                                            </select>
-                                            </div>
-                                            <div class="col-md-2">
-                                            <p>Arrival country</p>
-                                            <select class="noselect country form-control" id="filterArrivalCountry">
-                                            </select>
-                                            </div>
-                                            <div class="col-md-2">
-                                             <p>Departure city</p>
-                                            <select class="noselect city form-control" id="filterDepartureCity">
-                                            </select>
-                                            </div>
-                                            <div class="col-md-2">
-                                            <p>Arrival city</p>
-                                            <select class="noselect city form-control" id="filterDepartureCountry">
-                                            </select>
-                                            </div>
-                                            <div class="col-md-2">
-                                            <p>Min request price</p>
-                                            <input type="number" id="filterRequestMinimumPrice"/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    </div>
-                                    <br/><br/>
-                                    <div class="row">
+                                        <div class="panel panel-default">
+                                        <div class="panel-body">
+                                          <div class="btn-group">
+                                              <div class="col-md-2">
+                                              <p>Departure country</p>
+                                              <select class="country form-control" id="filterDepartureCountry">
+                                              </select>
+                                              </div>
+                                              <div class="col-md-2">
+                                              <p>Arrival country</p>
+                                              <select class="country form-control" id="filterArrivalCountry">
+                                              </select>
+                                              </div>
+                                              <div class="col-md-2">
+                                              <p>Departure city</p>
+                                              <select class="city form-control" id="filterDepartureCity">
+                                              </select>
+                                              </div>
+                                              <div class="col-md-2">
+                                              <p>Arrival city</p>
+                                              <select class="city form-control" id="filterDepartureCountry">
+                                              </select>
+                                              </div>
+                                              <div class="col-md-2">
+                                              <p>Min request price</p>
+                                              <input type="number" class="form-control" id="filterRequestMinimumPrice"/>
+                                              </div>
+                                              <div class="col-md-2">
+                                              <p>Currency</p>
+                                               <select class="form-control" id="seatfilla_currencies">
+                                              </select>
+                                              </div>
+                                          </div>
+                                              <div class="row">
                                     <div class="panel  widget">
                                         <div class="panel-body">
                                             <ul id="flightRequestItems" class="list-group" style="max-height:600px;width:100%;overflow-y:scroll;">
@@ -560,8 +563,14 @@ $(document).ready(function() {
 
                                             <br/>
                                         </div>
-                                        <a href="#" id="flightRequestMore" class="btn btn-primary btn-sm btn-block" role="button"><span class="glyphicon glyphicon-refresh"></span> More</a>
+                                        <a href="#" id="flightRequestMore" class="btn btn-info btn-sm btn-block" role="button"><span class="glyphicon glyphicon-refresh"></span> More</a>
                                     </div>
+                                          </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                    <br/><br/>
+
                                 </div>
 
 						</div>
@@ -570,7 +579,7 @@ $(document).ready(function() {
 							        <div style="margin:7px">
 
                                     <div class="col-xs-6 pull-right form-group">
-                                        <input type="text" class="form-control" style="border-radius:0px" placeholder="Search">
+                                        <input type="text" class="search form-control" style="border-radius:0px" placeholder="Search">
                                     </div>
                                     </div>
                                     <br/><br/>
@@ -582,7 +591,7 @@ $(document).ready(function() {
 
                                             <br/>
                                         </div>
-                                        <a href="#" id="acceptedFlightRequestMore" class="btn btn-primary btn-sm btn-block" role="button"><span class="glyphicon glyphicon-refresh"></span> More</a>
+                                        <a href="#" id="acceptedFlightRequestMore" class="btn btn-info btn-sm btn-block" role="button"><span class="glyphicon glyphicon-refresh"></span> More</a>
                                     </div>
                                 </div>
 
@@ -593,7 +602,7 @@ $(document).ready(function() {
 							        <div style="margin:7px">
 
                                     <div class="col-xs-6 pull-right form-group">
-                                        <input type="text" class="form-control" style="border-radius:0px" placeholder="Search">
+                                        <input type="text" class="search form-control" style="border-radius:0px" placeholder="Search">
                                     </div>
                                     </div>
                                     <br/><br/>

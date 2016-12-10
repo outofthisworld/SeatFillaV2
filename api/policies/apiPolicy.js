@@ -61,13 +61,22 @@ module.exports = function (req, res, next) {
           return callback(null, validRequestAddr)
         })
       })(req.ip, results.check_verified.decoded.requestURL)
+    }],
+    log_api_request:['check_verified','check_dns',function(callback,results){
+         ApiService.createApiRequest(req).then(function(request) {
+              sails.log.debug('New api request created ' + request);
+              return callback(null,request);
+          }).catch(function(err) {
+              sails.log.debug('Error when creating a new API request');
+              return callback(err,null)
+         })
     }]
   }, function (err, results) {
       sails.log.debug(results);
     if (!err) {
       return next()
     }else {
-      return res.badRequest({status: 400,error: err,errorMessage: err.message})
+      return res.badRequest({status: 400,error: err, errorMessage: err.message,path:req.path,moreInfo:'http://localhost:1337/api/documentation'})
     }
   })
 }

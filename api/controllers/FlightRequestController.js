@@ -26,11 +26,15 @@ module.exports = {
   accept: function (req, res) {
     const flightRequestId = req.param('id')
 
-
     const errors = []
+
     var apiUser
     try {
-      apiUser = ProviderService.getApiUser(req)
+      apiUser = ProviderService.getApiUser(req);
+
+      if(!(ProviderService.hasPermission('accept_request_permission',req))){
+        errors.push('Unauthrozized to perform this action, api token must have correct permission');
+      }
     } catch(err) {
       errors.push(err.message)
     }
@@ -38,6 +42,10 @@ module.exports = {
     sails.log.debug(req.allParams())
     sails.log.debug('Found api user: ')
     sails.log.debug(apiUser)
+
+    if(!flightRequestId){
+      errors.push('Invalid flight request id')
+    }
 
     if (!req.param('hours'))
       errors.push('Missing param hours')
@@ -82,6 +90,13 @@ module.exports = {
 
             return callback(null, flightRequest)
           })
+      },
+      function checkAmount(flightRequest,callback){
+        if(amount <= flightRequest.maximumPayment){
+            return callback(null,flightRequest)
+        }else{
+            return callback(new Error('Invalid flight accept amount'),null);
+        }
       },
       function acceptFlightRequest (flightRequest, callback) {
         // Use server date to stop inconsistencies from client side dates

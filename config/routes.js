@@ -196,7 +196,7 @@ module.exports.routes = {
             layout: 'layouts/provider-layout.ejs'
         }
     },
-    
+
     /**********/
     'get /UserProfile/:username':{
         controller:'UserProfileController',

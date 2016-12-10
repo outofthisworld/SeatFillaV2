@@ -127,29 +127,29 @@
                                             <tbody data-attr-flightRequestId="{{:id}}">
                                             <tr>
 
-                                                    <tr>
-                                                    <td>{{:id}}</td>
-                                                    <td>{{:username}}</td>
-                                                    <td>{{:maximumPayment}}</td>
-                                                    <td>{{:currency}}</td>
-                                                    <td>{{:departureCountryId}}</td>
-                                                    <td>{{:departureCountry}}</td>
-                                                    <td>{{:departureCity}}</td>
-                                                    <td>{{:departureIataCode}}</td>
-                                                    <td>{{:arrivalCountryId}}</td>
-                                                    <td>{{:arrivalCountry}}</td>
-                                                    <td>{{:arrivalCity}}</td>
-                                                    <td>{{:arrivalIataCode}}</td>
-                                                    <td>{{:cabinClass}}</td>
-                                                    <td>{{:adults}}</td>
-                                                    <td>{{:children}}</td>
-                                                    <td>{{:infants}}</td>
-                                                    <td>Flight type</td>
-                                                    <td>{{:departureDateStart}}</td></td>
-                                                    <td>{{:departureDateEnd}}</td>
-                                                    <td>{{:returnDateStart}}</td>
-                                                    <td>{{:returnDateEnd}}</td>
-                                                    </tr>
+
+                                                    <td data-attr-text="{{:id}}">{{:id}}</td>
+                                                    <td data-attr-text="{:username}}">{{:username}}</td>
+                                                    <td data-attr-text="{{:maximumPayment}}">{{:maximumPayment}}</td>
+                                                    <td data-attr-text="{{:currency}}">{{:currency}}</td>
+                                                    <td data-attr-text="{{:departureCountryId}}">{{:departureCountryId}}</td>
+                                                    <td data-attr-text="{{:departureCountry}}">{{:departureCountry}}</td>
+                                                    <td data-attr-text="{{:departureCity}}">{{:departureCity}}</td>
+                                                    <td data-attr-text="{{:departureIataCode}}">{{:departureIataCode}}</td>
+                                                    <td data-attr-text="{{:arrivalCountryId}}">{{:arrivalCountryId}}</td>
+                                                    <td data-attr-text="{{:arrivalCountry}}">{{:arrivalCountry}}</td>
+                                                    <td data-attr-text="{{:arrivalCity}}">{{:arrivalCity}}</td>
+                                                    <td data-attr-text="{{:arrivalIataCode}}">{{:arrivalIataCode}}</td>
+                                                    <td data-attr-text="{{:cabinClass}}">{{:cabinClass}}</td>
+                                                    <td data-attr-text="{{:adults}}">{{:adults}}</td>
+                                                    <td data-attr-text="{{:children}}">{{:children}}</td>
+                                                    <td data-attr-text="{{:infants}}">{{:infants}}</td>
+                                                    <td data-attr-text="">Flight type</td>
+                                                    <td data-attr-text="{{:departureDateStart}}">{{:departureDateStart}}</td></td>
+                                                    <td data-attr-text="{{:departureDateEnd}}">{{:departureDateEnd}}</td>
+                                                    <td data-attr-text="{{:returnDateStart}">{{:returnDateStart}}</td>
+                                                    <td data-attr-text="{{:returnDateEnd}}">{{:returnDateEnd}}</td>
+
 
                                             </tr>
 
@@ -261,6 +261,47 @@ $(document).ready(function() {
 
         const apiUser = "<%=data.apiUser.apiToken%>";
 
+        const flightRequests = {
+          path:'/flightrequest',
+          where:{
+            status: "AwaitingProviderAccept",
+            or:[
+                {departureDateStart:{'>=':new Date().toISOString()}},
+                {departureDateEnd:{'<=':new Date().toISOString()}}
+            ]
+          },
+          limit:20,
+          skip:0,
+          moreId:'#flightRequestMore',
+          templateId:'#flightRequestItem',
+          containerId:'#flightRequestItems'
+        }
+
+        const acceptedFlightRequests = {
+          path:'/acceptedflightrequest',
+            where:{
+              apiUser
+          },
+          limit:20,
+          skip:0,
+          moreId:'#acceptedFlightRequestMore',
+          templateId:'#acceptedFlightRequestItem',
+          containerId:'#acceptedFlightRequestItems'
+        }
+
+        const processedFlightRequests = {
+          path:'/acceptedflightrequest',
+          where:{
+            providerPayoutStatus:'PAID',
+            apiUser
+          },
+          limit:20,
+          skip:0,
+          moreId:'#processedFlightRequestMore',
+          templateId:'#processedFlightRequestItem',
+          containerId:'#processedFlightRequestItems'
+        }
+
         $('#flightRequestItems').on('submit', '#acceptForm', function(e) {
             e.preventDefault();
             e.stopImmediatePropagation()
@@ -321,6 +362,7 @@ $(document).ready(function() {
                 console.log(data)
                 if(data.length == 0){
                   $(options.moreId).attr('disabled','')
+                  $(options.moreId).hide();
                   $.toaster({priority:'info',message: options.message || 'No more results to show'})
                 }
                 data.forEach(function(d) {
@@ -372,40 +414,62 @@ $(document).ready(function() {
         })
 
 
-        const flightRequests = {
-          path:'/flightrequest',
-          where:{ status: "AwaitingProviderAccept"},
-          limit:20,
-          skip:0,
-          moreId:'#flightRequestMore',
-          templateId:'#flightRequestItem',
-          containerId:'#flightRequestItems'
-        }
+        $('#filterDepartureCountry').on('change',function(){;
+            flightRequests.where.departureCountry = $(this).val();
+            flightRequests.skip = 0;
+            $(flightRequests.containerId).html('')
+            getFlightRequests(flightRequests);
+        })
 
-        const acceptedFlightRequests = {
-          path:'/acceptedflightrequest',
-            where:{
-              apiUser
-          },
-          limit:20,
-          skip:0,
-          moreId:'#acceptedFlightRequestMore',
-          templateId:'#acceptedFlightRequestItem',
-          containerId:'#acceptedFlightRequestItems'
-        }
+        $('#filterDepartureCity').on('change',function(){
+            flightRequests.where.departureCity = $(this).val();
+            flightRequests.skip = 0;
+            $(flightRequests.containerId).html('')
+            getFlightRequests(flightRequests);
+        })
 
-        const processedFlightRequests = {
-          path:'/acceptedflightrequest',
-          where:{
-            providerPayoutStatus:'PAID',
-            apiUser
-          },
-          limit:20,
-          skip:0,
-          moreId:'#processedFlightRequestMore',
-          templateId:'#processedFlightRequestItem',
-          containerId:'#processedFlightRequestItems'
-        }
+        $('#filterArrivalCity').on('change',function(){
+            flightRequests.where.arrivalCity = $(this).val();
+            flightRequests.skip = 0;
+            $(flightRequests.containerId).html('')
+            getFlightRequests(flightRequests);
+        })
+
+        $('#filterArrivalCountry').on('change',function(){
+           flightRequests.where.arrivalCountry = $(this).val();
+           $(flightRequests.containerId).html('')
+           flightRequests.skip = 0;
+           getFlightRequests(flightRequests);
+        })
+
+       $('#filterRequestMinimumPrice').bind('keyup change click', function (e) {
+           const $this = $(this);
+           flightRequests.where.maximumPayment = {'>=':$this.val()}
+           $(flightRequests.containerId).html('')
+           flightRequests.skip = 0;
+           getFlightRequests(flightRequests);
+        });
+
+
+        $('#search').on('input',function(){
+          const query = $(this).val()
+
+          console.log(query)
+
+          if(query.length == 0){
+            $('tbody tr').css('background-color','#fff');
+            return;
+          }
+
+          $('tbody tr').each(function(indx,row){
+            console.log($(row))
+            console.log($(row).children())
+              if($(row).find('td[data-attr-text="'+query+ '"]').length){
+                $(row).css('background-color','lightblue');
+              }
+          })
+
+        })
 
         $('#flightRequestMore').on('click',function(){
             getFlightRequests(flightRequests);
@@ -453,25 +517,45 @@ $(document).ready(function() {
 					<div class="tab-content">
 						<div class="tab-pane active" id="tab_default_1">
 							        <div style="margin:7px">
-                                    <div class="col-xs-6">
-                                        <div class="btn-group">
-                                            <select>
-                                                <option>country</option>
-                                            </select>
-                                            <select>
-                                                <option>country</option>
-                                            </select>
-                                        </div>
-                                    </div>
+
                                     <div class="col-xs-6 pull-right form-group">
-                                        <input type="text" class="form-control" style="border-radius:0px" placeholder="Search">
+                                        <input type="text" id="search" class="form-control" style="border-radius:0px" placeholder="Search">
+                                    </div>
+                                     <div class="col-xs-12">
+                                        <p> Filter results </p>
+                                        <div class="btn-group">
+                                            <div class="col-md-2">
+                                            <p>Departure country</p>
+                                            <select class="noselect country form-control" id="filterDepartureCountry">
+                                            </select>
+                                            </div>
+                                            <div class="col-md-2">
+                                            <p>Arrival country</p>
+                                            <select class="noselect country form-control" id="filterArrivalCountry">
+                                            </select>
+                                            </div>
+                                            <div class="col-md-2">
+                                             <p>Departure city</p>
+                                            <select class="noselect city form-control" id="filterDepartureCity">
+                                            </select>
+                                            </div>
+                                            <div class="col-md-2">
+                                            <p>Arrival city</p>
+                                            <select class="noselect city form-control" id="filterDepartureCountry">
+                                            </select>
+                                            </div>
+                                            <div class="col-md-2">
+                                            <p>Min request price</p>
+                                            <input type="number" id="filterRequestMinimumPrice"/>
+                                            </div>
+                                        </div>
                                     </div>
                                     </div>
                                     <br/><br/>
                                     <div class="row">
                                     <div class="panel  widget">
                                         <div class="panel-body">
-                                            <ul id="flightRequestItems" class="list-group" style="max-height:500px;width:100%;overflow-y:scroll;">
+                                            <ul id="flightRequestItems" class="list-group" style="max-height:600px;width:100%;overflow-y:scroll;">
 
 
                                             <br/>
@@ -484,16 +568,7 @@ $(document).ready(function() {
 						<div class="tab-pane" id="tab_default_2">
                         	<div class="tab-pane active" id="tab_default_1">
 							        <div style="margin:7px">
-                                    <div class="col-xs-6">
-                                        <div class="btn-group">
-                                            <select>
-                                                <option>country</option>
-                                            </select>
-                                            <select>
-                                                <option>country</option>
-                                            </select>
-                                        </div>
-                                    </div>
+
                                     <div class="col-xs-6 pull-right form-group">
                                         <input type="text" class="form-control" style="border-radius:0px" placeholder="Search">
                                     </div>
@@ -516,16 +591,7 @@ $(document).ready(function() {
 						<div class="tab-pane" id="tab_default_3">
                       	<div class="tab-pane active" id="tab_default_1">
 							        <div style="margin:7px">
-                                    <div class="col-xs-6">
-                                        <div class="btn-group">
-                                            <select>
-                                                <option>country</option>
-                                            </select>
-                                            <select>
-                                                <option>country</option>
-                                            </select>
-                                        </div>
-                                    </div>
+
                                     <div class="col-xs-6 pull-right form-group">
                                         <input type="text" class="form-control" style="border-radius:0px" placeholder="Search">
                                     </div>

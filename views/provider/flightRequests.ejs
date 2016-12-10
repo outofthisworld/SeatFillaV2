@@ -295,54 +295,43 @@ $(document).ready(function() {
             })
         })
 
-        const frWhere = {
-            status: "AwaitingProviderAccept"
-        }
-        var limit = 20;
-        var skip = 0;
+        function getFlightRequests(options){
 
-        function getFlightRequests(){
-          io.socket.get('/flightrequest?where=' + JSON.stringify(frWhere) + '&limit=' + limit + '&skip=' + skip, function(data) {
-              skip += 20;
-              console.log(data)
-              if(data.length == 0){
-                $('#flightRequestMore').attr('disabled','')
-                $.toaster({priority:'info',message:'No more results to show'})
-              }
-              data.forEach(function(d) {
-                  const $html = $($.templates('#flightRequestItem').render(d));
-                  $html.hide();
-                  $('#flightRequestItems').append($html.fadeIn(1000));
-              })
-          })
-        }
-        getFlightRequests();
+          if(!options.path) return;
 
-        var acceptedFlightRequestLimit = 20;
-        var acceptedFlightRequestSkip = 0;
-        const afrWhere = {
-            apiUser
-        }
+          var path = options.path;
 
-        function getAcceptedFlightRequests(){
-          io.socket.get('/acceptedflightrequest?where=' + JSON.stringify(afrWhere) + '&limit=' + limit + '&skip=' + acceptedFlightRequestSkip, function(data) {
-              skip += 20;
-              console.log(data)
-              if(data.length == 0){
-                 $('#acceptedFlightRequestMore').attr('disabled','');
-                 $.toaster({priority:'info',message:'No more results to show'})
-              }
-              data.forEach(function(d) {
-                  const $html = $($.templates('#acceptedFlightRequestItem').render(d));
-                  $html.hide();
-                  $('#acceptedFlightRequestItems').append($html.fadeIn(1000));
-              })
-          })
+
+          if(options.where)
+            path = path+ '?where=' + JSON.stringify(options.where);
+
+          if(options.limit)
+            path = path + '&limit=' + options.limit
+
+          if(options.skip)
+            path = path+ '&skip=' + options.skip
+
+          if(options.sort)
+            path = path + '&sort=' + options.sort
+
+          console.log('path:' + path)
+
+          io.socket.get(path, function(data) {
+                options.skip += 20;
+                console.log(data)
+                if(data.length == 0){
+                  $(options.moreId).attr('disabled','')
+                  $.toaster({priority:'info',message: options.message || 'No more results to show'})
+                }
+                data.forEach(function(d) {
+                    const $html = $($.templates(options.templateId).render(d));
+                    $html.hide();
+                    $(options.containerId).append($html.fadeIn(1000));
+                })
+            })
         }
-        getAcceptedFlightRequests();
 
         io.socket.get('/apiusers?apiToken=' + apiUser, function() {})
-
         io.socket.on('apiusers', function(data) {
             console.log(data);
             switch (data.verb) {
@@ -382,13 +371,57 @@ $(document).ready(function() {
             }
         })
 
+
+        const flightRequests = {
+          path:'/flightrequest',
+          where:{ status: "AwaitingProviderAccept"},
+          limit:20,
+          skip:0,
+          moreId:'#flightRequestMore',
+          templateId:'#flightRequestItem',
+          containerId:'#flightRequestItems'
+        }
+
+        const acceptedFlightRequests = {
+          path:'/acceptedflightrequest',
+            where:{
+              apiUser
+          },
+          limit:20,
+          skip:0,
+          moreId:'#acceptedFlightRequestMore',
+          templateId:'#acceptedFlightRequestItem',
+          containerId:'#acceptedFlightRequestItems'
+        }
+
+        const processedFlightRequests = {
+          path:'/acceptedflightrequest',
+          where:{
+            providerPayoutStatus:'PAID',
+            apiUser
+          },
+          limit:20,
+          skip:0,
+          moreId:'#processedFlightRequestMore',
+          templateId:'#processedFlightRequestItem',
+          containerId:'#processedFlightRequestItems'
+        }
+
         $('#flightRequestMore').on('click',function(){
-            getFlightRequests();
+            getFlightRequests(flightRequests);
         })
 
          $('#acceptedFlightRequestMore').on('click',function(){
-            getFlightRequests();
+            getFlightRequests(acceptedFlightRequests)
         })
+
+        $('#processedFlightRequestMore').on('click',function(){
+           getFlightRequests(processedFlightRequests)
+        })
+
+        $('#flightRequestMore').trigger('click')
+        $('#acceptedFlightRequestMore').trigger('click')
+        $('#processedFlightRequestMore').trigger('click')
 
     })($, window.io);
 });
@@ -474,14 +507,44 @@ $(document).ready(function() {
 
                                             <br/>
                                         </div>
-                                        <a href="#" class="btn btn-primary btn-sm btn-block" role="button"><span class="glyphicon glyphicon-refresh"></span> More</a>
+                                        <a href="#" id="acceptedFlightRequestMore" class="btn btn-primary btn-sm btn-block" role="button"><span class="glyphicon glyphicon-refresh"></span> More</a>
                                     </div>
                                 </div>
 
 						</div>
 						</div>
 						<div class="tab-pane" id="tab_default_3">
+                      	<div class="tab-pane active" id="tab_default_1">
+							        <div style="margin:7px">
+                                    <div class="col-xs-6">
+                                        <div class="btn-group">
+                                            <select>
+                                                <option>country</option>
+                                            </select>
+                                            <select>
+                                                <option>country</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-6 pull-right form-group">
+                                        <input type="text" class="form-control" style="border-radius:0px" placeholder="Search">
+                                    </div>
+                                    </div>
+                                    <br/><br/>
+                                    <div class="row">
+                                    <div class="panel  widget">
+                                        <div class="panel-body">
+                                            <ul id="acceptedFlightRequestItems" class="list-group">
 
+
+                                            <br/>
+                                        </div>
+                                        <a href="#" id="processedFlightRequestMore" class="btn btn-primary btn-sm btn-block" role="button"><span class="glyphicon glyphicon-refresh"></span> More</a>
+                                    </div>
+                                </div>
+
+						</div>
+						</div>
 						</div>
 					</div>
 				</div>

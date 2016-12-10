@@ -1,8 +1,13 @@
-
+<script>
+  $(document).ready(function(){
+    $('.userCurrencySymbol').text($('#seatfilla_currencies option:selected').attr('data-symbol'))
+    $('.userCurrencyCode').text($('#seatfilla_currencies option:selected').val())
+  })
+</script>
 <div class="container-fluid">
 
 <div id="template">
-        <div style="width:80%;">
+        <div style="">
 			<form id="flightRequestForm" method="POST" action="/UserProfile/<%=req.user.username%>/FlightRequest/Create">
               <div class="form-group">
                 <label for="flight_type">Type of request</label>
@@ -13,52 +18,52 @@
               </div>
               <div class="row">
                     <div class="col-xs-6">
-                        <label for="departureDateStart">Departure Date</label>   
+                        <label for="departureDateStart">Departure Date</label>
                         <input type="date" name="departureDateStart" id="departure_date" class="form-control" required/>
                     </div>
                     <div class="col-xs-6">
-                        <label for="departureDateEnd">Latest Departure Date</label>   
+                        <label for="departureDateEnd">Latest Departure Date</label>
                         <input type="date" name="departureDateEnd" id="departure_date_end" class="form-control"/>
                     </div>
               </div>
               <div class="row">
                     <div class="col-xs-6">
-                        <label  for="returnDateStart">Return Date</label> 
+                        <label  for="returnDateStart">Return Date</label>
                         <input type="date" name="returnDateStart" id="return_date" class="form-control" required/>
                     </div>
                     <div class="col-xs-6">
-                        <label  for="returnDateEnd">Latest Return Date</label> 
+                        <label  for="returnDateEnd">Latest Return Date</label>
                         <input type="date" name="returnDateEnd" id="return_date_end" class="form-control"/>
                     </div>
               </div>
                 <div class="row">
                 <div class="col-xs-6">
-                        <label for="departureCountry">From country</label>   
-                        <select id="departureCountry" name="departureCountry" data-attr-cityLink="#departureCity" class="country form-control" required/> 
-                        
+                        <label for="departureCountry">From country</label>
+                        <select id="departureCountry" name="departureCountry" data-attr-cityLink="#departureCity" class="country form-control" required/>
+
                         </select>
                 </div>
                 <div class="col-xs-6">
-                        <label for="arrivalCountry">To country</label> 
+                        <label for="arrivalCountry">To country</label>
                         <select id="arrivalCountry" name="arrivalCountry" data-attr-cityLink="#arrivalCity" class="country form-control" required/>
                         </select>
                 </div>
               </div>
               <div class="row">
                 <div class="col-xs-6">
-                        <label for="departureCity">From city</label>   
-                        <select id="departureCity" name="departureCity" class="city form-control" required/> 
+                        <label for="departureCity">From city</label>
+                        <select id="departureCity" name="departureCity" class="city form-control" required/>
                         </select>
                 </div>
                 <div class="col-xs-6">
-                        <label  for="arrivalCity">To city</label> 
+                        <label  for="arrivalCity">To city</label>
                         <select id="arrivalCity" name="arrivaCity" class="city form-control" required/>
                         </select>
                 </div>
               </div>
               <div class="row">
               <div class="col-xs-8">
-              <label for="cabin_class">Cabin class</label>   
+              <label for="cabin_class">Cabin class</label>
                 <select id="cabin_class" name="cabinClass" class="form-control noselect">
                     <option value="Economy" selected>Economy</option>
                     <option value="PremiumEconomy">Premium Economy</option>
@@ -69,15 +74,15 @@
               </div>
               <div class="row">
                 <div class="col-xs-4">
-                        <label for="adults">No. adults</label>   
+                        <label for="adults">No. adults</label>
                         <input id="adults" name="adults" type="number" class="form-control" value="1" required/>
                 </div>
                 <div class="col-xs-4">
-                        <label  for="children">No. Children</label> 
+                        <label  for="children">No. Children</label>
                            <input id="children" name="children" type="number" class="form-control" value="0" required/>
                 </div>
                   <div class="col-xs-4">
-                        <label  for="infants">No. infants</label> 
+                        <label  for="infants">No. infants</label>
                         <input id="infants" name="infants" type="number" class="form-control" value="0" required/>
                 </div>
               </div>
@@ -86,16 +91,19 @@
               <br/>
             <div class="row">
                 <div class="col-xs-8">
-                   <label  for="maxPrice">Find flights cheaper than (Not required): </label> 
+                   <label  for="maxPrice">Max you are willing to pay for the flight: </label>
                    <div class="form-inline">
-                   <span id="currencySymbol"></span> <input id="maxPrice" name="maximumPayment" class="form-control" type="number" value="0"/> 
+                   <span class="userCurrencySymbol"></span> <input id="maxPrice" name="maximumPayment" class="form-control" type="number" value="0"/>
+                   <span class="userCurrencyCode"></span>
                    </div>
                 </div>
             </div>
+            <br/>
             <button type="submit" class="btn btn-info btn-block">Create a flight request</button>
             </form>
             </div>
+            <br/></br>
 </div>
 
-	
+
 <!-- SCRIPTS WILL BE AUTOMATICALLY LOADED WHEN PAGE IS SENT VIA AJAX (see lazy-script-loader.js)-->

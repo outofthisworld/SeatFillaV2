@@ -103,7 +103,7 @@
                                                 <tr>
                                                     <th>id</th>
                                                     <th>Username</th>
-                                                    <th>Price</th>
+                                                    <th>Maximum payment</th>
                                                     <th>Currency</th>
                                                     <th>Departure country code</th>
                                                     <th>Departure country</th>
@@ -126,7 +126,7 @@
                                             </thead>
                                             <tbody data-attr-flightRequestId="{{:id}}">
                                             <tr>
-                                            
+
                                                     <tr>
                                                     <td>{{:id}}</td>
                                                     <td>{{:username}}</td>
@@ -144,26 +144,25 @@
                                                     <td>{{:adults}}</td>
                                                     <td>{{:children}}</td>
                                                     <td>{{:infants}}</td>
-                                                    <td>Flight type</td> 
+                                                    <td>Flight type</td>
                                                     <td>{{:departureDateStart}}</td></td>
                                                     <td>{{:departureDateEnd}}</td>
                                                     <td>{{:returnDateStart}}</td>
                                                     <td>{{:returnDateEnd}}</td>
                                                     </tr>
-                                  
+
                                             </tr>
-                                            
+
                                             </tbody>
-                                    </table>   
+                                    </table>
                                 </div>
                                 <div class="action">
                                        <div class="container">
                                         <div class="row">
-                                            <button type="button" id="flightRequestAcceptModalButton{{:id}}"  type="button" class="btn btn-info badge" data-toggle="modal" data-target="#myModal{{:id}}">Accept flight request</button>  
+                                            <button type="button" id="flightRequestAcceptModalButton{{:id}}"  type="button" class="btn btn-info badge" data-toggle="modal" data-target="#myModal{{:id}}">Accept flight request</button>
                                             <div id="myModal{{:id}}" class="modal fade" role="dialog">
                                             <div class="vertical-alignment-modal">
                                             <div class="modal-dialog vertical-align-center">
-                                            
                                                 <div class="modal-content">
                                                 <div class="modal-header">
                                                     <button type="button" class="close" data-dismiss="modal">×</button>
@@ -171,14 +170,29 @@
                                                 </div>
                                                 <div class="modal-body" style="">
                                                 <form id="acceptForm" method="POST" action="/apiv1/flightrequest/{{:id}}/accept" data-attr-flightRequestId="{{:id}}">
-                                     
-                                                    <label for="number" class="col-xs-4">Hours user has to make payment (12+ hours)</label>
-                                                  
-                                                    <input id="number" name="hours" style="width:40%;" class="input" value="12" type="number" min="12" required/>
-                                             
-                                                        <button type="submit" class="btn btn-default">Accept</button>
-                                                        <button  class="btn btn-default" data-dismiss="modal">Close</button>
-                                                
+                                                <br/>
+                                                <div class="panel panel-default">
+                                                  <div class="panel-body form-horizontal payment-form">
+
+                                                      <div class="form-group">
+                                                          <label for="amount" class="col-sm-3 control-label">Hours user has to confirm</label>
+                                                          <div class="col-sm-9">
+                                                            <input id="number" name="hours" style="width:40%;" class="input" value="12" type="number" min="12" required/>
+                                                          </div>
+                                                      </div>
+                                                       <div class="form-group">
+                                                          <label for="amount" class="col-sm-3 control-label">Offer flight for:</label>
+                                                          <div class="col-sm-9">
+                                                              <input type="number" class="form-control" value="{{:maximumPayment}}" min="0" max="{{:maximumPayment}}" id="amount" name="amount">
+                                                              <small> The user has expressed a maximum payment of {{:maximumPayment}} {{:currency}} </small>
+                                                          </div>
+                                                      </div>
+
+                                                  </div>
+                                                 </div>
+                                                  </div>
+                                                    <button type="submit" class="btn btn-default">Accept</button>
+                                                    <button  class="btn btn-default" data-dismiss="modal">Close</button>
                                                 </form>
                                                 </div>
                                                 </div>
@@ -216,7 +230,7 @@
                                             </thead>
                                             <tbody data-attr-acceptedFlightRequestId="{{:id}}">
                                             <tr>
-                                            
+
                                                     <tr>
                                                     <td>{{:id}}</td>
                                                     <td>{{:providerPayoutStatus}}</td>
@@ -226,14 +240,14 @@
                                                     <td>{{:userPaymentId || 'N/A'}}</td>
                                                     <td>{{:validUntil}}</td>
                                                     </tr>
-                                  
+
                                             </tr>
-                                            
+
                                             </tbody>
-                                    </table>   
+                                    </table>
                                 </div>
                                 <div class="action">
-                             
+
                                 </div>
                                 </div>
                             </div>
@@ -286,30 +300,46 @@ $(document).ready(function() {
         }
         var limit = 20;
         var skip = 0;
-        io.socket.get('/flightrequest?where=' + JSON.stringify(frWhere) + '&limit=' + limit + '&skip=' + skip, function(data) {
-            skip += 20;
-            console.log(data)
-            data.forEach(function(d) {
-                const $html = $($.templates('#flightRequestItem').render(d));
-                $html.hide();
-                $('#flightRequestItems').append($html.fadeIn(1000));
-            })
-        })
+
+        function getFlightRequests(){
+          io.socket.get('/flightrequest?where=' + JSON.stringify(frWhere) + '&limit=' + limit + '&skip=' + skip, function(data) {
+              skip += 20;
+              console.log(data)
+              if(data.length == 0){
+                $('#flightRequestMore').attr('disabled','')
+                $.toaster({priority:'info',message:'No more results to show'})
+              }
+              data.forEach(function(d) {
+                  const $html = $($.templates('#flightRequestItem').render(d));
+                  $html.hide();
+                  $('#flightRequestItems').append($html.fadeIn(1000));
+              })
+          })
+        }
+        getFlightRequests();
 
         var acceptedFlightRequestLimit = 20;
         var acceptedFlightRequestSkip = 0;
         const afrWhere = {
             apiUser
         }
-        io.socket.get('/acceptedflightrequest?where=' + JSON.stringify(afrWhere) + '&limit=' + limit + '&skip=' + acceptedFlightRequestSkip, function(data) {
-            skip += 20;
-            console.log(data)
-            data.forEach(function(d) {
-                const $html = $($.templates('#acceptedFlightRequestItem').render(d));
-                $html.hide();
-                $('#acceptedFlightRequestItems').append($html.fadeIn(1000));
-            })
-        })
+
+        function getAcceptedFlightRequests(){
+          io.socket.get('/acceptedflightrequest?where=' + JSON.stringify(afrWhere) + '&limit=' + limit + '&skip=' + acceptedFlightRequestSkip, function(data) {
+              skip += 20;
+              console.log(data)
+              if(data.length == 0){
+                 $('#acceptedFlightRequestMore').attr('disabled','');
+                 $.toaster({priority:'info',message:'No more results to show'})
+              }
+              data.forEach(function(d) {
+                  const $html = $($.templates('#acceptedFlightRequestItem').render(d));
+                  $html.hide();
+                  $('#acceptedFlightRequestItems').append($html.fadeIn(1000));
+              })
+          })
+        }
+        getAcceptedFlightRequests();
 
         io.socket.get('/apiusers?apiToken=' + apiUser, function() {})
 
@@ -352,12 +382,20 @@ $(document).ready(function() {
             }
         })
 
+        $('#flightRequestMore').on('click',function(){
+            getFlightRequests();
+        })
+
+         $('#acceptedFlightRequestMore').on('click',function(){
+            getFlightRequests();
+        })
+
     })($, window.io);
 });
 </script>
 
 
-<div id="wrapper" style="padding:20px;">
+<div id="wrapper" style="padding-top:20px;">
 <div class="container">
     <div class="row">
 		<div class="col-md-12">
@@ -400,15 +438,15 @@ $(document).ready(function() {
                                     <div class="row">
                                     <div class="panel  widget">
                                         <div class="panel-body">
-                                            <ul id="flightRequestItems" class="list-group">
-                                    
-                                            
+                                            <ul id="flightRequestItems" class="list-group" style="max-height:500px;width:100%;overflow-y:scroll;">
+
+
                                             <br/>
                                         </div>
-                                        <a href="#" class="btn btn-primary btn-sm btn-block" role="button"><span class="glyphicon glyphicon-refresh"></span> More</a>
+                                        <a href="#" id="flightRequestMore" class="btn btn-primary btn-sm btn-block" role="button"><span class="glyphicon glyphicon-refresh"></span> More</a>
                                     </div>
                                 </div>
-                            
+
 						</div>
 						<div class="tab-pane" id="tab_default_2">
                         	<div class="tab-pane active" id="tab_default_1">
@@ -432,18 +470,18 @@ $(document).ready(function() {
                                     <div class="panel  widget">
                                         <div class="panel-body">
                                             <ul id="acceptedFlightRequestItems" class="list-group">
-                                    
-                                            
+
+
                                             <br/>
                                         </div>
                                         <a href="#" class="btn btn-primary btn-sm btn-block" role="button"><span class="glyphicon glyphicon-refresh"></span> More</a>
                                     </div>
                                 </div>
-                            
+
 						</div>
 						</div>
 						<div class="tab-pane" id="tab_default_3">
-							
+
 						</div>
 					</div>
 				</div>
@@ -456,4 +494,3 @@ $(document).ready(function() {
 
 </div>
 
-                    

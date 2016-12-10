@@ -1,10 +1,11 @@
 
 
 <script>
-
+  $('#flightRequestForm').validate();
   $('#pcontent').load('/UserProfile/<%=req.user.username%>/FlightRequest/Create',function(res){
     console.log(res)
     $.inputHookInit();
+    $('#seatfilla_currencies').trigger('change');
     $('#departure_date').val(moment().format('YYYY-MM-DD'))
     $('#departure_date_end').val(moment().format('YYYY-MM-DD'))
     $('#return_date').val(moment().add(7,'days').format('YYYY-MM-DD'))

@@ -57,9 +57,9 @@ $(document).ready(function () {
       }
     })
 
+    const errors = [];
     $('#seatfilla_currencies').on('change', function () {
       console.log('trigger sf currency change');
-
 
       const currencyCodePreference = $(this).val()
 
@@ -90,7 +90,7 @@ $(document).ready(function () {
 
         window.seatfilla.globals.getFixerIoExchangeRates(currencyCode, function (err, exchangeRates) {
           if (err) {
-            alert('Error ' + err)
+            errors.push(err);
             return
           }
 
@@ -118,6 +118,28 @@ $(document).ready(function () {
         $('span[data-attr-currency-symbol]').attr('data-attr-currency-symbol',newCurrencySymbol);
         $('span[data-attr-currency-symbol]').text(newCurrencySymbol);
       })
+
+      $('[data-attr-min-price]').each(function(indx,ele){
+        if($(ele).attr('data-attr-currency')){
+          window.seatfilla.globals.getFixerIoExchangeRates($(ele).attr('data-attr-currency'),function(err,res){
+            if(err){
+              //alert(JSON.stringify(err));
+              errors.push(err);
+              return;
+            }else{
+              const toCurrency = $('#seatfilla_currencies option:selected').val().toUpperCase();
+              var newMin = parseFloat($(ele).attr('min')) * parseFloat(res.rates[toCurrency])
+              newMin = parseFloat(newMin.toFixed(2)) + 0.01;
+              $(ele).attr('step','0.01')
+              $(ele).attr('min',newMin);
+              $(ele).val(newMin);
+            }
+          })
+        }
+      })
     })
+
+    if(errors.length){alert(JSON.stringify(errors[0]));}
+
   })()
 })

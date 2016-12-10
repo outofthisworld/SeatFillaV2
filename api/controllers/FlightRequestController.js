@@ -16,11 +16,52 @@ module.exports = {
     obj.status = 'AwaitingProviderAccept'
     delete obj.id
     sails.log.debug(req.allParams())
-    FlightRequest.create(obj).then(function (created) {
-      FlightRequest.publishCreate(created)
-      return res.ok(created)
-    }).catch(function (err) {
-      return res.negotiate(err)
+    async.auto({
+      //Convert everything to a base currency, makes it
+      //easier later,rather than trying to convert serveral disparate currencies to a single currency.
+      convert_currency:function(callback){
+        LookupService.fixer_io_get_exchange_rates(obj.currency)
+        .then(function(results){
+          if(!results.rates.USD){
+            return callback(new Error('Could not find correct conversion currency'),null);
+          }
+          var conversionRate = results.rates.USD;
+
+          try{
+            conversionRate = parseFloat(conversionRate);
+          }catch(err){
+            return callback(err,null);
+          }
+
+          var maximumPayment = obj.maximumPayment;
+
+          try{
+            maximumPayment = parseFloat(maximumPayment);
+          }catch(err){
+            return callback(new Error('Error parsing maximum payment amount'),null);
+          }
+
+          return callback(null,{maximumPayment,conversionRate,currency:'USD'});
+        })
+      },
+      create_flight_request:['convert_currency',function(callback,results){
+        obj.currency = results.convert_currency.currency;
+        obj.maximumPayment = results.convert_currency.maximumPayment * results.convert_currency.conversionRate;
+        FlightRequest.create(obj).then(function (created) {
+          sails.log.debug(created);
+          User.publishAdd(created.id,'flightRequests',created);
+          FlightRequest.publishCreate(created)
+          return callback(null,created)
+        }).catch(function (err) {
+          return callback(err,null);
+        })
+      }]
+    },function(err,results){
+      if(err){
+        return res.negotiate(err)
+      }else{
+        return res.ok(results.create_flight_request);
+      }
     })
   },
   accept: function (req, res) {

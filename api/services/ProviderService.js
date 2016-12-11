@@ -40,8 +40,10 @@ module.exports = {
       })
     })
   },
-  hasPermission(str) {
-    return !!(this.getApiUser(req).permissions.find(function (perm) {
+  hasPermission(str,req) {
+    const auth = this.getProviderAuth(req);
+    sails.log.debug(JSON.stringify(auth))
+    return !!(auth.decodedToken.permissions.find(function (perm) {
       return perm == str
     }))
   },
@@ -57,6 +59,13 @@ module.exports = {
     if (!this.isAuthenticated(req)) throw new Error('Invalid params to ProviderService.js/getApiUser, user must be authenticated')
 
     return (req.session.providerlogin && req.session.providerlogin.apiUser)
+  },
+  getProviderAuth(req){
+    if (!req || !req.session) throw new Error('Invalid params to ProviderService.js/isAutenticated')
+
+    if (!this.isAuthenticated(req)) throw new Error('Invalid params to ProviderService.js/getProviderAuth, user must be authenticated')
+
+    return req.session.providerlogin
   },
   getApiKey(req) {
     if (!req || !req.session) throw new Error('Invalid params to ProviderService.js/getApiKey')

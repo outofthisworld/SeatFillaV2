@@ -25,7 +25,7 @@ module.exports = {
             required: true
         },
         amount:{
-          type:'number',
+          type:'float',
           notNull:true,
           required:true
         },

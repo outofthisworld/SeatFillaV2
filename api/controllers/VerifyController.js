@@ -180,8 +180,8 @@ module.exports = {
       PaypalService.charge_credit_card(
         [{
           'amount': {
-            total: parseFloat(results.findFlightRequest.flightRequest.maximumPayment + 5),
-            currency: 'USD' // results.findFlightRequest.flightRequest.currency --> NZD is not supported
+            total: parseFloat(results.findFlightRequest.amount + 5),
+            currency: results.findFlightRequest.currency // results.findFlightRequest.flightRequest.currency --> NZD is not supported
           },
           'description': 'Seatfilla flight - ' + results.findFlightRequest.id
         }], {credit_card: results.findCreditCard}).then(function (paypal_response) {
@@ -221,10 +221,10 @@ module.exports = {
 
     function updateUserPaymentStatus (callback, results) {
       const errType = 'UpdateUserPaymentStatus'
-      results.findFlightRequest.flightRequest.userPaymentStatus = 'PAID'
+      results.findFlightRequest.userPaymentStatus = 'PAID'
       // This id can be used later on for locating the trasnaction via paypal
-      results.findFlightRequest.flightRequest.userPaymentId = results.chargeUserCreditCard.id
-      results.findFlightRequest.flightRequest.save(function (err) {
+      results.findFlightRequest.userPaymentId = results.chargeUserCreditCard.id
+      results.findFlightRequest.save(function (err) {
         if (err) {
           err.errType = errType
           return callback(err, null)
@@ -238,12 +238,12 @@ module.exports = {
       const payoutObj = {
         'recipient_type': 'EMAIL',
         'amount': {
-          'value': parseFloat(results.findFlightRequest.flightRequest.maximumPayment + 5),
+          'value': parseFloat(results.findFlightRequest.amount + 5),
           'currency': 'USD' // results.findFlightRequest.flightRequest.currency
         },
         'receiver': results.findFlightRequest.apiUser.paypalEmail, // fix this (this should be the providers paypal email),
-        'note': 'Seatfilla - payment for accepted flight ' + results.findFlightRequest.flightRequest.id,
-        'sender_item_id': results.findFlightRequest.flightRequest.id
+        'note': 'Seatfilla - payment for accepted flight ' + results.findFlightRequest.id,
+        'sender_item_id': results.findFlightRequest.id
       }
       PaypalService.createPaypalPayoutSyncMode(payoutObj).then(function (response) {
         // Validate response
@@ -269,10 +269,10 @@ module.exports = {
 
     function updateProviderPaymentStatus (callback, results) {
       const errType = 'UpdateProviderPaymentStatus'
-      results.findFlightRequest.flightRequest.providerPayoutStatus = 'PAID'
-      results.findFlightRequest.flightRequest.providerPayoutBatchId = results.sendProviderPayment.payout_batch_id
-      results.findFlightRequest.flightRequest.providerPayoutItemId = results.sendProviderPayment.items[0].payout_item_id
-      results.findFlightRequest.flightRequest.save(function (err) {
+      results.findFlightRequest.providerPayoutStatus = 'PAID'
+      results.findFlightRequest.providerPayoutBatchId = results.sendProviderPayment.payout_batch_id
+      results.findFlightRequest.providerPayoutItemId = results.sendProviderPayment.items[0].payout_item_id
+      results.findFlightRequest.save(function (err) {
         if (err) {
           err.errType = errType
           return callback(err, null)
@@ -400,7 +400,7 @@ module.exports = {
               // Something went wrong with the two fail safes, display to the user
               // a way to contact us with the necessary information to
               // lodge an inquiry
-              const flightRequestId = result.findFlightRequest.flightRequestid
+              const flightRequestId = result.findFlightRequest.id
               const transactionId = result.chargeUserCreditCard.id
               const state = result.chargeUserCreditCard.state
 

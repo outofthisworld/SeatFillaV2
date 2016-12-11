@@ -104,7 +104,6 @@
                                                     <th>id</th>
                                                     <th>Username</th>
                                                     <th>Maximum payment</th>
-                                                    <th>Currency</th>
                                                     <th>Departure country code</th>
                                                     <th>Departure country</th>
                                                     <th>Departure city</th>
@@ -130,8 +129,13 @@
 
                                                     <td data-attr-text="{{:id}}">{{:id}}</td>
                                                     <td data-attr-text="{:username}}">{{:username}}</td>
-                                                    <td data-attr-text="{{:maximumPayment}}">{{:maximumPayment}}</td>
-                                                    <td data-attr-text="{{:currency}}">{{:currency}}</td>
+                                                    <td data-attr-text="{{:maximumPayment}}">
+                                                    	<span class="itemPrice" data-attr-price="">
+                                                        <span data-attr-currency-symbol="{{:~currencySymbolFor(currency)}}">{{:~currencySymbolFor(currency)}}</span>
+                                                        <span data-attr-amount="{{:maximumPayment}}">{{:~toFixedDp(maximumPayment,2)}}</span>
+                                                        <span data-attr-currency-code="{{:currency}}">{{:currency}}</span>
+                                                      </span>
+                                                    </td>
                                                     <td data-attr-text="{{:departureCountryId}}">{{:departureCountryId}}</td>
                                                     <td data-attr-text="{{:departureCountry}}">{{:departureCountry}}</td>
                                                     <td data-attr-text="{{:departureCity}}">{{:departureCity}}</td>
@@ -169,31 +173,46 @@
                                                     <h4 class="modal-title">Accept flight request</h4>
                                                 </div>
                                                 <div class="modal-body" style="">
-                                                <form id="acceptForm" method="POST" action="/apiv1/flightrequest/{{:id}}/accept" data-attr-flightRequestId="{{:id}}">
                                                 <br/>
-                                                <div class="panel panel-default">
-                                                  <div class="panel-body form-horizontal payment-form">
-
+                                                <div class="panel">
+                                                  <div class="panel-body form-horizontal" style="padding:20px;">
+                                                  <form id="acceptForm" method="POST" action="/apiv1/flightrequest/{{:id}}/accept" data-attr-flightRequestId="{{:id}}">
                                                       <div class="form-group">
                                                           <label for="amount" class="col-sm-3 control-label">Hours user has to confirm</label>
                                                           <div class="col-sm-9">
-                                                            <input id="number" name="hours" style="width:40%;" class="input" value="12" type="number" min="12" required/>
+                                                            <input id="number" name="hours" class="form-control" style="width:40%;" class="input" value="12" type="number" min="12" required/>
                                                           </div>
                                                       </div>
                                                        <div class="form-group">
                                                           <label for="amount" class="col-sm-3 control-label">Offer flight for:</label>
                                                           <div class="col-sm-9">
-                                                              <input type="number" class="form-control" value="{{:maximumPayment}}" min="0" max="{{:maximumPayment}}" id="amount" name="amount">
-                                                              <small> The user has expressed a maximum payment of {{:maximumPayment}} {{:currency}} </small>
+                                                              <span class="userCurrencySymbol"></span>
+                                                              <input type="number" class="form-control" data-attr-max-price="{{:maximumPayment}}" data-attr-currency="{{:currency}}" value="{{:maximumPayment}}" min="0" max="{{:maximumPayment}}" id="amount" name="amount">
+                                                              <span class="userCurrencyCode"></span>
+                                                              <small> The user has expressed a maximum payment of {{:maximumPayment}} {{:currency}}. </small><br/>
+                                                              <small>
+                                                                 This makes the maximum price you can offer the flight for to the user: <br/>
+                                                                 <span class="itemPrice" data-attr-price="">
+                                                                  <span data-attr-currency-symbol="{{:~currencySymbolFor(currency)}}">{{:~currencySymbolFor(currency)}}</span>
+                                                                  <span data-attr-amount="{{:maximumPayment}}">{{:~toFixedDp(maximumPayment,2)}}</span>
+                                                                  <span data-attr-currency-code="{{:currency}}">{{:currency}}</span>
+                                                                </span>
+                                                              </small>
                                                           </div>
                                                       </div>
+                                                           <div class="input-group center-block" style="margin-bottom:50px;">
+                                                    <div class="col-xs-6">
+                                                    <button type="submit" class="btn btn-info btn-block">Accept</button>
+                                                    </div>
+                                                    <div class="col-xs-6">
+                                                    <button class="btn btn-danger btn-block" data-dismiss="modal">Close</button>
+                                                    </div>
+                                                    </div>
+                                                </form>
 
                                                   </div>
                                                  </div>
-                                                  </div>
-                                                    <button type="submit" class="btn btn-default">Accept</button>
-                                                    <button  class="btn btn-default" data-dismiss="modal">Close</button>
-                                                </form>
+
                                                 </div>
                                                 </div>
                                             </div>
@@ -305,6 +324,7 @@ $(document).ready(function() {
         $('#flightRequestItems').on('submit', '#acceptForm', function(e) {
             e.preventDefault();
             e.stopImmediatePropagation()
+            console.log('clicked')
             var $form = $(this)
             if (!$form[0].checkValidity()) {
                 $form.find(':submit').click()
@@ -334,6 +354,10 @@ $(document).ready(function() {
                     alert('error')
                 }
             })
+        })
+
+        $('[data-toggle]').on('click',function(){
+             $('#seatfilla_currencies').trigger('change');
         })
 
         function getFlightRequests(options){
@@ -370,6 +394,7 @@ $(document).ready(function() {
                     $html.hide();
                     $(options.containerId).append($html.fadeIn(1000));
                 })
+                $('#seatfilla_currencies').trigger('change');
             })
         }
 
@@ -409,6 +434,7 @@ $(document).ready(function() {
                     const $html = $($.templates('#flightRequestItem').render(res.data));
                     $html.hide();
                     $('#flightRequestItems').prepend($html.fadeIn(1000));
+                    $('#seatfilla_currencies').trigger('change');
                     break;
             }
         })
@@ -484,7 +510,6 @@ $(document).ready(function() {
         $('#flightRequestMore').trigger('click')
         $('#acceptedFlightRequestMore').trigger('click')
         $('#processedFlightRequestMore').trigger('click')
-
     })($, window.io);
 });
 </script>

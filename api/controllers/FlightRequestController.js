@@ -20,11 +20,19 @@ module.exports = {
       //Convert everything to a base currency, makes it
       //easier later,rather than trying to convert serveral disparate currencies to a single currency.
       convert_currency:function(callback){
+
+        //If we are already in the correct currency just return, value will remain the same.
+        if(obj.currency == 'USD'){
+          return callback(null,{maximumPayment:obj.maximumPayment,conversionRate:1,currency:'USD'})
+        }
+
         LookupService.fixer_io_get_exchange_rates(obj.currency)
         .then(function(results){
-          if(!results.rates.USD){
-            return callback(new Error('Could not find correct conversion currency'),null);
+
+          if(!('USD' in results.rates)){
+            return callback(new Error('Unsupported currency'),null);
           }
+
           var conversionRate = results.rates.USD;
 
           try{
@@ -94,7 +102,7 @@ module.exports = {
     var hours
     try {
       hours = parseInt(req.param('hours'))
-      if (!hours || hours < 12) errors.push('Invalid hours value specified')
+      if (!hours || isNan(hours) || hours < 12) errors.push('Invalid hours value specified')
     } catch(err) {
       errors.push('Invalid hours value specified')
     }
@@ -102,7 +110,7 @@ module.exports = {
     var amount;
     try{
       amount = parseFloat(req.param('amount'))
-      if(!amount) errors.push('Invalid amount specified')
+      if(!amount || isNan(amount)) errors.push('Invalid amount specified')
     }catch(err){
       errors.push('Invalid amount specified');
     }
@@ -132,11 +140,30 @@ module.exports = {
             return callback(null, flightRequest)
           })
       },
+      function convert_currency(flightRequest,callback){
+        LookupService.fixer_io_get_exchange_rates(req.param('currency')).then(function(response){
+            if(!('USD' in response.rates)){
+              return callback(new Error('Unsupported currency'),null);
+            }
+            try{
+              var conversionRate = parseFloat(response.rates.USD);
+              if(!conversionRate || isNaN(conversionRate)){
+                return callback(new Error('Invalid conversion rate'),null);
+              }
+              sails.log.debug('Before currency ' + amount + ' ' + req.param('currency'))
+              amount = amount * conversionRate;
+              sails.log.debug('After currency: ' + amount + ' USD')
+              return callback(null,flightRequest);
+            }catch(err){
+              return callback(err,null);
+            }
+        }).catch(callback)
+      },
       function checkAmount(flightRequest,callback){
-        if(amount <= flightRequest.maximumPayment){
+        if(amount <= parseFloat(flightRequest.maximumPayment)){
             return callback(null,flightRequest)
         }else{
-            return callback(new Error('Invalid flight accept amount'),null);
+            return callback(new Error('Invalid flight accept amount, must be below users maximum payment'),null);
         }
       },
       function acceptFlightRequest (flightRequest, callback) {
@@ -152,7 +179,8 @@ module.exports = {
             flightRequest: flightRequest.id,
             validUntil: today.toISOString(),
             apiUser: ProviderService.getApiUser(req).apiToken,
-            amount
+            amount,
+            currency:'USD'
           }
         ).then(function (acceptedFlightRequest) {
           if (!acceptedFlightRequest) callback(new Error('Invalid state'))
@@ -185,7 +213,7 @@ module.exports = {
     ], function (err, results) {
       sails.log.debug(results)
       if (err) {
-        sails.log.debug(err)
+        sails.log.error(err);
         return res.badRequest({error: err.message,errorMessages: [err.message],status: 400})
       }else {
         return res.ok({status: 200,message: 'succesfully accepted flight request',result: results.acceptFlightRequest})

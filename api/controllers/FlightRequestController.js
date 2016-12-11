@@ -102,7 +102,7 @@ module.exports = {
     var hours
     try {
       hours = parseInt(req.param('hours'))
-      if (!hours || isNan(hours) || hours < 12) errors.push('Invalid hours value specified')
+      if (!hours || isNaN(hours) || hours < 12) errors.push('Invalid hours value specified')
     } catch(err) {
       errors.push('Invalid hours value specified')
     }
@@ -110,9 +110,13 @@ module.exports = {
     var amount;
     try{
       amount = parseFloat(req.param('amount'))
-      if(!amount || isNan(amount)) errors.push('Invalid amount specified')
+      if(!amount || isNaN(amount)) errors.push('Invalid amount specified')
     }catch(err){
       errors.push('Invalid amount specified');
+    }
+
+    if(!req.param('currency')){
+      errors.push('No currency specified');
     }
 
     if (errors.length) {
@@ -141,26 +145,33 @@ module.exports = {
           })
       },
       function convert_currency(flightRequest,callback){
-        LookupService.fixer_io_get_exchange_rates(req.param('currency')).then(function(response){
-            if(!('USD' in response.rates)){
-              return callback(new Error('Unsupported currency'),null);
-            }
-            try{
-              var conversionRate = parseFloat(response.rates.USD);
-              if(!conversionRate || isNaN(conversionRate)){
-                return callback(new Error('Invalid conversion rate'),null);
+        if(req.param('currency') == 'USD'){
+          return callback(null,flightRequest);
+        }
+        try{
+          LookupService.fixer_io_get_exchange_rates(req.param('currency')).then(function(response){
+              if(!('USD' in response.rates)){
+                return callback(new Error('Unsupported currency'),null);
               }
-              sails.log.debug('Before currency ' + amount + ' ' + req.param('currency'))
-              amount = amount * conversionRate;
-              sails.log.debug('After currency: ' + amount + ' USD')
-              return callback(null,flightRequest);
-            }catch(err){
-              return callback(err,null);
-            }
-        }).catch(callback)
+              try{
+                var conversionRate = parseFloat(response.rates.USD);
+                if(!conversionRate || isNaN(conversionRate)){
+                  return callback(new Error('Invalid conversion rate'),null);
+                }
+                sails.log.debug('Before currency ' + amount + ' ' + req.param('currency'))
+                amount = amount * conversionRate;
+                sails.log.debug('After currency: ' + amount + ' USD')
+                return callback(null,flightRequest);
+              }catch(err){
+                return callback(err,null);
+              }
+          }).catch(callback)
+        }catch(err){
+          return callback(err,null);
+        }
       },
       function checkAmount(flightRequest,callback){
-        if(amount <= parseFloat(flightRequest.maximumPayment)){
+        if(amount <= parseFloat(flightRequest.maximumPayment).toFixed(2)){
             return callback(null,flightRequest)
         }else{
             return callback(new Error('Invalid flight accept amount, must be below users maximum payment'),null);

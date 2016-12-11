@@ -95,10 +95,12 @@
                                      Departure {{:departureCountry}} to {{:arrivalCountry}}
                                     <div class="mic-info">
                                      User: <a href="/userprofile/{{:username}}">{{:username}}</a>
+                                                                                                          <button type="button" id="flightRequestAcceptModalButton{{:id}}"  type="button" class="btn btn-info badge" data-toggle="modal" data-target="#myModal{{:id}}">Accept flight request</button>
                                     </div>
+
                                 </div>
-                                <div class="" style="overflow-y:scroll;">
-                                     <table class="flightrequest-table table table-responsive table-bordered" style="width:100%;">
+                                <div class="table-responsive-vertical shadow-z-1" style="overflow-x:scroll;">
+                                     <table class="table table-hover table-mc-light-blue" style="width:100%;">
                                             <thead>
                                                 <tr>
                                                     <th>id</th>
@@ -117,16 +119,14 @@
                                                     <th>Children</th>
                                                     <th>Infants</th>
                                                     <th>Flight type</th>
-                                                    <th>From departure date</th>
-                                                    <th>To departure date</th>
-                                                    <th>From return date</th>
-                                                    <th>To return date</th>
+                                                    <th>From departure date (YYYY-MM-DD)</th>
+                                                    <th>To departure date (YYYY-MM-DD)</th>
+                                                    <th>From return date (YYYY-MM-DD)</th>
+                                                    <th>To return date (YYYY-MM-DD)</th>
                                                 </tr>
                                             </thead>
                                             <tbody data-attr-flightRequestId="{{:id}}">
                                             <tr>
-
-
                                                     <td data-attr-text="{{:id}}">{{:id}}</td>
                                                     <td data-attr-text="{:username}}">{{:username}}</td>
                                                     <td data-attr-text="{{:maximumPayment}}">
@@ -149,21 +149,18 @@
                                                     <td data-attr-text="{{:children}}">{{:children}}</td>
                                                     <td data-attr-text="{{:infants}}">{{:infants}}</td>
                                                     <td data-attr-text="">Flight type</td>
-                                                    <td data-attr-text="{{:departureDateStart}}">{{:departureDateStart}}</td></td>
-                                                    <td data-attr-text="{{:departureDateEnd}}">{{:departureDateEnd}}</td>
-                                                    <td data-attr-text="{{:returnDateStart}">{{:returnDateStart}}</td>
-                                                    <td data-attr-text="{{:returnDateEnd}}">{{:returnDateEnd}}</td>
-
-
+                                                    <td data-attr-text="{{:departureDateStart}}">{{:~dateFormat(departureDateStart,'YYYY-MM-DD')}}</td></td>
+                                                    <td data-attr-text="{{:departureDateEnd}}">{{:~dateFormat(departureDateEnd,'YYYY-MM-DD')}}</td>
+                                                    <td data-attr-text="{{:returnDateStart}">{{:~dateFormat(returnDateStart,'YYYY-MM-DD')}}</td>
+                                                    <td data-attr-text="{{:returnDateEnd}}">{{:~dateFormat(returnDateEnd,'YYYY-MM-DD')}}</td>
                                             </tr>
-
                                             </tbody>
                                     </table>
                                 </div>
                                 <div class="action">
                                        <div class="container">
                                         <div class="row">
-                                            <button type="button" id="flightRequestAcceptModalButton{{:id}}"  type="button" class="btn btn-info badge" data-toggle="modal" data-target="#myModal{{:id}}">Accept flight request</button>
+                                            <br/>
                                             <div id="myModal{{:id}}" class="modal fade" role="dialog">
                                             <div class="vertical-alignment-modal">
                                             <div class="modal-dialog vertical-align-center">
@@ -189,7 +186,7 @@
                                                               <span class="userCurrencySymbol"></span>
                                                               <input type="number" class="form-control" data-attr-max-price="{{:maximumPayment}}" data-attr-currency="{{:currency}}" value="{{:maximumPayment}}" min="0" max="{{:maximumPayment}}" id="amount" name="amount">
                                                               <span class="userCurrencyCode"></span>
-                                                              <small> The user has expressed a maximum payment of {{:maximumPayment}} {{:currency}}. </small><br/>
+                                                              <small> The user has expressed a maximum payment of {{:~toFixedDp(maximumPayment,2)}} {{:currency}}. </small><br/>
                                                               <small>
                                                                  This makes the maximum price you can offer the flight for to the user: <br/>
                                                                  <span class="itemPrice" data-attr-price="">
@@ -200,7 +197,8 @@
                                                               </small>
                                                           </div>
                                                       </div>
-                                                           <div class="input-group center-block" style="margin-bottom:50px;">
+                                                    <input type="hidden" name="currency" value="{{:~currentCurrencyCode()}}"/>
+                                                    <div class="input-group center-block" style="margin-bottom:50px;">
                                                     <div class="col-xs-6">
                                                     <button type="submit" class="btn btn-info btn-block">Accept</button>
                                                     </div>
@@ -426,7 +424,7 @@ $(document).ready(function() {
                         const $ele = $('.list-group-item[data-attr-flightRequestId="' + res.id + '"]');
                         console.log('found ele:')
                         console.log($ele)
-                        $ele.css({'background-color': '#2f4f4f','color':'white'})
+                        $ele.css({'background-color': 'red'}).fadeOut(10000)
                         $('#flightRequestAcceptModalButton' + res.id).hide();
                     }
                     break;
@@ -475,6 +473,17 @@ $(document).ready(function() {
            flightRequests.skip = 0;
            getFlightRequests(flightRequests);
         });
+
+        $('#navToggle').on('click',function(){
+          if($(this).hasClass('active')){
+            $('.sidebar').fadeIn(500)
+            $('#page-wrapper').css({'margin':'0 0 0 255px'})
+          }else{
+            $('.sidebar').fadeOut(500)
+            $('#page-wrapper').css({'margin':'0px'})
+          }
+          $(this).toggleClass('active')
+        })
 
 
         $('.search').on('input',function(){
@@ -539,16 +548,17 @@ $(document).ready(function() {
 					</ul>
 					<div class="tab-content">
 						<div class="tab-pane active" id="tab_default_1">
-							        <div style="">
+							        <div class="panel panel-default">
+                      <div class="panel-body">
                                     <div class="col-xs-6">
                                       <p> Flight requests </p>
                                     </div>
                                     <div class="col-xs-6 pull-right form-group">
                                         <input type="text" class="search form-control" style="border-radius:0px" placeholder="Search">
                                     </div>
-                                     <div class="col-xs-12">
-                                        <div class="panel panel-default">
-                                        <div class="panel-body">
+                                     <div class="">
+                                        <div class="">
+                                        <div class="">
                                           <div class="btn-group">
                                               <div class="col-md-2">
                                               <p>Departure country</p>
@@ -581,21 +591,21 @@ $(document).ready(function() {
                                               </div>
                                           </div>
                                               <div class="row">
-                                    <div class="panel  widget">
-                                        <div class="panel-body">
-                                            <ul id="flightRequestItems" class="list-group" style="max-height:600px;width:100%;overflow-y:scroll;">
+                                          <div class="panel panel-default">
+                                              <div class="panel-body">
+                                                  <ul id="flightRequestItems" class="list-group" style="max-height:600px;overflow-y:scroll;">
 
-
-                                            <br/>
-                                        </div>
-                                        <a href="#" id="flightRequestMore" class="btn btn-info btn-sm btn-block" role="button"><span class="glyphicon glyphicon-refresh"></span> More</a>
-                                    </div>
+                                                  </ul>
+                                                  <br/>
+                                              </div>
+                                              <a href="#" id="flightRequestMore" class="btn btn-info btn-sm btn-block" role="button"><span class="glyphicon glyphicon-refresh"></span> More</a>
+                                          </div>
                                           </div>
                                         </div>
                                     </div>
                                     </div>
                                     <br/><br/>
-
+                                  </div>
                                 </div>
 
 						</div>

@@ -215,7 +215,7 @@ module.exports = {
 
 
   fixer_io_get_exchange_rates(base) {
-    if (!base) throw new Error('Invalid params to LookupService.js/rest_countries_get_country_info')
+    if (!base) throw new Error('Invalid params to LookupService.js/fixer_io_get_exchange_rates')
 
     const fixerIoEndpoint = 'http://api.fixer.io/latest?base=' + base
 

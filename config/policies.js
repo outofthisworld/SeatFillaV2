@@ -44,8 +44,6 @@
 module.exports.policies = {
     UserController: {
         '*':true,
-        'find': [],
-        'findOne': [],
         'create': ['postPolicy', 'createAccountPolicy', 'notLoggedInPolicy',],
         'index': ['getPolicy','passportAuth'],
         'update':['passportAuth','viewProfilePolicy','isOwnProfilePolicy']//Return user profile

@@ -71,7 +71,7 @@ label{
         const $h4 = $('<h4></h4>',{'class':'group inner list-group-item-heading'}).text('Product title');
         const $p = $('<p></p>',{class:'group inner list-group-item-text'}).text('Product description... Lorem ipsum dolor sit amet, consectetuer adipiscing elit,sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat');
         const $row =    $('<div></div>',{class:'row'});
-           
+
         const $div_12_1 = $('<div></div>',{class:'col-xs-12 col-md-6'});
         const $div_12_2 =  $('<div></div>',{class:'col-xs-12 col-md-6'});
         const $p_1 = $('<p></p>',{class:'lead'}).text('$1.00');
@@ -157,7 +157,7 @@ label{
 
 
     function renderView(response,r,xhr){
-        
+
         const _this = this;
 
 
@@ -194,10 +194,10 @@ label{
                             }
                             return itin
                         }).forEach(function(itin, index) {
-                            $('#flights').append($.templates('#flightTemplate').render({itin:itin,cityImages:response.cityImages,index}) )  
+                            $('#flights').append($.templates('#flightTemplate').render({itin:itin,cityImages:response.cityImages,index}) )
                             console.log(itin);
                     });
-                    
+
                 }
                 })
            }
@@ -230,7 +230,7 @@ label{
                 event.preventDefault();$('#products .item').addClass('list-group-item');
                 $('#flights .item .switch').removeClass('thumbnail')
             });
-        
+
             $('#grid').click(function(event){
                 event.preventDefault();
                 $('#flights .item').removeClass('list-group-item');
@@ -241,7 +241,7 @@ label{
             $('#flightForm').submit(function(e){
                 e.preventDefault();
                 e.stopImmediatePropagation();
-       
+
                 const departureCity =  $('#departureCity').val();
                 const departureCityIataCode = $('#departureCity option:selected').attr('data-attr-iataCode');
                 const departureCountry = $('#departureCountry').val();
@@ -293,7 +293,7 @@ label{
 
                 console.log('Sending:')
                 console.log(sendData);
-            
+
                 $.ajax({
                     url:'/maps/retrieveFlightInfo',
                     method:'POST',
@@ -314,7 +314,7 @@ label{
     })();
     $('#filter-side-menu').load('/ajax/flight-filter-nav.ejs', function finished() {
         $('#sort').on('click',function(){
-            
+
         })
     });
     $('#flight-search-details').load('/ajax/flight-search-nav.ejs', function finished() {});
@@ -371,25 +371,25 @@ label{
                         </tbody>
                         </table>
                     </div>
-                      
+
                     <div class="row">
                         <div class="col-xs-12 col-md-6">
                             <p class="lead"></p>
                         </div>
                         <div class="col-xs-12 col-md-6">
-                            <a class="btn btn-info" href="">Add to cart</a>
+                            <a class="btn btn-info" href="">View details</a>
                         </div>
                      </div>
                         </div>
                     </div>
                 </div>
                 </div>
-             
+
             </div>
         </div>
 </script>
 <div class="container-fluid">
-         
+
     <div class="well row" style="background-color:transparent;background-image:none;">
         <div class="button-group pull-right">
             <a href="#" id="list" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-th-list">
@@ -398,8 +398,8 @@ label{
         </div>
     </div>
     <div id="flights" class="row list-group">
-       
-     
+
+
     </div>
     <button id="nextPage" class="btn btn-lg btn-info btn-block">Search</button>
 </div>

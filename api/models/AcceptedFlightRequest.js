@@ -3,8 +3,7 @@ module.exports = {
     attributes: {
         id: {
             primaryKey: true,
-            required: true,
-            notNull: true,
+            type:'string',
             defaultsTo: function() {
                 return require('node-uuid').v4();
             }

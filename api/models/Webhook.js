@@ -4,8 +4,8 @@ module.exports = {
     autoPK: false,
     attributes: {
         id: {
-            type: 'string',
             primaryKey: true,
+            type: 'string',
             defaultsTo: function() {
                 return uuid.v4();
             }

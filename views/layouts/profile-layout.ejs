@@ -78,7 +78,7 @@ $(window).ready(function(){
 <body>
 <%- partial ('../partials/nav.ejs') %>
 
-<div class="container-fluid profile-cont" style="padding-top:120px;">
+<div class="container-fluid profile-cont" style="padding:120px;">
 	<div class="row" style="background-color:white;border-style:solid;border-color:#f3f3f3;border-width:2px;color:black;padding:10px;">
 
         <div class="col-xs-12">
@@ -102,7 +102,7 @@ $(window).ready(function(){
             <div class="header text-center">
                       <h2 class="" style="padding:10px;"><%= data.UserProfile.user.username %></h2>
                         <span class="text-white"><%= data.UserProfile.description %></span>
-      
+
             </div>
             <div class="row nav">
             <br>
@@ -124,7 +124,6 @@ $(window).ready(function(){
         <ul id="userProfileNavTabsContainer" class="nav nav-tabs profile" data-container="#profilePageTemplateContainer">
            <script id="userProfileNavTabsTemplate" type="text/html">
             <li data-hash="#profile"  class="active"><a data-page="/userprofile/<%=data.UserProfile.user.username%>?asAjax=true" data-toggle="tab">Profile</a></li>
-            <li data-hash="#feed"><a data-page="/userprofile/<%=data.UserProfile.user.username%>/feed">Feed</a></li>
             <li data-hash="#notifications" ><a data-page="/notifications/findByUser">Notifications</a></li>
             <% if(req.user){ %>
                 {{if (~getCurrentUser() && (~getCurrentUser().id == ~getCurrentProfileUser().id)) }}
@@ -171,8 +170,6 @@ $(window).ready(function(){
 <div class="panel-heading">Recent activity</div>
 <div class="activity-feed" style="max-height:200px;overflow:scroll;">
   <div class="feed-item">
-    <div class="date">2 hours ago</div>
-    <div class="text">User <a href="single-need.php">did something</a></div>
   </div>
 
 </div>

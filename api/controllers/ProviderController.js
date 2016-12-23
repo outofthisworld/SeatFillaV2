@@ -6,28 +6,30 @@ module.exports = {
       })
   },
   paymentMethod(req,res){
-      sails.log.debug('In payment method')
+      if(req.method == 'GET') return res.ok();
 
-      if(req.isGET()){
-          sails.log.debug('returning view, get req')
-         return res.ok();
-      }
       const paypalEmail = req.param('paypalEmail');
       sails.log.debug(req.allParams())
-      
+
       if(!paypalEmail){
           req.flash('danger','No email specified');
           return res.redirect('back')
       }
 
-      const apiUser = ProviderService.getApiUser(req);
-      ApiUsers.update({apiToken:apiUser.apiToken},{paypalEmail})
-      .then(function(updated){
-        apiUser.paypalEmail = updated.paypalEmail;
-        return res.redirect('provider/index')
-      }).catch(function(err){
-          return res.serverError(err);
-      })
+      try{
+         const apiUser = ProviderService.getApiUser(req);
+         ApiUsers.update({apiToken:apiUser.apiToken},{apiToken:apiUser.apiToken,paypalEmail})
+         .then(function(updated){
+          sails.log.debug('Success updating')
+          ProviderService.getApiUser(req).paypalEmail = paypalEmail;
+          return res.redirect('provider/index');
+         }).catch(function(err){
+            sails.log.error(err);
+            return res.serverError(err);
+        })
+      }catch(err){
+        return res.badRequest(err);
+      }
   },
   view_flight_requests(req, res) {
     return res.ok({

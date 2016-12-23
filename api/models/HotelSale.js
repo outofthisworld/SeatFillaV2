@@ -1,5 +1,16 @@
 module.exports = {
+    autoPK:false,
     attributes:{
+        id: {
+            primaryKey: true,
+            type: 'string',
+            defaultsTo: function() {
+                return require('node-uuid').v4();
+            }
+        },
+        openUntil:{
+          type:'datetime',
+        },
         checkInDate:{
             type:'date',
             notNull:true,
@@ -30,7 +41,7 @@ module.exports = {
             notNull:true,
             required:true
         },
-        curentWinner:{
+        currentWinner:{
             model:'user'
         },
         prices:{

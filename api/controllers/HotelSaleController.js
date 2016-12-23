@@ -40,7 +40,7 @@ module.exports = {
     }, function (err, results) {
       if (err) {
         sails.log.error(err)
-        return res.badRequest({error: error,errorMessages: err.message})
+        return res.badRequest({error: err,errorMessages: err.message})
       }else {
         sails.log.debug(results)
         return res.ok(results.find_hotel_sales)
@@ -90,6 +90,8 @@ module.exports = {
             if (!(hotel.saleType == 'auction')) {
               return callback(new Error('Invalid operation, this hotel is not for auction.'), null)
             }
+
+
 
             if (!(hotel.status == 'open')) {
               return callback(new Error('Invalid operation, this sale is closed.'), null)

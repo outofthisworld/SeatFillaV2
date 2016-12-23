@@ -4,7 +4,15 @@
  */
 
 module.exports = {
+    autoPK:false,
     attributes: {
+          id: {
+            primaryKey: true,
+            type: 'string',
+            defaultsTo: function() {
+                return require('node-uuid').v4();
+            }
+        },
         type: {
             type: 'string',
             notNull: true,
@@ -12,7 +20,6 @@ module.exports = {
         },
         ip: {
             type: 'string',
-            ip: true,
             notNull: true,
             required: true
         },

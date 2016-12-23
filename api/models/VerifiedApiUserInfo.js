@@ -1,4 +1,13 @@
 module.exports = {
+  autoPK:false,
+  attributes:{
+        id: {
+            primaryKey: true,
+            type: 'string',
+            defaultsTo: function() {
+                return require('node-uuid').v4();
+            }
+        },
     companyName:{
       type:'string',
       notNull:true,
@@ -24,4 +33,5 @@ module.exports = {
       notNull:true,
       required:true
     }
+  }
 }

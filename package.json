@@ -47,9 +47,9 @@
     "sails": "~0.12.4",
     "sails-disk": "~0.10.9",
     "sails-hook-flash": "^0.2.1",
-    "sails-postgresql": "^0.11.4",
     "socket.io-redis": "^1.1.1",
     "temp": "^0.8.3",
+    "waterline-postgresql": "^0.14.8",
     "winston": "^2.2.0",
     "xml2js": "^0.4.17"
   },

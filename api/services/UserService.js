@@ -1,22 +1,37 @@
 const uuid = require('node-uuid')
+const extract = require('../utils/dbUtils').extractModelAttributes;
 
 module.exports = {
   createUser: function (options) {
+    sails.log.debug('in create user')
     const _self = this
 
-    const user = options.user,
+    var user = options.user,
       ip = options.ip,
       locale = options.locale,
       userAgent = options.userAgent
 
+    sails.log.debug('User: ')
+    sails.log.debug(user)
+    sails.log.debug('ip: ' + ip)
+    sails.log.debug('locale ${locale}')
+    sails.log.debug('User agent ${userAgent}')
+
     if (!user || !ip || !locale || !userAgent) {
+      sail.s.log.debug('Invalid params to /createUser')
       return Promise.reject(new Error('Invalid params'))
     }
 
+    sails.log.debug('Valid params')
+
     user.displayName = user.username
+    //const extractedUserDets = extract(sails.models.user, user);
+   // sails.log.debug(extractedUserDets)
+    //sails.log.debug('extracted dets')
     // Create user
-    return User.create(user).then(function create (user) {
-      sails.log.debug('Creating user')
+    try{
+    return User.create(user).then(function(user) {
+
 
       // Well ofc..
       if (!user) {
@@ -25,22 +40,26 @@ module.exports = {
         // Debug something
         return Promise.reject(err)
       }
+
+      sails.log.debug('Created user')
       // Get rid of confedential information..
       delete user.password
       delete user.passwordConfirmation
 
       return Promise.resolve(user)
-    }).then(function (user) {
+    }).then(function (dbUser) {
       sails.log.debug('Creating address for user: ' + JSON.stringify(user))
 
       // Create address
-      return _self.findOrCreateUserAddress(user.id, user).then(function (val) {
+      return _self.findOrCreateUserAddress(dbUser.id, user).then(function (val) {
         return Promise.resolve({
-          user,
+          user:dbUser,
           address: val.address,
           countryInfo: val.countryInfo
         })
       }).catch(function (err) {
+        sails.log.debug('Error creating user address')
+        sails.log.error(err);
         err = err || new Error('Unknown error')
         err.modelErrors = err.modelErrors || []
         err.modelErrors.push({
@@ -54,12 +73,15 @@ module.exports = {
 
       // Create user settings (preferences)
       return UserSettings.create({
-        id: user_partial.user.id,
+        user:user_partial.user.id,
+        ip,
         localePreference: locale
       }).then(function (userSettings) {
         user_partial.userSettings = userSettings
         return Promise.resolve(user_partial)
       }).catch(function (err) {
+        sails.log.debug('Error creating user settings')
+        sails.log.error(err);
         err.modelErrors = err.modelErrors || []
         err.modelErrors.push({
           model: 'User',
@@ -81,6 +103,8 @@ module.exports = {
         user_partial.userProfile = userProfile
         return Promise.resolve(user_partial)
       }).catch(function (err) {
+        sails.log.debug('Error creating user profile')
+        sails.log.error(err);
         err.modelErrors = err.modelErrors || []
         err.modelErrors.push({
           model: 'User',
@@ -108,6 +132,8 @@ module.exports = {
         user_partial.user.verificationId = signup.id
         return Promise.resolve(user_partial)
       }).catch(function (err) {
+        sails.log.debug('Error creating sign up record')
+        sails.log.error(err);
         sails.log.debug('Error creating sign up record for user id :' + user_partial.user.id + 'Error: ' + err)
         err.modelErrors = err.modelErrors || []
         err.modelErrors.push({
@@ -163,14 +189,15 @@ module.exports = {
             id: user_partial.userProfile.id
           })
           sails.log.debug('Error sending email in UserService.js/createUser')
-          return reject(err)
+          return Promise.reject(err)
         })
       }else {
         return Promise.resolve(user_partial)
       }
     }).catch(function (err) {
+      sails.log.error(err);
 
-      // Catch and fix and model errors during this proccess 
+      // Catch and fix and model errors during this proccess
       if (err.modelErrors) {
         sails.log.debug('Correcting any model errors')
         try {
@@ -179,16 +206,17 @@ module.exports = {
               return Promise.reject(new Error('Invalid model error, no model or id attribute'))
             }
 
-            if (modelError.model in sails.models && '_attributes' in sails.model[modelError.model]) {
-              for (var key in sails.models[modelError.model]._attributes) {
+            modelError.model = modelError.model.toLowerCase();
+            if (modelError.model.toLowerCase() in sails.models && '_attributes' in sails.models[modelError.model]) {
+              for (var key in sails.models[modelError.model.toLowerCase()]._attributes) {
                 if ('primaryKey' in sails.models[modelError.model]._attributes[key] &&
                   sails.models[modelError.model]._attributes[key]['primaryKey']) {
-                  if (!sails.models[modelErros.model]._attributes[key]['type'])
+                  if (!sails.models[modelError.model]._attributes[key]['type'])
                     return Promise.reject(new Error('Could not determine type of model attribute ' + key))
 
                   const modelPrimaryKey = key
 
-                  sails.model[modelError.model].destroy({
+                  sails.models[modelError.model].destroy({
                     modelPrimaryKey: modelError.id
                   }).then(function () {
                     sails.log.debug('Destoryed record for model ' + modelError.model + ' with id ' + modelError.id)
@@ -211,6 +239,9 @@ module.exports = {
         return Promise.reject(err)
       }
     })
+    }catch(err){
+      sails.log.error(err)
+    }
   },
   findOrCreateUserAddress(userId, addressInfo) {
     sails.log.debug('AddressInfo in UserService.js/findOrCreateAddress is:')
@@ -225,13 +256,12 @@ module.exports = {
       addressInfo.countryInfo = country.alpha3Code
       addressInfo.user = userId.id || userId
 
-      sails.log.debug('Final address info: ')
-      sails.log.debug(JSON.stringify(addressInfo))
-
-      // Create an address and use the alpha 3 country code 
+      const trimmedObj = extract(sails.models.address,addressInfo);
+      // Create an address and use the alpha 3 country code
       // to link to the country table. Note that
       // country name is being duplicated as its required the most.
       return new Promise(function (resolve, reject) {
+
         Address.findOrCreate(addressInfo, addressInfo, function (err, address) {
           if (err) {
             sails.log.error(err)

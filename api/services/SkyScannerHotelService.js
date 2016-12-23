@@ -126,7 +126,7 @@ module.exports = {
               sails.log.error(new Error(result.ValidationErrors[0]))
               return reject(result.ValidationErrors[0])
             } else if (res.statusCode != 200) {
-              const error = new Error('Invalid response code when creating new session in SkyScannerHotelServer.js: response was: ' + res.statusCode)
+              const error = new Error('Invalid response code when requesting hotel details in SkyScannerHotelServer.js: response was: ' + res.statusCode)
               sails.log.error(error)
               return reject(error)
             } else {
@@ -198,16 +198,23 @@ module.exports = {
   },
   pollHotelDetails(detailsUrl, ids, callback) {
     const _this = this
-    var calledBack = false
-    _this.createHotelDetails(detailsUrl,
-      ids).then(function (result) {
-      if (result.body.status == 'COMPLETE' && !calledBack) {
-        calledBack = !calledBack
-        return callback(null, result)
-      } else {
-        _this.pollHotelDetails(result.nextPollUrl)
-      }
-    }).catch(callback)
+    var cbDone = false;
+    const clear = setInterval(function(){
+      _this.createHotelDetails(detailsUrl,ids)
+      .then(function (result) {
+        if (!cbDone && result.body.status == 'COMPLETE') {
+          cbDone = true;
+          clearInterval(clear);
+          return callback(null, result)
+        }else{
+           clearInterval(clear);
+        }
+      }).catch(function(err){
+        sails.log.error(err);
+        clearInterval(clear);
+        return callback(err,null);
+      })
+    },50);
   },
   getDefaultSessionObject() {
     return {

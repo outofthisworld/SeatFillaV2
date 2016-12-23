@@ -1,14 +1,18 @@
-
+<div class="container-fluid" style="min-height:300px;">
 <h2 class="">Hotel details</h2>
 <hr/><br/>
-  
-        
-        <select id="country">
-             <option value="New Zealand">New Zealand</option>
-            <option value="France">France</option>
-                 <option value="United kingdom">UK</option>
+
+<form>
+        <div class="col-md-4">
+        <select id="country" class="country select form-control"></select>
+        </div>
+        <div class="col-md-4">
+        <select class="form-control" id="hotelPlaceSuggestions">
         </select>
-        <button id="searchHotels">Search hotels</button>
-        <select id="hotelPlaceSuggestions">
-        </select>
-    
+        </div>
+        <div class="col-md-4">
+        <button id="searchHotels" class="btn btn-info">Search hotels</button><br/>
+        </div>
+</form>
+<br/>
+</div>

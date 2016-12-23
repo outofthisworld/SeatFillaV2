@@ -3,9 +3,11 @@ module.exports = {
     attributes: {
         id: {
             type: 'string',
-            notNull: true,
-            required: true,
-            primaryKey: true
+            primaryKey: true,
+            defaultsTo: function() {
+                return require('node-uuid').v4();
+            }
+
         },
         valid_until: {
             type: 'datetime',

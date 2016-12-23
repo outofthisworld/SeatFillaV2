@@ -5,8 +5,14 @@
 
 module.exports = {
     autoPk: false,
-    seedData: [],
     attributes: {
+          id: {
+            primaryKey: true,
+            type: 'string',
+            defaultsTo: function() {
+                return require('node-uuid').v4();
+            }
+        },
         role: {
             type: 'string',
             notNull: true,

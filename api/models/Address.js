@@ -4,7 +4,15 @@
  */
 
 module.exports = {
+    autoPK:false,
     attributes: {
+         id: {
+            primaryKey: true,
+            type:'string',
+            defaultsTo: function() {
+                return require('node-uuid').v4();
+            }
+        },
         addressLine: {
             type: 'string',
             required: true,
@@ -45,7 +53,7 @@ module.exports = {
             notNull: false,
             required: false
         },
-        //One to many 
+        //One to many
         user: {
             model: 'user',
             notNull: true

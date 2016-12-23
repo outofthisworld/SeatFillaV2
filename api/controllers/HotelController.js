@@ -1,7 +1,7 @@
 const _find = require('../out/find'),
   _create = require('../out/create'),
   _findOne = require('../out/findOne'),
-  _add = require('../out/add')
+  _add = require('../out/add');
 
 module.exports = {
   /**
@@ -565,12 +565,11 @@ module.exports = {
                         sessionObject: sessionObj
                       }).then(function (res) {
                         sails.log.debug('mapped results in create_hotel')
-                          return callback(null, { id: res.create_hotel.id, sessionObject: sessionObj || null,hotel:res.create_hotel})
                       }).catch(function (err) {
                         sails.log.error(err)
                           return callback(err, null)
-                      })
-      
+                      });
+                        return callback(null, { id, sessionObject: sessionObj || null})
                     })
                 }
               }]
@@ -592,13 +591,12 @@ module.exports = {
             return res.redirect('/hotel')
           } else {
             sails.log.debug('In hotel controller returning res.ok with results :' + JSON.stringify(results.findOrCreateHotel))
-            req.options.url = '/hotel/'+id+'?provider='+provider;
-            req.options.type = 'article'
-            req.options.title = 'Cheap Seatfilla hotel - ' + results.findOrCreateHotel.hotel.hotelName;
-            req.options.description = results.findOrCreateHotel.hotel.description;
-            req.options.image = results.findOrCreateHotel.hotel.image;
-            return res.ok({id:results.findOrCreateHotel.id,
-              sessionObject:results.findOrCreateHotel.sessionObj})
+           // req.options.url = '/hotel/'+id+'?provider='+provider;
+            //req.options.type = 'article'
+           // req.options.title = 'Cheap Seatfilla hotel - ' + results.findOrCreateHotel.hotel.hotelName;
+           // req.options.description = results.findOrCreateHotel.hotel.description;
+           // req.options.image = results.findOrCreateHotel.hotel.image;
+            return res.ok({id:results.findOrCreateHotel.id, sessionObject:results.findOrCreateHotel.sessionObj})
           }
         })
     }

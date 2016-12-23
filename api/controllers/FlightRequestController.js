@@ -177,6 +177,7 @@ module.exports = {
             return callback(new Error('Invalid flight accept amount, must be below users maximum payment'),null);
         }
       },
+      //This would be wrapped in a transaction if sails had support for it.
       function acceptFlightRequest (flightRequest, callback) {
         // Use server date to stop inconsistencies from client side dates
         // we can then either: provide a select
@@ -242,7 +243,7 @@ module.exports = {
     if (req.param('where'))
       obj = JSON.parse(req.param('where'))
 
-    const queryObj = {where: obj,limit: req.param('limit'),skip: req.param('skip'),sort: req.param('sort')}
+    const queryObj = {where: obj,limit: parseInt(req.param('limit'))|| 20,skip: req.param('skip') || 0,sort: req.param('sort') || 'createdAt DESC'}
     sails.log.debug(queryObj)
     FlightRequest.find(queryObj)
       .then(function (flightRequests) {

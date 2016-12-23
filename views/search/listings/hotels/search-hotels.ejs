@@ -15,12 +15,12 @@
     		<img class="media-object" src="{{:image}}" width="150" height="150">
   		</a>
   		<div class="media-body">
-    		<p class="media-heading">Hotel</p>
-          <p class="text-right">By Francisco</p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pharetra varius quam sit amet vulputate.
-                Quisque mauris augue, molestie tincidunt condimentum vitae, gravida a libero. Aenean sit amet felis
-                dolor, in sagittis nisi. Sed ac orci quis tortor imperdiet venenatis. Duis elementum auctor accumsan.
-                Aliquam in felis sit amet augue.</p>
+    		<p class="media-heading">{{:name}}</p>
+          <p class="text-right">
+          Popularity desc: {{:popularity_desc}}<br/>
+          Popularity {{:~mul(~div(popularity,100),100)}}%
+          </p>
+          <p>{{</p>
           <ul class="list-inline list-unstyled">
   			<li><span><i class="glyphicon glyphicon-calendar"></i> 2 days, 8 hours </span></li>
             <li>|</li>
@@ -48,18 +48,18 @@
             {{/if}}
             {{if !(~mulOf(#getIndex(),3) && #getIndex() != 0) || (~len < 4 || ~len==1)}}
                  <div class="col-md-6">
-                <div class="product-item">
-                <div class="pi-img-wrapper">
-                    <img src="{{:image}}" class="img-responsive">
-                    <div>
-                    <a href="#" class="btn">Zoom</a>
-                    <a href="#" class="btn">View</a>
+                  <div class="product-item">
+                    <div class="pi-img-wrapper">
+                      <img src="{{:image}}" class="img-responsive" alt="">
+                      <div>
+                        <a href="#" class="btn">Zoom</a>
+                        <a href="#" class="btn">View</a>
+                      </div>
                     </div>
-                </div>
-                <h3><a href="shop-item.html">Berry Lace Dress</a></h3>
-                <div class="pi-price">$29.00</div>
+                    <h3><a href="shop-item.html">{{:name}}</a></h3>
+                    <div class="pi-price">Popularity {{:~mul(~div(popularity,100),100)}}%</div>
                     <a href="/hotel/findOne/{{:hotel_id}}?detailsUrl={{:detailsUrl}}&provider=skyscanner"><button class="btn btn-info pull-right viewDetailsBtn"> View details </button></a>
-                <!--<div class="sticker sticker-new"></div>-->
+                    <div class="sticker sticker-new"></div>
                 </div>
                 </div>
                 {{:~log('col 4')}}
@@ -97,6 +97,7 @@
                                   smallestHeight: 600
                               });
 
+                          console.log('hotelListings:')
                           //Log for debug
                           console.log(hotelListings);
 
@@ -365,8 +366,8 @@
             <div class="progress-bar" style="width: 100%;"></div>
         </div>
         </div>-->
-<div class="main-container">
-	<div class="row" id="hotelListings">
+<div class="">
+	<div id="hotelListings">
 	</div>
     <br/>
     <button id="loadMoreResults" class="btn btn-info btn-block hide">More</button>

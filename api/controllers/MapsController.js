@@ -5,7 +5,7 @@ module.exports = {
     retrieveFlightInfo(req, res) {
         async.auto({
             createUserLocation: [function(callback, results) {
-                if (!req.user) return callback(null, null)
+                if (!req.user || !req.body.userLocation)  return callback(null, null)
 
                 UserLocationService.findOrCreateUserLocation(req.user, req.body.userLocation).then(function(object) {
                     sails.log.debug('Succesfully created user location: ' + JSON.stringify(object.location))
@@ -17,7 +17,7 @@ module.exports = {
                 })
             }],
             createUserSearch: [function(callback, results) {
-                if (!req.user) return callback(null, null)
+                if (!req.user || !req.body.origin || !req.body.destination) return callback(null, null)
 
                 UserSearchService.newUserMapSearch(
                         req.user,

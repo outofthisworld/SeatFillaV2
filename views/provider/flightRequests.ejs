@@ -149,7 +149,7 @@
                                                     <td data-attr-text="{{:children}}">{{:children}}</td>
                                                     <td data-attr-text="{{:infants}}">{{:infants}}</td>
                                                     <td data-attr-text="">Flight type</td>
-                                                    <td data-attr-text="{{:departureDateStart}}">{{:~dateFormat(departureDateStart,'YYYY-MM-DD')}}</td></td>
+                                                    <td data-attr-text="{{:departureDateStart}}">{{:~dateFormat(departureDateStart,'YYYY-MM-DD')}}</td>
                                                     <td data-attr-text="{{:departureDateEnd}}">{{:~dateFormat(departureDateEnd,'YYYY-MM-DD')}}</td>
                                                     <td data-attr-text="{{:returnDateStart}">{{:~dateFormat(returnDateStart,'YYYY-MM-DD')}}</td>
                                                     <td data-attr-text="{{:returnDateEnd}}">{{:~dateFormat(returnDateEnd,'YYYY-MM-DD')}}</td>
@@ -183,9 +183,15 @@
                                                        <div class="form-group">
                                                           <label for="amount" class="col-sm-3 control-label">Offer flight for:</label>
                                                           <div class="col-sm-9">
-                                                              <span class="userCurrencySymbol"></span>
+                                                              <div class="col-xs-3">
+                                                              <span class="userCurrencySymbol">{{:~currentCurrencySymbol()}}</span>
+                                                              </div>
+                                                              <div class="col-xs-3">
                                                               <input type="number" class="form-control" data-attr-max-price="{{:maximumPayment}}" data-attr-currency="{{:currency}}" value="{{:maximumPayment}}" min="0" max="{{:maximumPayment}}" id="amount" name="amount">
-                                                              <span class="userCurrencyCode"></span>
+                                                              </div>
+                                                              <div class="col-xs-3">
+                                                              <span class="userCurrencyCode">{{:~currentCurrencyCode()}}</span>
+                                                              </div>
                                                               <small> The user has expressed a maximum payment of {{:~toFixedDp(maximumPayment,2)}} {{:currency}}. </small><br/>
                                                               <small>
                                                                  This makes the maximum price you can offer the flight for to the user: <br/>
@@ -243,6 +249,7 @@
                                                     <th>User payment status</th>
                                                     <th>User payment id</th>
                                                     <th>Valid until</th>
+                                                    <th>Hours left<th>
                                                 </tr>
                                             </thead>
                                             <tbody data-attr-acceptedFlightRequestId="{{:id}}">
@@ -255,7 +262,11 @@
                                                     <td>{{:providerPayoutItemId || 'N/A'}}</td>
                                                     <td>{{:userPaymentStatus}}</td>
                                                     <td>{{:userPaymentId || 'N/A'}}</td>
-                                                    <td>{{:validUntil}}</td>
+                                                    <td>{{:~dateFormat(validUntil,'HH:MM, YYYY/MM/DD')}}</td>
+                                                    <td>
+                                                    <div data-countdown="{{:~dateFormat(validUntil,'YYYY-MM-DD HH:MM:SS')}}"></div>
+                                                    {{:~dateFormat(validUntil,'YYYY-MM-DD HH:MM:SS')}}
+                                                    </td>
                                                     </tr>
 
                                             </tr>
@@ -273,128 +284,10 @@
 </script>
 
 <script>
-$(document).ready(function() {
+$(window).ready(function() {
     (function($, io) {
 
         const apiUser = "<%=data.apiUser.apiToken%>";
-
-        const flightRequests = {
-          path:'/flightrequest',
-          where:{
-            status: "AwaitingProviderAccept",
-            or:[
-                {departureDateStart:{'>=':new Date().toISOString()}},
-                {departureDateEnd:{'<=':new Date().toISOString()}}
-            ]
-          },
-          limit:20,
-          skip:0,
-          moreId:'#flightRequestMore',
-          templateId:'#flightRequestItem',
-          containerId:'#flightRequestItems'
-        }
-
-        const acceptedFlightRequests = {
-          path:'/acceptedflightrequest',
-            where:{
-              apiUser
-          },
-          limit:20,
-          skip:0,
-          moreId:'#acceptedFlightRequestMore',
-          templateId:'#acceptedFlightRequestItem',
-          containerId:'#acceptedFlightRequestItems'
-        }
-
-        const processedFlightRequests = {
-          path:'/acceptedflightrequest',
-          where:{
-            providerPayoutStatus:'PAID',
-            apiUser
-          },
-          limit:20,
-          skip:0,
-          moreId:'#processedFlightRequestMore',
-          templateId:'#processedFlightRequestItem',
-          containerId:'#processedFlightRequestItems'
-        }
-
-        $('#flightRequestItems').on('submit', '#acceptForm', function(e) {
-            e.preventDefault();
-            e.stopImmediatePropagation()
-            console.log('clicked')
-            var $form = $(this)
-            if (!$form[0].checkValidity()) {
-                $form.find(':submit').click()
-            }
-
-            const $this = $(this);
-            const id = $this.attr('data-attr-flightRequestId');
-            $.ajax({
-                url: $this.attr('action'),
-                method: $this.attr('method'),
-                data: $this.serialize(),
-                success: function(res) {
-                    console.log(res);
-                    if (res.status == 200) {
-                        $('#myModal'+id).modal('toggle')
-                        $.toaster({
-                            message: 'Succesfully accepted flight request'
-                        })
-                    } else {
-                        $.taoster({
-                            message: 'Error accepting flight request ! ' + res.error || res.errorMessage,
-                            priority: 'info'
-                        });
-                    }
-                },
-                error: function() {
-                    alert('error')
-                }
-            })
-        })
-
-        $('[data-toggle]').on('click',function(){
-             $('#seatfilla_currencies').trigger('change');
-        })
-
-        function getFlightRequests(options){
-
-          if(!options.path) return;
-
-          var path = options.path;
-
-
-          if(options.where)
-            path = path+ '?where=' + JSON.stringify(options.where);
-
-          if(options.limit)
-            path = path + '&limit=' + options.limit
-
-          if(options.skip)
-            path = path+ '&skip=' + options.skip
-
-          if(options.sort)
-            path = path + '&sort=' + options.sort
-
-          console.log('path:' + path)
-
-          io.socket.get(path, function(data) {
-                options.skip += 20;
-                console.log(data)
-                if(data.length == 0){
-                  $(options.moreId).attr('disabled','')
-                  $(options.moreId).hide();
-                  $.toaster({priority:'info',message: options.message || 'No more results to show'})
-                }
-                data.forEach(function(d) {
-                    const $html = $($.templates(options.templateId).render(d));
-                    $html.hide();
-                    $(options.containerId).append($html.fadeIn(1000));
-                })
-                $('#seatfilla_currencies').trigger('change');
-            })
-        }
 
         io.socket.get('/apiusers?apiToken=' + apiUser, function() {})
         io.socket.on('apiusers', function(data) {
@@ -424,7 +317,7 @@ $(document).ready(function() {
                         const $ele = $('.list-group-item[data-attr-flightRequestId="' + res.id + '"]');
                         console.log('found ele:')
                         console.log($ele)
-                        $ele.css({'background-color': 'red'}).fadeOut(10000)
+                        $ele.css({'background-color': 'red'}).slideUp(2000)
                         $('#flightRequestAcceptModalButton' + res.id).hide();
                     }
                     break;
@@ -437,88 +330,238 @@ $(document).ready(function() {
             }
         })
 
-
-        $('#filterDepartureCountry').on('change',function(){;
-            flightRequests.where.departureCountry = $(this).val();
-            flightRequests.skip = 0;
-            $(flightRequests.containerId).html('')
-            getFlightRequests(flightRequests);
-        })
-
-        $('#filterDepartureCity').on('change',function(){
-            flightRequests.where.departureCity = $(this).val();
-            flightRequests.skip = 0;
-            $(flightRequests.containerId).html('')
-            getFlightRequests(flightRequests);
-        })
-
-        $('#filterArrivalCity').on('change',function(){
-            flightRequests.where.arrivalCity = $(this).val();
-            flightRequests.skip = 0;
-            $(flightRequests.containerId).html('')
-            getFlightRequests(flightRequests);
-        })
-
-        $('#filterArrivalCountry').on('change',function(){
-           flightRequests.where.arrivalCountry = $(this).val();
-           $(flightRequests.containerId).html('')
-           flightRequests.skip = 0;
-           getFlightRequests(flightRequests);
-        })
-
-       $('#filterRequestMinimumPrice').bind('keyup change click', function (e) {
-           const $this = $(this);
-           flightRequests.where.maximumPayment = {'>=':$this.val()}
-           $(flightRequests.containerId).html('')
-           flightRequests.skip = 0;
-           getFlightRequests(flightRequests);
-        });
-
-        $('#navToggle').on('click',function(){
-          if($(this).hasClass('active')){
-            $('.sidebar').fadeIn(500)
-            $('#page-wrapper').css({'margin':'0 0 0 255px'})
-          }else{
-            $('.sidebar').fadeOut(500)
-            $('#page-wrapper').css({'margin':'0px'})
-          }
-          $(this).toggleClass('active')
-        })
+        $(document).ready(function(){
 
 
-        $('.search').on('input',function(){
-          const query = $(this).val()
-
-          console.log(query)
-
-          if(query.length == 0){
-            $('tbody tr').css('background-color','#fff');
-            return;
+          const flightRequests = {
+            path:'/flightrequest',
+            where:{
+              status: "AwaitingProviderAccept",
+              or:[
+                  {departureDateStart:{'>=':new Date().toISOString()}},
+                  {departureDateEnd:{'<=':new Date().toISOString()}}
+              ]
+            },
+            limit:20,
+            skip:0,
+            sort:'createdAt DESC',
+            moreId:'#flightRequestMore',
+            templateId:'#flightRequestItem',
+            containerId:'#flightRequestItems',
           }
 
-          $('tbody tr').each(function(indx,row){
-              if($(row).find('td[data-attr-text="'+query+ '"]').length){
-                $(row).css('background-color','lightblue');
+          const acceptedFlightRequests = {
+            path:'/acceptedflightrequest',
+              where:{
+                apiUser
+            },
+            limit:20,
+            skip:0,
+            sort:'validUntil DESC',
+            moreId:'#acceptedFlightRequestMore',
+            templateId:'#acceptedFlightRequestItem',
+            containerId:'#acceptedFlightRequestItems',
+            done:function(){
+                $('[data-countdown]').each(function(indx,ele) {
+                  var $this = $(ele), finalDate = $(ele).data('countdown');
+                  console.log(finalDate)
+                  $this.countdown(finalDate,function(event) {
+                    console.log(event)
+                    var format = '%H:%M:%S';
+                      if(event.offset.totalDays > 0) {
+                        format = '%-d day%!d ' + format;
+                      }
+                      if(event.offset.weeks > 0) {
+                        format = '%-w week%!w ' + format;
+                      }
+                      $(this).html(event.strftime(format));
+                  })
+                    .on('finish.countdown', function(event) {
+                      $(this).html('This offer has expired!')
+                        .parent().addClass('disabled');
+
+                    });
+                });
+            }
+          }
+
+          const processedFlightRequests = {
+            path:'/acceptedflightrequest',
+            where:{
+              providerPayoutStatus:'PAID',
+              apiUser
+            },
+            limit:20,
+            skip:0,
+            moreId:'#processedFlightRequestMore',
+            templateId:'#processedFlightRequestItem',
+            containerId:'#processedFlightRequestItems'
+          }
+
+          function getFlightRequests(options){
+                if(!options || !options.path) return;
+
+                var path = options.path;
+
+
+                if(options.where)
+                  path = path+ '?where=' + JSON.stringify(options.where);
+
+                if(options.limit)
+                  path = path + '&limit=' + options.limit
+
+                if(options.skip)
+                  path = path + '&skip=' + options.skip
+
+                if(options.sort)
+                  path = path + '&sort=' + options.sort
+
+                console.log('path:' + path)
+
+                io.socket.get(path, function(data) {
+                      options.skip += 20;
+                      console.log(data)
+                      if(data.length == 0){
+                        $(options.moreId).attr('disabled','')
+                        $(options.moreId).hide();
+                        $.toaster({priority:'info',message: options.message || 'No more results to show'})
+                      }
+                      $(document).ready(function(){
+                        data.forEach(function(d) {
+                            const $html = $($.templates(options.templateId).render(d));
+                            $html.hide();
+                            $(options.containerId).append($html.fadeIn(1000));
+                        })
+
+                        if(options && options.done && typeof options.done === 'function')
+                            options.done.call();
+
+                        $('#seatfilla_currencies').trigger('change');
+                      });
+                  })
               }
+
+          $('#filterDepartureCountry').on('change',function(){;
+              flightRequests.where.departureCountry = $(this).val();
+              flightRequests.skip = 0;
+              $(flightRequests.containerId).html('')
+              getFlightRequests(flightRequests);
           })
 
-        })
+          $('#filterDepartureCity').on('change',function(){
+              flightRequests.where.departureCity = $(this).val();
+              flightRequests.skip = 0;
+              $(flightRequests.containerId).html('')
+              getFlightRequests(flightRequests);
+          })
 
-        $('#flightRequestMore').on('click',function(){
+          $('#filterArrivalCity').on('change',function(){
+              flightRequests.where.arrivalCity = $(this).val();
+              flightRequests.skip = 0;
+              $(flightRequests.containerId).html('')
+              getFlightRequests(flightRequests);
+          })
+
+          $('#filterArrivalCountry').on('change',function(){
+            flightRequests.where.arrivalCountry = $(this).val();
+            $(flightRequests.containerId).html('')
+            flightRequests.skip = 0;
             getFlightRequests(flightRequests);
-        })
+          })
 
-         $('#acceptedFlightRequestMore').on('click',function(){
-            getFlightRequests(acceptedFlightRequests)
-        })
+        $('#filterRequestMinimumPrice').bind('keyup change click', function (e) {
+            const $this = $(this);
+            flightRequests.where.maximumPayment = {'>=':$this.val()}
+            $(flightRequests.containerId).html('')
+            flightRequests.skip = 0;
+            getFlightRequests(flightRequests);
+          });
 
-        $('#processedFlightRequestMore').on('click',function(){
-           getFlightRequests(processedFlightRequests)
-        })
+          $('#navToggle').on('click',function(){
+            if($(this).hasClass('active')){
+              $('.sidebar').fadeIn(500)
+              $('#page-wrapper').css({'margin':'0 0 0 255px'})
+            }else{
+              $('.sidebar').fadeOut(500)
+              $('#page-wrapper').css({'margin':'0px'})
+            }
+            $(this).toggleClass('active')
+          })
 
-        $('#flightRequestMore').trigger('click')
-        $('#acceptedFlightRequestMore').trigger('click')
-        $('#processedFlightRequestMore').trigger('click')
+
+          $('.search').on('input',function(){
+            const query = $(this).val()
+
+            console.log(query)
+
+            if(query.length == 0){
+              $('tbody tr').css('background-color','#fff');
+              return;
+            }
+
+            $('tbody tr').each(function(indx,row){
+                if($(row).find('td[data-attr-text="'+query+ '"]').length){
+                  $(row).css('background-color','lightblue');
+                }
+            })
+
+          })
+
+          $('#flightRequestItems').on('submit', '#acceptForm', function(e) {
+              e.preventDefault();
+              e.stopImmediatePropagation()
+              console.log('clicked')
+              var $form = $(this)
+              if (!$form[0].checkValidity()) {
+                  $form.find(':submit').click()
+              }
+
+              const $this = $(this);
+              const id = $this.attr('data-attr-flightRequestId');
+              $.ajax({
+                  url: $this.attr('action'),
+                  method: $this.attr('method'),
+                  data: $this.serialize(),
+                  success: function(res) {
+                      console.log(res);
+                      if (res.status == 200) {
+                          $('#myModal'+id).modal('toggle')
+                          $.toaster({
+                              message: 'Succesfully accepted flight request'
+                          })
+                      } else {
+                          $.taoster({
+                              message: 'Error accepting flight request ! ' + res.error || res.errorMessage,
+                              priority: 'info'
+                          });
+                      }
+                  },
+                  error: function() {
+                      alert('error')
+                  }
+              })
+          })
+
+          $('[data-toggle]').on('click',function(){
+              $('#seatfilla_currencies').trigger('change');
+          })
+
+          $('#flightRequestMore').on('click',function(){
+              getFlightRequests(flightRequests);
+          })
+
+          $('#acceptedFlightRequestMore').on('click',function(){
+              getFlightRequests(acceptedFlightRequests)
+          })
+
+          $('#processedFlightRequestMore').on('click',function(){
+            getFlightRequests(processedFlightRequests)
+          })
+
+          $('#flightRequestMore').trigger('click')
+          $('#acceptedFlightRequestMore').trigger('click')
+          $('#processedFlightRequestMore').trigger('click');
+        });
     })($, window.io);
 });
 </script>

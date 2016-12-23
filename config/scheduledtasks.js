@@ -45,6 +45,54 @@ const flightOfferScheduledTask = {
       sails.log.debug('Stopped execution of scheduled task ' + this.key + ' on ' + date)
     }
   },
+  work() {
+    async.auto({
+      find_to_be_closed_sales: function (callback) {
+        // Find all hotel sales that are open and the current date is past the valid date of the sale
+        HotelSale.find({saleType: 'auction',openUntil: {'>=': new Date().toISOString()},status: 'open'})
+          .populate('currentWinner')
+          .then(function (sale) {
+            return callback(null, sale)
+          }).catch(function (err) {
+          return callback(err, null)
+        })
+      },
+      process_hotel_sales: ['find_to_be_closed_sales',function (callback, results) {
+        const promises = []
+        results.find_to_be_closed_sales.forEach(function (sale) {
+          promises.push(new Promise(function (resolve, reject) {
+            HotelService.process_hotel_sales(sale).then(function (result) {
+              return resolve(result)
+            }).catch(function (err) {
+              sails.log.error(err)
+              return reject(err)
+            })
+          }))
+
+          Promise.all(promises).then(function (done) {
+            return callback(null, done)
+          }).catch(function (err) {
+            sails.log.error(err)
+            return callback(err, null)
+          })
+        })
+      }]
+    }, function (err, results) {
+      if(err){
+        sails.log.error(err);
+      }
+    })
+  }
+}
+
+const processFlightAuctionScheduledTask = {
+  key: 'flightOfferScheduledTask',
+  on: {
+    executionBegan(date) {},
+    executionFinished(date, output) {},
+    error(date, error) {},
+    stop(date) {}
+  },
   work() {}
 }
 
@@ -87,8 +135,8 @@ const flightRequestScheduledTask = {
 
             const obj = Object.create(SkyScannerFlightService.sessionObj)
             obj.country = user.address.country
-            obj.currency = user.userSettings.currencyCodePreference
-            obj.locale = user.userSettings.prefferedLocale
+            obj.currency = user.userSettings.currencyCodePreference || 'USD'
+            obj.locale = user.userSettings.prefferedLocale || 'en-US'
             obj.originplace = request.originIataCode
             obj.destinationplace = request.destinationIataCode
             obj.outbounddate = request.departDate

@@ -1,12 +1,15 @@
+const extract = require('../utils/dbUtils').extractModelAttributes;
+
+
 module.exports = {
   process_hotel_sale(sale) {
     return new Promise(function (resolve, reject) {
       async.auto({
         find_hotel_sale: function (callback) {
-          HotelSale.populate('hotel').populate('prices').populate('bids').find({ id: sale.id })
+          HotelSale.findOne({ id: sale.id }).populate('hotel').populate('currentWinner')
             .then(function (hotelSale) {
               if (!hotelSale) {
-                return callback(new Error('Could not find speicifed sale'))
+                return callback(new Error('Could not find speicifed sale'),null)
               }
               sails.log.debug('Processing hotel sale, found sale ' + JSON.stringify(hotelSale))
               return callback(null, hotelSale)
@@ -14,7 +17,7 @@ module.exports = {
         },
         check_status: ['find_hotel_sale', function (callback, results) {
           if (results.find_hotel_sale.status == 'closed') {
-            return callback(null, null)
+            return callback(new Error('Hotel sale already closed'),null)
           }
 
           const hours = require('../utils/TimeUtils')
@@ -24,15 +27,15 @@ module.exports = {
 
           sails.log.debug('Hours left until check in date: ' + hours)
 
-          if (results.find_hotel_sale.saleType == 'auction' && hours <= 24
-            || results.find_hotel_sale.saleType == 'fixed' && hours <= 0) {
+          if ((results.find_hotel_sale.saleType == 'auction' && hours <= 24
+            || results.find_hotel_sale.saleType == 'fixed' && hours <= 0)
+            || new Date().toISOString() >= Date.parse(results.find_hotel_sale.openUntil)) {
             return callback(null, {saleType: results.find_hotel_sale.saleType})
           }else {
-            return callback(null, null)
+            return callback(new Error('This hotel sale has no expired'),null);
           }
         }],
         update_status: ['find_hotel_sale', 'check_status', function (callback, results) {
-          if (results.check_status) {
             results.find_hotel_sale.status = 'closed'
             results.find_hotel_sale.save(function (err) {
               if (err) {
@@ -41,73 +44,104 @@ module.exports = {
                 return callback(null, true)
               }
             })
-          }else {
-            return callback(null, null)
-          }
         }],
-        find_reserve: ['update_status', function (callback, results) {
-          if (!results.check_status) return callback(null, null)
-
-          if (results.find_hotel_sale.prices.length) {
-            var minPrice
-
-            _.each(results.find_hotel_sale.prices, function (price) {
-              if (!minPrice) {
-                minPrice = price
-              }else if (minPrice.price_total > price.price_total) {
-                minPrice = price
-              }
-            })
-
-            return callback(null, minPrice)
-          }else {
-            const error = new Error()
-            error.message = 'No reserves for this auction, invalid status'
-            error.errorCode = 219
-            return callback(error, null)
-          }
+        find_hotel_sale_min_price:['find_hotel_sale',function(){
+          HotelPrices.findOne({hotelSale:results.findHotelSale.id}).min('price_total')
+          then(function(hotelPrice){
+            return callback(null,hotelPrice);
+          }).catch(callback);
         }],
-        find_winner: ['find_hotel_sale', 'find_reserve', 'check_status', function (callback, results) {
-          if (!results.check_status) return callback({hasWinner: false})
+        convert_hotel_min_price_currency:['find_hotel_sale_min_price',function(callback,results){
+          if(!results.find_hotel_sale_min_price || results.find_hotel_sale_min_price.currency == 'USD'){
+            return callback(null,{maxBid:(results.find_hotel_sale_min_price
+              && results.find_hotel_sale_min_price.price_total) || 0, currency:'USD'});
+          }
 
-          if (results.check_status.saleType == 'auction' && results.find_hotel_sale.bids.length) {
-            var minBid
-            _.each(results.find_hotel_sale.bids, function (bid) {
-              if (!minBid) {
-                minBid = bid
-              }else if (bid.bidAmount < minBid.bidAmount) {
-                minBid = bid
-              }
-            })
-
-            if (minBid.bidAmount >= results.find_reserve.price_total) {
-              User.find({id: minBid.user}).then(function (user) {
-                return callback(null,
-                  {
-                    hasWinner: true,
-                    bidAmount: minBid.bidAmount,
-                    reserveAmount: results.find_reserve.price_total,
-                    hotel: results.find_hotel_sale.hotel,
-                    hotelSale: results.find_hotel_sale,
-                    winner: user
-                  })
-              }).catch(function (err) {
-                return callback({
-                  wlError: err,
-                  error: new Error('Invalid bid user')
-                }, null)
-              })
-            }else {
-              return callback(null, {hasWinner: false})
+          const pCurrency = results.find_hotel_sale_min_price.currency;
+          LookupService.fixer_io_get_exchange_rates(pCurrency)
+          .then(function(exchangeRates){
+            if(!('rates' in exchangeRates) || !('USD' in exchangeRates.rates)){
+              return callback(new Error('Exchange rates.rates was undefined or USD does not exist within returned rates'))
             }
-          }else {
-            return callback(null, {hasWinner: false})
-          }
+            var conversionRate;
+            try{
+              conversionRate = parseFloat(exchangeRates.rates.USD);
+              return callback(null,{minPrice:parseFloat(results.find_hotel_sale_min_price.price_total) * conversionRate, currency:'USD'});
+            }catch(err){
+              return callback(err,null);
+            }
+          }).catch(callback)
         }],
-        email_winner: ['find_winner', function (callback, results) {
+        find_hotel_sale_max_bid:['find_hotel_sale',function(){
+          HotelBid.findOne({hotelSale:results.find_hotel_sale.id}).populate('user').max('bidAmount')
+          .then(function(bid){
+            if(bid && bid.user.username != results.find_hotel_sale.currentWinner.username){
+              return callback(new Error('Invalid database state, current winner should be the same as user returned from max hotel sale query.'),null);
+            }
+            return callback(null,bid);
+          }).catch(callback);
+        }],
+        convert_hotel_max_bid_currency:['find_hotel_sale_max_bid',function(callback,results){
+          if(!results.find_hotel_sale_max_bid || results.find_hotel_sale_max_bid.currency == 'USD'){
+            return callback(null,{maxBid:(results.find_hotel_sale_max_bid
+              && results.find_hotel_sale_max_bid.bidAmount) || 0, currency:'USD'});
+          }
+
+          const bidCurrency = results.find_hotel_sale.max_bid.currency;
+          LookupService.fixer_io_get_exchange_rates(bidCurrency)
+          .then(function(exchangeRates){
+            if(!('rates' in exchangeRates) || !('USD' in exchangeRates.rates)){
+              return callback(new Error('Exchange rates.rates was undefined or USD does not exist within returned rates'))
+            }
+            var conversionRate;
+            try{
+              conversionRate = parseFloat(exchangeRates.rates.USD);
+              return callback(null,{maxBid:parseFloat(results.find_hotel_sale_max_bid.bidAmount) * conversionRate, currency:'USD'});
+            }catch(err){
+              return callback(err,null);
+            }
+          }).catch(callback)
+        }],
+        find_winner: ['convert_hotel_max_bid_currency','convert_hotel_min_price_currency', function (callback, results) {
+            if(results.find_hotel_sale_max_bid && results.find_hotel_sale_min_price &&
+               results.convert_hotel_max_bid_currency.maxBid >= results.convert_hotel_min_price_currency.minPrice){
+                 return callback(null,{hasWinner:true})
+            }else{
+              return callback(null,{hasWinner:false})
+            }
+        }],
+        find_all_bidders:['find_hotel_sale',function(callback,results){
+          HotelBids.find({hotelSale:results.find_hotel_sale.id})
+          .populate('user')
+          .then(function(bids){
+            return callback(null,bids);
+          }).catch(callback);
+        }],
+        populate_info:['find_winner','find_hotel_sale',
+        'convert_hotel_max_bid_currency',
+        'convert_hotel_min_price_currency',function(callback,results){
+            return callback(null,{
+              winner:results.find_hotel_sale_max_bid.user,
+              bidAmount:results.convert_hotel_max_bid_currency.maxBid,
+              currency:results.convert_hotel_max_bid_currency.currency,
+              hotel:results.find_hotel_sale.hotel,
+              reservePrice:results.convert_hotel_min_price_currency.minPrice,
+              reservePriceCurrency:results.convert_hotel_min_price_currency.currency
+            })
+        }],
+        notify_all_auction_bidders:['populate_info','find_all_bidders',function(callback,results){
+          const template = results.find_winner.hasWinner? sails.config.email.messageTemplates.wonAuctionTemplate :
+          sails.config.email.messageTemplates.lostAuctionTemplate
+          const email = template(results.populate_info);
+          _.each(results.find_all_bidders,function(bidder){
+              if(results.find_winner.hasWinner && bidder.user.username == results.find_hotel_sale_max_bid.user.username) return;
+              EmailService.sendEmailAsync(email).then(function () {})
+          })
+        }],
+        email_winner: ['find_winner','populate_info', function (callback, results) {
           if (results.find_winner.hasWinner) {
             EmailService.sendEmailAsync(
-              sails.config.email.messageTemplates.hotelAuctionWinner(results.find_winner)
+              sails.config.email.messageTemplates.hotelAuctionWinnerTemplate(results.populate_info)
             ).then(function () {
               return callback(null, true)
             }).catch(function (err) {
@@ -120,10 +154,10 @@ module.exports = {
         notify_winner: ['find_winner', function (callback, results) {
           if (results.find_winner.hasWinner) {
             NotificationService.sendNotification({
-              user: results.find_winner.winner.id,
-              title: 'You have won an auction for hotel ' + results.find_winner.hotel.name,
-              message: 'A bid of ' + results.find_winner.bidAmount + ' was place on hotel '
-                + results.find_winner.hotel.name + ' and has won.',
+              user: results.find_hotel_sale_max_bid.user.id,
+              title: 'You have won an auction for hotel ' + results.find_hotel_sale.hotel.hotelName,
+              message: 'A bid of ' + results.convert_hotel_max_bid_currency.maxBid + ' ' + results.convert_hotel_max_bid_currency.currency
+              + ' was place on hotel ' + results.find_hotel_sale.hotel.hotelName + ' and has won.',
               read: false,
               type: 'Individual',
               link: '/hotel/' + results.find_winner.hotel.id
@@ -138,12 +172,7 @@ module.exports = {
       }, function (err, results) {
         if (err) {
           sails.log.error(err)
-          sails.log.debug('Error processing auction sale')
-          if (err.errCode == 219) {
-            // Notify user of fail,
-            // log failiure
-          }
-          return reject(err)
+          return reject(err);
         }else {
           sails.log.debug(results)
           return resolve(results)
@@ -238,7 +267,7 @@ module.exports = {
               const sales = hotelSale.filter(function (sale) {
                 const dateDif = new Date(sale.checkindate) - new Date()
                 const hours = require('../utils/TimeUtils').createTimeUnit(dateDif).Milliseconds.toHours()
-                if (sale.saleType == 'auction' && hours <= 24 || sale.saleType == 'fixed' && hours <= 0) {
+                if ((sale.saleType == 'auction' && hours <= 24) || (sale.saleType == 'fixed' && hours <= 0)) {
                   _this.process_hotel_sale(sale)
                   return false
                 }else if (sale.status == 'closed') {
@@ -269,9 +298,19 @@ module.exports = {
           return cb(null, results.find_hotel_sale)
         }
 
+        var validDate;
+
+        if(results.determine_sale_type == 'auction'){
+          validDate = new Date(sessionObj.checkindate);
+          validDate.setHours(validDate.getHours() - 24);
+        }else{
+          validDate = new Date(sessionObj.checkInDate);
+        }
+        validDate = validDate.toISOString();
         HotelSale.create({
           checkInDate: sessionObj.checkindate,
           checkOutDate: sessionObj.checkoutdate,
+          openUntil:validDate,
           numberOfGuests: sessionObj.guests,
           numberOfRooms: sessionObj.rooms,
           hotel: results.create_hotel.id,
@@ -380,9 +419,11 @@ module.exports = {
       }
 
       function create_hotel_tags (cb, results) {
-        const tags = [{
-          tag: 'AVAILABLE'
-        }]
+        const tags = [{ tag: 'AVAILABLE'},
+        {tag: results.create_hotel.longitude },
+        {tag:results.create_hotel.latitude},
+        {tag:'${results.create_hotel.star_rating} star'},
+        {tag:results.create_hotel.hotelName}]
         HotelTag.findOrCreate(tags, tags)
           .then(function (hotelTag) {
             _.each(hotelTag, function (tag) {
@@ -410,12 +451,15 @@ module.exports = {
 
       function create_hotel_agents (cb, results) {
         sails.log.debug('creating hotel agents')
-        HotelAgent.findOrCreate(hotel.agents, hotel.agents)
+        //const agents = extract(sails.models.hotelagent,hotel.agents);
+        // sails.log.debug('extracted agents:')
+        // sails.log.debug(agents);
+        HotelAgent.findOrCreate({id:_.map(hotel.agents,function(a){return a.id})}, hotel.agents)
           .then(function (agents) {
             return cb(null, agents)
           }).catch(function (err) {
           sails.log.error(err)
-          return callback({
+          return cb({
             wlError: err,
             error: new Error('Error creating hotel agents')
           })
@@ -520,7 +564,9 @@ module.exports = {
       function create_hotel_amenities (cb, results) {
         sails.log.debug('In hotel amenities')
 
-        sails.log.debug(hotel.amenities)
+        //sails.log.debug(hotel.amenities)
+        //sails.log.debug('extracted:')
+       // sails.log.debug(extract(sails.models.hotelamenities,hotel.amenities))
 
         HotelAmenities.findOrCreate(_.map(hotel.amenities, function (amenities) {
           return amenities.id

@@ -91,6 +91,9 @@ $(window).ready(function() {
             div: function(value1, value2) {
                 return value1 / value2
             },
+            mod:function(val,val2){
+              return val%val2;
+            },
             abs: function(value, attrMapping) {
                 return Math.abs(value)
             },

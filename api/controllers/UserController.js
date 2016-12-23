@@ -4,14 +4,15 @@
 
 const _find = require('../out/find'),
     _update = require('../out/update');
-    
+
 module.exports = {
     create: function(req, res) {
-        const obj = (req.session.tempUser && Object.assign(_.clone(req.session.tempUser),_.clone(req.allParams()))) || null;
-        const user = obj? obj:req.allParams();
+        const obj = Object.assign(req.session.tempUser || {},req.allParams())
         delete req.session.tempUser;
+        sails.log.debug('All params in create/user')
+        sails.log.debug(obj)
         UserService.createUser({
-            user,
+            user:obj,
             locale:req.headers['Accept-Language'] || 'en-US',
             userAgent:req.headers['user-agent'],
             ip:req.ip,

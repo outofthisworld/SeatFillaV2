@@ -1,8 +1,15 @@
 //Just trying to think of what is needed haha -----where do you find that out?
 //In my brain :D lol
 module.exports = {
-
+    autoPK:false,
     attributes: {
+          id: {
+            primaryKey: true,
+            type: 'string',
+            defaultsTo: function() {
+                return require('node-uuid').v4();
+            }
+        },
         socketID: {
             type: 'string',
             notNull: true,

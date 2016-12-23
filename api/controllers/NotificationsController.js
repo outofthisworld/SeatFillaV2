@@ -3,7 +3,7 @@ module.exports = {
     /*
        Subscribes new users to their own room.
        The client side functionality for this should be enabled on all pages
-       and will enable the server to push notifications to the client at any time. 
+       and will enable the server to push notifications to the client at any time.
     */
     subscribe: function(req, res) {
         // Check to see if this is a socket
@@ -11,7 +11,6 @@ module.exports = {
 
         // If it is a socket then get its id
         const socketId = sails.sockets.getId(req)
-        req.session.notificationSocketId = socketId
 
         sails.sockets.join(req, socketId, function(err) {
             if (err) return res.badRequest()
@@ -31,29 +30,6 @@ module.exports = {
             //All good
             return res.ok()
         })
-    },
-    latestNotifications: function(req, res) {
-        sails.log.debug('attempting to retrieve loatest notifications')
-            //Make sure we only get requests from sockets or xhr..
-        if (!req.isSocket && !req.xhr) return res.redirect('/');
-
-        //Use our notification service to find our latest notifications (both system and user specific)
-        NotificationService.findLatestNotifications(req, {
-            limit: req.param('limit'),
-            sort: req.param('sort'),
-            skip: req.param('skip')
-        }).then(function(latestNotifications) {
-            //Return them to the client.
-            sails.log.debug('Returning lastest notifcations : ');
-            sails.log.debug(JSON.stringify(latestNotifications))
-            return res.json(lastestNotifications);
-        }).catch(function(err) {
-            sails.log.error(err)
-            return res.json({
-                error: err,
-                message: err.message
-            });
-        });
     },
     // This is here for testing purposes (sends a system wide notification to all users)
     sendNotification: function(req, res) {

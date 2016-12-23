@@ -32,7 +32,7 @@ $('a[href*=#]:not([href=#])').click(function() {
 
 <style>
 
-#masthead { 
+#masthead {
  min-height:250px;
 }
 
@@ -67,7 +67,7 @@ $('a[href*=#]:not([href=#])').click(function() {
       margin-top:30px;
   	width:228px;
   }
-  
+
   #sidebar.affix {
     position: fixed;
     top:70px;
@@ -98,10 +98,10 @@ ol li{
 
 </body>
 
-<div id="masthead">  
+<div id="masthead">
 
 <!--main-->
-<div class="container">
+<div class="container-fluid">
 
 	<div class="row">
       <!--left-->
@@ -115,13 +115,13 @@ ol li{
           <li><a href="#sec4">Section 4</a></li>
         </ul>
       </div><!--/left-->
-      
+
       <!--right-->
       <div class="col-md-9">
           <br/>
          <div class="pull-right"><a href="/" class="btn btn-info">Back to seatfilla</a></div>
          <h4 id="intro">Getting Started</h4>
-         <p> 
+         <p>
           <h2>What does the Seatfilla API do?</h2>
           <small> To sum it up quickly, here is some of the things you can do:
           <br/><hr/><br/>
@@ -145,7 +145,7 @@ ol li{
           <li>Token in request header under `x-access-token`</li>
           <li>Key in request query or body using param sfKey</li>
           <li>Key in request header under 'x-seatfilla-key'</li>
-          </ol>  
+          </ol>
           <br/>
 
           Seatfilla uses the secret key that you provide when generating the API token in order to encrypt the API token
@@ -167,7 +167,7 @@ ol li{
               <tr>
                 <td class="text-left text-nowrap">
                   <button class="btn btn-xs btn-info">GET</button>
-                  
+
                 </td>
                 <td>
                   <p class="pull-right"> /apiv1/flightrequest/</p>
@@ -188,7 +188,7 @@ ol li{
               <tr>
                 <td class="text-left text-nowrap">
                   <button class="btn btn-xs btn-info">POST</button>
-                  
+
                 </td>
                 <td>
                   <p class="pull-right"> /apiv1/flightrequest/</p>
@@ -209,7 +209,7 @@ ol li{
               <tr>
                 <td class="text-left text-nowrap">
                   <button class="btn btn-xs btn-info">GET</button>
-                  
+
                 </td>
                 <td>
                   <p class="pull-right"> /apiv1/flightrequest/:id</p>
@@ -231,7 +231,7 @@ ol li{
               <tr>
                 <td class="text-left text-nowrap">
                   <button class="btn btn-xs btn-info">PATCH</button>
-                  
+
                 </td>
                 <td>
                   <p class="pull-right"> /apiv1/flightrequest/id/accept</p>
@@ -252,7 +252,7 @@ ol li{
               <tr>
                 <td class="text-left text-nowrap">
                   <button class="btn btn-xs btn-info">PATCH</button>
-                  
+
                 </td>
                 <td>
                   <p class="pull-right"> /apiv1/flightrequest/:id</p>
@@ -273,7 +273,7 @@ ol li{
               <tr>
                 <td class="text-left text-nowrap">
                   <button class="btn btn-xs btn-info">DELETE</button>
-                  
+
                 </td>
                 <td>
                   <p class="pull-right"> /apiv1/flightrequest/:id</p>
@@ -290,7 +290,7 @@ ol li{
       </div>
 
          <h2 id="sec1">Flight Offer Routes</h2>
-      
+
       <div class="panel panel-default documentation-panel">
         <div class="panel-body">
         <div class="container-fluid">
@@ -300,7 +300,7 @@ ol li{
               <tr>
                 <td class="text-left text-nowrap">
                   <button class="btn btn-xs btn-info">GET</button>
-                  
+
                 </td>
                 <td>
                   <p class="pull-right"> /apiv1/flightoffers/</p>
@@ -321,7 +321,7 @@ ol li{
               <tr>
                 <td class="text-left text-nowrap">
                   <button class="btn btn-xs btn-info">GET</button>
-                  
+
                 </td>
                 <td>
                   <p class="pull-right"> /apiv1/flightoffer/:id</p>
@@ -342,7 +342,7 @@ ol li{
               <tr>
                 <td class="text-left text-nowrap">
                   <button class="btn btn-xs btn-info">PATCH</button>
-                  
+
                 </td>
                 <td>
                   <p class="pull-right"> /apiv1/flightrequest/id</p>
@@ -363,7 +363,7 @@ ol li{
               <tr>
                 <td class="text-left text-nowrap">
                   <button class="btn btn-xs btn-info">DELETE</button>
-                  
+
                 </td>
                 <td>
                   <p class="pull-right"> /apiv1/flightrequest/id</p>
@@ -381,7 +381,7 @@ ol li{
 
 
        <h2 id="sec3">Hotel Offer Routes</h2>
-      
+
       <div class="panel panel-default documentation-panel">
         <div class="panel-body">
         <div class="container-fluid">
@@ -391,7 +391,7 @@ ol li{
               <tr>
                 <td class="text-left text-nowrap">
                   <button class="btn btn-xs btn-info">GET</button>
-                  
+
                 </td>
                 <td>
                   <p class="pull-right"> /apiv1/flightoffers/</p>
@@ -412,7 +412,7 @@ ol li{
               <tr>
                 <td class="text-left text-nowrap">
                   <button class="btn btn-xs btn-info">GET</button>
-                  
+
                 </td>
                 <td>
                   <p class="pull-right"> /apiv1/flightoffer/:id</p>
@@ -433,7 +433,7 @@ ol li{
               <tr>
                 <td class="text-left text-nowrap">
                   <button class="btn btn-xs btn-info">PATCH</button>
-                  
+
                 </td>
                 <td>
                   <p class="pull-right"> /apiv1/flightrequest/id</p>
@@ -454,7 +454,7 @@ ol li{
               <tr>
                 <td class="text-left text-nowrap">
                   <button class="btn btn-xs btn-info">DELETE</button>
-                  
+
                 </td>
                 <td>
                   <p class="pull-right"> /apiv1/flightrequest/id</p>
@@ -469,7 +469,7 @@ ol li{
       </div>
       </div>
       </div>
-       
+
 
         </div><!--/right-->
   	</div><!--/row-->

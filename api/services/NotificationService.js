@@ -62,7 +62,7 @@ module.exports = {
     },
     // Sends a system notification to all users.
     sendSystemNotification: function(message) {
-        // Return a new promouse 
+        // Return a new promouse
         return new Promise(function(resolve, reject) {
             async.auto({
                 createNotification(callback) {
@@ -110,29 +110,7 @@ module.exports = {
             })
         })
     },
-    // Returns a new promise with the users latest notifications
-    findLatestNotifications: function(req, criteria) {
-        return new Promise(function(resolve, reject) {
-            criteria = criteria || {}
-            if (req.user) {
-                criteria.where = {
-                    user: req.user.id
-                }
-                return Notifications.find(criteria).then(function(notifications) {
-                    return Promise.resolve(notifications)
-                })
-            } else {
-                return SystemNotifications.find(criteria).then(function(systemNotifications) {
-                    return Promise.resolve(systemNotifications)
-                })
-            }
-        }).then(function(result) {
-            result.sort(function(a, b) {
-                return Date.parse(a.createdAt).getTime() - Date.parse(b.createdAt).getTime()
-            })
-            return result.splice(0, 5)
-        })
-    },
+
     // Notifies all links to a user.
     notifyUserLinksAsync(user) {
         return UserLink.find({

@@ -82,6 +82,25 @@ module.exports.email = {
                 html: 'Flight request concerned : ' + JSON.stringify(flightRequest) + '<br/>'
                 + '<br/> Error ' + JSON.stringify(err) + '<br/> Error message: ' +  err.message
             }
+        },
+         hotelSaleAuctionWon:function(hotelSale){
+            return {
+                to: [hotelSale.currentWinner.email],
+                from: 'admin@seatfilla.com',
+                subject: 'You',
+                html: 'Flight request concerned : ' + JSON.stringify(flightRequest) + '<br/>'
+                + '<br/> Error ' + JSON.stringify(err) + '<br/> Error message: ' +  err.message
+            }
+        },
+        hotelSaleAuctionFinished:function(hotelSale){
+            return {
+                to: [hotelSale.currentWinner.email],
+                from: 'admin@seatfilla.com',
+                subject: 'A hotel auction you have bid on has just finished',
+                html: 'Hi ' + hotelSale.currentWinner.firstName + ',' +
+                '<br/> A hotel sale that you have bid on has just finished. The winner of this auction was'
+                + hotelSale.currentWinner.username + '.'
+            }
         }
     }
 }

@@ -64,7 +64,7 @@ module.exports.policies = {
         'twitterCallback': 'notLoggedInPolicy',
     },
     HomeController:{
-         '*':true,
+         '*':true ,
         'login':['notLoggedInPolicy'],
         'register':['notLoggedInPolicy']
     },

@@ -94,8 +94,6 @@ label{
 <script>
 (function(){
 
-
-
     const mapItin = function(result,itin, directionality, legId) {
                     if (!itin.PricingOptionsMapped) {
                         itin.PricingOptions = itin.PricingOptions.map((pricingOption) => {
@@ -158,7 +156,7 @@ label{
 
     function renderView(response,r,xhr){
 
-        const _this = this;
+    const _this = this;
 
 
     function pollSession(pageIndex,nextPollUrl){
@@ -194,7 +192,10 @@ label{
                             }
                             return itin
                         }).forEach(function(itin, index) {
-                            $('#flights').append($.templates('#flightTemplate').render({itin:itin,cityImages:response.cityImages,index}) )
+                            console.log(_this);
+                            $('#flights').append($.templates('#flightTemplate').render(
+                            {itin:itin,cityImages:response.cityImages, index,
+                            sendData:_this}) )
                             console.log(itin);
                     });
 
@@ -220,14 +221,15 @@ label{
 
     function handleAjaxError(err){
         console.log(err);
-        $.toaster({priority:'error',message:'Error with request to server'});
+        $.toaster({priority:'error', message:'Error with request to server'});
     }
 
     (function(){
         function attach(){
 
             $('#list').click(function(event){
-                event.preventDefault();$('#products .item').addClass('list-group-item');
+                event.preventDefault();
+                $('#products .item').addClass('list-group-item');
                 $('#flights .item .switch').removeClass('thumbnail')
             });
 
@@ -266,7 +268,7 @@ label{
 
                 const prefferedCabinClass = $('prefferedCabinClass').val();
 
-                const sendData ={
+                const sendData = {
                         dates:{
                             departure:departureDate,
                             arrival:returnDate
@@ -342,8 +344,7 @@ label{
                                 <img class="group list-group-image" src="{{:itin.OutboundLegs[0].FlightNumbers[0].carrierInfo.ImageUrl}}" alt="" />
                             </div>
 
-                      <p>  A flight from  {{:itin.OutboundLegs[0].OriginStation.Code}} to {{:itin.InboundLegs[0].OriginStation.Code}}</p>
-
+                        <p>A flight from  {{:itin.OutboundLegs[0].OriginStation.Code}} to {{:itin.InboundLegs[0].OriginStation.Code}}</p>
                         <p>
                         <strong>Inbound departure/arrival:</strong> <br/> {{:~dateFormat(itin.InboundLegs[0].Departure,'YYYY-MM-DD HH:MM')}} - {{:~dateFormat(itin.InboundLegs[0].Departure,'YYYY-MM-DD HH:MM')}} <br/><br/>
                         <strong>Outbound departure/arrival:</strong> <br/> {{:~dateFormat(itin.InboundLegs[0].Departure,'YYYY-MM-DD HH:MM')}} - {{:~dateFormat(itin.InboundLegs[0].Arrival,'YYYY-MM-DD HH:MM')}}
@@ -359,27 +360,35 @@ label{
                                 <th>Type</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody style="font-size:10px;">
                             {{for itin.PricingOptions}}
                                 <tr>
                                 <td><img class="img img-responsive" src="{{:agents[0].agent.ImageUrl}}"/></td>
                                 <td>{{:agents[0].agent.Name}}</td>
-                                <td>{{:pricingOption.Price}}</td>
+                                <td>
+                                      <span data-attr-price>
+                                        <span data-attr-currency-symbol="{{:~currentCurrencySymbol()}}">{{:~currentCurrencySymbol()}}</span>
+                                        <span data-attr-amount="{{:pricingOption.Price}}">{{:pricingOption.Price}}</span>
+                                        <span data-attr-currency-code="{{:~currentCurrencyCode()}}">{{:~currentCurrencyCode()}}</span>
+                                      </span>
+                                </td>
                                 <td>{{:agents[0].agent.Type}}</td>
                                 </tr>
                             {{/for}}
                         </tbody>
                         </table>
                     </div>
-
                     <div class="row">
-                        <div class="col-xs-12 col-md-6">
-                            <p class="lead"></p>
+                        <br/>
+                        <div class="col-xs-12">
+                            <form action="/flightoffer/findOne" method="POST">
+                              <input type="hidden" name="flightData" value="{{:~escapeHtml(~stringify(itin))}}"/>
+                              <input type="hidden" name="flightOffer" value="{{:~escapeHtml(~stringify(sendData))}}"/>
+                              <input type="hidden" name="provider" value="Skyscanner"/>
+                              <button type="submit" class="btn btn-info btn-block" href="">View details</button>
+                            </form>
                         </div>
-                        <div class="col-xs-12 col-md-6">
-                            <a class="btn btn-info" href="">View details</a>
-                        </div>
-                     </div>
+                         </div>
                         </div>
                     </div>
                 </div>
@@ -389,7 +398,6 @@ label{
         </div>
 </script>
 <div class="container-fluid">
-
     <div class="well row" style="background-color:transparent;background-image:none;">
         <div class="button-group pull-right">
             <a href="#" id="list" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-th-list">
@@ -398,8 +406,6 @@ label{
         </div>
     </div>
     <div id="flights" class="row list-group">
-
-
     </div>
     <button id="nextPage" class="btn btn-lg btn-info btn-block">Search</button>
 </div>

@@ -1,7 +1,7 @@
 /*
     This module contains the logic for integrating with skyscanners public flight API.
     Created by Dale.
-    
+
     Methods are heavily documented with information obtained about skyscanners API,
     to enable quick modifications/ability to recognize API changes.
 */
@@ -15,6 +15,9 @@ const querystring = require('querystring')
 const ErrorUtils = require('./../utils').ErrorUtils
 // Making requests to SS.
 const apiKey = sails.config.skyscanner.apiKey
+
+const skyScannerBaseUrl = 'http://partners.api.skyscanner.net';
+
 // The end point location
 const skyScannerApiEndPoint = 'http://partners.api.skyscanner.net/apiservices/pricing/v1.0'
 
@@ -50,7 +53,7 @@ const exportObj = {
     inbounddeparttime: 'inbounddeparttime',
     price: 'price'
   },
-  // Sort asc desc..             
+  // Sort asc desc..
   sortorders: {
     asc: 'asc',
     desc: 'desc'
@@ -127,7 +130,7 @@ const exportObj = {
   },
 
   /*
-      GET REQUEST information: 
+      GET REQUEST information:
       (Note that this request must be sent AFTER first obtaining a session key from skyscanner.)
       [param  required  type notes] - REQUEST DETAILS
       apiKey	Yes	The API Key to identify the customer	String	Must be a valid API Key
@@ -155,7 +158,7 @@ const exportObj = {
       skipPlaceLookup	11235;13542;16189	A semicolon separated list of place Ids which have already been sent to the client in this pricing session, and hence will not be re-sent in subsequent polls	List of integers
       includeCurrencyLookup	false	Whether or not to repeat the currency lookup information in the subsequent poll session	Boolean
       includeBookingDetailsLink	false	Whether or not to show the BookingDetailsLink for each itinerary in the subsequent poll session. If false, the client will have to build this booking details link manually
-              
+
       RESPONSE BODY:
       SessionKey	The Session key to identify the session.
       Query	A copy of the query which was submitted.
@@ -352,18 +355,17 @@ const exportObj = {
       The Response
       Location Header	Contains the URL for polling the the booking details.
   */
-  requestForBookingDetails(obj) {
+  requestForBookingDetails(bookingDetailsUrl, obj) {
     return new Promise((resolve, reject) => {
-      if (!obj || !obj.sessionkey) {
-        return reject(ErrorUtils.createNewError('Invalid parameters when calling requestForBookingDetails', arguments))
-      }
 
-      const requestLoc = 'http://partners.api.skyscanner.net/apiservices/pricing/v1.0/${obj.sessionkey}/booking?'
-      // Remove the session key before url encoding the object
-      delete obj.sessionkey
+      sails.log.debug('Booking details url: ')
+      sails.log.debug(bookingDetailsUrl);
+      if(!obj.apiKey)
+        obj.apiKey = apiKey;
 
-      const finalRequestURI = requestLoc + querystring.stringify(obj)
-
+      const finalRequestURI = skyScannerBaseUrl + bookingDetailsUrl + '?' + querystring.stringify(obj)
+      sails.log.debug('Final request uri:')
+      sails.log.debug(finalRequestURI)
       request({
         headers: {
           'Accept': 'application/json'
@@ -371,10 +373,16 @@ const exportObj = {
         uri: finalRequestURI,
         method: 'PUT'
       }, function (err, res, body) {
-        if (err) return reject(err)
-        else return resolve({
-            url: res.headers.location
+        if (err) {
+          sails.log.error(err);
+          return reject(err)
+        }else{
+          sails.log.debug(body)
+          sails.log.debug(res.headers)
+          return resolve({
+            url: res.headers.Location
           })
+        }
       })
     })
   },
@@ -395,48 +403,69 @@ const exportObj = {
       skipPlaceLookup	11235;13542;16189	A semicolon separated list of place Ids which have already been sent to the client in this booking details session, and hence will not be re-sent in subsequent polls	List of integers
   */
   pollBookingDetails(pollingUrl, obj) {
+    const args = arguments;
     return new Promise(function (resolve, reject) {
       if (!obj || !pollingUrl) {
-        return reject(new Error('Invalid parameters when calling pollBookingDetails'))
+        return reject(new Error('Invalid parameters when calling pollBookingDetails: ' + args))
       }
 
       if (!obj.apiKey)
-        obj.apiKey = this.apiKey
+        obj.apiKey = apiKey
 
       const queryString = querystring.stringify(obj)
+      const finalPollUrl = pollingUrl + '?' + querystring;
+
+      sails.log.debug('Polling booking details ' + finalPollUrl);
 
       request({
         headers: {
           'Accept': 'application/json'
         },
-        uri: pollingUrl + '?' + querystring,
+        uri: finalPollUrl ,
         method: 'GET'
       }, function (err, res, body) {
-        if (err) return reject(new Error('Error in request response in pollBookingDetails '))
-        else return resolve({
+        if (err){
+          sails.log.error(err);
+          return reject(new Error('Error in request response in pollBookingDetails '))
+        }else {
+          return resolve({
             body: res.body,
             nextPollUrl: res.headers.location
           })
+        }
       })
     })
   },
-
-  requestAndPollBookingDetails(bookingDetailsObj, pollingDetailsObj) {
-    return new Promise((resolve, reject) => {
-      this.requestForBookingDetails(bookingDetailsObj).then(
+  requestAndPollBookingDetails(bookingDetailsUrl, bookingDetailsObj, pollingDetailsObj, callback) {
+     const _this = this;
+     var calledBack = false;
+     sails.log.debug(arguments)
+     this.requestForBookingDetails(bookingDetailsUrl,bookingDetailsObj).then(
         (result) => {
-          this.pollBookingDetails(result, pollingDetailsObj).then((resolvedObj) => {
-            const responseBody = resolvedObj.body
-            const nextPollUrl = resolvedObj.nextPollUrl
 
-            console.log(responseBody)
-            console.log(nextPollUrl)
+          sails.log.debug('Result from request for booking details:')
+          sails.log.debug(JSON.stringify(result))
 
-            resolve(resolvedObj)
-          }).catch((error) => reject(new Error('Error occured polling booking details')))
-        }
-      ).catch((error) => reject(new Error('Error occurred requesting booking details')))
-    })
+          const clearIntervalKey = setInterval(function(){
+            var pollUrl = result.url;
+             _this.pollBookingDetails(pollUrl, pollingDetailsObj).then((resolvedObj) => {
+              const responseBody = resolvedObj.body
+              pollUrl = resolvedObj.nextPollUrl
+
+              if(true && !calledBack){
+                clearInterval(clearIntervalKey);
+                calledBack = !calledBack;
+                return callback(null,responseBody)
+              }
+          }).catch((error) => {
+            clearInterval(clearIntervalKey);
+            return callback(new Error('Error occured polling booking details : ' + error.message),null)
+          })
+        });
+      }).catch(function(err){
+        sails.log.error(err);
+        return callback(err,null);
+      });
   },
   getDefaultItinObject() {
     return {

@@ -1,7 +1,7 @@
 <body>
       <%- partial ('../partials/nav.ejs') %>
-  
-        <div class="container-fluid" style="height:100vh;margin-top:95px;">  
+
+        <div class="container-fluid" style="height:100vh;margin-top:95px;">
 
             <div class="row">
             <div class="col-md-3 col-lg-3 col-sm-3 col-xs-3" style="margin:0px;padding:0px;">
@@ -36,22 +36,22 @@
                     <div class="form-group">
                       <label for="pwd">Destination Airport(s)</label>
                             <select id="destination_airports" multiselect="true" class="form-control">
-                            </select> 
+                            </select>
                     </select>
                     </div>
                     <hr>
                     </div>
                     <div class="panel-footer">
-                      <button id="Search" class="fancy">Search </button>
+                      <button id="Search" class="btn btn-info btn-block">Search </button>
                     </div>
                     </div>
-          
+
                 </div>
                 <div class="content-footer">
                 </div>
             </div>
             </paper-material>
-            
+
             <div class="col-md-9 col-sm-9 col-xs-9 col-lg-9" style="margin:0px;padding:0px;">
             <div id="map-canvas" style="width:100vw;height:100vh;padding:0px;margin:0px;"></div>
             <div id="legend">
@@ -63,8 +63,8 @@
 
 
 
-         <div id="myModal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
+  <div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog" style="min-width:80%;">
     <!-- Modal content-->
     <div class="modal-content">
       <div class="modal-header">
@@ -88,26 +88,26 @@
 
           <div class="form-group">
 
-              <label class="col-md-2 control-label text-black" for="name">Departure Date</label>  
+              <label class="col-md-2 control-label text-black" for="name">Departure Date</label>
               <div class="col-md-4">
               <input name="departureDate" id="departure_date" type="date" placeholder="Departure Date" class="form-control input-md" required="">
-              <span class="help-block">The departure date of the flight (Must be today, or in the future)</span>  
+              <span class="help-block">The departure date of the flight (Must be today, or in the future)</span>
               </div>
 
 
-              <label class="col-md-2 control-label text-black" for="name">Return Date</label>  
+              <label class="col-md-2 control-label text-black" for="name">Return Date</label>
               <div class="col-md-4">
               <input id="return_date" name="returnDate" type="date" placeholder="Return Date" class="form-control input-md">
-              <span class="help-block">Enter the return flight date (If return is required)</span>  
+              <span class="help-block">Enter the return flight date (If return is required)</span>
               </div>
-            
+
 
             </div><!-- form group-->
                    <hr/><br/>
 
              <div class="form-group">
 
-                <label class="col-md-2 control-label text-black" for="name">Cabin class</label>  
+                <label class="col-md-2 control-label text-black" for="name">Cabin class</label>
                 <div class="col-md-4">
                 <select name="cabinClass" id="cabin_class"  class="form-control input-md" required="">
                   <option value="Economy" selected="">Economy class</option>
@@ -115,50 +115,50 @@
                   <option value="Business">Business class</option>
                   <option value="First">First class</option>
                 </select>
-                <span class="help-block">The cabin class required when flying.</span>  
+                <span class="help-block">The cabin class required when flying.</span>
                 </div>
 
-                <label class="col-md-2 control-label text-black" for="name">Group pricing</label>  
+                <label class="col-md-2 control-label text-black" for="name">Group pricing</label>
                 <div class="col-md-4">
                 <input id="group_pricing" name="groupPricing" type="checkbox" placeholder="Return Date" class="form-control input-md">
-                <span class="help-block">If checked, the result prices will be the total for all tickets rather than one adult.</span>  
+                <span class="help-block">If checked, the result prices will be the total for all tickets rather than one adult.</span>
                 </div>
-            
+
              </div>
              <hr/><br/>
 
             <div class="form-group">
               <div class="row">
 
-            
+
                 <div class="col-xs-12">
 
-                  <label class="col-md-2 control-label text-black" for="num_adult_tickets">Number of adult tickets</label>  
+                  <label class="col-md-2 control-label text-black" for="num_adult_tickets">Number of adult tickets</label>
                   <div class="col-md-2">
                   <input name="departureDate" id="num_adult_tickets" type="number" value="1" class="form-control input-sm" required="">
                   </div>
 
-                  <label class="col-md-2 control-label text-black" for="num_child_tickets">Number of child tickets</label>  
+                  <label class="col-md-2 control-label text-black" for="num_child_tickets">Number of child tickets</label>
                   <div class="col-md-2">
                   <input id="num_child_tickets" type="number" class="form-control input-sm" value="0" required="">
                   </div>
-                
-                  <label class="col-md-2 control-label text-black" for="num_infant_tickets">Number of infant tickets</label>  
+
+                  <label class="col-md-2 control-label text-black" for="num_infant_tickets">Number of infant tickets</label>
                   <div class="col-md-2">
                   <input id="num_infant_tickets" type="number" class="form-control input-sm" value="0" required="">
                   </div>
                 </div
               </div>
             </div>
-     
+
             </div><!--input group-->
             <button type="submit" style="display:hidden"></button>
                   </fieldset>
             </form>
-  
-      
+
+
             <ul id="flightResults" class="list-group" style="overflow:scroll;">
-              
+
             </ul>
         </div><!--panel body-->
         </div>
@@ -179,4 +179,4 @@
 <script type="text/javascript" src="/js/maps/airport-map.js"></script>
   </body>
 
-  
+

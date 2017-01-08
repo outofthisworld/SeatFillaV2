@@ -64,7 +64,7 @@ module.exports.policies = {
         'twitterCallback': 'notLoggedInPolicy',
     },
     HomeController:{
-         '*':true ,
+         '*':true,
         'login':['notLoggedInPolicy'],
         'register':['notLoggedInPolicy']
     },
@@ -78,7 +78,8 @@ module.exports.policies = {
     FlightOfferController: {
         '*': false,
         'find':true,
-        'index':true
+        'index':true,
+        'findOne':true
     },
     FlightRequestController: {
         'create':['passportAuth','viewProfilePolicy','isOwnProfilePolicy']

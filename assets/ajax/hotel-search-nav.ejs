@@ -1,18 +1,45 @@
-<div class="container-fluid" style="min-height:300px;">
+<div class="container" style="min-height:300px;">
 <h2 class="">Hotel details</h2>
 <hr/><br/>
-
 <form>
-        <div class="col-md-4">
-        <select id="country" class="country select form-control"></select>
+  <div class="row">
+        <div class="col-xs-8">
+            <div class="row">
+                <div class="col-md-6">
+                  <label for="country"> Select country </label>
+                  <select id="country" class="country select form-control"></select>
+                  </div>
+                <div class="col-md-6">
+                  <label for="hotelPlaceSuggestions">Suggestions</label>
+                  <select class="form-control" id="hotelPlaceSuggestions">
+                  </select>
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col-md-2">
+                    <label for="numRooms">No. rooms</label>
+                    <input type="number" class="form-control" id="numRooms" required value="1"/>
+                </div>
+                <div class="col-md-2">
+                    <label for="numGuests">No. guests</label>
+                    <input type="number" class="form-control" id="numGuests" required value="1"/>
+                </div>
+                 <div class="col-md-4">
+                    <label for="checkInDate">Check in date</label>
+                    <input type="date" class="form-control" id="checkInDate" required/>
+                </div>
+                <div class="col-md-4">
+                    <label for="checkOutDate">Check out date</label>
+                    <input type="date" class="form-control" id="checkOutDate" required/>
+                </div>
+            </div>
+
         </div>
         <div class="col-md-4">
-        <select class="form-control" id="hotelPlaceSuggestions">
-        </select>
+             <input type="button" id="searchHotels" style="margin:auto;position:absolute;left:40px;top:50px;" class="btn btn-info btn-lg" value="Search hotels"/>
         </div>
-        <div class="col-md-4">
-        <button id="searchHotels" class="btn btn-info">Search hotels</button><br/>
-        </div>
+  </div>
 </form>
 <br/>
 </div>

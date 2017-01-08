@@ -81,7 +81,8 @@ module.exports = {
                 sails.log.debug('Returning record: ' + JSON.stringify(record));
                 return res.ok({
                     user: record[0],
-                    UserProfile
+                    UserProfile,
+                    cards:[]
                 });
             }).catch(function(err) {
                 sails.log.error(err);

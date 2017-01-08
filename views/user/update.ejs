@@ -22,6 +22,7 @@
            $('input[type="password"]').removeAttr('disabled');
            $('select').removeAttr('disabled');
            $('button').removeAttr('disabled');
+           $.inputHookInit();
       });
 
       $('#storeCreditCard').ajaxForm(function(err,response,jqXHR,ts,errorThrown){
@@ -38,9 +39,9 @@
             $.toaster({message:'Succesfully stored credit card', priority:'success'})
           }
       })
-      
+
   });
-  
+
 </script>
 <style>
 form .control-label{
@@ -114,7 +115,7 @@ form .control-label{
   background-color:#fff;
 }
 .panel.material .panel-heading.border{
-    
+
 }
 .help-block{
   color:black;
@@ -138,7 +139,7 @@ form .control-label{
   {{/for}}
 </script>
 <div id="wrapper" class="wrapper">
-    
+
 	<div class="row">
 		<div class="col-xs-12">
             <div class="panel panel-deault material">
@@ -152,7 +153,7 @@ form .control-label{
                         </ul>
                     </span>
                 </div>
-              
+
                 <div class="panel-body">
                     <div class="tab-content">
                         <div class="tab-pane active" id="updatedetails">
@@ -164,58 +165,58 @@ form .control-label{
                         <fieldset>
 
                         <br/>
-                    
+
                           <!-- Text input-->
                           <div class="form-group">
-                            <label class="col-md-3 control-label" for="name">First Name</label>  
+                            <label class="col-md-3 control-label" for="name">First Name</label>
                             <div class="col-md-8">
                             <input id="name" name="firstName" type="text" value="<%=data.user.firstName%>" placeholder="First Name" class="form-control input-md" required="" disabled>
-                            <span class="help-block">First name</span>  
+                            <span class="help-block">First name</span>
                             </div>
                           </div>
 
                           <div class="form-group">
-                            <label class="col-md-3 control-label" for="name">Middle Name</label>  
+                            <label class="col-md-3 control-label" for="name">Middle Name</label>
                             <div class="col-md-8">
                             <input id="name" name="middleName" type="text" value="<%=data.user.middleName%>" placeholder="Middle Name" class="form-control input-md" required="" disabled>
-                            <span class="help-block">Middle name</span>  
+                            <span class="help-block">Middle name</span>
                             </div>
                           </div>
 
                           <div class="form-group">
-                            <label class="col-md-3 control-label" for="name">Last Name</label>  
+                            <label class="col-md-3 control-label" for="name">Last Name</label>
                             <div class="col-md-8">
                             <input id="name" name="lastName" type="text" value="<%=data.user.lastName%>" placeholder="Last Name" class="form-control input-md" required="" disabled>
-                            <span class="help-block">Last name</span>  
+                            <span class="help-block">Last name</span>
                             </div>
                           </div>
 
 
                           <!-- Text input-->
                           <div class="form-group">
-                            <label class="col-md-3 control-label" for="phone">Home Phone</label>  
+                            <label class="col-md-3 control-label" for="phone">Home Phone</label>
                             <div class="col-md-8">
                             <input id="phone" name="home" type="text" value="<%=data.user.home%>" placeholder="Home Phone Number" class="form-control input-md" required="" disabled>
-                            <span class="help-block">Your home phone</span>  
+                            <span class="help-block">Your home phone</span>
                             </div>
                           </div>
 
                           <div class="form-group">
-                            <label class="col-md-3 control-label" for="phone">Mobile No.</label>  
+                            <label class="col-md-3 control-label" for="phone">Mobile No.</label>
                             <div class="col-md-8">
                             <input id="phone" name="mobile" type="text" value="<%=data.user.mobile%>" placeholder="Mobile Phone Number" class="form-control input-md" required="" disabled>
-                            <span class="help-block">Mobile</span>  
+                            <span class="help-block">Mobile</span>
                             </div>
                           </div>
 
                           <!-- Text input-->
                           <div class="form-group">
-                            <label class="col-md-3 control-label" for="email">Email</label>  
+                            <label class="col-md-3 control-label" for="email">Email</label>
                             <div class="col-md-6">
                             <input id="email" name="email" type="text" value="<%=data.user.email%>" placeholder="Email address" class="form-control input-md" required="" disabled>
-                            <span class="help-block">Email will be used for notication messages</span>  
+                            <span class="help-block">Email will be used for notification messages</span>
                             </div>
-                            <label class="col-md-1 control-label" for="email">Email verified? </label> 
+                            <label class="col-md-1 control-label" for="email">Email verified? </label>
                             <div class="col-md-1">
                                 <%if(data.user.isEmailVerified){%>
                                     <input type="checkbox" class="form-control" checked="" disabled/>
@@ -227,41 +228,41 @@ form .control-label{
 
                           <!-- Text input-->
                           <div class="form-group">
-                            <label class="col-md-3 control-label" for="address1">Address line one</label>  
+                            <label class="col-md-3 control-label" for="address1">Address line one</label>
                             <div class="col-md-8">
                             <input id="address1" name="addressLine" value="<%=data.user.addressLine%>" type="text" placeholder="Address " class="form-control input-md" required="" disabled>
                             </div>
                           </div>
 
                           <div class="form-group">
-                            <label class="col-md-3 control-label" for="address1">Address line two</label>  
+                            <label class="col-md-3 control-label" for="address1">Address line two</label>
                             <div class="col-md-8">
                             <input id="address1" name="addressLineTwo" type="text" value="<%=data.user.addressLineTwo%>" placeholder="Address " class="form-control input-md" required="" disabled>
-                      
+
                             </div>
                           </div>
 
                           <div class="form-group">
-                            <label class="col-md-3 control-label" for="address1">Address line three</label>  
+                            <label class="col-md-3 control-label" for="address1">Address line three</label>
                             <div class="col-md-8">
                             <input id="address1" name="addressLineThree" type="text" value="<%=data.user.addressLineThree%>" placeholder="Address " class="form-control input-md" required="" disabled>
-                      
+
                             </div>
                           </div>
 
                           <div class="form-group">
-                            <label class="col-md-8 control-label" for="country">Country</label>  
+                            <label class="col-md-8 control-label" for="country">Country</label>
                             <div class="col-md-4">
-                            <select id="country" name="country" data-attr-cityLink="#city" type="text" class="form-control input-md country" required disabled>
+                            <select id="country" name="country" value="<%=data.user.addressLineThree%>" data-attr-cityLink="#city" type="text" class="form-control input-md country" required>
                             </select>
                             </div>
                           </div>
 
                           <!-- Text input-->
                           <div class="form-group">
-                            <label class="col-md-8 control-label" for="city">City</label>  
+                            <label class="col-md-8 control-label" for="city">City</label>
                             <div class="col-md-4">
-                            <select id="city" name="city" value="<%=data.user.city%>" type="text" class="form-control input-md city" required disabled>
+                            <select id="city" name="city" value="" type="text" class="form-control input-md city" required>
                             </select>
                             </div>
                           </div>
@@ -269,10 +270,10 @@ form .control-label{
 
                           <!-- Text input-->
                           <div class="form-group">
-                            <label class="col-md-3 control-label" for="zip">Post Code</label>  
+                            <label class="col-md-3 control-label" for="zip">Post Code</label>
                             <div class="col-md-4">
                             <input id="zip" name="zip" type="text" value="<%=data.user.postcode%>" placeholder="Zip Code" class="form-control input-md" required="" disabled>
-                      
+
                             </div>
                           </div>
 
@@ -302,26 +303,26 @@ form .control-label{
                   </div>
                         <div class="tab-pane" id="updatepaymentinfo">
 
-          <div class="row">          
+          <div class="row">
       <div class="col-xs-8">
              <div class="panel-heading" style="margin:0px;padding:0px;padding-left:20px;"><p> Enter new payment details </p></div>
       <form id="storeCreditCard" action="/paypal/storeCreditCard" method="POST" class="form-horizontal">
           <div class="errors"></div>
           <div class="form-group">
-                            <label class="col-md-3 control-label" for="zip">First name</label>  
+                            <label class="col-md-3 control-label" for="zip">First name</label>
                             <div class="col-md-6">
                              <input type="text" name="first_name" placeholder="Dale" class="form-control input input-sm" pattern="[a-zA-Z]+" required>
                                 <span class="help-block">Your first name</span>
                             </div>
                           </div>
           <div class="form-group">
-                            <label class="col-md-3 control-label" for="lastName">Last name</label>  
+                            <label class="col-md-3 control-label" for="lastName">Last name</label>
                             <div class="col-md-6">
                              <input type="text" minlength="2" name="last_name" placeholder="Appleby" class="form-control input input-sm" pattern="[a-zA-Z]+" title="Fill your first and last name" required>
                                 <span class="help-block">Your last name</span>
                             </div>
                           </div>
-       
+
           <div class="form-group">
             <label class="col-md-3 control-label">Card Number</label>
               <div class="row">
@@ -337,16 +338,16 @@ form .control-label{
                 <div class="col-xs-2">
                   <input type="password" name="ccPartFour"  placeholder="7661" class="form-control input input-sm" autocomplete="off" maxlength="4" pattern="\d{4}" title="Fourth four digits" required>
                 </div>
-            
+
             </div>
                <span class="help-block"> Sixteen digit card no. The first and last four digits will not be visible for safety.</span>
           </div>
-       
+
           <div class="form-group">
             <label class="col-md-3 control-label">Expiry</label>
-            
+
                 <div class="col-md-4">
-                
+
                   <select name="expire_month" class="form-control noselect" required>
                   <% for(var i = 1;i <= 12;i++){%>
                         <option value="<%=i%>" ><%=i%><option>
@@ -363,7 +364,7 @@ form .control-label{
                       <span class="help-block">Expiry year e.g (2021)</span>
                 </div>
           </div>
-       
+
           <div class="form-group">
             <label class="col-md-3 control-label">Card CVV</label>
                <div class="row">
@@ -448,9 +449,9 @@ form .control-label{
       </div>
       </div>
       </div>
-                        
+
                         </div>
-                      
+
                     </div>
                 </div>
             </div>

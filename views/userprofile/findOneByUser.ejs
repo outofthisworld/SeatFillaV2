@@ -1350,7 +1350,7 @@ border-width:2px;
                 <div class="tabbable-panel margin-tops4 ">
                 <div class="tabbable-line">
                     <ul class="nav nav-tabs tabtop  tabsetting">
-                    <li class="active"> <a href="#tab_default_1" data-toggle="tab">Lates hotel bids</a></li>
+                    <li class="active"> <a href="#tab_default_1" data-toggle="tab">Latest hotel bids</a></li>
                     <li> <a href="#tab_default_2" data-toggle="tab"> Latest flight bids</a></li>
                     <li> <a href="#tab_default_3" data-toggle="tab"> Winning hotel sales</a></li>
                     <li> <a href="#tab_default_4" data-toggle="tab"> Winning flight sales</a></li>
@@ -1513,56 +1513,6 @@ border-width:2px;
             </div>
             </section>
 
-            <div class="artist-title col-md-12">
-                <a href="">Content</a><br/>
-            </div>
-            <div class="artist-collage col-md-12">
-                <span class="play-mix"><span class="btn btn-info play-mix-btn"> Deals</span></span>
-                <div class="col-md-6"><img src="https://placeholdit.imgix.net/~text?txtsize=33&txt=350%C3%97350&w=200&h=200" width="150" height="150"></div>
-                <div class="col-md-6 collage-rhs">
-                    <div class="col-md-12"><img src="https://placeholdit.imgix.net/~text?txtsize=33&txt=350%C3%97350&w=200&h=200"  width="150" height="84"></div>
-                    <div class="col-md-12"><img src="https://placeholdit.imgix.net/~text?txtsize=33&txt=350%C3%97350&w=200&h=200" width="150" height="84"></div>
-                </div>
-            </div>
-            <div class="listing-tab col-md-12">
-                  <!-- Nav tabs -->
-                  <ul class="nav nav-tabs" id="myTabs" role="tablist">
-                    <li role="presentation" class="active"><a href="#items" aria-controls="items" role="tab" data-toggle="tab">Items</a></li>
-                    <li role="presentation"><a href="#albums" aria-controls="albums" role="tab" data-toggle="tab">Other</a></li>
-                  </ul>
-
-                  <!-- Tab panes -->
-                  <div class="tab-content">
-                    <div role="tabpanel" class="tab-pane active" id="items">
-                        <ul>
-                            <li><a href="#"></a> Item   <span> one</span></li>
-
-                        </ul>
-                        <div class="itemms">
-                            <h3></h3>
-                            <div class="col-md-12">
-                                <div class="col-md-4 artist-next"><img src="" alt="" ></div>
-                                <div class="col-md-4 artist-next"><img src="" alt="" ></div>
-                                <div class="col-md-4 artist-next"><img src="" alt="" ></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div role="tabpanel" class="tab-pane" id="albums">
-                        <ul>
-                            <li><a href="#"><img src="" alt="" width="50" height="50"> </a></li>
-
-                        </ul>
-                        <div class="itemms">
-                            <h3></h3>
-                            <div class="col-md-12">
-                                <div class="col-md-4 artist-next"><img src="" alt=""></div>
-                                <div class="col-md-4 artist-next"><img src="" alt=""></div>
-                                <div class="col-md-4 artist-next"><img src="" alt=""></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
 
           </div>
@@ -1621,10 +1571,10 @@ border-width:2px;
 <!--  statitics -->
 <script type="text/html" id="userprofilecommentreplytemplate">
     <li data-attr-eventName="userprofilecommentreply" data-attr-id="{{:id}}">
-        <div class="comment-avatar"><img src="http://i9.photobucket.com/albums/a88/creaticode/avatar_2_zps7de12f8b.jpg" alt=""></div>
+        <div class="comment-avatar"><img src="{{:user.imageUrl}}" alt=""></div>
         <div class="comment-box">
             <div class="comment-head">
-                <h6 class="comment-name"><a href="http://creaticode.com/blog">{{:user.username}}</a></h6>
+                <h6 class="comment-name"><a href="/userprofile/{{:user.username}}">{{:user.username}}</a></h6>
                 <span>{{:createdAt}}</span>
                 <i class="fa fa-reply"></i>
                 <i class="fa fa-heart"></i>
@@ -1638,10 +1588,10 @@ border-width:2px;
 <script type="text/html" id="userprofilecommenttemplate">
     <li data-attr-eventName="userprofilecomment" data-attr-id="{{:id}}">
         <div class="comment-main-level">
-            <div class="comment-avatar"><img src="https://placeholdit.imgix.net/~text?w=80&h=80" alt=""></div>
+            <div class="comment-avatar"><img src="{{:user.image}}" alt=""></div>
             <div class="comment-box">
                 <div class="comment-head">
-                    <h6 class="comment-name by-author"><a class="text-black" href="http://creaticode.com/blog">{{:user.username}}</a></h6>
+                    <h6 class="comment-name by-author"><a class="text-black" href="/userprofile/{{:user.username}}">{{:user.username}}</a></h6>
                     <span>{{:~timeSinceNow(createdAt,'days')}} day(s) ago</span>
                     <i class="fa fa-reply show-reply-panel" data-attr-reply-panel="{{:id}}"></i>
                 </div>

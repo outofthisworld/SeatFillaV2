@@ -58,6 +58,26 @@ module.exports = {
       return res.serverError(err);
     })
   },
+  findOne(req,res){
+      sails.log.debug('flight data:')
+      sails.log.debug(req.param('flightOffer'))
+
+      if(req.param('provider') == 'Skyscanner'){
+        try{
+          const flightOffer = JSON.parse(req.param('flightOffer'));
+          const flightData = JSON.parse(req.param('flightData'));
+
+          async.auto({
+            create_flight_offer:function(){
+
+            }
+          })
+        }catch(err){
+          return res.serverError();
+        }
+      }
+      return res.ok({})
+  },
   destroy(req,res){
     var apiUser;
     const errors = []

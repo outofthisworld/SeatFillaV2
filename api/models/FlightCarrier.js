@@ -1,0 +1,25 @@
+module.exports = {
+  attributes:{
+    id:{
+      type:'integer',
+      notNull:true,
+      required:true,
+      primaryKey:true
+    },
+    code:{
+      type:'string',
+      notNull:true,
+      required:true
+    },
+    imageUrl:{
+      type:'string',
+      notNull:true,
+      required:true
+    },
+    name:{
+      type:'string',
+      notNull:true,
+      required:true
+    }
+  }
+}

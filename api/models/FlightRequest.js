@@ -135,7 +135,6 @@ module.exports = {
         maximumPayment: {
             type: 'float',
             decimal: true,
-            min: 1,
             max: 20001
         },
         timeZoneOffset: {

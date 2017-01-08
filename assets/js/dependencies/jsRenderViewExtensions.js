@@ -167,7 +167,21 @@ $(window).ready(function() {
             },
             stringify(obj){
                 return JSON.stringify(obj);
+            },
+            escapeHtml(string) {
+              var entityMap = {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': '&quot;',
+                "'": '&#39;',
+                "/": '&#x2F;'
+              };
+              return String(string).replace(/[&<>"'\/]/g, function (s) {
+                return entityMap[s];
+              });
             }
+
         })
         $.views.tags({
             setvar: function(key, value) {

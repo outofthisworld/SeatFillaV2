@@ -1,0 +1,33 @@
+module.exports = {
+  attributes:{
+    id:{
+      type:'string',
+      notNull:true,
+      primaryKey:true
+    },
+    arrivalDate:{
+      type:'datetime',
+      notNull:true,
+      required:true
+    },
+    departureDate:{
+      type:'datetime',
+      notNull:true,
+      required:true
+    },
+    duration:{
+      type:'integer',
+    },
+    originStation:{
+      type:'string'
+    },
+    originStationName:{
+      type:'string'
+    },
+    carrier:{
+      model:'FlightCarrier',
+      notNull:true,
+      required:true
+    }
+  }
+}

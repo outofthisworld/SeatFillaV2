@@ -6,79 +6,74 @@
 module.exports = {
     autoPK:false,
     attributes: {
-          id: {
+        id: {
             primaryKey: true,
             type: 'string',
             defaultsTo: function() {
                 return require('node-uuid').v4();
             }
         },
-        type: {
-            type: 'string',
-            notNull: true,
-            required: true
-        },
-        ip: {
-            type: 'string',
-            notNull: true,
-            required: true
-        },
         apiUser: {
             type: 'ApiUsers',
-            notNull: true,
-            required: true
         },
-        departureAirportCode: {
+        provider:{
+            type:'string'
+        },
+        departureIataCode:{
             type: 'string',
             required: true,
             notNull: true
         },
-        departureDateTime: {
+        departureDate: {
             type: 'datetime',
+            notNull:true,
+            required:true
         },
-        arrivalAirportCode: {
+        arrivalIataCode: {
             type: 'string',
             required: true,
             notNull: true
         },
-        arrivalDateTime: {
+        arrivalDate: {
             type: 'datetime',
             required: true,
             notNull: true,
             hasValidDates: true
         },
-        flightNumber: {
-            type: 'string',
-            required: true,
-            notNull: true
+        cabinClass:{
+          type:'string',
+          notNull:true,
+          required:true,
         },
-        carrier: {
-            type: 'string',
-            notNull: true,
-            required: true
+        numAdultTickets:{
+          type:'integer',
+          defaultsTo:0
         },
-        minPrice: {
-            type: 'number',
-            decimal: true,
-            required: true,
-            notNull: true,
-            min: 0,
-            max: 20001 //1 -> 20000
+        numChildTickets:{
+          type:'integer',
+          defaultsTo:0
         },
-        isReturnTrip: {
-            type: 'boolean',
-            required: true,
-            notNull: true
+        numInfantTickets:{
+          type:'integer',
+          defaultsTo:0
         },
-        ticketsAvailable: {
-            type: 'number',
-            int: true,
-            max: 11,
-            min: 0 //1 - 10
+        sellTicketsSeperately:{
+          type:'boolean',
+          defaultsTo:0
         },
         offerExpireDateTime: {
             type: 'datetime',
-            required: true,
+        },
+        inboundLeg:{
+          collection:'FlightLeg'
+        },
+        outboundLeg:{
+          collection:'FlightLeg'
+        },
+        currency:{
+          type:'string',
+          notNull:true,
+          required:true
         },
         bids: {
             collection: 'FlightBid',

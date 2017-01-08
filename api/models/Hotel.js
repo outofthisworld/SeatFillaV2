@@ -1,7 +1,7 @@
 module.exports = {
     autoPK:false,
     attributes:{
-          id: {
+        id: {
             primaryKey: true,
             type: 'string',
             defaultsTo: function() {

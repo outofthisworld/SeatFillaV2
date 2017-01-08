@@ -1,0 +1,20 @@
+module.exports = {
+  attributes:{
+    id:{
+      type:'string',
+      notNull:true,
+      required:true
+    },
+    imageUrl:{
+      type:'string',
+      notNull:true,
+      required:true
+    },
+    name:{
+      type:'string'
+    },
+    type:{
+      type:'string'
+    }
+  }
+}
